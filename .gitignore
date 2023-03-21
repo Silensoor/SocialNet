@@ -7,4 +7,3 @@ Dockerfile
 /.jpb/
 application-dim.yml
 .gitlab-ci.yml
-javapro37backend.iml
