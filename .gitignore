@@ -7,3 +7,4 @@ Dockerfile
 /.jpb/
 application-dim.yml
 .gitlab-ci.yml
+
