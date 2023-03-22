@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 16(1)
+      author: Michael
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: cities_key
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: gismeteo_id
+                  type: INTEGER
+              - column:
+                  name: country_id
+                  type: BIGINT
+              - column:
+                  name: district
+                  type: VARCHAR(255)
+              - column:
+                  name: sub_district
+                  type: VARCHAR(255)
+            tableName: cities
+
