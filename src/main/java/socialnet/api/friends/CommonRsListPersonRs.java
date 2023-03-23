@@ -1,0 +1,13 @@
+package socialnet.api.friends;
+
+import java.util.List;
+
+public class CommonRsListPersonRs {
+
+    private List<PersonRs> data;
+    private Integer itemPerPage;
+    private Integer offset;
+    private Integer perPage;
+    private Long timestamp;
+    private Long total;
+}
