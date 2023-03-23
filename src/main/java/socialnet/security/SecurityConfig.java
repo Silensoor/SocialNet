@@ -1,5 +1,6 @@
 package socialnet.security;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -9,43 +10,42 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import socialnet.security.jwt.JWTRequestFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import socialnet.security.jwt.JWTokenRepository;
+import socialnet.security.jwt.JwtCsrfFilter;
 
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserService socialNetUserDetailsService;
-    private final JWTRequestFilter filter;
 
-    public SecurityConfig(UserService socialNetUserDetailsService) {
-        this.socialNetUserDetailsService = socialNetUserDetailsService;
-    }
+    private UserService service;
+
+
+    private JWTokenRepository jwtTokenRepository;
+
+
+    @Qualifier("handlerExceptionResolver")
+    private HandlerExceptionResolver resolver;
 
     @Bean
-    PasswordEncoder getPasswordEncoder() {
+    public PasswordEncoder devPasswordEncoder() {
         return NoOpPasswordEncoder.getInstance();
+    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .and()
+                .addFilterAt(new JwtCsrfFilter(jwtTokenRepository, resolver), CsrfFilter.class)
+                .csrf().ignoringAntMatchers("/**");
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(socialnetUserDeatailsService)
-                .passwordEncoder();
+        auth.userDetailsService(this.service);
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .and().formLogin()
-                .loginPage("/api/v1/auth/login").failureUrl("/api/v1/auth/login")
-                .and().logout().logoutUrl("/api/v1/auth/logout").logoutSuccessUrl("/api/v1/auth/login").deleteCookies("token");
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
-    }
 }

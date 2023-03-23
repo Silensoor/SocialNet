@@ -20,3 +20,4 @@ spring:
       password: admin
 auth:
   secret: socialNet
+  timeLive: 3600
