@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 7
+      id: 7(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: post_files_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: name
                   type: VARCHAR(255)

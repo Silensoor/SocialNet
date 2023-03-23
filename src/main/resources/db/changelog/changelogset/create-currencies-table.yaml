@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 20
+      id: 20(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: currencies_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: name
                   type: VARCHAR(255)
