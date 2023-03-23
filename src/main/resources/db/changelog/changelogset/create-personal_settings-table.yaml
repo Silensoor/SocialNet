@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 18
+      id: 18(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: person_settings_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: comment_comment_notification
                   type: BOOLEAN
