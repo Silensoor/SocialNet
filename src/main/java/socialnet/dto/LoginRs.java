@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class LoginRs {
-    private LoginData data;
+    private PersonRs data;
     private String email;
     private String firstName;
     private String friendStatus;
@@ -20,6 +20,6 @@ public class LoginRs {
     private String regDate;
     private String token;
     private Boolean userDeleted;
-    private LoginWeather weather;
+    private WeatherRs weather;
 
 }

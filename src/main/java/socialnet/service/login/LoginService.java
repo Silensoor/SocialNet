@@ -9,19 +9,19 @@ import socialnet.dto.LoginRq;
 import socialnet.dto.PersonRs;
 import socialnet.dto.WeatherRs;
 import socialnet.dto.login.*;
+import socialnet.model.Person;
 
-import javax.naming.AuthenticationException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
 
-    private Persons person;
+    private Person person;
 
     private final JdbcTemplate jdbcTemplate;
 
-    public Object getLogin(LoginRq loginRq) throws AuthenticationException {
+    public Object getLogin(LoginRq loginRq) {
 
         if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
             return setLoginRs(); //заполнить поля
@@ -66,24 +66,24 @@ public class LoginService {
         personRs.setAbout(null); //?
         personRs.setCity(person.getCity());
         personRs.setCountry(person.getCountry());
-        personRs.setBirthDate(person.getBirth_date());
+        personRs.setBirthDate(person.getBirthDate());
         personRs.setCurrency(loginCurrency);
         personRs.setWeather(weatherRs);
         personRs.setEmail(person.getEmail());
-        personRs.setFirstName(person.getFirst_name());
+        personRs.setFirstName(person.getFirstName());
         personRs.setFriendStatus(null); //?
         personRs.setId(person.getId());
-        personRs.setIsBlocked(person.getIs_blocked());
+        personRs.setIsBlocked(null);
         personRs.setIsBlockedByCurrentUser(false); //?
-        personRs.setLastName(person.getLast_name());
-        personRs.setLastOnlineTime(person.getLast_online_time());
-        personRs.setMessagesPermission(person.getMessage_permissions());
-        personRs.setOnline(person.getOnline_status());
+        personRs.setLastName(person.getLastName());
+        personRs.setLastOnlineTime(person.getLastOnlineTime());
+        personRs.setMessagesPermission(person.getMessagePermissions());
+        personRs.setOnline(person.getOnlineStatus());
         personRs.setPhone(person.getPhone());
         personRs.setPhoto(person.getPhoto());
-        personRs.setRegDate(person.getReg_date());
+        personRs.setRegDate(person.getRegDate());
         personRs.setToken(null);
-        personRs.setUserDeleted(person.getIs_deleted());
+        personRs.setUserDeleted(person.getDeletedTime());
 
         return personRs;
     }
@@ -108,7 +108,7 @@ public class LoginService {
 
     public boolean checkLoginAndPassword(String email, String password) {
 
-        for (Persons personInDb : personList()) {
+        for (Person personInDb : personList()) {
             if ((personInDb.getEmail().equals(email) && personInDb.getPassword().equals(password))) {
                 person = personInDb;
                 return true;
@@ -117,7 +117,7 @@ public class LoginService {
         return false;
     }
 
-    public List<Persons> personList() {
-        return jdbcTemplate.query("SELECT * FROM public.persons", new BeanPropertyRowMapper<>(Persons.class));
+    public List<Person> personList() {
+        return jdbcTemplate.query("SELECT * FROM public.persons", new BeanPropertyRowMapper<>(Person.class));
     }
 }

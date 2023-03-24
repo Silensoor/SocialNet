@@ -3,12 +3,13 @@ package socialnet.dto;
 import lombok.Data;
 import socialnet.dto.login.LoginCurrency;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
 public class PersonRs {
     private String about;
-    private String birthDate;
+    private Timestamp birthDate;
     private String city;
     private String country;
     private LoginCurrency currency;
@@ -24,8 +25,8 @@ public class PersonRs {
     private String online;
     private String phone;
     private String photo;
-    private String regDate;
+    private Timestamp regDate;
     private String token;
-    private Boolean userDeleted;
+    private Timestamp userDeleted;
     private WeatherRs weather;
 }
