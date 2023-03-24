@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: weather_key
                   name: id
-                  type: INTEGER
+                  type: SERIAL
               - column:
                   name: gismeteo_id
                   type: INTEGER

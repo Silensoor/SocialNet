@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 10
+      id: 10(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: post2tag_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: post_id
                   type: BIGINT
