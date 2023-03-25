@@ -3,9 +3,10 @@ package socialnet.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import socialnet.dto.LoginRq;
+import socialnet.dto.login.LoginRs;
 import socialnet.service.login.LoginServiceImpl;
 
-import javax.naming.AuthenticationException;
+import javax.naming.Name;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -17,13 +18,13 @@ public class Controller {
         this.loginServer = loginServer;
     }
 
-    @GetMapping("/v1/auth/login")
-    public ResponseEntity<?> login(@RequestBody LoginRq loginRq) throws AuthenticationException {
+    @GetMapping("/auth/login")
+    public ResponseEntity<?> login(@RequestBody LoginRq loginRq) {
         return ResponseEntity.ok(loginServer.getLogin(loginRq));
     }
 
     @GetMapping("users/me")
-    public ResponseEntity<?> Me() {
-        return ResponseEntity.ok(loginServer.getMe());
+    public ResponseEntity<?> Me(@RequestParam(name = "jwt") String jwt) {
+        return ResponseEntity.ok(loginServer.getMe(jwt));
     }
 }

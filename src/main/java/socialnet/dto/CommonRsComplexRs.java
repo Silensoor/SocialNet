@@ -3,7 +3,7 @@ package socialnet.dto;
 import lombok.Data;
 
 @Data
-public class MeRs {
+public class CommonRsComplexRs {
 
     private ComplexRs data;
     private Integer itemPerPage;

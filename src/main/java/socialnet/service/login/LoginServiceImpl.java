@@ -14,7 +14,6 @@ import socialnet.dto.login.LoginCurrency;
 import socialnet.dto.login.LoginRs;
 import socialnet.security.jwt.JwtUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Service
@@ -27,35 +26,32 @@ public class LoginServiceImpl implements LoginService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    @Bean
     public Object getLogin(LoginRq loginRq) {
 
+        if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
+            return setLoginRs(getToken(loginRq)); //заполнить поля
+        } else {
+            return setLoginErrorRs(); //заполнить поля
+        }
+    }
+
+    public Object getMe(String getToken) {
+
+        return CommonRsComplexRs();
+    }
+
+    public String getToken (LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
-        if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
-            System.out.println("ok");
-            System.out.println(jwt);
-            return setLoginRs(); //заполнить поля
-        } else {
-            System.out.println("no ok");
-            return setLoginErrorRs(); //заполнить поля
-        }
+        return jwt;
     }
+    public CommonRsComplexRs CommonRsComplexRs() {
 
-    public Object getMe() {
-        if (true) {
-            return setMeRs();
-        }
-        return setLoginErrorRs();
-    }
-
-    public MeRs setMeRs() {
-
-        MeRs meRs = new MeRs();
+        CommonRsComplexRs meRs = new CommonRsComplexRs();
 
         meRs.setData(null);
         meRs.setOffset(null);
@@ -96,7 +92,7 @@ public class LoginServiceImpl implements LoginService {
         return loginCurrency;
     }
 
-    public PersonRs setLoginData(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs) {
+    public PersonRs setLoginData(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs, String jwt) {
 
         weatherRs = setLoginWeather(weatherRs);
         loginCurrency = setLoginCurrency(loginCurrency);
@@ -119,18 +115,18 @@ public class LoginServiceImpl implements LoginService {
         personRs.setPhone(persons.getPhone());
         personRs.setPhoto(persons.getPhoto());
         personRs.setRegDate(persons.getReg_date());
-        personRs.setToken(null);
+        personRs.setToken(jwt);
         personRs.setUserDeleted(persons.getIs_deleted());
 
         return personRs;
     }
 
-    public LoginRs setLoginRs() {
+    public LoginRs setLoginRs(String jwt) {
         WeatherRs loginWeather = new WeatherRs();
         LoginCurrency loginCurrency = new LoginCurrency();
         PersonRs loginData = new PersonRs();
 
-        loginData = setLoginData(loginData, loginCurrency, loginWeather);
+        loginData = setLoginData(loginData, loginCurrency, loginWeather, jwt);
 
         LoginRs loginRs = new LoginRs();
         loginRs.setData(loginData);
