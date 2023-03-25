@@ -1,4 +1,4 @@
-package socialnet.model;
+package socialnet.model.db;
 
 import lombok.Data;
 
