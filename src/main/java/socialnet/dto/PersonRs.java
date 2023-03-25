@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class PersonRs {
     private String about;
-    private Timestamp birthDate;
+    private String birthDate;
     private String city;
     private String country;
     private LoginCurrency currency;
@@ -25,8 +25,8 @@ public class PersonRs {
     private String online;
     private String phone;
     private String photo;
-    private Timestamp regDate;
+    private String regDate;
     private String token;
-    private Timestamp userDeleted;
+    private Boolean userDeleted;
     private WeatherRs weather;
 }

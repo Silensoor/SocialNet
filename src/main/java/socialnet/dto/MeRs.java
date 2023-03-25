@@ -1,10 +1,9 @@
-package socialnet.dto.logoutAndMe;
+package socialnet.dto;
 
 import lombok.Data;
-import socialnet.dto.ComplexRs;
 
 @Data
-public class LogoutAndMeRs {
+public class MeRs {
 
     private ComplexRs data;
     private Integer itemPerPage;
