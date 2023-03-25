@@ -17,11 +17,11 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         template.execute("DELETE FROM post_comments");
-        template.execute("DELETE FROM posts");
-        template.execute("DELETE FROM persons");
-        template.execute("DELETE FROM likes");
-        template.execute("DELETE FROM tags");
         template.execute("DELETE FROM post2tag");
+        template.execute("DELETE FROM posts");
+        template.execute("DELETE FROM likes");
+        template.execute("DELETE FROM persons");
+        template.execute("DELETE FROM tags");
         List<String> lines = Files.readAllLines(Paths.get("src/main/resources/data.sql"));
         lines.forEach(x -> template.execute(x));
     }

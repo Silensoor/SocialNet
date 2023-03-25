@@ -28,7 +28,7 @@ public class PersonRs {
     @JsonProperty("friend_status")
     private String friendStatus;
 
-    private Integer id;
+    private Long id;
 
     @JsonProperty("is_blocked")
     private Boolean isBlocked;

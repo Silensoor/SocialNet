@@ -8,4 +8,7 @@ spring:
     username: landsreyk
     password: landsreyk
   liquibase:
-    enabled: true
+    enabled: false
+auth:
+  secret: socialNet
+  timeLive: 216000

@@ -17,7 +17,7 @@ public class PostRs {
     @JsonProperty("is_blocked")
     private Boolean isBlocked;
 
-    private Integer likes;
+    private Long likes;
 
     @JsonProperty("my_like")
     private Boolean myLike;

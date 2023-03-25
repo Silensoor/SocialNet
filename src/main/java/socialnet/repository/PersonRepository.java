@@ -35,8 +35,8 @@ public class PersonRepository {
             person.setRegDate(rs.getTimestamp("reg_date"));
             person.setCity(rs.getString("city"));
             person.setCountry(rs.getString("country"));
-            person.setTelegramId(rs.getInt("telegram_id"));
-            person.setPersonSettingsId(rs.getInt("person_settings_id"));
+            person.setTelegramId(rs.getLong("telegram_id"));
+            person.setPersonSettingsId(rs.getLong("person_settings_id"));
 
             return person;
         });

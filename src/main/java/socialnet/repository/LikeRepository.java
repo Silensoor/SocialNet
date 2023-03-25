@@ -10,8 +10,8 @@ public class LikeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public Integer findCountByPersonId(Integer personId) {
-        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM likes WHERE person_id = " + personId, Integer.class);
+    public Long findCountByPersonId(Long personId) {
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM likes WHERE person_id = " + personId, Long.class);
         return count;
     }
 }

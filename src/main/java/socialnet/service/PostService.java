@@ -48,7 +48,7 @@ public class PostService {
         postRs.setComments(commentsRs);
         postRs.setId(post.getId());
         postRs.setIsBlocked(post.getIsBlocked());
-        int likesCount = likeRepository.findCountByPersonId(person.getId());
+        long likesCount = likeRepository.findCountByPersonId(person.getId());
         postRs.setLikes(likesCount);
         postRs.setMyLike(null);
         postRs.setPostText(post.getPostText());
