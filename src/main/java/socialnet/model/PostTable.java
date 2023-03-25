@@ -6,12 +6,12 @@ import java.sql.Timestamp;
 
 @Data
 public class PostTable {
-    private long id;
-    private boolean isBlocked;
-    private boolean isDeleted;
+    private Long id;
+    private Boolean isBlocked;
+    private Boolean isDeleted;
     private String postText;
     private Timestamp time;
     private Timestamp timeDelete;
     private String title;
-    private long authorId;
+    private Long authorId;
 }
