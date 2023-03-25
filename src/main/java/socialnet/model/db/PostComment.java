@@ -1,10 +1,12 @@
 package socialnet.model.db;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Timestamp;
 
 @Data
+@AllArgsConstructor
 public class PostComment {
     private long id;
     private String commentText;

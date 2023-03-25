@@ -1,11 +1,8 @@
 package socialnet.mapper;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.SpringApplication;
-import org.springframework.format.datetime.joda.LocalDateTimeParser;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import socialnet.model.db.Like;
 import socialnet.model.db.Tag;
 import socialnet.model.enums.PostType;
@@ -19,15 +16,14 @@ import socialnet.repository.TagRepository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+
+@Component
 @RequiredArgsConstructor
-@Service
 public class PostMapper implements RowMapper<PostRs> {
 
     private final PersonRepository personRepository;
@@ -42,9 +38,9 @@ public class PostMapper implements RowMapper<PostRs> {
         int authorId = resultSet.getInt("author_id");
         PersonRs author = personRepository.getPersonById(authorId);
         int postId = resultSet.getInt("id");
-        List<CommentRs> comments = commentsRepository.getComments();
+        List<CommentRs> comments = commentsRepository.getCommentsByEntityId(postId);
         boolean isBlocked = resultSet.getBoolean("is_blocked");
-        List<Like> likesList = likeRepository.getLikesByPostId(postId);
+        List<Like> likesList = likeRepository.getLikesByEntityId(postId);
         int likes = likesList.size();
         boolean myLike = containsMyLike(likesList);
         String postText = resultSet.getString("post_text");

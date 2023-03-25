@@ -1,10 +1,12 @@
 package socialnet.model.rs;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class CommentRs {
     private PersonRs author;
     private int id;
