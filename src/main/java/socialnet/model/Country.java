@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class Country {
-    private long id;
+    private Long id;
     private String name;
     private String fullName;
     private String internationalName;

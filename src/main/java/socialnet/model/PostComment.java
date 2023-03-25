@@ -6,12 +6,12 @@ import java.sql.Timestamp;
 
 @Data
 public class PostComment {
-    private long id;
+    private Long id;
     private String commentText;
-    private boolean isBlocked;
-    private boolean isDeleted;
+    private Boolean isBlocked;
+    private Boolean isDeleted;
     private Timestamp time;
-    private long parentId;
-    private long authorId;
-    private long postId;
+    private Long parentId;
+    private Long authorId;
+    private Long postId;
 }

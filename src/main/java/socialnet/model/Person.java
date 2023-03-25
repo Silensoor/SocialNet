@@ -5,17 +5,17 @@ import java.sql.Timestamp;
 
 @Data
 public class Person {
-    private long id;
+    private Long id;
     private String about;
     private Timestamp birthDate;
     private String changePasswordToken;
-    private int configurationCode;
+    private Integer configurationCode;
     private Timestamp deletedTime;
     private String email;
     private String firstName;
-    private boolean isApproved;
-    private boolean isBlocked;
-    private boolean isDeleted;
+    private Boolean isApproved;
+    private Boolean isBlocked;
+    private Boolean isDeleted;
     private String lastName;
     private Timestamp lastOnlineTime;
     private String messagePermissions;
@@ -27,6 +27,6 @@ public class Person {
     private Timestamp regDate;
     private String city;
     private String country;
-    private long telegramId;
-    private long personSettingsId;
+    private Long telegramId;
+    private Long personSettingsId;
 }
