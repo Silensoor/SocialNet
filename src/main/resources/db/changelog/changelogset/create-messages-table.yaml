@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 12
+      id: 12(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: messages_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: is_deleted
                   type: BOOLEAN

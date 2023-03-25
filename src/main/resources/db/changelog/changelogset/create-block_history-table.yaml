@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 2(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: block_history_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: action
                   type: VARCHAR(255)

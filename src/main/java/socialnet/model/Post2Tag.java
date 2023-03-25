@@ -3,7 +3,8 @@ package socialnet.model;
 import lombok.Data;
 
 @Data
-public class Tag {
+public class Post2Tag {
     private Long id;
-    private String tag;
+    private Long postId;
+    private Long tagId;
 }

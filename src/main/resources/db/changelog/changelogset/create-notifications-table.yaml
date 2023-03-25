@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 15
+      id: 15(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: notifications_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: contact
                   type: VARCHAR(255)

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 3
+      id: 3(1)
       author: Michael
       changes:
         - createTable:
@@ -11,7 +11,7 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: person_key
                   name: id
-                  type: BIGINT
+                  type: BIGSERIAL
               - column:
                   name: about
                   type: VARCHAR(255)
