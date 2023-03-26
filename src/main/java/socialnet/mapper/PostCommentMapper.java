@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import socialnet.model.Like;
-import socialnet.dto.rs.CommentRs;
-import socialnet.dto.rs.PersonRs;
+import socialnet.dto.CommentRs;
+import socialnet.dto.PersonRs;
 import socialnet.repository.LikeRepository;
 import socialnet.repository.PersonRepository;
 

@@ -3,7 +3,7 @@ package socialnet.repository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.mapper.PostMapper;
-import socialnet.dto.rs.PostRs;
+import socialnet.dto.PostRs;
 import java.util.List;
 
 @Repository

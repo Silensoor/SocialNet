@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.mapper.PersonMapper;
-import socialnet.dto.rs.PersonRs;
+import socialnet.dto.PersonRs;
 
 @Repository
 @RequiredArgsConstructor

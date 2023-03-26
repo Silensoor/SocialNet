@@ -1,20 +1,16 @@
 package socialnet.mapper;
 
+import org.mapstruct.Mapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import socialnet.dto.rs.PersonRs;
+import socialnet.dto.PersonRs;
+import socialnet.model.Person;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Component
-public class PersonMapper implements RowMapper<PersonRs> {
-
-    @Override
-    public PersonRs mapRow(ResultSet resultSet, int i) throws SQLException {
-//        String about = resultSet.getString("about");
-//        String birthDate = resultSet.getTimestamp("birth_date");
-        return null;
-
-    }
+@Mapper(componentModel = "spring")
+public interface PersonMapper {
+    PersonRs toModel(Person person);
+    Person toDTO(PersonRs personRs);
 }
