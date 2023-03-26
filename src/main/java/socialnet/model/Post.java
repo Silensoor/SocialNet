@@ -5,7 +5,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class PostTable {
+public class Post {
     private long id;
     private boolean isBlocked;
     private boolean isDeleted;

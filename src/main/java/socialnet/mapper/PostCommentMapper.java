@@ -27,7 +27,7 @@ public class PostCommentMapper implements RowMapper<CommentRs> {
     @Override
     public CommentRs mapRow(ResultSet resultSet, int i) throws SQLException {
         long authorId = resultSet.getLong("author_id");
-        PersonRs author = personRepository.getPersonById(authorId);
+//        PersonRs author = personRepository.getPersonById(authorId);
         int id = (int) resultSet.getLong("id");
         List<Like> likesList = likeRepository.getLikesByEntityId(id);
         int likes = likesList.size();
@@ -41,7 +41,8 @@ public class PostCommentMapper implements RowMapper<CommentRs> {
         int parentId = (int) resultSet.getLong("parent_id");
         int postId = (int) resultSet.getLong("post_id");
 //        List<CommentRs> subComments = commentsRepository.getCommentsByEntityId(id);
-        return new CommentRs(author, id, isBlocked, isBlocked, likes, myLike, parentId, postId, null, time);
+//        return new CommentRs(author, id, isBlocked, isBlocked, likes, myLike, parentId, postId, null, time);
+        return null;
     }
 
     private boolean containsMyLike(List<Like> likesList) {
