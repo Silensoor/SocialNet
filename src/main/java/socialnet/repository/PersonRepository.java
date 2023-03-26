@@ -13,9 +13,9 @@ import socialnet.model.Tag;
 @RequiredArgsConstructor
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final PersonMapper personMapper;
 
     public Person getPersonById(long id) {
+        System.out.println(id);
         String select = "SELECT * FROM persons WHERE id = ?";
         Object[] objects = new Object[]{id};
         return jdbcTemplate.query(select, objects, new BeanPropertyRowMapper<>(Person.class)).get(0);

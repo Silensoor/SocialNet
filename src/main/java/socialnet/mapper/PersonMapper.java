@@ -24,5 +24,5 @@ public interface PersonMapper {
 
     @Mapping(target = "currency", expression = "java(PersonMapper.getCurrencyRs())")
     @Mapping(target = "blockedByCurrentUser", expression = "java(PersonMapper.isBlockedByCurrentUser())")
-    PersonRs toDTO(Person personRs);
+    PersonRs toDTO(Person person);
 }

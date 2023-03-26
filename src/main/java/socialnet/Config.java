@@ -5,6 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import socialnet.dto.PersonRs;
+import socialnet.mapper.PersonMapper;
+import socialnet.model.Person;
+import socialnet.repository.PersonRepository;
 
 import javax.sql.DataSource;
 
@@ -27,10 +31,9 @@ public class Config {
         return dataSource;
     }
 
-
-
-    @Bean
+    @Bean(name = "jdbcTemplate")
     JdbcTemplate getJdbcTemplate() {
         return new JdbcTemplate(getDataSource());
     }
+
 }
