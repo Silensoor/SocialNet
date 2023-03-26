@@ -1,4 +1,4 @@
-package socialnet.model.db;
+package socialnet.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

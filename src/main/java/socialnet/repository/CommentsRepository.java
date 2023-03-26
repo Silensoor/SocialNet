@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.mapper.PostCommentMapper;
-import socialnet.model.rs.CommentRs;
+import socialnet.dto.rs.CommentRs;
 
 import java.util.List;
 

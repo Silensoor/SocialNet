@@ -2,7 +2,7 @@ package socialnet.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import socialnet.model.db.Tag;
+import socialnet.model.Tag;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

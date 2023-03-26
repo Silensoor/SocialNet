@@ -3,10 +3,9 @@ package socialnet.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import socialnet.model.db.Like;
-import socialnet.model.rs.CommentRs;
-import socialnet.model.rs.PersonRs;
-import socialnet.repository.CommentsRepository;
+import socialnet.model.Like;
+import socialnet.dto.rs.CommentRs;
+import socialnet.dto.rs.PersonRs;
 import socialnet.repository.LikeRepository;
 import socialnet.repository.PersonRepository;
 
@@ -17,13 +16,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class PostCommentMapper implements RowMapper<CommentRs> {
 
     private final PersonRepository personRepository;
-    private final CommentsRepository commentsRepository;
     private final LikeRepository likeRepository;
     @Override
     public CommentRs mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -41,13 +40,13 @@ public class PostCommentMapper implements RowMapper<CommentRs> {
         String time = dateFormat.format(new Date(timeStamp.getTime()));
         int parentId = (int) resultSet.getLong("parent_id");
         int postId = (int) resultSet.getLong("post_id");
-        List<CommentRs> subComments = commentsRepository.getCommentsByEntityId(id);
-        return new CommentRs(author, id, isBlocked, isBlocked, likes, myLike, parentId, postId, subComments, time);
+//        List<CommentRs> subComments = commentsRepository.getCommentsByEntityId(id);
+        return new CommentRs(author, id, isBlocked, isBlocked, likes, myLike, parentId, postId, null, time);
     }
 
     private boolean containsMyLike(List<Like> likesList) {
         long myId = 0;
-        List<Long> personIdList = likesList.stream().map(Like::getPersonId).toList();
+        List<Long> personIdList = likesList.stream().map(Like::getPersonId).collect(Collectors.toList());
         return personIdList.contains(myId);
     }
 }

@@ -1,4 +1,4 @@
-package socialnet.model.rs;
+package socialnet.dto.rs;
 
 import lombok.Data;
 import socialnet.model.enums.FriendStatus;

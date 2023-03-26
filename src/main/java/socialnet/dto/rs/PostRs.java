@@ -1,8 +1,8 @@
-package socialnet.model.rs;
+package socialnet.dto.rs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import socialnet.model.db.Tag;
+import socialnet.model.Tag;
 import socialnet.model.enums.PostType;
 
 import java.util.List;

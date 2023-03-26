@@ -3,12 +3,12 @@ package socialnet.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import socialnet.model.db.Like;
-import socialnet.model.db.Tag;
+import socialnet.model.Like;
+import socialnet.model.Tag;
 import socialnet.model.enums.PostType;
-import socialnet.model.rs.CommentRs;
-import socialnet.model.rs.PersonRs;
-import socialnet.model.rs.PostRs;
+import socialnet.dto.rs.CommentRs;
+import socialnet.dto.rs.PersonRs;
+import socialnet.dto.rs.PostRs;
 import socialnet.repository.CommentsRepository;
 import socialnet.repository.LikeRepository;
 import socialnet.repository.PersonRepository;
@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -79,7 +80,7 @@ public class PostMapper implements RowMapper<PostRs> {
 
     private boolean containsMyLike(List<Like> likesList) {
         int myId = 0;
-        List<Long> personIdList = likesList.stream().map(Like::getPersonId).toList();
+        List<Long> personIdList = likesList.stream().map(Like::getPersonId).collect(Collectors.toList());
         return personIdList.contains(myId);
     }
 }

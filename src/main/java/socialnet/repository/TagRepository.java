@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.mapper.TagMapper;
-import socialnet.model.db.Tag;
+import socialnet.model.Tag;
 
 import java.util.List;
 @Repository
