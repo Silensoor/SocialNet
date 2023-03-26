@@ -7,9 +7,9 @@ import java.sql.Timestamp;
 
 @Data
 public class Friendships {
-    private long id;
+    private Long id;
     private Timestamp sentTime;
-    private long dstPersonId;
-    private long srcPersonId;
+    private Long dstPersonId;
+    private Long srcPersonId;
     private FriendshipStatusTypes statusName;
 }

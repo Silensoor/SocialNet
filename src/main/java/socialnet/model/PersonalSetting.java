@@ -4,11 +4,11 @@ import lombok.Data;
 
 @Data
 public class PersonalSetting {
-    private long id;
-    private boolean commentCommentNotification;
-    private boolean friendBirthdayNotification;
-    private boolean likeNotification;
-    private boolean messageNotification;
-    private boolean postCommentNotification;
-    private boolean postNotification;
+    private Long id;
+    private Boolean commentCommentNotification;
+    private Boolean friendBirthdayNotification;
+    private Boolean likeNotification;
+    private Boolean messageNotification;
+    private Boolean postCommentNotification;
+    private Boolean postNotification;
 }

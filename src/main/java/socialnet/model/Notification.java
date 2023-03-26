@@ -6,11 +6,11 @@ import java.sql.Timestamp;
 
 @Data
 public class Notification {
-    private long id;
+    private Long id;
     private String contact;
     private String notificationType;
-    private long entityId;
-    private boolean isRead;
+    private Long entityId;
+    private Boolean isRead;
     private Timestamp sentTime;
-    private long personId;
+    private Long personId;
 }
