@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import socialnet.dto.LoginRq;
 import socialnet.dto.login.LoginRs;
@@ -19,12 +20,12 @@ public class Controller {
     }
 
     @GetMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestBody LoginRq loginRq) {
+    public ResponseEntity<?> login(@Validated @RequestBody LoginRq loginRq) {
         return ResponseEntity.ok(loginServer.getLogin(loginRq));
     }
 
-    @GetMapping("users/me")
-    public ResponseEntity<?> Me(@RequestParam(name = "jwt") String jwt) {
-        return ResponseEntity.ok(loginServer.getMe(jwt));
-    }
+//    @GetMapping("users/me")
+//    public ResponseEntity<?> Me(@RequestParam(name = "jwt") String jwt) {
+//        return ResponseEntity.ok(loginServer.getMe(jwt));
+//    }
 }

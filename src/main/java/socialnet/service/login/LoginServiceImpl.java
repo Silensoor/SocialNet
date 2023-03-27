@@ -26,19 +26,22 @@ public class LoginServiceImpl implements LoginService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
+    @Bean
     public Object getLogin(LoginRq loginRq) {
 
         if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
-            return setLoginRs(getToken(loginRq)); //заполнить поля
+            System.out.println("ok");
+            return setPersonRs(); //заполнить поля
         } else {
+            System.out.println("no ok");
             return setLoginErrorRs(); //заполнить поля
         }
     }
 
-    public Object getMe(String getToken) {
-
-        return CommonRsComplexRs();
-    }
+//    public Object getMe(String getToken) {
+//
+//        return CommonRsComplexRs();
+//    }
 
     public String getToken (LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
@@ -92,7 +95,7 @@ public class LoginServiceImpl implements LoginService {
         return loginCurrency;
     }
 
-    public PersonRs setLoginData(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs, String jwt) {
+    public PersonRs setLoginData(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs) {
 
         weatherRs = setLoginWeather(weatherRs);
         loginCurrency = setLoginCurrency(loginCurrency);
@@ -115,18 +118,18 @@ public class LoginServiceImpl implements LoginService {
         personRs.setPhone(persons.getPhone());
         personRs.setPhoto(persons.getPhoto());
         personRs.setRegDate(persons.getReg_date());
-        personRs.setToken(jwt);
+        personRs.setToken(null);
         personRs.setUserDeleted(persons.getIs_deleted());
 
         return personRs;
     }
 
-    public LoginRs setLoginRs(String jwt) {
+    public LoginRs setPersonRs() {
         WeatherRs loginWeather = new WeatherRs();
         LoginCurrency loginCurrency = new LoginCurrency();
         PersonRs loginData = new PersonRs();
 
-        loginData = setLoginData(loginData, loginCurrency, loginWeather, jwt);
+        loginData = setLoginData(loginData, loginCurrency, loginWeather);
 
         LoginRs loginRs = new LoginRs();
         loginRs.setData(loginData);
