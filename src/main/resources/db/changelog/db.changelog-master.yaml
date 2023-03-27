@@ -37,3 +37,7 @@ databaseChangeLog:
       file: db/changelog/changelogset/create-captha-table.yaml
   - include:
       file: db/changelog/changelogset/create-fk-constraints.yaml
+  - include:
+      file: db/changelog/changelogset/add-constrains-persons-table.yaml
+  - include:
+      file: db/changelog/changelogset/add-constraints.yaml
