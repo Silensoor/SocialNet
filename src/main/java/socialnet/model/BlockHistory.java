@@ -6,10 +6,10 @@ import java.sql.Timestamp;
 
 @Data
 public class BlockHistory {
-    private long id;
+    private Long id;
     private String action;
     private Timestamp time;
-    private long comment_id;
-    private long person_id;
-    private long post_id;
+    private Long comment_id;
+    private Long person_id;
+    private Long post_id;
 }

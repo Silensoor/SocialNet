@@ -3,6 +3,7 @@ package socialnet.security;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import socialnet.model.Person;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class UserDetailsImpl implements UserDetails {
         this.password = password;
     }
 
-    public static UserDetailsImpl build(User user) {
+    public static UserDetailsImpl build(Person user) {
 
         return new UserDetailsImpl(
                 user.getId(),

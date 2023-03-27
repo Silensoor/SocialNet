@@ -29,6 +29,4 @@ public class Person {
     private String country;
     private long telegramId;
     private long personSettingsId;
-
-
 }

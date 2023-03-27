@@ -5,13 +5,21 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class PostComment {
-    private Long id;
+public class Comment {
+    private Integer id;
+
     private String commentText;
+
     private Boolean isBlocked;
+
     private Boolean isDeleted;
+
     private Timestamp time;
-    private Long parentId;
-    private Long authorId;
-    private Long postId;
+
+    private Integer parentId;
+
+    private Integer authorId;
+
+    private Integer postId;
+
 }
