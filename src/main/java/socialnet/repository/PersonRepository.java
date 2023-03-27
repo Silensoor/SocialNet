@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Person;
@@ -42,5 +43,10 @@ public class PersonRepository {
         });
 
         return author;
+    }
+
+    public Person findPersonByEmail(String email) {
+        return jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
 }
