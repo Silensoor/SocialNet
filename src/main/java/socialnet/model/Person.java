@@ -13,9 +13,9 @@ public class Person {
     private Timestamp deletedTime;
     private String email;
     private String firstName;
-    private boolean isApproved;
-    private boolean isBlocked;
-    private boolean isDeleted;
+    private Boolean isApproved;
+    private Boolean isBlocked;
+    private Boolean isDeleted;
     private String lastName;
     private Timestamp lastOnlineTime;
     private String messagePermissions;

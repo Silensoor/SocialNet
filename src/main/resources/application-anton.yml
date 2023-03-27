@@ -1,7 +1,4 @@
 server:
-  servlet:
-    session:
-      tracking-modes: cookie
   port: 8086
 spring:
   jpa:

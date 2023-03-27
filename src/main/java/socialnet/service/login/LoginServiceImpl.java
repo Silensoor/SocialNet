@@ -1,7 +1,6 @@
 package socialnet.service.login;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,8 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
-import socialnet.dto.login.LoginCurrency;
-import socialnet.dto.login.LoginRs;
+import socialnet.dto.LoginRs;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.List;
@@ -23,25 +21,26 @@ public class LoginServiceImpl implements LoginService {
     private final JdbcTemplate jdbcTemplate;
 
     private Persons persons;
+    private String jwt;
+
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    @Bean
     public Object getLogin(LoginRq loginRq) {
 
         if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
-            System.out.println("ok");
-            return setPersonRs(); //заполнить поля
+            jwt = getToken(loginRq);
+            return setLoginRs(jwt); //заполнить поля
         } else {
-            System.out.println("no ok");
             return setLoginErrorRs(); //заполнить поля
         }
     }
 
-//    public Object getMe(String getToken) {
-//
-//        return CommonRsComplexRs();
-//    }
+    public Object getMe(String authorization) {
+
+        System.out.println(authorization);
+        return setLoginRs(jwt);
+    }
 
     public String getToken (LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
@@ -95,7 +94,7 @@ public class LoginServiceImpl implements LoginService {
         return loginCurrency;
     }
 
-    public PersonRs setLoginData(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs) {
+    public PersonRs setLoginRs(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs, String jwt) {
 
         weatherRs = setLoginWeather(weatherRs);
         loginCurrency = setLoginCurrency(loginCurrency);
@@ -103,7 +102,7 @@ public class LoginServiceImpl implements LoginService {
         personRs.setCity(persons.getCity());
         personRs.setCountry(persons.getCountry());
         personRs.setBirthDate(persons.getBirth_date());
-        personRs.setCurrency(loginCurrency);
+        personRs.setCurrency(null);
         personRs.setWeather(weatherRs);
         personRs.setEmail(persons.getEmail());
         personRs.setFirstName(persons.getFirst_name());
@@ -112,24 +111,24 @@ public class LoginServiceImpl implements LoginService {
         personRs.setIsBlocked(null);
         personRs.setIsBlockedByCurrentUser(false); //?
         personRs.setLastName(persons.getLast_name());
-        personRs.setLastOnlineTime(persons.getLast_online_time());
+        personRs.setLastOnlineTime(null);
         personRs.setMessagesPermission(persons.getMessage_permissions());
-        personRs.setOnline(persons.getOnline_status());
+        personRs.setOnline(null);
         personRs.setPhone(persons.getPhone());
         personRs.setPhoto(persons.getPhoto());
         personRs.setRegDate(persons.getReg_date());
-        personRs.setToken(null);
+        personRs.setToken(jwt);
         personRs.setUserDeleted(persons.getIs_deleted());
 
         return personRs;
     }
 
-    public LoginRs setPersonRs() {
+    public LoginRs setLoginRs(String jwt) {
         WeatherRs loginWeather = new WeatherRs();
         LoginCurrency loginCurrency = new LoginCurrency();
         PersonRs loginData = new PersonRs();
 
-        loginData = setLoginData(loginData, loginCurrency, loginWeather);
+        loginData = setLoginRs(loginData, loginCurrency, loginWeather, jwt);
 
         LoginRs loginRs = new LoginRs();
         loginRs.setData(loginData);

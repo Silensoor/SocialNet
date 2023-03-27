@@ -1,42 +1,11 @@
 package socialnet.dto;
 
-<<<<<<< HEAD
-import lombok.Data;
-import socialnet.dto.login.LoginCurrency;
-
-import java.sql.Timestamp;
-import java.util.Date;
-
-@Data
-public class PersonRs {
-    private String about;
-    private String birthDate;
-    private String city;
-    private String country;
-    private LoginCurrency currency;
-    private String email;
-    private String firstName;
-    private String friendStatus;
-    private Long id;
-    private Boolean isBlocked;
-    private Boolean isBlockedByCurrentUser;
-    private String lastName;
-    private Date lastOnlineTime;
-    private String messagesPermission;
-    private String online;
-    private String phone;
-    private String photo;
-    private String regDate;
-    private String token;
-    private Boolean userDeleted;
-=======
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonRs {
 
     private String about;
@@ -89,6 +58,6 @@ public class PersonRs {
     @JsonProperty("user_deleted")
     private Boolean userDeleted;
 
->>>>>>> origin/dev
     private WeatherRs weather;
+
 }
