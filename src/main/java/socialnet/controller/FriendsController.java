@@ -13,11 +13,11 @@ import java.util.Optional;
 @RequestMapping("/api/v1/friends")
 public class FriendsController {
 
-    private final FriendsService friendsService;
+    FriendsService friendsService;
 
-    public FriendsController() {
-        this.friendsService = new FriendsService();
-    }
+//    public FriendsController() {
+//        this.friendsService = new FriendsService();
+//    }
 
     @GetMapping("/")
     public ResponseEntity<?> getFriendsUsingGET(@RequestParam String authorization,

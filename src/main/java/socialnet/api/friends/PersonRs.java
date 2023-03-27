@@ -1,5 +1,8 @@
 package socialnet.api.friends;
 
+import lombok.Data;
+
+@Data
 public class PersonRs {
 
     private String about;
