@@ -1,11 +1,15 @@
 package socialnet.mapper;
 
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import socialnet.model.Like;
 import socialnet.dto.CommentRs;
 import socialnet.dto.PersonRs;
+import socialnet.model.Person;
+import socialnet.model.PostComment;
 import socialnet.repository.LikeRepository;
 import socialnet.repository.PersonRepository;
 
@@ -18,36 +22,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-@RequiredArgsConstructor
-public class PostCommentMapper implements RowMapper<CommentRs> {
+@Mapper(componentModel = "spring")
+public abstract class PostCommentMapper {
 
-    private final PersonRepository personRepository;
-    private final LikeRepository likeRepository;
-    @Override
-    public CommentRs mapRow(ResultSet resultSet, int i) throws SQLException {
-        long authorId = resultSet.getLong("author_id");
-//        PersonRs author = personRepository.getPersonById(authorId);
-        int id = (int) resultSet.getLong("id");
-        List<Like> likesList = likeRepository.getLikesByEntityId(id);
-        int likes = likesList.size();
-        boolean myLike = containsMyLike(likesList);
-        String commentText = resultSet.getString("comment_text");
-        boolean isBlocked = resultSet.getBoolean("is_blocked");
-        boolean isDeleted = resultSet.getBoolean("is_deleted");
-        Timestamp timeStamp = resultSet.getTimestamp("time");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
-        String time = dateFormat.format(new Date(timeStamp.getTime()));
-        int parentId = (int) resultSet.getLong("parent_id");
-        int postId = (int) resultSet.getLong("post_id");
-//        List<CommentRs> subComments = commentsRepository.getCommentsByEntityId(id);
-//        return new CommentRs(author, id, isBlocked, isBlocked, likes, myLike, parentId, postId, null, time);
-        return null;
+    @Mapping(target = "deleted", source = "postComment.deleted")
+    @Mapping(target = "blocked", source = "postComment.blocked")
+    @Mapping(target = "subComments", source = "subComments")
+    @Mapping(target = "myLike", expression = "java(itLikesMe(likes, authUserId))")
+    @Mapping(target = "likes", expression = "java(likes.size())")
+    @Mapping(target = "author", source = "author")
+    @Mapping(target = "id", source = "postComment.id")
+    public abstract CommentRs toDTO(Person author, PostComment postComment, List<CommentRs> subComments, List<Like> likes, long authUserId);
+
+    boolean itLikesMe(List<Like> likes, long authUserId) {
+        for (Like like : likes) {
+            if (like.getPersonId() == authUserId) return true;
+        }
+        return false;
     }
 
-    private boolean containsMyLike(List<Like> likesList) {
-        long myId = 0;
-        List<Long> personIdList = likesList.stream().map(Like::getPersonId).collect(Collectors.toList());
-        return personIdList.contains(myId);
-    }
 }

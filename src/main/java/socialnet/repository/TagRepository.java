@@ -11,7 +11,7 @@ import java.util.List;
 public class TagRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Tag> getTagsByPostId(int postId) {
+    public List<Tag> getTagsByPostId(long postId) {
         return jdbcTemplate.queryForList("SELECT * FROM post2tag WHERE post_id = " + postId, Tag.class);
     }
 }
