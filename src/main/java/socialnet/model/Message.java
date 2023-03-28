@@ -6,12 +6,12 @@ import java.sql.Timestamp;
 
 @Data
 public class Message {
-    private long id;
-    private boolean isDeleted;
+    private Long id;
+    private Boolean isDeleted;
     private String messageText;
     private String readStatus;
     private Timestamp time;
-    private long dialogId;
-    private long authorId;
-    private long recipientId;
+    private Long dialogId;
+    private Long authorId;
+    private Long recipientId;
 }

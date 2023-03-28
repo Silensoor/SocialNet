@@ -8,9 +8,9 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 public class Like {
-    private long id;
+    private Long id;
     private String type;
-    private long entityId;
+    private Long entityId;
     private Timestamp time;
-    private long personId;
+    private Long personId;
 }
