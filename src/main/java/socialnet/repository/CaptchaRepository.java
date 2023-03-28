@@ -12,7 +12,7 @@ import socialnet.model.Captcha;
 public class CaptchaRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public int saveCaptcha(Captcha captcha) {
+    public int save(Captcha captcha) {
         return jdbcTemplate.update(
             "insert into captcha (code, secret_code, time) values (?, ?, ?)",
             captcha.getCode(),
@@ -21,7 +21,7 @@ public class CaptchaRepository {
         );
     }
 
-    public Captcha findCaptchaBySecretCode(String secretCode) {
+    public Captcha findBySecretCode(String secretCode) {
         try {
             return jdbcTemplate.queryForObject(
                 "select * from captcha where secret_code = ?",

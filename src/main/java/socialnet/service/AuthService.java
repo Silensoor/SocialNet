@@ -26,7 +26,7 @@ public class AuthService {
         captcha.setSecretCode(code);
         captcha.setTime(new Timestamp(System.currentTimeMillis()));
 
-        captchaRepository.saveCaptcha(captcha);
+        captchaRepository.save(captcha);
 
         return new CaptchaRs(code, image);
     }

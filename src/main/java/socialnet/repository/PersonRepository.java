@@ -13,7 +13,7 @@ public class PersonRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public int savePerson(Person person) {
+    public int save(Person person) {
         return jdbcTemplate.update(
             "insert into persons (email, first_name, last_name, password, reg_date) values (?, ?, ?, ?, ?)",
             person.getEmail(),
@@ -37,7 +37,14 @@ public class PersonRepository {
     }
 
     public Person findById(Integer authorId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = " + authorId, personRowMapper);
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE id = " + authorId,
+                personRowMapper
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {

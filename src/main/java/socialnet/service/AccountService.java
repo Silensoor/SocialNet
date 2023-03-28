@@ -28,7 +28,7 @@ public class AccountService {
         person.setPassword(regRequest.getPasswd1());
         person.setRegDate(new Timestamp(System.currentTimeMillis()));
 
-        personRepository.savePerson(person);
+        personRepository.save(person);
 
         RegisterRs registerRs = new RegisterRs();
         registerRs.setMessage("OK");
@@ -47,7 +47,7 @@ public class AccountService {
             throw new RegisterException("Email already exists");
         }
 
-        Captcha captcha = captchaRepository.findCaptchaBySecretCode(regRequest.getCodeSecret());
+        Captcha captcha = captchaRepository.findBySecretCode(regRequest.getCodeSecret());
 
         if (captcha == null) {
             throw new RegisterException("Wrong code");
