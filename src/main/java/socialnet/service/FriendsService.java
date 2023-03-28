@@ -2,31 +2,31 @@ package socialnet.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import socialnet.api.friends.CommonRsListPersonRs;
-import socialnet.api.friends.ErrorRs;
-import socialnet.api.friends.PersonRs;
+import socialnet.api.friends.*;
+import socialnet.dto.PersonRs;
 import socialnet.model.Friendships;
 import socialnet.model.Person;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.friends.FriendsShipsRepository;
-import socialnet.repository.friends.PersonRepository;
+import socialnet.repository.friends.PersonRepositoryFriends;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static socialnet.model.enums.FriendshipStatusTypes.BLOCKED;
 
 public class FriendsService {
 
     private JwtUtils jwtUtils;
-    private PersonRepository personRepository;
+    private PersonRepositoryFriends personRepository;
 
     private FriendsShipsRepository friendsShipsRepository;
 
     public FriendsService(JwtUtils jwtUtils,
-                          PersonRepository personRepository,
+                          PersonRepositoryFriends personRepository,
                           FriendsShipsRepository friendsShipsRepository) {
         this.jwtUtils = jwtUtils;
         this.personRepository = personRepository;
@@ -49,18 +49,23 @@ public class FriendsService {
                     if (!friendsId.contains(friendship.getSrcPersonId())){friendsId.add(friendship.getSrcPersonId());}
                     if (!friendsId.contains(friendship.getDstPersonId())){friendsId.add(friendship.getDstPersonId());}
                 });
-                String friendsIdString ="";
-                for (int i = 0; i < friendsId.size(); i++){
-                    if (i < friendsId.size() - 1) {
-                        friendsIdString = friendsIdString + " id=" + friendsId.get(i).toString() + " OR ";
-                    } else {
-                        friendsIdString = friendsIdString + " id=" + friendsId.get(i).toString();
-                    }
-                }
+                String friendsIdString = friendsIdStringMethod(friendsId);
                 List<Person> personList = personRepository.findPersonFriendsAll(friendsIdString);
                 return new ResponseEntity<>(fillingCommonRsListPersonRs(personList, offset, perPage), HttpStatus.OK);
             }
         }
+    }
+
+    private String friendsIdStringMethod(List<Long> friendsId) {
+        String friendsIdString = "";
+        for (int i = 0; i < friendsId.size(); i++){
+            if (i < friendsId.size() - 1) {
+                friendsIdString = friendsIdString + " id=" + friendsId.get(i).toString() + " OR ";
+            } else {
+                friendsIdString = friendsIdString + " id=" + friendsId.get(i).toString();
+            }
+        }
+        return friendsIdString;
     }
 
     public CommonRsListPersonRs fillingCommonRsListPersonRs(List<Person> personList, Integer offset, Integer perPage){
@@ -83,24 +88,28 @@ public class FriendsService {
         for (Person person : personList) {
             PersonRs rs = new PersonRs();
             rs.setAbout(person.getAbout());
-            rs.setBirth_date(person.getBirthDate().toString());
+            rs.setBirthDate(person.getBirthDate().toString());
             rs.setCity(person.getCity());
             rs.setCountry(person.getCountry());
             rs.setCurrency(null);
             rs.setEmail(person.getEmail());
-            rs.setFirst_name(person.getFirstName());
-            rs.setFriend_status("FRIEND");
+            rs.setFirstName(person.getFirstName());
+            rs.setFriendStatus("FRIEND");
             rs.setId(person.getId());
-            rs.setIs_blocked(person.getIsBlocked());
-            rs.setIs_blocked_by_current_user(false);
-            rs.setLast_online_time(person.getLastOnlineTime().toString());
-            rs.setMessages_permission(null);
-            rs.setOnline(person.getOnlineStatus());
+            rs.setIsBlocked(person.getIsBlocked());
+            rs.setIsBlockedByCurrentUser(false);
+            rs.setLastOnlineTime(person.getLastOnlineTime().toString());
+            rs.setMessagesPermission(null);
+            if (person.getOnlineStatus().equals(true)){
+                rs.setOnline(true);
+            } else {
+                rs.setOnline(false);
+            }
             rs.setPhone(person.getPhone());
             rs.setPhoto(person.getPhoto());
-            rs.setReg_date(person.getRegDate().toString());
+            rs.setRegDate(person.getRegDate().toString());
             rs.setToken(null);
-            rs.setUser_deleted(person.getIsDeleted());
+            rs.setUserDeleted(person.getIsDeleted());
             rs.setWeather(null);
             personRsList.add(rs);
         }
@@ -108,7 +117,7 @@ public class FriendsService {
     }
 
 
-    public ResponseEntity<?> getFriendsBlockUnblock(String authorization, Integer id) {
+    public ResponseEntity<?> userBlocksUserUsingPOST(String authorization, Integer id) {
         String email = jwtUtils.getUserNameFromJwtToken(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail.isEmpty()){
@@ -122,15 +131,16 @@ public class FriendsService {
             } else {
                 FriendshipStatusTypes status = friend.get(0).getStatusName();
                 Long idFriend = friend.get(0).getId();
+                String statusNew = "";
                 if (friend.get(0).getStatusName().equals(BLOCKED)){
-                    friend.set(FriendshipStatusTypes.FRIEND);
+                    statusNew = "FRIEND";
                 } else {
-                    friend.set(BLOCKED);
+                    statusNew = "BLOCKED";
                 }
+                friendsShipsRepository.insertStatusFriend(idFriend, statusNew);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
         }
-        ///////////////////////
     }
 
     public ResponseEntity<?> getFriendsUsingId(String authorization, Integer id) {
@@ -144,5 +154,71 @@ public class FriendsService {
         Date date = new Date();
         errorRs.setTimestamp(date.getTime());
         return errorRs;
+    }
+
+    public ResponseEntity<?> getOutgoingRequestsUsingGET(String authorization, Integer offset, Integer perPage) {
+        String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        if (personsEmail.isEmpty()){
+            return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+            List<Friendships> outgoingRequests = friendsShipsRepository
+                    .findAllOutgoingRequests(personsEmail.get(0).getId());
+            if (outgoingRequests.isEmpty()){
+                return new ResponseEntity<>(errorRs("EmptyEmailException",
+                        "Field 'OutgoingRequests' is empty"), HttpStatus.BAD_REQUEST);
+            } else {
+                List<Long> requestsId = new ArrayList<>();
+                outgoingRequests.forEach((Friendships friendship) -> {
+                    requestsId.add(friendship.getId());
+                });
+                String friendsIdString = friendsIdStringMethod(requestsId);
+                List<Person> personList = personRepository.findPersonFriendsAll(friendsIdString);
+                return new ResponseEntity<>(fillingCommonRsListPersonRs(personList, offset, perPage), HttpStatus.OK);
+            }
+        }
+    }
+
+    public ResponseEntity<?> getRecommendedFriendsUsingGET(String authorization) {
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<?> getPotentialFriendsUsingGET(String authorization, Integer orElse, Integer orElse1) {
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<?> addFriendUsingPOST(String authorization, Integer id) {
+        String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        if (personsEmail.isEmpty()){
+            return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
+                    HttpStatus.BAD_REQUEST);
+        } else {
+//            friendsShipsRepository.addFriend(time, id, idFriend, status);
+//            ComplexRs complexRs = new C;
+//
+//            return new ResponseEntity<>(fillingCommonRsListPersonRs(personList, offset, perPage), HttpStatus.OK);
+        }
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+////////////////////////////////////////
+
+
+
+    public ResponseEntity<?> deleteSentFriendshipRequestUsingDELETE(String authorization, Integer id) {
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<?> sendFriendshipRequestUsingPOST(String authorization, Integer id) {
+        return new ResponseEntity<>( HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<?> deleteFriendUsingDELETE(String authorization, Integer id) {
+        return new ResponseEntity<>( HttpStatus.OK);
     }
 }

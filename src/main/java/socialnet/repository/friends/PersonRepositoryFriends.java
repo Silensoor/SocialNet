@@ -1,29 +1,31 @@
 package socialnet.repository.friends;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Person;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class PersonRepository {
+public class PersonRepositoryFriends {
 
     private JdbcTemplate jdbcTemplate;
 
-    public PersonRepository(JdbcTemplate jdbcTemplate) {
+    public PersonRepositoryFriends(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public List<Person> findPersonFriendsAll(String friendsId) {
-        String sql = "SELECT * FROM persons WHERE " + friendsId;
-        return this.jdbcTemplate.query(sql, personRowMapper);
+        return this.jdbcTemplate.query("SELECT * FROM persons WHERE id = ?", new Object[] { friendsId },
+                personRowMapper);
     }
 
     public List<Person> findPersonsEmail(String email) {
-        return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?", personRowMapper);
+        return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?",
+                new Object[] { email }, personRowMapper);
     }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {

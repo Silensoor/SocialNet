@@ -2,11 +2,9 @@ package socialnet.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import socialnet.service.FriendsService;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -15,12 +13,8 @@ public class FriendsController {
 
     FriendsService friendsService;
 
-//    public FriendsController() {
-//        this.friendsService = new FriendsService();
-//    }
-
     @GetMapping("/")
-    public ResponseEntity<?> getFriendsUsingGET(@RequestParam String authorization,
+    public ResponseEntity<?> getFriendsUsingGET(@RequestHeader String authorization,
                                                 @RequestParam Optional<Integer> offset,
                                                 @RequestParam Optional<Integer> perPage) {
 
@@ -30,62 +24,62 @@ public class FriendsController {
     }
 
     @PostMapping("/block_unblock/{id}")
-    public ResponseEntity<?> userBlocksUserUsingPOST(@RequestParam String authorization,
+    public ResponseEntity<?> userBlocksUserUsingPOST(@RequestHeader String authorization,
                                                 @RequestParam Integer id) {
 
-        return friendsService.getFriendsBlockUnblock(authorization, id);
+        return friendsService.userBlocksUserUsingPOST(authorization, id);
     }
 
     @GetMapping("/outgoing_requests")
-    public ResponseEntity<?> getOutgoingRequestsUsingGET(@RequestParam String authorization,
+    public ResponseEntity<?> getOutgoingRequestsUsingGET(@RequestHeader String authorization,
                                                 @RequestParam Optional<Integer> offset,
                                                 @RequestParam Optional<Integer> perPage) {
 
-        return friendsService.getFriendsUsing(authorization,
+        return friendsService.getOutgoingRequestsUsingGET(authorization,
                 offset.orElse(0),
                 perPage.orElse(20));
     }
 
     @GetMapping("/recommendations")
-    public ResponseEntity<?> getRecommendedFriendsUsingGET(@RequestParam String authorization) {
+    public ResponseEntity<?> getRecommendedFriendsUsingGET(@RequestHeader String authorization) {
 
-        return friendsService.getFriendsUsing(authorization, 0, 20);
+        return friendsService.getRecommendedFriendsUsingGET(authorization);
     }
 
     @GetMapping("/request")
-    public ResponseEntity<?> getPotentialFriendsUsingGET(@RequestParam String authorization,
+    public ResponseEntity<?> getPotentialFriendsUsingGET(@RequestHeader String authorization,
                                                          @RequestParam Optional<Integer> offset,
                                                          @RequestParam Optional<Integer> perPage) {
 
-        return friendsService.getFriendsUsing(authorization,
+        return friendsService.getPotentialFriendsUsingGET(authorization,
                 offset.orElse(0),
                 perPage.orElse(20));
     }
 
     @GetMapping("/request/{id}")
-    public ResponseEntity<?> addFriendUsingPOST(@RequestParam String authorization,
+    public ResponseEntity<?> addFriendUsingPOST(@RequestHeader String authorization,
                                                 @RequestParam Integer id) {
 
-        return friendsService.getFriendsUsingId(authorization, id);
+        return friendsService.addFriendUsingPOST(authorization, id);
     }
 
     @DeleteMapping("/request/{id}")
-    public ResponseEntity<?> deleteSentFriendshipRequestUsingDELETE(@RequestParam String authorization,
+    public ResponseEntity<?> deleteSentFriendshipRequestUsingDELETE(@RequestHeader String authorization,
                                                 @RequestParam Integer id) {
 
-        return friendsService.getFriendsUsingId(authorization, id);
+        return friendsService.deleteSentFriendshipRequestUsingDELETE(authorization, id);
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<?> sendFriendshipRequestUsingPOST(@RequestParam String authorization,
+    public ResponseEntity<?> sendFriendshipRequestUsingPOST(@RequestHeader String authorization,
                                                      @RequestParam Integer id) {
 
-        return friendsService.getFriendsBlockUnblock(authorization, id);
+        return friendsService.sendFriendshipRequestUsingPOST(authorization, id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFriendUsingDELETE(@RequestParam String authorization,
+    public ResponseEntity<?> deleteFriendUsingDELETE(@RequestHeader String authorization,
                                                      @RequestParam Integer id) {
-        return friendsService.getFriendsUsingId(authorization, id);
+        return friendsService.deleteFriendUsingDELETE(authorization, id);
     }
 }

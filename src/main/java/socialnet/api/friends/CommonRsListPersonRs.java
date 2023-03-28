@@ -1,6 +1,7 @@
 package socialnet.api.friends;
 
 import lombok.Data;
+import socialnet.dto.PersonRs;
 
 import java.util.List;
 @Data
