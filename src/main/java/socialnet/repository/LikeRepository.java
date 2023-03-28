@@ -18,4 +18,8 @@ public class LikeRepository {
         Object[] objects = new Object[]{postId};
         return jdbcTemplate.query(select, objects, new BeanPropertyRowMapper<>(Like.class));
     }
+    public Long findCountByPersonId(Long personId) {
+        Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM likes WHERE person_id = " + personId, Long.class);
+        return count;
+    }
 }

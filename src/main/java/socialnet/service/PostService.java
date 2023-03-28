@@ -1,63 +1,81 @@
 package socialnet.service;
 
-import liquibase.repackaged.org.apache.commons.lang3.tuple.Pair;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import socialnet.dto.CommentRs;
-import socialnet.dto.PersonRs;
 import socialnet.dto.PostRs;
-import socialnet.model.Comment;
-import socialnet.model.Person;
-import socialnet.model.Post;
+import socialnet.mapper.PostCommentMapper;
+import socialnet.mapper.PostMapper;
+import socialnet.model.*;
 import socialnet.repository.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class PostService {
-
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
-    private final PersonRepository personRepository;
+    private final PostCommentRepository postCommentRepository;
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
-    private final PersonService authorService;
-    private final CommentService commentService;
+    private final PersonRepository personRepository;
+    private final PostMapper postMapper;
+    private final PostRepository postRepository;
+    private final PostCommentMapper postCommentMapper;
 
-    public Pair<Integer, List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
-        List<Post> posts = postRepository.findAll();
-        List<PostRs> result = new ArrayList<>();
-        for (Post post : posts) {
-            PostRs postRs = convertToPostRs(post);
-            result.add(postRs);
-        }
+    public ResponseEntity<String> getFeeds(int offset, int perPage) {
+            List<Post> posts = postRepository.getPosts();
+            List<PostRs> postRsList = new ArrayList<>();
+            for (Post post : posts) {
+                long postId = post.getId();
+                Person author = personRepository.getPersonById(post.getAuthorId());
+                List<Like> likes = likeRepository.getLikesByEntityId(postId);
+                List<Tag> tags = tagRepository.getTagsByPostId(postId);
+                long authUserId = 0L;
+                List<PostComment> postComments = postCommentRepository.getCommentsByPostId(postId);
+                List<CommentRs> comments = getComments(postComments);
+                PostRs postRs = postMapper.toDTO(post, author, likes, tags, authUserId, comments);
 
-        return Pair.of(result.size(), result.stream().skip(offset).limit(perPage).collect(Collectors.toList()));
+                System.out.println(postRs.getAuthor());
+                System.out.println(postRs.getTags());
+
+                postRsList.add(postRs);
+            }
+            postRsList.sort(Comparator.comparing(PostRs::getTime));
+            JSONObject jsonObject = postRsListToJSON(postRsList);
+
+        return null;
     }
 
-    public PostRs convertToPostRs(Post post) {
-        PostRs postRs = new PostRs();
-        Person person = personRepository.findById(post.getAuthorId());
-        PersonRs personRs =  authorService.convertToPersonRs(person);
-        postRs.setAuthor(personRs);
-        List<Comment> comments = commentRepository.findByPostId(post.getId());
-        List<CommentRs> commentsRs = comments.stream().map(commentService::convertToCommentRs).collect(Collectors.toList());
-        postRs.setComments(commentsRs);
-        postRs.setId(post.getId());
-        postRs.setIsBlocked(post.getIsBlocked());
-        long likesCount = likeRepository.findCountByPersonId(person.getId());
-        postRs.setLikes(likesCount);
-        postRs.setMyLike(null);
-        postRs.setPostText(post.getPostText());
-        List<String> tags = tagRepository.findByPostId(post.getId());
-        postRs.setTags(tags);
-        postRs.setTime(post.getTime().toString());
-        postRs.setTitle(post.getTitle());
-        postRs.setType(null);
+    private JSONObject postRsListToJSON(List<PostRs> postRsList) {
+        JSONObject jsonObject = new JSONObject();
+        for (PostRs postRs : postRsList) {
+            jsonObject.put("id", postRs.getId());
+            jsonObject.put("id", postRs.get);
+            jsonObject.put("id", postRs.getId());
+            jsonObject.put("id", postRs.getId());
+            jsonObject.put("id", postRs.getId());
+            jsonObject.put("id", postRs.getId());
+        }
+        return null;
+    }
 
-        return postRs;
+    private List<CommentRs> getComments(List<PostComment> postComments) {
+        List<CommentRs> comments = new ArrayList<>();
+        for (PostComment postComment : postComments) {
+            long commentId = postComment.getId();
+            Person author = personRepository.getPersonById(postComment.getAuthorId());
+            List<PostComment> subCommentsList = postCommentRepository.getCommentsByPostId(commentId);
+            List<CommentRs> subComments = getComments(subCommentsList);
+            List<Like> likes = likeRepository.getLikesByEntityId(commentId);
+            long authUserId = 0;
+            CommentRs commentRs = postCommentMapper.toDTO(author, postComment, subComments, likes, authUserId);
+            comments.add(commentRs);
+        }
+        return comments;
     }
 }

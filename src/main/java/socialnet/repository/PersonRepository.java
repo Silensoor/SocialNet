@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,19 @@ public class PersonRepository {
         String select = "SELECT * FROM persons WHERE id = ?";
         Object[] objects = new Object[]{id};
         return jdbcTemplate.query(select, objects, new BeanPropertyRowMapper<>(Person.class)).get(0);
+    }
+    public int save(Person person) {
+        return jdbcTemplate.update(
+                "insert into persons (email, first_name, last_name, password, reg_date) values (?, ?, ?, ?, ?)",
+                person.getEmail(),
+                person.getFirstName(),
+                person.getLastName(),
+                person.getPassword(),
+                person.getRegDate()
+        );
+    }
+    public Person findByEmail(String email) {
+        String select = "SELECT * FROM persons WHERE email = " + email;
+        return jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class)).get(0);
     }
 }

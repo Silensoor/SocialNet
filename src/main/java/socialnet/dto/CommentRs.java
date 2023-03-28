@@ -9,6 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentRs {
     private PersonRs author;
+    private String commentText;
     private int id;
     private boolean isBlocked;
     private boolean isDeleted;

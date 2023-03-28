@@ -17,9 +17,7 @@ import java.util.List;
 public class PostsRepository{
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Post> getPosts() {
-        return jdbcTemplate.query("SELECT * FROM posts", new BeanPropertyRowMapper<>(Post.class));
-    }
+
 
 
 }
