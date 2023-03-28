@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public abstract class PostCommentMapper {
 
-    @Mapping(target = "deleted", source = "postComment.deleted")
-    @Mapping(target = "blocked", source = "postComment.blocked")
+    @Mapping(target = "isDeleted", source = "postComment.isDeleted")
+    @Mapping(target = "isBlocked", source = "postComment.isDeleted")
     @Mapping(target = "subComments", source = "subComments")
     @Mapping(target = "myLike", expression = "java(itLikesMe(likes, authUserId))")
     @Mapping(target = "likes", expression = "java(likes.size())")
