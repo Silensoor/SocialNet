@@ -43,6 +43,18 @@ public class LoginServiceImpl implements LoginService {
         return setCommonRsComplexRs(setComplexRs());
     }
 
+    public String getToken(LoginRq loginRq) {
+
+        long timeToLive = 1;
+        byte[] secret = new byte[1];
+
+        return Jwts.builder()
+                .setSubject(loginRq.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + timeToLive))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
+
     public CommonRsComplexRs setCommonRsComplexRs(ComplexRs setComplexRs) {
         CommonRsComplexRs commonRsComplexRs = new CommonRsComplexRs();
 
@@ -65,18 +77,6 @@ public class LoginServiceImpl implements LoginService {
         complexRs.setMessageId(0);
 
         return complexRs;
-    }
-
-    public String getToken(LoginRq loginRq) {
-
-        long timeToLive = 300000;
-        byte[] secret = new byte[300];
-
-        return Jwts.builder()
-                .setSubject(loginRq.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + timeToLive))
-                .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
     public ErrorRs setLoginErrorRs() {
