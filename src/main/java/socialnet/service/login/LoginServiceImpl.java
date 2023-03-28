@@ -1,17 +1,17 @@
 package socialnet.service.login;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.dto.LoginRs;
 import socialnet.security.jwt.JwtUtils;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -22,6 +22,7 @@ public class LoginServiceImpl implements LoginService {
 
     private Persons persons;
     private String jwt;
+    private Integer codResponse;
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
@@ -43,36 +44,54 @@ public class LoginServiceImpl implements LoginService {
         return setLoginRs(jwt);
     }
 
-    public String getToken (LoginRq loginRq) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
+    public Object getLogout(String authorization) {
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        return jwt;
+        return setCommonRsComplexRs(setComplexRs());
     }
-    public CommonRsComplexRs CommonRsComplexRs() {
 
-        CommonRsComplexRs meRs = new CommonRsComplexRs();
+    public CommonRsComplexRs setCommonRsComplexRs(ComplexRs setComplexRs) {
+        CommonRsComplexRs commonRsComplexRs = new CommonRsComplexRs();
 
-        meRs.setData(null);
-        meRs.setOffset(null);
-        meRs.setTimestamp(null);
-        meRs.setTotal(null);
-        meRs.setItemPerPage(null);
-        meRs.setPerPage(null);
+        commonRsComplexRs.setData(setComplexRs);
+        commonRsComplexRs.setOffset(0);
+        commonRsComplexRs.setTimestamp(0);
+        commonRsComplexRs.setTotal(0);
+        commonRsComplexRs.setItemPerPage(0);
+        commonRsComplexRs.setPerPage(0);
 
-        return meRs;
+        return commonRsComplexRs;
+    }
+
+    public ComplexRs setComplexRs() {
+        ComplexRs complexRs = new ComplexRs();
+
+        complexRs.setId(0);
+        complexRs.setCount(0);
+        complexRs.setMessage("");
+        complexRs.setMessageId(0);
+
+        return complexRs;
+    }
+
+    public String getToken(LoginRq loginRq) {
+
+        long timeToLive = 300000;
+        byte[] secret = new byte[300];
+
+        return Jwts.builder()
+                .setSubject(loginRq.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + timeToLive))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 
     public ErrorRs setLoginErrorRs() {
 
         ErrorRs loginErrorRs = new ErrorRs();
 
-        loginErrorRs.setError("");
-        loginErrorRs.setErrorDescription("");
-        loginErrorRs.setErrorDescription("");
+        loginErrorRs.setError(""); //??????????????
+        loginErrorRs.setErrorDescription(""); //????????????
+        loginErrorRs.setErrorDescription(""); //????????????
 
         return loginErrorRs;
     }
@@ -99,7 +118,7 @@ public class LoginServiceImpl implements LoginService {
 
         weatherRs = setLoginWeather(weatherRs);
         currencyRs = setCurrencyRs(currencyRs);
-        personRs.setAbout(""); //?
+        personRs.setAbout(persons.getAbout());
         personRs.setCity(persons.getCity());
         personRs.setCountry(persons.getCountry());
         personRs.setBirthDate(persons.getBirth_date());
@@ -107,14 +126,14 @@ public class LoginServiceImpl implements LoginService {
         personRs.setWeather(weatherRs);
         personRs.setEmail(persons.getEmail());
         personRs.setFirstName(persons.getFirst_name());
-        personRs.setFriendStatus(""); //?
+        personRs.setFriendStatus(""); //???????????????????????
         personRs.setId(persons.getId());
-        personRs.setIsBlocked(false);
-        personRs.setIsBlockedByCurrentUser(false); //?
+        personRs.setIsBlocked(persons.getIs_blocked());
+        personRs.setIsBlockedByCurrentUser(false); //????????????????????
         personRs.setLastName(persons.getLast_name());
-        personRs.setLastOnlineTime(null);
+        personRs.setLastOnlineTime(persons.getLast_online_time());
         personRs.setMessagesPermission(persons.getMessage_permissions());
-        personRs.setOnline(null);
+        personRs.setOnline(true); //???????????????
         personRs.setPhone(persons.getPhone());
         personRs.setPhoto(persons.getPhoto());
         personRs.setRegDate(persons.getReg_date());

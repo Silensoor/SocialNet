@@ -24,4 +24,9 @@ public class Controller {
     public ResponseEntity<?> Me(@RequestHeader(name = "authorization") String authorization) {
         return ResponseEntity.ok(loginServer.getMe(authorization));
     }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logout(@RequestHeader(name = "authorization") String authorization) {
+        return ResponseEntity.ok(loginServer.getLogout(authorization));
+    }
 }
