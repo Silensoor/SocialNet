@@ -2,14 +2,15 @@ package socialnet.controller;
 
 import liquibase.repackaged.org.apache.commons.lang3.tuple.Pair;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import socialnet.api.ErrorRs;
 import socialnet.dto.CommonRs;
 import socialnet.dto.PostRs;
 import socialnet.service.PostService;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,5 +34,16 @@ public class NewsFeedController {
         result.setData(pair.getRight());
 
         return result;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorRs handleJsonMappingException(Exception exception) {
+        ErrorRs errorRs = new ErrorRs();
+        errorRs.setError("/api/v1/feeds returned exception");
+        errorRs.setErrorDescription(exception.getLocalizedMessage());
+        errorRs.setTimestamp(new Timestamp(System.currentTimeMillis()));
+
+        return errorRs;
     }
 }
