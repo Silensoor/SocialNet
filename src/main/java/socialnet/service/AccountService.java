@@ -1,6 +1,7 @@
 package socialnet.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.api.account.RegisterRq;
 import socialnet.api.account.RegisterRs;
@@ -17,6 +18,7 @@ import java.sql.Timestamp;
 public class AccountService {
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public RegisterRs getRegisterData(RegisterRq regRequest) {
         validateFields(regRequest);
@@ -25,7 +27,7 @@ public class AccountService {
         person.setEmail(regRequest.getEmail());
         person.setFirstName(regRequest.getFirstName());
         person.setLastName(regRequest.getLastName());
-        person.setPassword(regRequest.getPasswd1());
+        person.setPassword(passwordEncoder.encode(regRequest.getPasswd1()));
         person.setRegDate(new Timestamp(System.currentTimeMillis()));
 
         personRepository.save(person);
