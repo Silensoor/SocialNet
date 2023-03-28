@@ -22,7 +22,7 @@ public class Runner implements CommandLineRunner {
         template.execute("DELETE FROM likes");
         template.execute("DELETE FROM persons");
         template.execute("DELETE FROM tags");
-        //List<String> lines = Files.readAllLines(Paths.get("src/main/resources/data.sql"));
-        //lines.forEach(x -> template.execute(x));
+        List<String> lines = Files.readAllLines(Paths.get("src/main/resources/data.sql"));
+        lines.forEach(x -> template.execute(x));
     }
 }
