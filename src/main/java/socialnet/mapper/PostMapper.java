@@ -3,6 +3,7 @@ package socialnet.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import socialnet.dto.CommentRs;
+import socialnet.dto.PostRq;
 import socialnet.dto.PostRs;
 import socialnet.model.Like;
 import socialnet.model.Person;
@@ -22,7 +23,17 @@ public abstract class PostMapper {
     @Mapping(target = "id", source = "post.id")
     @Mapping(target = "blocked", source = "post.blocked")
     @Mapping(target = "author", source = "author")
-    public abstract PostRs toDTO(Post post, Person author, List<Like> likes, List<Tag> tags, long authUserId, List<CommentRs> comments);
+    public abstract PostRs toRs(Post post, Person author, List<Like> likes, List<Tag> tags, long authUserId, List<CommentRs> comments);
+
+    @Mapping(target = "timeDelete", ignore = true)
+    @Mapping(target = "time", expression = "java(getTime(publishDate))")
+    @Mapping(target = "postText", source = "postRq.post_text")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", expression = "java(getFalse())")
+    @Mapping(target = "blocked", expression = "java(getFalse())")
+    @Mapping(target = "authorId", source = "id")
+    public abstract Post toModel(PostRq postRq, Integer publishDate, int id);
+
 
     PostType getType(Post post) {
         if (post.isDeleted()) return PostType.DELETED;
@@ -30,6 +41,15 @@ public abstract class PostMapper {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         if (postTime.after(now)) return PostType.QUEUED;
         return PostType.POSTED;
+    }
+
+    Timestamp getTime(Integer publishDate) {
+        if (publishDate == null) return new Timestamp(System.currentTimeMillis());
+        return new Timestamp(publishDate);
+    }
+
+    boolean getFalse() {
+        return false;
     }
 
     boolean itLikesMe(List<Like> likes, long authUserId) {
