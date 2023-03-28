@@ -1,5 +1,8 @@
 package socialnet.api.friends;
 
+import lombok.Data;
+import socialnet.dto.ComplexRs;
+@Data
 public class CommonRsComplexRs {
 
     private ComplexRs data;

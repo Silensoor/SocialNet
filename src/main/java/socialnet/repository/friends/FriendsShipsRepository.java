@@ -53,10 +53,35 @@ public class FriendsShipsRepository {
                 new Object[] { id }, friendshipsRowMapper);
     }
 
+    public List<Friendships> findAllPotentialFriends(Long id) {
+        return this.jdbcTemplate.query("SELECT * FROM friendships" +
+                        " WHERE status_name = 'REQUEST' AND dst_person_id = ?)",
+                new Object[] { id }, friendshipsRowMapper);
+    }
     public void addFriend(Date time, Long id, Long idFriend, String status) {
         this.jdbcTemplate.query("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
                         "VALUES (?, ?, ?, ?)", (RowCallbackHandler) time, idFriend, id, status);
     }
 
 
+    public void deleteSentFriendshipRequest(Date date, String status, Long id) {
+        this.jdbcTemplate.update("UPDATE friendships SET sent_time = ?," +
+                " status = ? WHERE id = ? ", date, status, id);
+        return;
+    }
+
+    public List<Friendships> sendFriendshipRequest(Long id) {
+        return this.jdbcTemplate.query("SELECT * FROM friendships" +
+                        " WHERE status_name = 'REQUEST' AND src_person_id = ?)",
+                new Object[] { id }, friendshipsRowMapper);
+    }
+
+    public void sendFriendshipRequestUsingPOST(Date date, Long idfriend, long id, String status) {
+        this.jdbcTemplate.query("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
+                "VALUES (?, ?, ?, ?)", (RowCallbackHandler) date, idfriend, id, status);
+    }
+
+    public void deleteFriendUsing(Integer id) {
+        this.jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
+    }
 }
