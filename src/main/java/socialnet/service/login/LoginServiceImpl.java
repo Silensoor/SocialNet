@@ -30,15 +30,16 @@ public class LoginServiceImpl implements LoginService {
 
         if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
             jwt = getToken(loginRq);
+            System.out.println("ok");
             return setLoginRs(jwt); //заполнить поля
         } else {
+            System.out.println("no ok");
             return setLoginErrorRs(); //заполнить поля
         }
     }
 
     public Object getMe(String authorization) {
 
-        System.out.println(authorization);
         return setLoginRs(jwt);
     }
 
@@ -69,9 +70,9 @@ public class LoginServiceImpl implements LoginService {
 
         ErrorRs loginErrorRs = new ErrorRs();
 
-        loginErrorRs.setError(null);
-        loginErrorRs.setErrorDescription(null);
-        loginErrorRs.setErrorDescription(null);
+        loginErrorRs.setError("");
+        loginErrorRs.setErrorDescription("");
+        loginErrorRs.setErrorDescription("");
 
         return loginErrorRs;
     }
@@ -79,36 +80,36 @@ public class LoginServiceImpl implements LoginService {
     public WeatherRs setLoginWeather(WeatherRs weatherRs) {
 
         weatherRs.setCity(persons.getCity());
-        weatherRs.setTemp(null); //?
-        weatherRs.setDate(null); //?
-        weatherRs.setClouds(null); //?
+        weatherRs.setTemp(""); //?
+        weatherRs.setDate(""); //?
+        weatherRs.setClouds(""); //?
 
         return weatherRs;
     }
 
-    public LoginCurrency setLoginCurrency(LoginCurrency loginCurrency) {
+    public CurrencyRs setCurrencyRs(CurrencyRs currencyRs) {
 
-        loginCurrency.setEuro(null); //?
-        loginCurrency.setUsd(null); //?
+        currencyRs.setEuro(""); //?
+        currencyRs.setUsd(""); //?
 
-        return loginCurrency;
+        return currencyRs;
     }
 
-    public PersonRs setLoginRs(PersonRs personRs, LoginCurrency loginCurrency, WeatherRs weatherRs, String jwt) {
+    public PersonRs setLoginRs(PersonRs personRs, CurrencyRs currencyRs, WeatherRs weatherRs, String jwt) {
 
         weatherRs = setLoginWeather(weatherRs);
-        loginCurrency = setLoginCurrency(loginCurrency);
-        personRs.setAbout(null); //?
+        currencyRs = setCurrencyRs(currencyRs);
+        personRs.setAbout(""); //?
         personRs.setCity(persons.getCity());
         personRs.setCountry(persons.getCountry());
         personRs.setBirthDate(persons.getBirth_date());
-        personRs.setCurrency(null);
+        personRs.setCurrency(currencyRs);
         personRs.setWeather(weatherRs);
         personRs.setEmail(persons.getEmail());
         personRs.setFirstName(persons.getFirst_name());
-        personRs.setFriendStatus(null); //?
+        personRs.setFriendStatus(""); //?
         personRs.setId(persons.getId());
-        personRs.setIsBlocked(null);
+        personRs.setIsBlocked(false);
         personRs.setIsBlockedByCurrentUser(false); //?
         personRs.setLastName(persons.getLast_name());
         personRs.setLastOnlineTime(null);
@@ -125,10 +126,10 @@ public class LoginServiceImpl implements LoginService {
 
     public LoginRs setLoginRs(String jwt) {
         WeatherRs loginWeather = new WeatherRs();
-        LoginCurrency loginCurrency = new LoginCurrency();
+        CurrencyRs currencyRs = new CurrencyRs();
         PersonRs loginData = new PersonRs();
 
-        loginData = setLoginRs(loginData, loginCurrency, loginWeather, jwt);
+        loginData = setLoginRs(loginData, currencyRs, loginWeather, jwt);
 
         LoginRs loginRs = new LoginRs();
         loginRs.setData(loginData);

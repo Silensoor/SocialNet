@@ -15,7 +15,7 @@ public class Controller {
         this.loginServer = loginServer;
     }
 
-    @GetMapping("/auth/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRq loginRq) {
         return ResponseEntity.ok(loginServer.getLogin(loginRq));
     }
