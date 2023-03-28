@@ -23,24 +23,25 @@ public class PostsService {
     private final PostMapper postMapper;
     private final PostsRepository postsRepository;
     private final PostCommentMapper postCommentMapper;
+
     public ResponseEntity<String> getFeeds(int offset, int perPage) {
-        List<Post> posts = postsRepository.getPosts();
-        List<PostRs> postRsList = new ArrayList<>();
-        for (Post post : posts) {
-            long postId = post.getId();
-            Person author = personRepository.getPersonById(post.getAuthorId());
-            List<Like> likes = likeRepository.getLikesByEntityId(postId);
-            List<Tag> tags = tagRepository.getTagsByPostId(postId);
-            long authUserId = 0L;
-            List<PostComment> postComments = postCommentRepository.getCommentsByPostId(postId);
-            List<CommentRs> comments = getComments(postComments);
-            PostRs postRs = postMapper.toDTO(post, author, likes, tags, authUserId, comments);
+            List<Post> posts = postsRepository.getPosts();
+            List<PostRs> postRsList = new ArrayList<>();
+            for (Post post : posts) {
+                long postId = post.getId();
+                Person author = personRepository.getPersonById(post.getAuthorId());
+                List<Like> likes = likeRepository.getLikesByEntityId(postId);
+                List<Tag> tags = tagRepository.getTagsByPostId(postId);
+                long authUserId = 0L;
+                List<PostComment> postComments = postCommentRepository.getCommentsByPostId(postId);
+                List<CommentRs> comments = getComments(postComments);
+                PostRs postRs = postMapper.toDTO(post, author, likes, tags, authUserId, comments);
 
-            System.out.println(postRs.getAuthor());
-            System.out.println(postRs.getTags());
+                System.out.println(postRs.getAuthor());
+                System.out.println(postRs.getTags());
 
-            postRsList.add(postRs);
-        }
+                postRsList.add(postRs);
+            }
 
 
         return null;

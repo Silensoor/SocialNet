@@ -15,7 +15,6 @@ public class PostsController {
 
     @GetMapping("/api/v1/feeds")
     public ResponseEntity<String> getFeeds(@RequestParam int offset, @RequestParam int perPage) {
-        System.out.println("!!!");
         postsService.getFeeds(offset, perPage);
         return new ResponseEntity<>(HttpStatus.OK);
     }
