@@ -43,7 +43,7 @@ public class AccountService {
             throw new RegisterException("Password not equals");
         }
 
-        if (personRepository.findPersonByEmail(regRequest.getEmail()) != null) {
+        if (personRepository.findByEmail(regRequest.getEmail()) != null) {
             throw new RegisterException("Email already exists");
         }
 

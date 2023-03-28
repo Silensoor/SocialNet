@@ -24,7 +24,7 @@ public class PersonRepository {
         );
     }
 
-    public Person findPersonByEmail(String email) {
+    public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
                 "select * from persons where email = ?",
