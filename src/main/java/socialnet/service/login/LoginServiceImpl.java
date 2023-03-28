@@ -5,11 +5,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.dto.LoginRs;
-import socialnet.security.jwt.JwtUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -22,10 +20,6 @@ public class LoginServiceImpl implements LoginService {
 
     private Persons persons;
     private String jwt;
-    private Integer codResponse;
-
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
 
     public Object getLogin(LoginRq loginRq) {
 
