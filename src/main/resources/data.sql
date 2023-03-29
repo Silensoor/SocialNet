@@ -603,3 +603,4 @@ insert into post2tag (id, post_id, tag_id) values (97, 97, 48);
 insert into post2tag (id, post_id, tag_id) values (98, 98, 99);
 insert into post2tag (id, post_id, tag_id) values (99, 99, 42);
 insert into post2tag (id, post_id, tag_id) values (100, 100, 61);
+

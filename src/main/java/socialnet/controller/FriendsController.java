@@ -55,9 +55,9 @@ public class FriendsController {
                 perPage.orElse(20));
     }
 
-    @GetMapping("/friends/request/{id}")
+    @PostMapping("/friends/request/{id}")
     public ResponseEntity<?> addFriendUsingPOST(@RequestHeader String authorization,
-                                                @RequestParam Integer id) {
+                                                @PathVariable(value = "id") Integer id) {
 
         return friendsService.addFriendUsingPOST(authorization, id);
     }

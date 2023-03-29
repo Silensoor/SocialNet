@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -38,28 +39,28 @@ public class FriendsShipsRepository {
 
     public List<Friendships> findFriend(Long id, Integer idFriend) {
         return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                " WHERE dst_person_id = ? OR src_person_id = ?",
-                new Object[] { id, idFriend }, friendshipsRowMapper);
+                " WHERE (dst_person_id = ? AND src_person_id = ?) OR (dst_person_id = ? AND src_person_id = ?)",
+                new Object[] { id, idFriend, idFriend, id }, friendshipsRowMapper);
     }
 
     public void insertStatusFriend(Long id, String status) {
-        this.jdbcTemplate.update("UPDATE friendships SET status_name = ? WHERE id = ? ", status, id);
+        this.jdbcTemplate.update("UPDATE friendships SET status_name = ? WHERE id = ?", status, id);
     }
 
     public List<Friendships> findAllOutgoingRequests(Long id) {
         return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                        " WHERE status_name = 'REQUEST' AND src_person_id = ?)",
+                        " WHERE status_name = 'REQUEST' AND src_person_id = ?",
                 new Object[] { id }, friendshipsRowMapper);
     }
 
     public List<Friendships> findAllPotentialFriends(Long id) {
         return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                        " WHERE status_name = 'REQUEST' AND dst_person_id = ?)",
+                        " WHERE status_name = 'REQUEST' AND dst_person_id = ?",
                 new Object[] { id }, friendshipsRowMapper);
     }
-    public void addFriend(Date time, Long id, Long idFriend, String status) {
-        this.jdbcTemplate.query("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
-                        "VALUES (?, ?, ?, ?)", (RowCallbackHandler) time, idFriend, id, status);
+    public void addFriend(Long id, Long idFriend, String status) {
+        this.jdbcTemplate.update("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
+                        "VALUES (NOW(), ?, ?, ?)", idFriend, id, status);
     }
 
 
