@@ -15,12 +15,13 @@ public class PersonRepository {
 
     public int save(Person person) {
         return jdbcTemplate.update(
-            "insert into persons (email, first_name, last_name, password, reg_date) values (?, ?, ?, ?, ?)",
+            "insert into persons (email, first_name, last_name, password, reg_date, is_approved) values (?, ?, ?, ?, ?, ?)",
             person.getEmail(),
             person.getFirstName(),
             person.getLastName(),
             person.getPassword(),
-            person.getRegDate()
+            person.getRegDate(),
+            person.getIsApproved()
         );
     }
 
