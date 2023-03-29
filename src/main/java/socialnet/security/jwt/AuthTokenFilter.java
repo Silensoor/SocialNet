@@ -13,8 +13,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import socialnet.security.UserDetailsServiceImpl;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @Slf4j
 @Component
@@ -26,7 +29,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) {
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
@@ -45,6 +48,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             log.error("Cannot set user authentication: {}");
         }
+        filterChain.doFilter(request,response);
 
     }
     private String parseJwt(HttpServletRequest request) {
