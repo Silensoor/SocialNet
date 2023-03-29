@@ -3,12 +3,21 @@ package socialnet.service.login;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.dto.LoginRs;
+import socialnet.repository.PersonRepository;
+import socialnet.security.jwt.JwtUtils;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -17,9 +26,20 @@ import java.util.List;
 public class LoginServiceImpl implements LoginService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
+    private PersonRs personRs;
     private Persons persons;
     private String jwt;
+    private final PersonRepository personRepository;
+
+    @Bean
+    private void a() {
+        String s = new BCryptPasswordEncoder().encode("aaaaaaaa");
+        System.out.println(s);
+
+    }
 
     public Object getLogin(LoginRq loginRq) {
 
@@ -28,8 +48,14 @@ public class LoginServiceImpl implements LoginService {
             System.out.println("ok");
             return setLoginRs(jwt); //заполнить поля
         } else {
-            System.out.println("no ok");
-            return setLoginErrorRs(); //заполнить поля
+
+            ErrorRs errorRs = new ErrorRs();
+
+            errorRs.setError("400");
+            errorRs.setErrorDescription("Field 'email' is empty");
+            errorRs.setTimestamp(String.valueOf(new Timestamp(System.currentTimeMillis())));
+
+            return errorRs;
         }
     }
 
@@ -79,17 +105,6 @@ public class LoginServiceImpl implements LoginService {
         return complexRs;
     }
 
-    public ErrorRs setLoginErrorRs() {
-
-        ErrorRs loginErrorRs = new ErrorRs();
-
-        loginErrorRs.setError(""); //??????????????
-        loginErrorRs.setErrorDescription(""); //????????????
-        loginErrorRs.setErrorDescription(""); //????????????
-
-        return loginErrorRs;
-    }
-
     public WeatherRs setLoginWeather(WeatherRs weatherRs) {
 
         weatherRs.setCity(persons.getCity());
@@ -108,7 +123,7 @@ public class LoginServiceImpl implements LoginService {
         return currencyRs;
     }
 
-    public PersonRs setLoginRs(PersonRs personRs, CurrencyRs currencyRs, WeatherRs weatherRs, String jwt) {
+    public PersonRs setPersonRs(PersonRs personRs, CurrencyRs currencyRs, WeatherRs weatherRs, String jwt) {
 
         weatherRs = setLoginWeather(weatherRs);
         currencyRs = setCurrencyRs(currencyRs);
@@ -134,6 +149,8 @@ public class LoginServiceImpl implements LoginService {
         personRs.setToken(jwt);
         personRs.setUserDeleted(persons.getIs_deleted());
 
+        this.personRs = personRs;
+
         return personRs;
     }
 
@@ -142,7 +159,7 @@ public class LoginServiceImpl implements LoginService {
         CurrencyRs currencyRs = new CurrencyRs();
         PersonRs loginData = new PersonRs();
 
-        loginData = setLoginRs(loginData, currencyRs, loginWeather, jwt);
+        loginData = setPersonRs(loginData, currencyRs, loginWeather, jwt);
 
         LoginRs loginRs = new LoginRs();
         loginRs.setData(loginData);
@@ -160,6 +177,8 @@ public class LoginServiceImpl implements LoginService {
         for (Persons personInDb : personList()) {
             if ((personInDb.getEmail().equals(email) && personInDb.getPassword().equals(password))) {
                 persons = personInDb;
+                System.out.println("пароль " + personInDb.getPassword());
+                System.out.println("маил " + personInDb.getEmail());
                 return true;
             }
         }
@@ -168,6 +187,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     public List<Persons> personList() {
+
         return jdbcTemplate.query("SELECT * FROM public.persons", new BeanPropertyRowMapper<>(Persons.class));
     }
 }
