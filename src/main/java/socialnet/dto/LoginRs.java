@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class LoginRs {
 
-    private DataRs data;
+    private PersonRs data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;

@@ -1,9 +1,7 @@
 package socialnet.service.login;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,43 +12,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.dto.LoginRs;
-import socialnet.repository.PersonRepository;
+import socialnet.model.Persons;
 import socialnet.security.jwt.JwtUtils;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginServiceImpl implements LoginService {
-
     private final JdbcTemplate jdbcTemplate;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-
-    private PersonRs personRs;
-    private Persons persons;
     private String jwt;
-    private final PersonRepository personRepository;
+    private final AuthenticationManager authenticationManager;
 
-    @Bean
-    private void a() {
-        String s = new BCryptPasswordEncoder().encode("aaaaaaaa");
-        System.out.println(s);
-
-    }
 
     public Object getLogin(LoginRq loginRq) {
 
-        if (checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword()) == true) {
-            jwt = getToken(loginRq);
-            System.out.println("ok");
-            return setLoginRs(jwt); //заполнить поля
+
+
+        Persons persons;
+        if ((persons = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
+            jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
+            authenticated(loginRq);
+            return setLoginRs(jwt, persons); //заполнить поля
         } else {
-
             ErrorRs errorRs = new ErrorRs();
-
             errorRs.setError("400");
             errorRs.setErrorDescription("Field 'email' is empty");
             errorRs.setTimestamp(String.valueOf(new Timestamp(System.currentTimeMillis())));
@@ -60,8 +49,10 @@ public class LoginServiceImpl implements LoginService {
     }
 
     public Object getMe(String authorization) {
-
-        return setLoginRs(jwt);
+        String email = jwtUtils.getUserEmail(authorization);
+        Persons persons = jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
+                new BeanPropertyRowMapper<>(Persons.class)).stream().findAny().orElse(null);
+        return setLoginRs(jwt, persons);
     }
 
     public Object getLogout(String authorization) {
@@ -69,28 +60,14 @@ public class LoginServiceImpl implements LoginService {
         return setCommonRsComplexRs(setComplexRs());
     }
 
-    public String getToken(LoginRq loginRq) {
-
-        long timeToLive = 1;
-        byte[] secret = new byte[1];
-
-        return Jwts.builder()
-                .setSubject(loginRq.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + timeToLive))
-                .signWith(SignatureAlgorithm.HS256, secret).compact();
-    }
-
     public CommonRsComplexRs setCommonRsComplexRs(ComplexRs setComplexRs) {
         CommonRsComplexRs commonRsComplexRs = new CommonRsComplexRs();
-
         commonRsComplexRs.setData(setComplexRs);
         commonRsComplexRs.setOffset(0);
         commonRsComplexRs.setTimestamp(0);
         commonRsComplexRs.setTotal(0);
         commonRsComplexRs.setItemPerPage(0);
         commonRsComplexRs.setPerPage(0);
-
         return commonRsComplexRs;
     }
 
@@ -105,11 +82,11 @@ public class LoginServiceImpl implements LoginService {
         return complexRs;
     }
 
-    public WeatherRs setLoginWeather(WeatherRs weatherRs) {
+    public WeatherRs setLoginWeather(WeatherRs weatherRs, Persons persons) {
 
         weatherRs.setCity(persons.getCity());
         weatherRs.setTemp(""); //?
-        weatherRs.setDate(""); //?
+        weatherRs.setDate(new Date()); //?
         weatherRs.setClouds(""); //?
 
         return weatherRs;
@@ -123,9 +100,9 @@ public class LoginServiceImpl implements LoginService {
         return currencyRs;
     }
 
-    public PersonRs setPersonRs(PersonRs personRs, CurrencyRs currencyRs, WeatherRs weatherRs, String jwt) {
-
-        weatherRs = setLoginWeather(weatherRs);
+    public PersonRs setPersonRs(CurrencyRs currencyRs, WeatherRs weatherRs, String jwt, Persons persons) {
+        PersonRs personRs = new PersonRs();
+        weatherRs = setLoginWeather(weatherRs, persons);
         currencyRs = setCurrencyRs(currencyRs);
         personRs.setAbout(persons.getAbout());
         personRs.setCity(persons.getCity());
@@ -148,46 +125,36 @@ public class LoginServiceImpl implements LoginService {
         personRs.setRegDate(persons.getReg_date());
         personRs.setToken(jwt);
         personRs.setUserDeleted(persons.getIs_deleted());
-
-        this.personRs = personRs;
-
         return personRs;
     }
 
-    public LoginRs setLoginRs(String jwt) {
+    public LoginRs setLoginRs(String jwt, Persons persons) {
         WeatherRs loginWeather = new WeatherRs();
         CurrencyRs currencyRs = new CurrencyRs();
-        PersonRs loginData = new PersonRs();
-
-        loginData = setPersonRs(loginData, currencyRs, loginWeather, jwt);
-
+        PersonRs personRs1 = setPersonRs(currencyRs, loginWeather, jwt, persons);
         LoginRs loginRs = new LoginRs();
-        loginRs.setData(loginData);
+        loginRs.setData(personRs1);
         loginRs.setItemPerPage(0); //?
         loginRs.setOffset(0); //?
         loginRs.setPerPage(0); //?
-        loginRs.setTimestamp(1670773804); //?
+        loginRs.setTimestamp(System.currentTimeMillis()); //?
         loginRs.setTotal(0); //?
-
         return loginRs;
     }
 
-    public boolean checkLoginAndPassword(String email, String password) {
+    public Persons checkLoginAndPassword(String email, String password) {
 
-        for (Persons personInDb : personList()) {
-            if ((personInDb.getEmail().equals(email) && personInDb.getPassword().equals(password))) {
-                persons = personInDb;
-                System.out.println("пароль " + personInDb.getPassword());
-                System.out.println("маил " + personInDb.getEmail());
-                return true;
-            }
+        Persons persons = jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
+                new BeanPropertyRowMapper<>(Persons.class)).stream().findAny().orElse(null);
+        if (persons != null && new BCryptPasswordEncoder().matches(password, persons.getPassword())) {
+            log.info(persons.getFirst_name() + " авторизован");
+            return persons;
         }
-
-        return false;
+        return null;
     }
-
-    public List<Persons> personList() {
-
-        return jdbcTemplate.query("SELECT * FROM public.persons", new BeanPropertyRowMapper<>(Persons.class));
+    private void authenticated(LoginRq loginRq){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
