@@ -2,6 +2,8 @@ package socialnet.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class WeatherRs {
 
@@ -9,7 +11,7 @@ public class WeatherRs {
 
     private String clouds;
 
-    private String date;
+    private Date date;
 
     private String temp;
 }

@@ -1,15 +1,15 @@
 package socialnet.dto;
 
 import lombok.Data;
-import socialnet.dto.PersonRs;
 
 @Data
 public class LoginRs {
-    private PersonRs data;
+
+    private DataRs data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private Integer timestamp;
+    private Long timestamp;
     private Integer total;
 
 }
