@@ -2,6 +2,8 @@ package socialnet.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 import socialnet.api.friends.*;
 import socialnet.dto.ComplexRs;
 import socialnet.dto.PersonRs;
@@ -17,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import static socialnet.model.enums.FriendshipStatusTypes.BLOCKED;
-
+@Service
 public class FriendsService {
 
     private JwtUtils jwtUtils;
@@ -72,7 +74,11 @@ public class FriendsService {
         CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
         List<Person> personListOffset = new ArrayList<>();
         for (int i = offset; i < offset + perPage; i++){
-            personListOffset.add(personList.get(i));
+            if (i < personList.size()) {
+                personListOffset.add(personList.get(i));
+            } else {
+                break;
+            }
         }
         List<PersonRs> personRsList = createPersonRsList(personListOffset);
         commonRsListPersonRsFilling.setData(personRsList);
@@ -117,7 +123,8 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> userBlocksUserUsingPOST(String authorization, Integer id) {
-        String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        String email = "twharlton27@smh.com.au";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail.isEmpty()){
             return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
@@ -193,6 +200,18 @@ public class FriendsService {
                 });
                 String friendsIdString = friendsIdStringMethod(friendsId);
                 List<Person> personList = personRepository.findPersonFriendsAll(friendsIdString);
+                if (personList.size() < 10){
+                    final String city = personsEmail.get(0).getCity();
+                    personList.addAll(personRepository.findPersonsCity(city));
+                    List<Person> personListAll = new ArrayList<>();
+                    if (personList.size() < 10){
+                        personListAll = personRepository.findPersonAll();
+                    }
+                    for (int i = 0; i < 10; i++){
+                        personList.add(personListAll.get(i));
+                        if (personList.size() >= 10){ break;}
+                    }
+                }
                 CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
                 List<PersonRs> personRsList = createPersonRsList(personList);
                 commonRsListPersonRsFilling.setData(personRsList);

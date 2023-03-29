@@ -18,14 +18,23 @@ public class PersonRepositoryFriends {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public List<Person> findPersonAll() {
+        return this.jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
+    }
+
     public List<Person> findPersonFriendsAll(String friendsId) {
-        return this.jdbcTemplate.query("SELECT * FROM persons WHERE id = ?", new Object[] { friendsId },
+        return this.jdbcTemplate.query("SELECT * FROM persons WHERE " + friendsId,
                 personRowMapper);
     }
 
     public List<Person> findPersonsEmail(String email) {
         return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?",
                 new Object[] { email }, personRowMapper);
+    }
+
+    public List<Person> findPersonsCity(String city) {
+        return this.jdbcTemplate.query("SELECT * FROM persons WHERE city = ?",
+                new Object[] { city }, personRowMapper);
     }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {

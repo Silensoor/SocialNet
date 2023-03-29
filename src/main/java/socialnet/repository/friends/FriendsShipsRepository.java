@@ -23,7 +23,7 @@ public class FriendsShipsRepository {
     public List<Friendships> findAllFriendships(Long id) {
         return this.jdbcTemplate.query("SELECT * FROM friendships" +
                 " WHERE status_name = 'FRIEND' AND (dst_person_id = ? OR src_person_id = ?)",
-                new Object[] { id }, friendshipsRowMapper);
+                new Object[] { id, id }, friendshipsRowMapper);
     }
 
     private final RowMapper<Friendships> friendshipsRowMapper = (resultSet, rowNum) -> {
@@ -38,13 +38,12 @@ public class FriendsShipsRepository {
 
     public List<Friendships> findFriend(Long id, Integer idFriend) {
         return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                " WHERE dst_person_id = ?1 OR src_person_id = ?2)",
+                " WHERE dst_person_id = ? OR src_person_id = ?",
                 new Object[] { id, idFriend }, friendshipsRowMapper);
     }
 
     public void insertStatusFriend(Long id, String status) {
         this.jdbcTemplate.update("UPDATE friendships SET status_name = ? WHERE id = ? ", status, id);
-        return;
     }
 
     public List<Friendships> findAllOutgoingRequests(Long id) {
