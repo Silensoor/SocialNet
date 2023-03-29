@@ -1,8 +1,6 @@
 package socialnet.dto;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
