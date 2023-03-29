@@ -4,12 +4,12 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
-    enabled: false
+    enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: 198855
-    url: jdbc:postgresql://localhost:5432/db
+    url: jdbc:postgresql://localhost:5432/postgres
 auth:
   secret: socialNet
   timeLive: 9999999
