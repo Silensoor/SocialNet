@@ -1,12 +1,11 @@
 package socialnet.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonRs {
 
     private String about;
@@ -60,4 +59,5 @@ public class PersonRs {
     private Boolean userDeleted;
 
     private WeatherRs weather;
+
 }

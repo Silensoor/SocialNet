@@ -4,12 +4,12 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class Person {
-    private Long id;
+public class    Person {
+    private long id;
     private String about;
     private Timestamp birthDate;
     private String changePasswordToken;
-    private Integer configurationCode;
+    private int configurationCode;
     private Timestamp deletedTime;
     private String email;
     private String firstName;
@@ -27,6 +27,6 @@ public class Person {
     private Timestamp regDate;
     private String city;
     private String country;
-    private Long telegramId;
-    private Long personSettingsId;
+    private long telegramId;
+    private long personSettingsId;
 }
