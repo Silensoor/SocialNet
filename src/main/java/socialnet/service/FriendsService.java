@@ -299,7 +299,8 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> deleteSentFriendshipRequestUsingDELETE(String authorization, Integer id) {
-        String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        String email = "ipeggs0@amazon.co.uk";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
         if (personsEmail.isEmpty()){
@@ -322,7 +323,8 @@ public class FriendsService {
 
 
     public ResponseEntity<?> sendFriendshipRequestUsingPOST(String authorization, Integer id) {
-        String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        String email = "ipeggs0@amazon.co.uk";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
         if (personsEmail.isEmpty()){
@@ -345,7 +347,8 @@ public class FriendsService {
 
 
     public ResponseEntity<?> deleteFriendUsingDELETE(String authorization, Integer id) {
-        String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        String email = "ipeggs0@amazon.co.uk";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
         if (personsEmail.isEmpty()){
