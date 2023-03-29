@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.security.jwt.JwtUtils;
@@ -21,11 +22,16 @@ public class LoginService {
     private final AuthenticationManager authenticationManager;
 
     public LoginRs login (LoginRq loginRq){
+
+
+
+
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        String jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
         WeatherRs weatherRs = getWeatherRs();
         CurrencyRs currencyRs = getCurrency();
         DataRs dataRs = getData(loginRq,jwt,currencyRs,weatherRs);

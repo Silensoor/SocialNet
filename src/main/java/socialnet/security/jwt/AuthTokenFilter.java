@@ -36,6 +36,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
+            } else if (jwt!=null&&!jwtUtils.validateJwtToken(jwt)) {
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } catch (Exception e) {
             SecurityContextHolder.clearContext();

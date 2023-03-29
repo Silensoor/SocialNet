@@ -17,15 +17,16 @@ public class LoginController {
     private final LoginService loginService;
     private final JwtUtils jwtUtils;
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(LoginRq loginRq) {
+    public ResponseEntity<?> login(@RequestBody LoginRq loginRq) {
 
         System.err.println(new BCryptPasswordEncoder().encode(loginRq.getPassword()));
+        LoginRs login = loginService.login(loginRq);
 
-        return ResponseEntity.ok(loginService.login(loginRq));
+        return ResponseEntity.ok(login);
     }
 
     @GetMapping("users/me")
-    public ResponseEntity<?> Me(@RequestParam(name = "jwt") String jwt) {
+    public ResponseEntity<?> Me(@RequestHeader(name = "authorization") String jwt) {
         LoginRq loginRq = new LoginRq();
         String userNameFromJwtToken = jwtUtils.getUserNameFromJwtToken(jwt);
         loginRq.setEmail(userNameFromJwtToken);
