@@ -2,8 +2,6 @@ package socialnet.security;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,8 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
-
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -25,8 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println("FS");
         Person person = personRepository.findByEmail(email);
-        return User.withUsername(person.getEmail()).build();
+        return User.withUsername(person.getEmail()).password(person.getPassword()).roles().build();
     }
 }

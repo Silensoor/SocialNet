@@ -1,0 +1,20 @@
+server:
+  port: 8086
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 85778577
+    url: jdbc:postgresql://localhost:5432/test
+    initialization-mode: never
+  security:
+    user:
+      name: admin
+      password: admin
+auth:
+  secret: socialNet
+  timeLive: 216000

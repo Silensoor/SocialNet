@@ -3,13 +3,12 @@ package socialnet.dto;
 import lombok.Data;
 
 @Data
-public class LoginRs {
+public class CommonRsComplexRs {
 
-    private PersonRs data;
+    private ComplexRs data;
     private Integer itemPerPage;
     private Integer offset;
     private Integer perPage;
-    private Long timestamp;
+    private Integer timestamp;
     private Integer total;
-
 }
