@@ -35,6 +35,7 @@ public class LoginServiceImpl implements LoginService {
         if ((persons = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
             jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
             authenticated(loginRq);
+
             return setLoginRs(jwt, persons); //заполнить поля
         } else {
             throw new EmptyEmailException("invalid username or password");
@@ -125,9 +126,9 @@ public class LoginServiceImpl implements LoginService {
     public LoginRs setLoginRs(String jwt, Persons persons) {
         WeatherRs loginWeather = new WeatherRs();
         CurrencyRs currencyRs = new CurrencyRs();
-        PersonRs personRs1 = setPersonRs(currencyRs, loginWeather, jwt, persons);
+        PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, persons);
         LoginRs loginRs = new LoginRs();
-        loginRs.setData(personRs1);
+        loginRs.setData(personRs);
         loginRs.setItemPerPage(0); //?
         loginRs.setOffset(0); //?
         loginRs.setPerPage(0); //?
@@ -147,6 +148,7 @@ public class LoginServiceImpl implements LoginService {
         }
         return null;
     }
+
     private void authenticated(LoginRq loginRq){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
