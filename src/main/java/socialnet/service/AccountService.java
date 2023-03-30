@@ -29,6 +29,9 @@ public class AccountService {
         person.setLastName(regRequest.getLastName());
         person.setPassword(passwordEncoder.encode(regRequest.getPasswd1()));
         person.setRegDate(new Timestamp(System.currentTimeMillis()));
+        person.setIsApproved(true);
+        person.setIsBlocked(false);
+        person.setIsDeleted(false);
 
         personRepository.save(person);
 
