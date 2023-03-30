@@ -31,7 +31,7 @@ public class PostsController {
     public ResponseEntity<CommonRs<PostRs>> createPost(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestBody PostRq postRq,
-            @RequestParam(required = false, name = "publish_date") int publishDate,
+            @RequestParam(required = false, name = "publish_date") Integer publishDate,
             @PathVariable int id) {
         CommonRs<PostRs> commonRs = postsService.createPost(postRq, id, publishDate, jwtToken);
         return new ResponseEntity<>(commonRs, HttpStatus.OK);

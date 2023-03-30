@@ -63,7 +63,7 @@ public class PostService {
             List<PostComment> subCommentsList = getPostComments(commentId);
             List<CommentRs> subComments = getComments(subCommentsList, jwtToken);
             List<Like> likes = getLikes(commentId);
-            Person authUser = personRepository.findByEmail(jwtUtils.getUserNameFromJwtToken(jwtToken));
+            Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
             long authUserId = authUser.getId();
             CommentRs commentRs = postCommentMapper.toDTO(author, postComment, subComments, likes, authUserId);
             comments.add(commentRs);

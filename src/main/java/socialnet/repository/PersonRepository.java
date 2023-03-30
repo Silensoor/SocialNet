@@ -28,16 +28,21 @@ public class PersonRepository {
     }
     public int save(Person person) {
         return jdbcTemplate.update(
-                "insert into persons (email, first_name, last_name, password, reg_date) values (?, ?, ?, ?, ?)",
+                "insert into persons (email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) values (?, ?, ?, ?, ?, ?, ?, ?)",
                 person.getEmail(),
                 person.getFirstName(),
                 person.getLastName(),
                 person.getPassword(),
-                person.getRegDate()
+                person.getRegDate(),
+                true,
+                false,
+                false
         );
     }
     public Person findByEmail(String email) {
-        String select = "SELECT * FROM persons WHERE email = " + email;
-        return jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class)).get(0);
+        String select = "SELECT * FROM persons WHERE email = \'" + email + "\'";
+        List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
+        if(personList.isEmpty()) return null;
+        return personList.get(0);
     }
 }

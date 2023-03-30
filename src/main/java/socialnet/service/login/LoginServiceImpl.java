@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.dto.LoginRs;
 import socialnet.model.Persons;
+import socialnet.model.enums.FriendStatus;
 import socialnet.security.jwt.JwtUtils;
 
 import java.sql.Timestamp;
@@ -86,7 +87,7 @@ public class LoginServiceImpl implements LoginService {
 
         weatherRs.setCity(persons.getCity());
         weatherRs.setTemp(""); //?
-        weatherRs.setDate(new Date()); //?
+        weatherRs.setDate(new Date().toString()); //?
         weatherRs.setClouds(""); //?
 
         return weatherRs;
@@ -112,13 +113,13 @@ public class LoginServiceImpl implements LoginService {
         personRs.setWeather(weatherRs);
         personRs.setEmail(persons.getEmail());
         personRs.setFirstName(persons.getFirst_name());
-        personRs.setFriendStatus(""); //???????????????????????
-        personRs.setId(persons.getId());
-        personRs.setIsBlocked(persons.getIs_blocked());
-        personRs.setIsBlockedByCurrentUser(false); //????????????????????
+        personRs.setFriendStatus(FriendStatus.FRIEND); //???????????????????????
+//        personRs.set(persons.getId());
+        personRs.setBlocked(persons.getIs_blocked());
+        personRs.setBlockedByCurrentUser(false); //????????????????????
         personRs.setLastName(persons.getLast_name());
         personRs.setLastOnlineTime(persons.getLast_online_time());
-        personRs.setMessagesPermission(persons.getMessage_permissions());
+        personRs.setMessagePermission(persons.getMessage_permissions());
         personRs.setOnline(true); //???????????????
         personRs.setPhone(persons.getPhone());
         personRs.setPhoto(persons.getPhoto());
