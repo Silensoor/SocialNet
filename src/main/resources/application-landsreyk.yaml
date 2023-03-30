@@ -9,6 +9,9 @@ spring:
     password: landsreyk
   liquibase:
     enabled: true
+logging:
+  level:
+    root: debug
 auth:
   secret: socialNet
   timeLive: 216000
