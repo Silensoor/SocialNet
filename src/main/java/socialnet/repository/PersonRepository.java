@@ -5,21 +5,26 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import socialnet.exception.PostException;
+import socialnet.exception.RegisterException;
 import socialnet.mapper.PersonMapper;
 import socialnet.dto.PersonRs;
 import socialnet.model.Person;
 import socialnet.model.Tag;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public Person getPersonById(long id) {
-        System.out.println(id);
+    public Person findByEmail(long id) {
         String select = "SELECT * FROM persons WHERE id = ?";
         Object[] objects = new Object[]{id};
-        return jdbcTemplate.query(select, objects, new BeanPropertyRowMapper<>(Person.class)).get(0);
+        List<Person> personList = jdbcTemplate.query(select, objects, new BeanPropertyRowMapper<>(Person.class));
+        if(personList.isEmpty()) throw new PostException("Пользователя с id = " + id + " не существует");
+        return personList.get(0);
     }
     public int save(Person person) {
         return jdbcTemplate.update(

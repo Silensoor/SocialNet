@@ -10,20 +10,22 @@ import socialnet.model.Person;
 import socialnet.model.Post;
 import socialnet.model.Tag;
 import socialnet.model.enums.PostType;
+import socialnet.service.PostService;
+
 import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper(componentModel = "spring", imports = PostMapper.class)
 public abstract class PostMapper {
     @Mapping(target = "type", expression = "java(getType(post))")
-    @Mapping(target = "tags", source = "tags")
-    @Mapping(target = "myLike", expression = "java(itLikesMe(likes, authUserId))")
-    @Mapping(target = "likes", expression = "java(likes.size())")
-    @Mapping(target = "comments", source = "comments")
+    @Mapping(target = "tags", source = "details.tags")
+    @Mapping(target = "myLike", expression = "java(itLikesMe(details.getLikes(), details.getAuthUserId()))")
+    @Mapping(target = "likes", expression = "java(details.getLikes().size())")
+    @Mapping(target = "comments", source = "details.comments")
     @Mapping(target = "id", source = "post.id")
     @Mapping(target = "blocked", source = "post.blocked")
-    @Mapping(target = "author", source = "author")
-    public abstract PostRs toRs(Post post, Person author, List<Like> likes, List<Tag> tags, long authUserId, List<CommentRs> comments);
+    @Mapping(target = "author", source = "details.author")
+    public abstract PostRs toRs(Post post, PostService.Details details);
 
     @Mapping(target = "timeDelete", ignore = true)
     @Mapping(target = "time", expression = "java(getTime(publishDate))")

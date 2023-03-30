@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import socialnet.dto.CommonRs;
 import socialnet.dto.PostRq;
 import socialnet.dto.PostRs;
+import socialnet.exception.RegisterException;
 import socialnet.model.Post;
 import socialnet.service.PostService;
 

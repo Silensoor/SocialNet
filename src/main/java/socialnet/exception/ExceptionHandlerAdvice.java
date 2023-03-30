@@ -19,4 +19,13 @@ public class ExceptionHandlerAdvice {
 
         return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(PostException.class)
+    public ResponseEntity<ErrorRs> handlePostException(RegisterException e) {
+        ErrorRs errorRs = new ErrorRs();
+        errorRs.setError("PostException");
+        errorRs.setErrorDescription(e.getLocalizedMessage());
+        errorRs.setTimestamp(new Timestamp(System.currentTimeMillis()));
+
+        return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
+    }
 }

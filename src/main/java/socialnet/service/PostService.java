@@ -1,18 +1,21 @@
 package socialnet.service;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.dto.CommentRs;
 import socialnet.dto.CommonRs;
 import socialnet.dto.PostRq;
 import socialnet.dto.PostRs;
+import socialnet.exception.PostException;
+import socialnet.exception.RegisterException;
 import socialnet.mapper.PostCommentMapper;
 import socialnet.mapper.PostMapper;
 import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -34,17 +37,22 @@ public class PostService {
             List<PostRs> postRsList = new ArrayList<>();
             for (Post post : posts) {
                 int postId = (int) post.getId();
-                Person author = getAuthor(post.getAuthorId());
-                List<Like> likes = getLikes(postId);
-                List<Tag> tags = getTags(postId);
-                Person authUser = getAuthUser(jwtToken);
-                List<PostComment> postComments = getPostComments(postId);
-                List<CommentRs> comments = getComments(postComments, jwtToken);
-                PostRs postRs = postMapper.toRs(post, author, likes, tags, authUser.getId(), comments);
+                Details details = getDetails(post.getAuthorId(), postId, jwtToken);
+                PostRs postRs = postMapper.toRs(post, details);
                 postRsList.add(postRs);
             }
             postRsList.sort(Comparator.comparing(PostRs::getTime));
         return new CommonRs<>(postRsList, perPage, offset, perPage, (int) System.currentTimeMillis(), postRsList.size());
+    }
+
+    private Details getDetails(long authorId, int postId, String jwtToken) {
+        Person author = getAuthor(authorId);
+        List<Like> likes = getLikes(postId);
+        List<Tag> tags = getTags(postId);
+        Person authUser = getAuthUser(jwtToken);
+        List<PostComment> postComments = getPostComments(postId);
+        List<CommentRs> comments = getComments(postComments, jwtToken);
+        return new Details(author, likes, tags, authUser.getId(), comments);
     }
 
     private List<CommentRs> getComments(List<PostComment> postComments, String jwtToken) {
@@ -64,33 +72,25 @@ public class PostService {
     }
 
     public CommonRs<PostRs> createPost(PostRq postRq, int id, int publishDate, String jwtToken) {
+        personRepository.findByEmail(id);
         Post post = postMapper.toModel(postRq, publishDate, id);
         int postId = postRepository.save(post);
-        List<Like> likes = likeRepository.getLikesByEntityId(postId);
-        List<Tag> tags = tagRepository.getTagsByPostId(postId);
-//        Person authUser = personRepository.findByEmail(jwtUtils.getUserNameFromJwtToken(jwtToken));
-//        long authUserId = authUser.getId();
-        long authUserId = 1;
-        List<PostComment> postComments = postCommentRepository.getCommentsByPostId(postId);
-        List<CommentRs> comments = getComments(postComments, jwtToken);
-        PostRs postRs = postMapper.toRs(post, personRepository.getPersonById(id), likes, tags, authUserId, comments);
+        Person author = personRepository.findByEmail(id);
+        Details details = getDetails(author.getId(), postId, jwtToken);
+        PostRs postRs = postMapper.toRs(post,details);
         return new CommonRs<>(postRs, (int) System.currentTimeMillis());
     }
 
     public CommonRs<PostRs> getPostById(int postId, String jwtToken) {
         Post post = postRepository.findById(postId);
         Person author = getAuthor(post.getAuthorId());
-        List<Like> likes = getLikes(postId);
-        List<Tag> tags = getTags(postId);
-        long authUserId = getAuthUser(jwtToken).getId();
-        List<PostComment> postComments = getPostComments(postId);
-        List<CommentRs> comments = getComments(postComments, jwtToken);
-        PostRs postRs = postMapper.toRs(post, author, likes, tags, authUserId, comments);
+        Details details = getDetails(author.getId(), postId, jwtToken);
+        PostRs postRs = postMapper.toRs(post, details);
         return new CommonRs<>(postRs, (int) System.currentTimeMillis());
     }
 
     private Person getAuthor(long id) {
-        return personRepository.getPersonById(id);
+        return personRepository.findByEmail(id);
     }
     private List<Like> getLikes(int id) {
         return likeRepository.getLikesByEntityId(id);
@@ -120,7 +120,8 @@ public class PostService {
         List<Tag> tags = getTags((int) newPost.getId());
         List<PostComment> postComments = getPostComments((int) newPost.getId());
         List<CommentRs> comments = getComments(postComments, jwtToken);
-        PostRs postRs = postMapper.toRs(newPost, author, likes, tags, getAuthUser(jwtToken).getId(), comments);
+        Details details = getDetails(author.getId(), (int) newPost.getId(), jwtToken);
+        PostRs postRs = postMapper.toRs(newPost, details);
         return new CommonRs<>(postRs, (int) System.currentTimeMillis());
     }
 
@@ -129,11 +130,8 @@ public class PostService {
         postFromDB.setDeleted(true);
         postRepository.updateById(id, postFromDB);
         Person author = getAuthor(postFromDB.getId());
-        List<Like> likes = getLikes((int) postFromDB.getId());
-        List<Tag> tags = getTags((int) postFromDB.getId());
-        List<PostComment> postComments = getPostComments((int) postFromDB.getId());
-        List<CommentRs> comments = getComments(postComments, jwtToken);
-        PostRs postRs = postMapper.toRs(postFromDB, author, likes, tags, getAuthUser(jwtToken).getId(), comments);
+        Details details = getDetails(author.getId(), (int) postFromDB.getId(), jwtToken);
+        PostRs postRs = postMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs,(int) System.currentTimeMillis());
     }
 
@@ -141,11 +139,17 @@ public class PostService {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setDeleted(false);
         Person author = getAuthor(postFromDB.getId());
-        List<Like> likes = getLikes((int) postFromDB.getId());
-        List<Tag> tags = getTags((int) postFromDB.getId());
-        List<PostComment> postComments = getPostComments((int) postFromDB.getId());
-        List<CommentRs> comments = getComments(postComments, jwtToken);
-        PostRs postRs = postMapper.toRs(postFromDB, author, likes, tags, getAuthUser(jwtToken).getId(), comments);
+        Details details = getDetails(author.getId(), (int) postFromDB.getId(), jwtToken);
+        PostRs postRs = postMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs,(int) System.currentTimeMillis());
+    }
+    @Data
+    @AllArgsConstructor
+    public class Details {
+        Person author;
+        List<Like> likes;
+        List<Tag> tags;
+        Long authUserId;
+        List<CommentRs> comments;
     }
 }
