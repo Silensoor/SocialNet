@@ -12,10 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.dto.*;
 import socialnet.dto.LoginRs;
+import socialnet.exception.EmptyEmailException;
 import socialnet.model.Persons;
 import socialnet.security.jwt.JwtUtils;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -31,24 +31,19 @@ public class LoginServiceImpl implements LoginService {
 
     public Object getLogin(LoginRq loginRq) {
 
-
-
         Persons persons;
         if ((persons = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
             jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
             authenticated(loginRq);
+
             return setLoginRs(jwt, persons); //заполнить поля
         } else {
-            ErrorRs errorRs = new ErrorRs();
-            errorRs.setError("400");
-            errorRs.setErrorDescription("Field 'email' is empty");
-            errorRs.setTimestamp(String.valueOf(new Timestamp(System.currentTimeMillis())));
-
-            return errorRs;
+            throw new EmptyEmailException("invalid username or password");
         }
     }
 
     public Object getMe(String authorization) {
+
         String email = jwtUtils.getUserEmail(authorization);
         Persons persons = jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
                 new BeanPropertyRowMapper<>(Persons.class)).stream().findAny().orElse(null);
@@ -131,9 +126,9 @@ public class LoginServiceImpl implements LoginService {
     public LoginRs setLoginRs(String jwt, Persons persons) {
         WeatherRs loginWeather = new WeatherRs();
         CurrencyRs currencyRs = new CurrencyRs();
-        PersonRs personRs1 = setPersonRs(currencyRs, loginWeather, jwt, persons);
+        PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, persons);
         LoginRs loginRs = new LoginRs();
-        loginRs.setData(personRs1);
+        loginRs.setData(personRs);
         loginRs.setItemPerPage(0); //?
         loginRs.setOffset(0); //?
         loginRs.setPerPage(0); //?
@@ -146,12 +141,14 @@ public class LoginServiceImpl implements LoginService {
 
         Persons persons = jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
                 new BeanPropertyRowMapper<>(Persons.class)).stream().findAny().orElse(null);
+
         if (persons != null && new BCryptPasswordEncoder().matches(password, persons.getPassword())) {
             log.info(persons.getFirst_name() + " авторизован");
             return persons;
         }
         return null;
     }
+
     private void authenticated(LoginRq loginRq){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
