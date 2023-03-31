@@ -37,8 +37,8 @@ public class JwtUtils {
         try {
             Claims body = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody();
             Date expiration = body.getExpiration();
-            Date issuedAt = body.getIssuedAt();
-            if(expiration.after(issuedAt)){
+            Date now = new Date();
+            if(expiration.after(now)){
                 return true;
             }
         } catch (SignatureException e) {
