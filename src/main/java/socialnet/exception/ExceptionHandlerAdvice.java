@@ -19,4 +19,14 @@ public class ExceptionHandlerAdvice {
 
         return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(EmptyEmailException.class)
+    public ResponseEntity<ErrorRs> handEmptyEmailException(EmptyEmailException e) {
+        ErrorRs errorRs = new ErrorRs();
+        errorRs.setError("EmptyEmailException");
+        errorRs.setErrorDescription(e.getLocalizedMessage());
+        errorRs.setTimestamp(new Timestamp(System.currentTimeMillis()));
+
+        return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
+    }
 }
