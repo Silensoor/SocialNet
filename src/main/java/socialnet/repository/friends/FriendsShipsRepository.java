@@ -59,7 +59,7 @@ public class FriendsShipsRepository {
                 new Object[] { id }, friendshipsRowMapper);
     }
     public void addFriend(Long id, Long idFriend, String status) {
-        this.jdbcTemplate.update("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
+        this.jdbcTemplate.update("INSERT INTO friendships (id, sent_time, dst_person_id, src_person_id, status_name)" +
                         "VALUES (NOW(), ?, ?, ?)", idFriend, id, status);
     }
 

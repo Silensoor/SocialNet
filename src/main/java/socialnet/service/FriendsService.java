@@ -2,24 +2,18 @@ package socialnet.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.api.friends.*;
 import socialnet.dto.ComplexRs;
 import socialnet.dto.PersonRs;
 import socialnet.model.Friendships;
 import socialnet.model.Person;
-import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.friends.FriendsShipsRepository;
 import socialnet.repository.friends.PersonRepositoryFriends;
 import socialnet.security.jwt.JwtUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import static socialnet.model.enums.FriendshipStatusTypes.BLOCKED;
 @Service
 public class FriendsService {
 
@@ -37,8 +31,7 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> getFriendsUsing(String authorization, Integer offset, Integer perPage) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        String email = "ipeggs0@amazon.co.uk";
+        String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail.isEmpty()){
             return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
@@ -50,8 +43,14 @@ public class FriendsService {
             } else {
                 List<Long> friendsId = new ArrayList<>();
                 allFriendships.forEach((Friendships friendship) -> {
-                    if (!friendsId.contains(friendship.getSrcPersonId())){friendsId.add(friendship.getSrcPersonId());}
-                    if (!friendsId.contains(friendship.getDstPersonId())){friendsId.add(friendship.getDstPersonId());}
+                    if (!friendsId.contains(friendship.getSrcPersonId()) &&
+                            !friendship.getSrcPersonId().equals(personsEmail.get(0).getId())){
+                        friendsId.add(friendship.getSrcPersonId());
+                    }
+                    if (!friendsId.contains(friendship.getDstPersonId())&&
+                            !friendship.getDstPersonId().equals(personsEmail.get(0).getId())){
+                        friendsId.add(friendship.getDstPersonId());
+                    }
                 });
                 String friendsIdString = friendsIdStringMethod(friendsId);
                 List<Person> personList = personRepository.findPersonFriendsAll(friendsIdString);
@@ -125,8 +124,7 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> userBlocksUserUsingPOST(String authorization, Integer id) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        String email = "ipeggs0@amazon.co.uk";
+        String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail.isEmpty()){
             return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
@@ -161,8 +159,7 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> getOutgoingRequestsUsingGET(String authorization, Integer offset, Integer perPage) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        String email = "ipeggs0@amazon.co.uk";
+        String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail.isEmpty()){
             return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
@@ -186,10 +183,10 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> getRecommendedFriendsUsingGET(String authorization) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        //String email = jwtUtils.getUserEmail(authorization);
         String email = "ipeggs0@amazon.co.uk";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
-        if (personsEmail.isEmpty()){
+        if (personsEmail.isEmpty()) {
             return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
                     HttpStatus.BAD_REQUEST);
         } else {
@@ -201,42 +198,59 @@ public class FriendsService {
                 idNewSrcPersonId = allFriendships.get(i).getSrcPersonId();
                 idNewDstPersonId = allFriendships.get(i).getDstPersonId();
                 if (!friendsId.contains(idNewSrcPersonId) && !idNewSrcPersonId.equals(personsEmail.get(0).getId())) {
-                        friendsId.add(idNewSrcPersonId);
+                    friendsId.add(idNewSrcPersonId);
                 }
-                if (!friendsId.contains(idNewDstPersonId) && !idNewSrcPersonId.equals(personsEmail.get(0).getId())) {
+                if (!friendsId.contains(idNewDstPersonId) && !idNewDstPersonId.equals(personsEmail.get(0).getId())) {
                     friendsId.add(idNewDstPersonId);
                 }
             }
-            String friendsIdString = friendsIdStringMethod(friendsId);
-            List<Person> personList = personRepository.findPersonFriendsAll(friendsIdString);
-            if (personList.size() < 10){
-                final String city = personsEmail.get(0).getCity();
-                personList.addAll(personRepository.findPersonsCity(city));
-                List<Person> personListAll = new ArrayList<>();
-                if (personList.size() < 10){
-                    personListAll = personRepository.findPersonAll();
-                }
-                for (int i = 0; i < 10; i++){
-                    personList.add(personListAll.get(i));
-                    if (personList.size() >= 10){ break;}
-                }
+            List<Friendships> personList = new ArrayList<>();
+            for (Long idFriend : friendsId){
+                personList.addAll(friendsShipsRepository.findAllFriendships(idFriend));
+            }
+            HashSet<Long> friendsFriendsId = new HashSet<>();
+            for (Friendships friendships : personList){
+                friendsFriendsId.add(friendships.getSrcPersonId());
+                friendsFriendsId.add(friendships.getDstPersonId());
+            }
+            List<Long> friendsFriendsId2 = new ArrayList<>(friendsFriendsId);
+            String searchIdFriendFriends = friendsIdStringMethod(friendsFriendsId2);
+            List<Person> friendFriendsNew = personRepository.findPersonFriendsAll(searchIdFriendFriends);
+
+            if (friendFriendsNew.size() < 10){
+                friendFriendsNew.addAll(addRecommendedFriendsCityAndAll(friendFriendsNew, personsEmail));
             }
             CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
-            List<PersonRs> personRsList = createPersonRsList(personList);
+            List<PersonRs> personRsList = createPersonRsList(friendFriendsNew);
             commonRsListPersonRsFilling.setData(personRsList);
             Date date = new Date();
             commonRsListPersonRsFilling.setTimestamp(date.getTime());
-            commonRsListPersonRsFilling.setTotal((long) personList.size());
-            commonRsListPersonRsFilling.setPerPage(personList.size());
-            commonRsListPersonRsFilling.setItemPerPage(personList.size());
+            commonRsListPersonRsFilling.setTotal((long) personRsList.size());
+            commonRsListPersonRsFilling.setPerPage(personRsList.size());
+            commonRsListPersonRsFilling.setItemPerPage(personRsList.size());
             return new ResponseEntity<>(commonRsListPersonRsFilling, HttpStatus.OK);
         }
     }
 
+    public List<Person> addRecommendedFriendsCityAndAll(List<Person> friendFriendsNew, List<Person> personsEmail){
+        final String city = personsEmail.get(0).getCity();
+        friendFriendsNew.addAll(personRepository.findPersonsCity(city));
+//                List<Person> personListAll = new ArrayList<>();
+//                if (personList.size() < 10) {
+//                    personListAll = personRepository.findPersonAll();
+//                }
+//                for (int i = 0; i < 10; i++) {
+//                    personList.add(personListAll.get(i));
+//                    if (personList.size() >= 10) {
+//                        break;
+//                    }
+//                }
+
+        return friendFriendsNew;
+    }
 
     public ResponseEntity<?> getPotentialFriendsUsingGET(String authorization, Integer offset, Integer perPage) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        String email = "ipeggs0@amazon.co.uk";
+        String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail.isEmpty()){
             return new ResponseEntity<>(errorRs("EmptyEmailException", "Field 'email' is empty"),
@@ -260,9 +274,9 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> addFriendUsingPOST(String authorization, Integer id) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        final String password = new BCryptPasswordEncoder().encode("password");
+        //String email = jwtUtils.getUserEmail(authorization);
         String email = "ipeggs0@amazon.co.uk";
+        //final String password = new BCryptPasswordEncoder().encode("password");
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
         if (personsEmail.isEmpty()){
@@ -299,7 +313,7 @@ public class FriendsService {
     }
 
     public ResponseEntity<?> deleteSentFriendshipRequestUsingDELETE(String authorization, Integer id) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
+        //String email = jwtUtils.getUserEmail(authorization);
         String email = "ipeggs0@amazon.co.uk";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
@@ -323,8 +337,7 @@ public class FriendsService {
 
 
     public ResponseEntity<?> sendFriendshipRequestUsingPOST(String authorization, Integer id) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        String email = "ipeggs0@amazon.co.uk";
+        String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
         if (personsEmail.isEmpty()){
@@ -347,8 +360,7 @@ public class FriendsService {
 
 
     public ResponseEntity<?> deleteFriendUsingDELETE(String authorization, Integer id) {
-        //String email = jwtUtils.getUserNameFromJwtToken(authorization);
-        String email = "ipeggs0@amazon.co.uk";
+        String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         Long friendships = 0L;
         if (personsEmail.isEmpty()){
