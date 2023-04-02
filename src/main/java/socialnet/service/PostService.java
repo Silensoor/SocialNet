@@ -11,7 +11,6 @@ import socialnet.mapper.PostMapper;
 import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +29,8 @@ public class PostService {
     private final PostCommentRepository postCommentRepository;
     private final PostMapper postMapper;
     private final PostCommentMapper postCommentMapper;
+    private final TagService tagService;
+
 
     public Pair<Integer, List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -109,6 +110,7 @@ public class PostService {
         personRepository.findById(id);
         Post post = postMapper.toModel(postRq, publishDate, id);
         int postId = postRepository.save(post);
+        tagService.createTags(postRq.getTags(), postId);
         Person author = personRepository.findById(id);
         Details details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postMapper.toRs(post,details);

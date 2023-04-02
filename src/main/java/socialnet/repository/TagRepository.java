@@ -2,10 +2,13 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Tag;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Repository
@@ -23,5 +26,14 @@ public class TagRepository {
     }
     public List<Tag> getTagsByPostId(long postId) {
         return jdbcTemplate.queryForList("SELECT * FROM post2tag WHERE post_id = " + postId, Tag.class);
+    }
+
+    public long save(Tag tag) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
+        simpleJdbcInsert.withTableName("tags").usingGeneratedKeyColumns("id");
+        Map<String, Object> values = new HashMap<>();
+        values.put("tag", tag.getTag());
+
+        return simpleJdbcInsert.executeAndReturnKey(values).longValue();
     }
 }
