@@ -4,7 +4,7 @@ import com.github.cage.Cage;
 import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import socialnet.api.auth.CaptchaRs;
+import socialnet.api.response.CaptchaRs;
 import socialnet.model.Captcha;
 import socialnet.repository.CaptchaRepository;
 

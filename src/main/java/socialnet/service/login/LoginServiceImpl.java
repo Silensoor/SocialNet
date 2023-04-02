@@ -2,20 +2,20 @@ package socialnet.service.login;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import socialnet.dto.*;
-import socialnet.dto.LoginRs;
+import socialnet.api.request.LoginRq;
+import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
-import socialnet.model.Persons;
+import socialnet.model.Person;
+import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -23,20 +23,21 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginServiceImpl implements LoginService {
-    private final JdbcTemplate jdbcTemplate;
     private final JwtUtils jwtUtils;
     private String jwt;
     private final AuthenticationManager authenticationManager;
+    private final PersonRepository personRepository;
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
     public Object getLogin(LoginRq loginRq) {
 
-        Persons persons;
-        if ((persons = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
+        Person person;
+        if ((person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
             jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
             authenticated(loginRq);
 
-            return setLoginRs(jwt, persons); //заполнить поля
+            return setLoginRs(jwt, person);
         } else {
             throw new EmptyEmailException("invalid username or password");
         }
@@ -45,9 +46,8 @@ public class LoginServiceImpl implements LoginService {
     public Object getMe(String authorization) {
 
         String email = jwtUtils.getUserEmail(authorization);
-        Persons persons = jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
-                new BeanPropertyRowMapper<>(Persons.class)).stream().findAny().orElse(null);
-        return setLoginRs(jwt, persons);
+        Person person = personRepository.findByEmail(email);
+        return setLoginRs(jwt, person);
     }
 
     public Object getLogout(String authorization) {
@@ -55,101 +55,99 @@ public class LoginServiceImpl implements LoginService {
         return setCommonRsComplexRs(setComplexRs());
     }
 
-    public CommonRsComplexRs setCommonRsComplexRs(ComplexRs setComplexRs) {
-        CommonRsComplexRs commonRsComplexRs = new CommonRsComplexRs();
-        commonRsComplexRs.setData(setComplexRs);
-        commonRsComplexRs.setOffset(0);
-        commonRsComplexRs.setTimestamp(0);
-        commonRsComplexRs.setTotal(0);
-        commonRsComplexRs.setItemPerPage(0);
-        commonRsComplexRs.setPerPage(0);
-        return commonRsComplexRs;
+    public CommonRs<ComplexRs> setCommonRsComplexRs(ComplexRs complexRs) {
+        CommonRs<ComplexRs> commonRs = new CommonRs<>();
+        commonRs.setData(complexRs);
+        commonRs.setOffset(0);
+        commonRs.setTimestamp(0L);
+        commonRs.setTotal(0L);
+        commonRs.setItemPerPage(0);
+        commonRs.setPerPage(0);
+        return commonRs;
     }
 
     public ComplexRs setComplexRs() {
-        ComplexRs complexRs = new ComplexRs();
 
-        complexRs.setId(0);
-        complexRs.setCount(0);
-        complexRs.setMessage("");
-        complexRs.setMessageId(0);
-
-        return complexRs;
+        return ComplexRs.builder()
+                .id(0)
+                .count(0L)
+                .message("")
+                .messageId(0L)
+                .build();
     }
 
-    public WeatherRs setLoginWeather(WeatherRs weatherRs, Persons persons) {
+    public WeatherRs setLoginWeather(WeatherRs weatherRs, Person person) {
 
-        weatherRs.setCity(persons.getCity());
-        weatherRs.setTemp(""); //?
-        weatherRs.setDate(new Date()); //?
-        weatherRs.setClouds(""); //?
+        weatherRs.setCity(person.getCity());
+        weatherRs.setTemp("");
+        weatherRs.setDate(DATE_FORMATTER.format(new Date()));
+        weatherRs.setClouds("");
 
         return weatherRs;
     }
 
     public CurrencyRs setCurrencyRs(CurrencyRs currencyRs) {
 
-        currencyRs.setEuro(""); //?
-        currencyRs.setUsd(""); //?
+        currencyRs.setEuro("");
+        currencyRs.setUsd("");
 
         return currencyRs;
     }
 
-    public PersonRs setPersonRs(CurrencyRs currencyRs, WeatherRs weatherRs, String jwt, Persons persons) {
+    public PersonRs setPersonRs(CurrencyRs currencyRs, WeatherRs weatherRs, String jwt, Person person) {
         PersonRs personRs = new PersonRs();
-        weatherRs = setLoginWeather(weatherRs, persons);
+        weatherRs = setLoginWeather(weatherRs, person);
         currencyRs = setCurrencyRs(currencyRs);
-        personRs.setAbout(persons.getAbout());
-        personRs.setCity(persons.getCity());
-        personRs.setCountry(persons.getCountry());
-        personRs.setBirthDate(persons.getBirth_date());
+        personRs.setAbout(person.getAbout());
+        personRs.setCity(person.getCity());
+        personRs.setCountry(person.getCountry());
+        personRs.setBirthDate(person.getBirthDate().toString());
         personRs.setCurrency(currencyRs);
         personRs.setWeather(weatherRs);
-        personRs.setEmail(persons.getEmail());
-        personRs.setFirstName(persons.getFirst_name());
-        personRs.setFriendStatus(""); //???????????????????????
-        personRs.setId(persons.getId());
-        personRs.setIsBlocked(persons.getIs_blocked());
-        personRs.setIsBlockedByCurrentUser(false); //????????????????????
-        personRs.setLastName(persons.getLast_name());
-        personRs.setLastOnlineTime(persons.getLast_online_time());
-        personRs.setMessagesPermission(persons.getMessage_permissions());
-        personRs.setOnline(true); //???????????????
-        personRs.setPhone(persons.getPhone());
-        personRs.setPhoto(persons.getPhoto());
-        personRs.setRegDate(persons.getReg_date());
+        personRs.setEmail(person.getEmail());
+        personRs.setFirstName(person.getFirstName());
+        personRs.setFriendStatus("");
+        personRs.setId(person.getId());
+        personRs.setIsBlocked(person.getIsBlocked());
+        personRs.setIsBlockedByCurrentUser(false);
+        personRs.setLastName(person.getLastName());
+        personRs.setLastOnlineTime(person.getLastOnlineTime().toString());
+        personRs.setMessagesPermission(person.getMessagePermissions());
+        personRs.setOnline(true);
+        personRs.setPhone(person.getPhone());
+        personRs.setPhoto(person.getPhoto());
+        personRs.setRegDate(person.getRegDate().toString());
         personRs.setToken(jwt);
-        personRs.setUserDeleted(persons.getIs_deleted());
+        personRs.setUserDeleted(person.getIsDeleted());
         return personRs;
     }
 
-    public LoginRs setLoginRs(String jwt, Persons persons) {
+    public CommonRs<PersonRs> setLoginRs(String jwt, Person person) {
         WeatherRs loginWeather = new WeatherRs();
         CurrencyRs currencyRs = new CurrencyRs();
-        PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, persons);
-        LoginRs loginRs = new LoginRs();
-        loginRs.setData(personRs);
-        loginRs.setItemPerPage(0); //?
-        loginRs.setOffset(0); //?
-        loginRs.setPerPage(0); //?
-        loginRs.setTimestamp(System.currentTimeMillis()); //?
-        loginRs.setTotal(0); //?
-        return loginRs;
+        PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, person);
+        CommonRs<PersonRs> commonRs = new CommonRs<>();
+        commonRs.setData(personRs);
+        commonRs.setItemPerPage(0);
+        commonRs.setOffset(0);
+        commonRs.setPerPage(0);
+        commonRs.setTimestamp(System.currentTimeMillis());
+        commonRs.setTotal(0L);
+        return commonRs;
     }
 
-    public Persons checkLoginAndPassword(String email, String password) {
+    public Person checkLoginAndPassword(String email, String password) {
 
-        Persons persons = jdbcTemplate.query("SELECT * FROM persons where email=?", new Object[]{email},
-                new BeanPropertyRowMapper<>(Persons.class)).stream().findAny().orElse(null);
+        Person person = personRepository.findByEmail(email);
 
-        if (persons != null && new BCryptPasswordEncoder().matches(password, persons.getPassword())) {
-            log.info(persons.getFirst_name() + " авторизован");
-            return persons;
+        if (person != null && new BCryptPasswordEncoder().matches(password, person.getPassword())) {
+            log.info(person.getFirstName() + " авторизован");
+            return person;
         }
         return null;
     }
 
-    private void authenticated(LoginRq loginRq){
+    private void authenticated(LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);

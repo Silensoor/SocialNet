@@ -7,8 +7,12 @@ import java.sql.Timestamp;
 @Data
 public class Dialog {
     private Long id;
-    private Long firstPerson;
-    private Long secondPerson;
+
+    private Long firstPersonId;
+
+    private Long secondPersonId;
+
     private Timestamp lastActiveTime;
+
     private Long lastMessageId;
 }

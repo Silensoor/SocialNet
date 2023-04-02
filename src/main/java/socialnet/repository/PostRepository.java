@@ -2,6 +2,7 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Post;
 
@@ -14,19 +15,20 @@ public class PostRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Post> findAll() {
-        List<Post> posts = jdbcTemplate.query("SELECT * FROM posts", (rs, rowNum) -> {
-            Post post = new Post();
-            post.setId(rs.getInt("id"));
-            post.setIsBlocked(rs.getBoolean("is_blocked"));
-            post.setIsDeleted(rs.getBoolean("is_deleted"));
-            post.setPostText(rs.getString("post_text"));
-            post.setTime(rs.getTimestamp("time"));
-            post.setTimeDelete(rs.getTimestamp("time_delete"));
-            post.setTitle(rs.getString("title"));
-            post.setAuthorId(rs.getInt("author_id"));
-            return post;
-        });
 
-        return posts;
+        return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
     }
+
+    private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
+        Post post = new Post();
+        post.setId(resultSet.getLong("id"));
+        post.setIsBlocked(resultSet.getBoolean("is_blocked"));
+        post.setIsDeleted(resultSet.getBoolean("is_deleted"));
+        post.setPostText(resultSet.getString("post_text"));
+        post.setTime(resultSet.getTimestamp("time"));
+        post.setTimeDelete(resultSet.getTimestamp("time_delete"));
+        post.setTitle(resultSet.getString("title"));
+        post.setAuthorId(resultSet.getLong("author_id"));
+        return post;
+    };
 }
