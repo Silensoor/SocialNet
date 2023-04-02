@@ -3,6 +3,7 @@ package socialnet.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import socialnet.model.Tag;
 
 import java.util.List;
 
@@ -19,5 +20,8 @@ public class TagRepository {
         });
 
         return result;
+    }
+    public List<Tag> getTagsByPostId(long postId) {
+        return jdbcTemplate.queryForList("SELECT * FROM post2tag WHERE post_id = " + postId, Tag.class);
     }
 }
