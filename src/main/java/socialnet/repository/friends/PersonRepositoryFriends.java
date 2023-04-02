@@ -18,8 +18,8 @@ public class PersonRepositoryFriends {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Person> findPersonAll() {
-        return this.jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
+    public List<Person> findPersonAll(int limit) {
+        return this.jdbcTemplate.query("SELECT * FROM persons LIMIT ?", new Object[] { limit }, personRowMapper);
     }
 
     public List<Person> findPersonFriendsAll(String friendsId) {

@@ -8,6 +8,8 @@ import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -82,6 +84,14 @@ public class FriendsShipsRepository {
     }
 
     public void deleteFriendUsing(Integer id) {
-        this.jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
+        this.jdbcTemplate.update(
+                "DELETE FROM friendships WHERE id = ?", id);
     }
+
+//    public List<Friendships> findAllFriendsFriendships(String idFriends) {
+//        System.out.println("SELECT * FROM friendships WHERE status_name = 'FRIEND' " + idFriends);
+//        return this.jdbcTemplate.query("SELECT * FROM friendships" +
+//                        " WHERE status_name = 'FRIEND' ?",
+//                new Object[] { idFriends }, friendshipsRowMapper);
+//    }
 }

@@ -16,6 +16,7 @@ import socialnet.exception.EmptyEmailException;
 import socialnet.model.Persons;
 import socialnet.security.jwt.JwtUtils;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 
@@ -59,7 +60,9 @@ public class LoginServiceImpl implements LoginService {
         CommonRsComplexRs commonRsComplexRs = new CommonRsComplexRs();
         commonRsComplexRs.setData(setComplexRs);
         commonRsComplexRs.setOffset(0);
-        commonRsComplexRs.setTimestamp(0);
+        //commonRsComplexRs.setTimestamp(0);
+        Date date = new Date();
+        commonRsComplexRs.setTimestamp((int) date.getTime());
         commonRsComplexRs.setTotal(0);
         commonRsComplexRs.setItemPerPage(0);
         commonRsComplexRs.setPerPage(0);
