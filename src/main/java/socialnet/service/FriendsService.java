@@ -242,25 +242,25 @@ public class FriendsService {
         for (int i = 0; i < friendFriendsNewAddCity.size(); i++) {
             flag = false;
             for (int a = 0; a < friendFriendsNew.size(); a++){
-                final long id = friendFriendsNewAddCity.get(i).getId();
-                if (friendFriendsNewAddCity.get(i).getId() == friendFriendsNew.get(a)) {
-                    flag = true;
-                }
-                if (personList.get(i).getDstPersonId().equals(friendsId.get(a))) {
-                    flagDst = true;
-                }
-                if (personList.get(i).getSrcPersonId().equals(personsEmail.get(0).getId())){
-                    flagSrc = true;
-                }
-                if (personList.get(i).getDstPersonId().equals(personsEmail.get(0).getId())){
-                    flagDst = true;
-                }
-            }
-            if (!flagSrc){
-                friendsFriendsId.add(personList.get(i).getSrcPersonId());
-            }
-            if (!flagDst){
-                friendsFriendsId.add(personList.get(i).getDstPersonId());
+//                final long id = friendFriendsNewAddCity.get(i).getId();
+//                if (friendFriendsNewAddCity.get(i).getId() == friendFriendsNew.get(a)) {
+//                    flag = true;
+//                }
+//                if (personList.get(i).getDstPersonId().equals(friendsId.get(a))) {
+//                    flagDst = true;
+//                }
+//                if (personList.get(i).getSrcPersonId().equals(personsEmail.get(0).getId())){
+//                    flagSrc = true;
+//                }
+//                if (personList.get(i).getDstPersonId().equals(personsEmail.get(0).getId())){
+//                    flagDst = true;
+//                }
+//            }
+//            if (!flagSrc){
+//                friendsFriendsId.add(personList.get(i).getSrcPersonId());
+//            }
+//            if (!flagDst){
+//                friendsFriendsId.add(personList.get(i).getDstPersonId());
             }
         }
         friendFriendsNew.addAll(friendFriendsNewAddCity);
