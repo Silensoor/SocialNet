@@ -11,6 +11,8 @@ import socialnet.mapper.PostMapper;
 import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
+
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -178,6 +180,43 @@ public class PostService {
         PostRs postRs = postMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs,(int) System.currentTimeMillis());
     }
+
+    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom, Integer dateTo, int offset, int perPage, String[] tags, String text) {
+        List<PostRs> postRsList = getFeeds(jwtToken, offset, perPage).getData();
+        if (author != null) {
+            for (PostRs postRs : postRsList) {
+                String name = postRs.getAuthor().getFirstName() + " " + postRs.getAuthor().getLastName();
+                if (name.contains(author)) continue;
+                postRsList.remove(postRs);
+            }
+        }
+        if (dateFrom != null) {
+            for (PostRs postRs : postRsList) {
+                if (Timestamp.valueOf(postRs.getTime()).after(new Timestamp(dateFrom))) continue;
+                postRsList.remove(postRs);
+            }
+        }
+        if (dateFrom != null) {
+            for (PostRs postRs : postRsList) {
+                if (Timestamp.valueOf(postRs.getTime()).before(new Timestamp(dateTo))) continue;
+                postRsList.remove(postRs);
+            }
+        }
+        if (tags != null) {
+            for (PostRs postRs : postRsList) {
+                if (postRs.getTags().containsAll(Arrays.stream(tags).collect(Collectors.toList()))) continue;
+                postRsList.remove(postRs);
+            }
+        }
+        if (text != null) {
+            for (PostRs postRs : postRsList) {
+                if (postRs.getPostText().contains(text)) continue;
+                postRsList.remove(postRs);
+            }
+        }
+        return new CommonRs<>(postRsList, perPage, offset, perPage,(int) System.currentTimeMillis(), postRsList.size());
+    }
+
     @Data
     @AllArgsConstructor
     public class Details {

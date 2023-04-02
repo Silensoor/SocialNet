@@ -58,4 +58,17 @@ public class PostsController {
         CommonRs<PostRs> commonRs = postsService.recoverPost(id, jwtToken);
         return new ResponseEntity<>(commonRs, HttpStatus.OK);
     }
+    @GetMapping("/api/v1/post")
+    public ResponseEntity<CommonRs<List<PostRs>>> getPostsByQuery(
+            @RequestHeader(name = "authorization") String jwtToken,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false, name = "date_from")Integer dateFrom,
+            @RequestParam(required = false, name = "date_to") Integer dateTo,
+            @RequestParam(required = false) int offset,
+            @RequestParam(required = false) int perPage,
+            @RequestParam(required = false) String[] tags,
+            @RequestParam(required = false) String text) {
+        CommonRs<List<PostRs>> commonRs =  postsService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
+        return null;
+    }
 }
