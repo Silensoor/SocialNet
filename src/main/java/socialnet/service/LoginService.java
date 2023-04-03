@@ -52,10 +52,10 @@ public class LoginService {
 
     public Object getLogout(String authorization) {
 
-        return setCommonRsComplexRs(setComplexRs());
+        return setCommonRs(setComplexRs());
     }
 
-    public CommonRs<ComplexRs> setCommonRsComplexRs(ComplexRs complexRs) {
+    public CommonRs<ComplexRs> setCommonRs(ComplexRs complexRs) {
         CommonRs<ComplexRs> commonRs = new CommonRs<>();
         commonRs.setData(complexRs);
         commonRs.setOffset(0);
@@ -128,11 +128,7 @@ public class LoginService {
         PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, person);
         CommonRs<PersonRs> commonRs = new CommonRs<>();
         commonRs.setData(personRs);
-        commonRs.setItemPerPage(0);
-        commonRs.setOffset(0);
-        commonRs.setPerPage(0);
         commonRs.setTimestamp(System.currentTimeMillis());
-        commonRs.setTotal(0L);
         return commonRs;
     }
 
