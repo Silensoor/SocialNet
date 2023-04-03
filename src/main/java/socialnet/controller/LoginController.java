@@ -3,14 +3,14 @@ package socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LoginRq;
-import socialnet.service.login.LoginServiceImpl;
+import socialnet.service.LoginService;
 
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final LoginServiceImpl loginServer;
+    private final LoginService loginServer;
 
     @PostMapping("/auth/login")
     public Object login(@RequestBody LoginRq loginRq) {
