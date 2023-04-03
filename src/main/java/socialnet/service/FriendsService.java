@@ -3,10 +3,11 @@ package socialnet.service;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import socialnet.api.friends.*;
+import socialnet.api.response.CommonRsListPersonRs;
+import socialnet.api.response.PersonRs;
 import socialnet.dto.CommonRsComplexRs;
 import socialnet.dto.ComplexRs;
-import socialnet.dto.PersonRs;
+
 import socialnet.exception.EmptyEmailException;
 import socialnet.model.Friendships;
 import socialnet.model.Person;

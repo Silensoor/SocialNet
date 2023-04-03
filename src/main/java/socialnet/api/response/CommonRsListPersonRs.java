@@ -1,9 +1,9 @@
-package socialnet.api.friends;
+package socialnet.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import socialnet.dto.PersonRs;
+import socialnet.api.response.PersonRs;
 
 import java.util.List;
 @Data
