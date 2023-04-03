@@ -11,7 +11,6 @@ import socialnet.mapper.PostMapper;
 import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
-
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class PostService {
-
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final PersonRepository personRepository;
@@ -32,7 +30,6 @@ public class PostService {
     private final PostMapper postMapper;
     private final PostCommentMapper postCommentMapper;
     private final TagService tagService;
-
 
     public Pair<Integer, List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
