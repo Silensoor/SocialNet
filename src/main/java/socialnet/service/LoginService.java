@@ -1,4 +1,4 @@
-package socialnet.service.login;
+package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class LoginServiceImpl implements LoginService {
+public class LoginService {
     private final JwtUtils jwtUtils;
     private String jwt;
     private final AuthenticationManager authenticationManager;
