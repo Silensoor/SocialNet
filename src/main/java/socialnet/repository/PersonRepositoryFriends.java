@@ -1,40 +1,53 @@
-package socialnet.repository.friends;
+package socialnet.repository;
 
+import lombok.AllArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Person;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class PersonRepositoryFriends {
 
-    private JdbcTemplate jdbcTemplate;
-
-    public PersonRepositoryFriends(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     public List<Person> findPersonAll(int limit) {
-        return this.jdbcTemplate.query("SELECT * FROM persons LIMIT ?", new Object[] { limit }, personRowMapper);
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons LIMIT ?", new Object[]{limit}, personRowMapper);
+
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
-    public List<Person> findPersonFriendsAll(String friendsId) {
-        return this.jdbcTemplate.query("SELECT * FROM persons WHERE " + friendsId,
-                personRowMapper);
+    public List<Person> findPersonFriendsAll(String sql) {
+        try {
+            return this.jdbcTemplate.query(sql, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Person> findPersonsEmail(String email) {
-        return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?",
-                new Object[] { email }, personRowMapper);
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?",
+                    new Object[]{email}, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Person> findPersonsCity(String city) {
-        return this.jdbcTemplate.query("SELECT * FROM persons WHERE city = ?",
-                new Object[] { city }, personRowMapper);
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons WHERE city = ?",
+                    new Object[]{city}, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {

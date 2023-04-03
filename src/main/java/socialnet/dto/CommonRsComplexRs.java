@@ -1,10 +1,12 @@
 package socialnet.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.sql.Timestamp;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommonRsComplexRs {
 
     private ComplexRs data;

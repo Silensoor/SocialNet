@@ -37,8 +37,8 @@ public class FriendsController {
     @GetMapping("/friends/outgoing_requests")
     @ResponseBody
     public CommonRsListPersonRs getOutgoingRequestsUsingGET(@RequestHeader String authorization,
-                                                @RequestParam Optional<Integer> offset,
-                                                @RequestParam Optional<Integer> perPage) {
+                                                            @RequestParam Optional<Integer> offset,
+                                                            @RequestParam Optional<Integer> perPage) {
 
         return friendsService.getOutgoingRequestsUsingGET(authorization,
                 offset.orElse(0),
@@ -74,7 +74,7 @@ public class FriendsController {
     @DeleteMapping("/friends/request/{id}")
     @ResponseBody
     public CommonRsComplexRs deleteSentFriendshipRequestUsingDELETE(@RequestHeader String authorization,
-                                                                    @RequestParam Integer id) {
+                                                                    @PathVariable(value = "id") Integer id) {
 
         return friendsService.deleteSentFriendshipRequestUsingDELETE(authorization, id);
     }
@@ -82,7 +82,7 @@ public class FriendsController {
     @PostMapping("/friends/{id}")
     @ResponseBody
     public CommonRsComplexRs sendFriendshipRequestUsingPOST(@RequestHeader String authorization,
-                                                            @RequestParam Integer id) {
+                                                            @PathVariable(value = "id") Integer id) {
 
         return friendsService.sendFriendshipRequestUsingPOST(authorization, id);
     }
@@ -90,7 +90,7 @@ public class FriendsController {
     @DeleteMapping("/friends/{id}")
     @ResponseBody
     public CommonRsComplexRs deleteFriendUsingDELETE(@RequestHeader String authorization,
-                                                     @RequestParam Integer id) {
+                                                     @PathVariable(value = "id") Integer id) {
         return friendsService.deleteFriendUsingDELETE(authorization, id);
     }
 }
