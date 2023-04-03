@@ -1,10 +1,11 @@
 package socialnet.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import socialnet.api.account.RegisterRq;
-import socialnet.api.account.RegisterRs;
+import socialnet.api.request.RegisterRq;
+import socialnet.api.response.ComplexRs;
+import socialnet.api.response.RegisterRs;
 import socialnet.exception.RegisterException;
 import socialnet.model.Captcha;
 import socialnet.model.Person;
@@ -14,7 +15,7 @@ import socialnet.repository.PersonRepository;
 import java.sql.Timestamp;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AccountService {
     private final PersonRepository personRepository;
     private final CaptchaRepository captchaRepository;
@@ -36,9 +37,10 @@ public class AccountService {
         personRepository.save(person);
 
         RegisterRs registerRs = new RegisterRs();
-        registerRs.setMessage("OK");
+        ComplexRs complexRs = ComplexRs.builder().message("OK").build();
+        registerRs.setData(complexRs);
         registerRs.setEmail(regRequest.getEmail());
-        registerRs.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        registerRs.setTimestamp((int) System.currentTimeMillis());
 
         return registerRs;
     }

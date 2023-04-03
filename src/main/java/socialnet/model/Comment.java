@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 @Data
 public class Comment {
-    private Integer id;
+    private Long id;
 
     private String commentText;
 
@@ -16,10 +16,9 @@ public class Comment {
 
     private Timestamp time;
 
-    private Integer parentId;
+    private Long parentId;
 
-    private Integer authorId;
+    private Long authorId;
 
-    private Integer postId;
-
+    private Long postId;
 }

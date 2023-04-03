@@ -1,7 +1,6 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -15,41 +14,26 @@ public class PersonRepository {
 
     public int save(Person person) {
         return jdbcTemplate.update(
-            "insert into persons " +
-            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-            "values (?, ?, ?, ?, ?, ?, ?, ?)",
-            person.getEmail(),
-            person.getFirstName(),
-            person.getLastName(),
-            person.getPassword(),
-            person.getRegDate(),
-            person.getIsApproved(),
-            person.getIsBlocked(),
-            person.getIsDeleted()
+                "INSERT INTO persons " +
+                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                person.getEmail(),
+                person.getFirstName(),
+                person.getLastName(),
+                person.getPassword(),
+                person.getRegDate(),
+                person.getIsApproved(),
+                person.getIsBlocked(),
+                person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
-        try {
-            return jdbcTemplate.queryForObject(
-                "select * from persons where email = ?",
-                personRowMapper,
-                email
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
+        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE email = ?", personRowMapper, email);
     }
 
-    public Person findById(Integer authorId) {
-        try {
-            return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE id = " + authorId,
-                personRowMapper
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
+    public Person findById(Long authorId) {
+        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?", personRowMapper, authorId);
     }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {

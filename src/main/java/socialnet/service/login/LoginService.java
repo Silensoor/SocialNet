@@ -1,6 +1,6 @@
 package socialnet.service.login;
 
-import socialnet.dto.LoginRq;
+import socialnet.api.request.LoginRq;
 
 public interface LoginService {
 
