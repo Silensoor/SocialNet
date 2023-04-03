@@ -2,8 +2,8 @@ package socialnet.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import socialnet.dto.CurrencyRs;
-import socialnet.dto.PersonRs;
+import socialnet.api.response.CurrencyRs;
+import socialnet.api.response.PersonRs;
 import socialnet.model.Person;
 
 

@@ -1,18 +1,17 @@
 package socialnet.service;
 
-import liquibase.repackaged.org.apache.commons.lang3.tuple.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import socialnet.dto.*;
-import socialnet.mapper.PostCommentMapper;
-import socialnet.mapper.PostMapper;
-import socialnet.model.*;
 import socialnet.api.response.*;
+import socialnet.mapper.PostCommentMapper;
+import socialnet.mapper.PostsMapper;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.PostMapper;
+import socialnet.model.*;
+
 import socialnet.model.Comment;
 import socialnet.model.Person;
 import socialnet.model.Post;
@@ -32,11 +31,10 @@ public class PostService {
     private final PersonRepository personRepository;
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
-    private final PersonService authorService;
-    private final CommentService commentService;
     private final JwtUtils jwtUtils;
     private final PostCommentRepository postCommentRepository;
     private final PostMapper postMapper;
+    private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
     private final TagService tagService;
 
@@ -101,13 +99,13 @@ public class PostService {
         List<Post> posts = postRepository.findAll();
         List<PostRs> postRsList = new ArrayList<>();
         for (Post post : posts) {
-            int postId = (int) post.getId();
+            int postId = post.getId().intValue();
             Details details = getDetails(post.getAuthorId(), postId, jwtToken);
-            PostRs postRs = postMapper.toRs(post, details);
+            PostRs postRs = postsMapper.toRs(post, details);
             postRsList.add(postRs);
         }
         postRsList.sort(Comparator.comparing(PostRs::getTime));
-        return new CommonRs<>(postRsList, perPage, offset, perPage, (int) System.currentTimeMillis(), postRsList.size());
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
     private Details getDetails(long authorId, int postId, String jwtToken) {

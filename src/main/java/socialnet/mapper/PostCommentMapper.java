@@ -2,6 +2,7 @@ package socialnet.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import socialnet.api.response.CommentRs;
 import socialnet.dto.CommentRs;
 import socialnet.model.Like;
 import socialnet.model.Person;

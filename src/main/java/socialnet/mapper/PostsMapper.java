@@ -2,6 +2,7 @@ package socialnet.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import socialnet.api.response.PostRs;
 import socialnet.dto.PostRq;
 import socialnet.dto.PostRs;
 import socialnet.model.Like;
@@ -11,8 +12,8 @@ import socialnet.service.PostService;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Mapper(componentModel = "spring", imports = PostMapper.class)
-public abstract class PostMapper {
+@Mapper(componentModel = "spring", imports = PostsMapper.class)
+public abstract class PostsMapper {
     @Mapping(target = "type", expression = "java(getType(post))")
     @Mapping(target = "tags", source = "details.tags")
     @Mapping(target = "myLike", expression = "java(itLikesMe(details.getLikes(), details.getAuthUserId()))")
