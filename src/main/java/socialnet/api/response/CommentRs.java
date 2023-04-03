@@ -1,18 +1,20 @@
-package socialnet.dto;
+package socialnet.api.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentRs {
     private PersonRs author;
 
     @JsonProperty("comment_text")
     private String commentText;
 
-    private Integer id;
+    private Long id;
 
     @JsonProperty("is_blocked")
     private Boolean isBlocked;
@@ -26,10 +28,10 @@ public class CommentRs {
     private Boolean myLike;
 
     @JsonProperty("parent_id")
-    private Integer parentId;
+    private Long parentId;
 
     @JsonProperty("post_id")
-    private Integer postId;
+    private Long postId;
 
     @JsonProperty("sub_comments")
     private List<CommentRs> subComments;
