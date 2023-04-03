@@ -1,4 +1,4 @@
-package socialnet.dto;
+package socialnet.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

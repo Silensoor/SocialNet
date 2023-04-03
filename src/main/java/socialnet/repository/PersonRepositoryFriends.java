@@ -1,39 +1,53 @@
 package socialnet.repository;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Person;
 
-@RequiredArgsConstructor
+import java.util.List;
+
 @Repository
-public class PersonRepository {
+@AllArgsConstructor
+public class PersonRepositoryFriends {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public int save(Person person) {
-        return jdbcTemplate.update(
-                "INSERT INTO persons " +
-                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
-                person.getFirstName(),
-                person.getLastName(),
-                person.getPassword(),
-                person.getRegDate(),
-                person.getIsApproved(),
-                person.getIsBlocked(),
-                person.getIsDeleted()
-        );
+    public List<Person> findPersonAll(int limit) {
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons LIMIT ?", new Object[]{limit}, personRowMapper);
+
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
-    public Person findByEmail(String email) {
-        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE email = ?", personRowMapper, email);
+    public List<Person> findPersonFriendsAll(String sql) {
+        try {
+            return this.jdbcTemplate.query(sql, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
-    public Person findById(Long authorId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?", personRowMapper, authorId);
+    public List<Person> findPersonsEmail(String email) {
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?",
+                    new Object[]{email}, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findPersonsCity(String city) {
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons WHERE city = ?",
+                    new Object[]{city}, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {
@@ -62,7 +76,6 @@ public class PersonRepository {
         person.setCountry(resultSet.getString("country"));
         person.setTelegramId(resultSet.getLong("telegram_id"));
         person.setPersonSettingsId(resultSet.getLong("person_settings_id"));
-
         return person;
     };
 }

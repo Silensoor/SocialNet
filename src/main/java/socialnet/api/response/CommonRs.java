@@ -1,18 +1,20 @@
-package socialnet.dto;
+package socialnet.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CommonRsComplexRs {
+public class CommonRs<T> {
+    private T data;
 
-    private ComplexRs data;
     private Integer itemPerPage;
+
     private Integer offset;
+
     private Integer perPage;
-    private Integer timestamp;
-    private Integer total;
+
+    private Long timestamp;
+
+    private Long total;
 }

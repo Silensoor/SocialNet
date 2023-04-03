@@ -1,23 +1,25 @@
-package socialnet.dto;
+package socialnet.api.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostRs {
 
     private PersonRs author;
 
     private List<CommentRs> comments;
 
-    private Integer id;
+    private Long id;
 
     @JsonProperty("is_blocked")
     private Boolean isBlocked;
 
-    private Long likes;
+    private Integer likes;
 
     @JsonProperty("my_like")
     private Boolean myLike;

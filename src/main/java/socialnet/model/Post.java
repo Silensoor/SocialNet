@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 @Data
 public class Post {
-    private Integer id;
+    private Long id;
 
     private Boolean isBlocked;
 
@@ -20,5 +20,5 @@ public class Post {
 
     private String title;
 
-    private Integer authorId;
+    private Long authorId;
 }
