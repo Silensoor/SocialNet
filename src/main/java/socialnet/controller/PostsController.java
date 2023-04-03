@@ -10,6 +10,7 @@ import socialnet.api.response.PostRs;
 import socialnet.dto.PostRq;
 import socialnet.service.PostService;
 
+import java.text.ParseException;
 import java.util.List;
 
 
@@ -60,7 +61,7 @@ public class PostsController {
         return new ResponseEntity<>(commonRs, HttpStatus.OK);
     }
     @GetMapping("/api/v1/post")
-    public ResponseEntity<CommonRs<List<PostRs>>> getPostsByQuery(
+    public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestParam(required = false) String author,
             @RequestParam(required = false, name = "date_from")Integer dateFrom,
@@ -68,8 +69,8 @@ public class PostsController {
             @RequestParam(required = false) int offset,
             @RequestParam(required = false) int perPage,
             @RequestParam(required = false) String[] tags,
-            @RequestParam(required = false) String text) {
-        CommonRs<List<PostRs>> commonRs =  postsService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
-        return null;
+            @RequestParam(required = false) String text) throws ParseException {
+        return postsService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
+
     }
 }

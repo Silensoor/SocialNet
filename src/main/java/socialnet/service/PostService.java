@@ -20,7 +20,12 @@ import socialnet.model.Tag;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
+
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -180,7 +185,7 @@ public class PostService {
         Post post = postsMapper.toModel(postRq, publishDate, id);
         postRepository.updateById(id, post);
         Post newPost = postRepository.findById(id);
-        Person author = getAuthor(newPost.getId());
+        Person author = getAuthor(newPost.getAuthorId());
         List<Like> likes = getLikes(newPost.getId().intValue());
         List<Tag> tags = getTags(newPost.getId().intValue());
         List<PostComment> postComments = getPostComments(newPost.getId().intValue());
@@ -203,13 +208,13 @@ public class PostService {
     public CommonRs<PostRs> recoverPost(int id, String jwtToken) {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
-        Person author = getAuthor(postFromDB.getId());
+        Person author = getAuthor(postFromDB.getAuthorId());
         Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
-    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom, Integer dateTo, int offset, int perPage, String[] tags, String text) {
+    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom, Integer dateTo, int offset, int perPage, String[] tags, String text) throws ParseException {
         List<PostRs> postRsList = getFeeds(jwtToken, offset, perPage).getData();
         List<PostRs> tempPostRsList = new ArrayList<>();
         if (author != null) {
@@ -221,13 +226,14 @@ public class PostService {
         }
         if (dateFrom != null) {
             for (PostRs postRs : postRsList) {
-                if (Timestamp.valueOf(postRs.getTime()).after(new Timestamp(dateFrom))) continue;
+
+                if (parseDate(postRs.getTime()).after(new Timestamp(dateFrom))) continue;
                 tempPostRsList.add(postRs);
             }
         }
         if (dateTo != null) {
             for (PostRs postRs : postRsList) {
-                if (Timestamp.valueOf(postRs.getTime()).before(new Timestamp(dateTo))) continue;
+                if (parseDate(postRs.getTime()).before(new Timestamp(dateTo))) continue;
                 tempPostRsList.add(postRs);
             }
         }
@@ -245,6 +251,12 @@ public class PostService {
         }
         postRsList.removeAll(tempPostRsList);
         return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(),(long) postRsList.size());
+    }
+
+    private Timestamp parseDate(String str) throws ParseException {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date date = parser.parse(str);
+        return new Timestamp(date.getTime());
     }
 
     @Data

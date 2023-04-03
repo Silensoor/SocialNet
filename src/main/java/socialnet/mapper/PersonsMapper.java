@@ -7,8 +7,8 @@ import socialnet.api.response.PersonRs;
 import socialnet.model.Person;
 
 
-@Mapper(componentModel = "spring", imports = PersonMapper.class)
-public interface PersonMapper {
+@Mapper(componentModel = "spring", imports = PersonsMapper.class)
+public interface PersonsMapper {
 
     static boolean isBlockedByCurrentUser() {
         return true;
@@ -18,7 +18,7 @@ public interface PersonMapper {
         return new CurrencyRs("euro", "usd");
     }
 
-    @Mapping(target = "currency", expression = "java(PersonMapper.getCurrencyRs())")
-    @Mapping(target = "isBlockedByCurrentUser", expression = "java(PersonMapper.isBlockedByCurrentUser())")
+    @Mapping(target = "currency", expression = "java(PersonsMapper.getCurrencyRs())")
+    @Mapping(target = "isBlockedByCurrentUser", expression = "java(PersonsMapper.isBlockedByCurrentUser())")
     PersonRs toDTO(Person person);
 }
