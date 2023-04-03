@@ -183,38 +183,40 @@ public class PostService {
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom, Integer dateTo, int offset, int perPage, String[] tags, String text) {
         List<PostRs> postRsList = getFeeds(jwtToken, offset, perPage).getData();
+        List<PostRs> tempPostRsList = new ArrayList<>();
         if (author != null) {
             for (PostRs postRs : postRsList) {
-                String name = postRs.getAuthor().getFirstName() + " " + postRs.getAuthor().getLastName();
+                String name = postRs.getAuthor().getLastName() + " " + postRs.getAuthor().getFirstName();
                 if (name.contains(author)) continue;
-                postRsList.remove(postRs);
+                tempPostRsList.add(postRs);
             }
         }
         if (dateFrom != null) {
             for (PostRs postRs : postRsList) {
                 if (Timestamp.valueOf(postRs.getTime()).after(new Timestamp(dateFrom))) continue;
-                postRsList.remove(postRs);
+                tempPostRsList.add(postRs);
             }
         }
-        if (dateFrom != null) {
+        if (dateTo != null) {
             for (PostRs postRs : postRsList) {
                 if (Timestamp.valueOf(postRs.getTime()).before(new Timestamp(dateTo))) continue;
-                postRsList.remove(postRs);
+                tempPostRsList.add(postRs);
             }
         }
         if (tags != null) {
             for (PostRs postRs : postRsList) {
                 if (postRs.getTags().containsAll(Arrays.stream(tags).collect(Collectors.toList()))) continue;
-                postRsList.remove(postRs);
+                tempPostRsList.add(postRs);
             }
         }
         if (text != null) {
             for (PostRs postRs : postRsList) {
                 if (postRs.getPostText().contains(text)) continue;
-                postRsList.remove(postRs);
+                tempPostRsList.add(postRs);
             }
         }
-        return new CommonRs<>(postRsList, perPage, offset, perPage,(int) System.currentTimeMillis(), postRsList.size());
+        postRsList.removeAll(tempPostRsList);
+        return new CommonRs<>(postRsList, perPage, offset, perPage, (int) System.currentTimeMillis(), postRsList.size());
     }
 
     @Data
