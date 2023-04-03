@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.exception.PostException;
 import socialnet.model.Post;
@@ -21,14 +22,14 @@ public class PostRepository {
     public List<Post> findAll() {
         List<Post> posts = jdbcTemplate.query("SELECT * FROM posts", (rs, rowNum) -> {
             Post post = new Post();
-            post.setId(rs.getInt("id"));
+            post.setId((long) rs.getInt("id"));
             post.setIsBlocked(rs.getBoolean("is_blocked"));
             post.setIsDeleted(rs.getBoolean("is_deleted"));
             post.setPostText(rs.getString("post_text"));
             post.setTime(rs.getTimestamp("time"));
             post.setTimeDelete(rs.getTimestamp("time_delete"));
             post.setTitle(rs.getString("title"));
-            post.setAuthorId(rs.getInt("author_id"));
+            post.setAuthorId((long) rs.getInt("author_id"));
             return post;
         });
 
@@ -66,9 +67,6 @@ public class PostRepository {
         String delete = "DELETE FROM posts WHERE id = " + id;
         jdbcTemplate.execute(delete);
         return true;
-    }
-
-        return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
     }
 
     private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {

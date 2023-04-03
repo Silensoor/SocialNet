@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import socialnet.api.response.ErrorRs;
 
+import java.sql.Timestamp;
+
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
     @ExceptionHandler(RegisterException.class)
@@ -24,7 +26,7 @@ public class ExceptionHandlerAdvice {
         ErrorRs errorRs = new ErrorRs();
         errorRs.setError("PostException");
         errorRs.setErrorDescription(e.getLocalizedMessage());
-        errorRs.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        errorRs.setTimestamp(System.currentTimeMillis());
 
         return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
     }

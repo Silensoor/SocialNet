@@ -21,4 +21,9 @@ public class CommonRs<T> {
     private Long timestamp;
 
     private Long total;
+
+    public CommonRs(T data, Long timestamp) {
+        this.data = data;
+        this.timestamp = timestamp;
+    }
 }

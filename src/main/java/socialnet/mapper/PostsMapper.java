@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import socialnet.api.response.PostRs;
 import socialnet.dto.PostRq;
-import socialnet.dto.PostRs;
 import socialnet.model.Like;
 import socialnet.model.Post;
 import socialnet.model.enums.PostType;
@@ -17,7 +16,7 @@ public abstract class PostsMapper {
     @Mapping(target = "type", expression = "java(getType(post))")
     @Mapping(target = "tags", source = "details.tags")
     @Mapping(target = "myLike", expression = "java(itLikesMe(details.getLikes(), details.getAuthUserId()))")
-    @Mapping(target = "likes", expression = "java((long) details.getLikes().size())")
+    @Mapping(target = "likes", expression = "java(details.getLikes().size())")
     @Mapping(target = "comments", source = "details.comments")
     @Mapping(target = "id", source = "post.id")
     @Mapping(target = "isBlocked", source = "post.isBlocked")

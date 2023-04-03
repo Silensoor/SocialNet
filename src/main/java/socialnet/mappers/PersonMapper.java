@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 import socialnet.api.response.PersonRs;
 import socialnet.model.Person;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PersonMapper {
 
     PersonMapper INSTANCE = Mappers.getMapper(PersonMapper.class);

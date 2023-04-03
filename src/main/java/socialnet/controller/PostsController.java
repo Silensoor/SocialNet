@@ -5,12 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import socialnet.dto.CommonRs;
+import socialnet.api.response.CommonRs;
+import socialnet.api.response.PostRs;
 import socialnet.dto.PostRq;
-import socialnet.dto.PostRs;
 import socialnet.service.PostService;
 
 import java.util.List;
+
 
 @Controller
 @RequiredArgsConstructor

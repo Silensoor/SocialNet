@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.*;
+import socialnet.dto.PostRq;
 import socialnet.mapper.PostCommentMapper;
 import socialnet.mapper.PostsMapper;
 import socialnet.mappers.CommentMapper;
@@ -136,26 +137,26 @@ public class PostService {
     }
 
     public CommonRs<PostRs> createPost(PostRq postRq, int id, Integer publishDate, String jwtToken) {
-        personRepository.findById(id);
-        Post post = postMapper.toModel(postRq, publishDate, id);
+        personRepository.findById((long) id);
+        Post post = postsMapper.toModel(postRq, publishDate, id);
         int postId = postRepository.save(post);
         tagService.createTags(postRq.getTags(), postId);
-        Person author = personRepository.findById(id);
+        Person author = personRepository.findById((long) id);
         Details details = getDetails(author.getId(), postId, jwtToken);
-        PostRs postRs = postMapper.toRs(post,details);
-        return new CommonRs<>(postRs, (int) System.currentTimeMillis());
+        PostRs postRs = postsMapper.toRs(post,details);
+        return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
     public CommonRs<PostRs> getPostById(int postId, String jwtToken) {
         Post post = postRepository.findById(postId);
         Person author = getAuthor(post.getAuthorId());
         Details details = getDetails(author.getId(), postId, jwtToken);
-        PostRs postRs = postMapper.toRs(post, details);
-        return new CommonRs<>(postRs, (int) System.currentTimeMillis());
+        PostRs postRs = postsMapper.toRs(post, details);
+        return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
     private Person getAuthor(long id) {
-        return personRepository.findById((int) id);
+        return personRepository.findById(id);
     }
     private List<Like> getLikes(int id) {
         return likeRepository.getLikesByEntityId(id);
@@ -176,17 +177,17 @@ public class PostService {
     public CommonRs<PostRs> updatePost(int id, PostRq postRq, String jwtToken) {
         Post postFromDB = postRepository.findById(id);
         int publishDate = (int) postFromDB.getTime().getTime();
-        Post post = postMapper.toModel(postRq, publishDate, id);
+        Post post = postsMapper.toModel(postRq, publishDate, id);
         postRepository.updateById(id, post);
         Post newPost = postRepository.findById(id);
         Person author = getAuthor(newPost.getId());
-        List<Like> likes = getLikes((int) newPost.getId());
-        List<Tag> tags = getTags((int) newPost.getId());
-        List<PostComment> postComments = getPostComments((int) newPost.getId());
+        List<Like> likes = getLikes(newPost.getId().intValue());
+        List<Tag> tags = getTags(newPost.getId().intValue());
+        List<PostComment> postComments = getPostComments(newPost.getId().intValue());
         List<CommentRs> comments = getComments(postComments, jwtToken);
-        Details details = getDetails(author.getId(), (int) newPost.getId(), jwtToken);
-        PostRs postRs = postMapper.toRs(newPost, details);
-        return new CommonRs<>(postRs, (int) System.currentTimeMillis());
+        Details details = getDetails(author.getId(), newPost.getId().intValue(), jwtToken);
+        PostRs postRs = postsMapper.toRs(newPost, details);
+        return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
     public CommonRs<PostRs> markAsDelete(int id, String jwtToken) {
@@ -194,18 +195,18 @@ public class PostService {
         postFromDB.setIsDeleted(true);
         postRepository.updateById(id, postFromDB);
         Person author = getAuthor(postFromDB.getId());
-        Details details = getDetails(author.getId(), (int) postFromDB.getId(), jwtToken);
-        PostRs postRs = postMapper.toRs(postFromDB, details);
-        return new CommonRs<>(postRs,(int) System.currentTimeMillis());
+        Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
+        PostRs postRs = postsMapper.toRs(postFromDB, details);
+        return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
     public CommonRs<PostRs> recoverPost(int id, String jwtToken) {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
         Person author = getAuthor(postFromDB.getId());
-        Details details = getDetails(author.getId(), (int) postFromDB.getId(), jwtToken);
-        PostRs postRs = postMapper.toRs(postFromDB, details);
-        return new CommonRs<>(postRs,(int) System.currentTimeMillis());
+        Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
+        PostRs postRs = postsMapper.toRs(postFromDB, details);
+        return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom, Integer dateTo, int offset, int perPage, String[] tags, String text) {
@@ -243,7 +244,7 @@ public class PostService {
             }
         }
         postRsList.removeAll(tempPostRsList);
-        return new CommonRs<>(postRsList, perPage, offset, perPage, (int) System.currentTimeMillis(), postRsList.size());
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(),(long) postRsList.size());
     }
 
     @Data
