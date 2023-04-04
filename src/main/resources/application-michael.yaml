@@ -7,6 +7,11 @@ spring:
     username: postgres
     password: testtest55
     url: jdbc:postgresql://localhost:5432/test
+
 auth:
   secret: socialNet
   timeLive: 216000
+
+socialnet:
+  sheduled:
+    interval: 1

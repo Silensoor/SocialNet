@@ -3,6 +3,7 @@ package socialnet.service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.*;
 import socialnet.dto.PostRq;
@@ -12,18 +13,11 @@ import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.PostMapper;
 import socialnet.model.*;
-
-import socialnet.model.Comment;
-import socialnet.model.Person;
-import socialnet.model.Post;
-import socialnet.model.Tag;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -43,6 +37,7 @@ public class PostService {
     private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
     private final TagService tagService;
+
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -257,6 +252,11 @@ public class PostService {
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         Date date = parser.parse(str);
         return new Timestamp(date.getTime());
+    }
+    @Scheduled(cron = "0 0 1 * * *")
+    private void hardDeletingPosts() {
+        List<Post> deletingPosts = postRepository.findDeletedPosts();
+        postRepository.deleteAll(deletingPosts);
     }
 
     @Data
