@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import socialnet.api.request.LoginRq;
 import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
@@ -15,6 +16,7 @@ import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
+import javax.validation.constraints.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,6 +24,7 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class LoginService {
     private final JwtUtils jwtUtils;
     private String jwt;
@@ -101,7 +104,7 @@ public class LoginService {
         personRs.setAbout(person.getAbout());
         personRs.setCity(person.getCity());
         personRs.setCountry(person.getCountry());
-        personRs.setBirthDate(person.getBirthDate().toString());
+        personRs.setBirthDate(person.getBirthDate());
         personRs.setCurrency(currencyRs);
         personRs.setWeather(weatherRs);
         personRs.setEmail(person.getEmail());
@@ -111,12 +114,12 @@ public class LoginService {
         personRs.setIsBlocked(person.getIsBlocked());
         personRs.setIsBlockedByCurrentUser(false);
         personRs.setLastName(person.getLastName());
-        personRs.setLastOnlineTime(person.getLastOnlineTime().toString());
+        personRs.setLastOnlineTime(person.getLastOnlineTime());
         personRs.setMessagesPermission(person.getMessagePermissions());
         personRs.setOnline(true);
         personRs.setPhone(person.getPhone());
         personRs.setPhoto(person.getPhoto());
-        personRs.setRegDate(person.getRegDate().toString());
+        personRs.setRegDate(person.getRegDate());
         personRs.setToken(jwt);
         personRs.setUserDeleted(person.getIsDeleted());
         return personRs;
