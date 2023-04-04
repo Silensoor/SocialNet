@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonRs {
@@ -11,7 +13,7 @@ public class PersonRs {
     private String about;
 
     @JsonProperty("birth_date")
-    private String birthDate;
+    private Timestamp birthDate;
 
     private String city;
 
@@ -39,7 +41,7 @@ public class PersonRs {
     private String lastName;
 
     @JsonProperty("last_online_time")
-    private String lastOnlineTime;
+    private Timestamp lastOnlineTime;
 
     @JsonProperty("messages_permission")
     private String messagesPermission;
@@ -51,7 +53,7 @@ public class PersonRs {
     private String photo;
 
     @JsonProperty("reg_date")
-    private String regDate;
+    private Timestamp regDate;
 
     private String token;
 

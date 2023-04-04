@@ -102,7 +102,7 @@ public class FriendsService {
         for (Person person : personList) {
             PersonRs rs = new PersonRs();
             rs.setAbout(person.getAbout());
-            rs.setBirthDate(person.getBirthDate().toString());
+            rs.setBirthDate(person.getBirthDate());
             rs.setCity(person.getCity());
             rs.setCountry(person.getCountry());
             rs.setCurrency(null);
@@ -112,7 +112,7 @@ public class FriendsService {
             rs.setId(person.getId());
             rs.setIsBlocked(person.getIsBlocked());
             rs.setIsBlockedByCurrentUser(false);
-            rs.setLastOnlineTime(person.getLastOnlineTime().toString());
+            rs.setLastOnlineTime(person.getLastOnlineTime());
             rs.setMessagesPermission(null);
             if (person.getOnlineStatus().equals(true)) {
                 rs.setOnline(true);
@@ -121,7 +121,7 @@ public class FriendsService {
             }
             rs.setPhone(person.getPhone());
             rs.setPhoto(person.getPhoto());
-            rs.setRegDate(person.getRegDate().toString());
+            rs.setRegDate(person.getRegDate());
             rs.setToken(null);
             rs.setUserDeleted(person.getIsDeleted());
             rs.setWeather(null);
