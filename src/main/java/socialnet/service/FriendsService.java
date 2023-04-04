@@ -4,15 +4,19 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CommonRsListPersonRs;
+import socialnet.api.response.CurrencyRs;
 import socialnet.api.response.PersonRs;
+import socialnet.api.response.WeatherRs;
 import socialnet.dto.CommonRsComplexRs;
 import socialnet.dto.ComplexRs;
 
 import socialnet.exception.EmptyEmailException;
+import socialnet.mappers.PersonMapper;
 import socialnet.model.Friendships;
 import socialnet.model.Person;
+import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
-import socialnet.repository.PersonRepositoryFriends;
+import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.*;
@@ -102,7 +106,7 @@ public class FriendsService {
         for (Person person : personList) {
             PersonRs rs = new PersonRs();
             rs.setAbout(person.getAbout());
-            rs.setBirthDate(person.getBirthDate());
+            rs.setBirthDate(person.getBirthDate().toString());
             rs.setCity(person.getCity());
             rs.setCountry(person.getCountry());
             rs.setCurrency(null);
@@ -112,7 +116,7 @@ public class FriendsService {
             rs.setId(person.getId());
             rs.setIsBlocked(person.getIsBlocked());
             rs.setIsBlockedByCurrentUser(false);
-            rs.setLastOnlineTime(person.getLastOnlineTime());
+            rs.setLastOnlineTime(person.getLastOnlineTime().toString());
             rs.setMessagesPermission(null);
             if (person.getOnlineStatus().equals(true)) {
                 rs.setOnline(true);
@@ -121,7 +125,7 @@ public class FriendsService {
             }
             rs.setPhone(person.getPhone());
             rs.setPhoto(person.getPhoto());
-            rs.setRegDate(person.getRegDate());
+            rs.setRegDate(person.getRegDate().toString());
             rs.setToken(null);
             rs.setUserDeleted(person.getIsDeleted());
             rs.setWeather(null);
