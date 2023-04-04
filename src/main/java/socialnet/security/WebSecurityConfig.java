@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import socialnet.security.jwt.AuthEntryPointJwt;
 import socialnet.security.jwt.AuthTokenFilter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -31,13 +32,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.applyPermitDefaultValues();
+//        corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
+//        corsConfiguration.setAllowedMethods(List.of("OPTIONS", "DELETE", "POST", "GET", "PATCH", "PUT"));
+//        corsConfiguration.setExposedHeaders(List.of("Content-Type", "X-Requested-With", "accept", "Origin",
+//                "Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Origin",
+//                "Access-Control-Allow-Credentials"));
+//        corsConfiguration.setAllowCredentials(true);
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", corsConfiguration);
+//        return source;
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.applyPermitDefaultValues();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
-        corsConfiguration.setAllowedMethods(List.of("OPTIONS", "DELETE", "POST", "GET", "PATCH", "PUT"));
-        corsConfiguration.setExposedHeaders(List.of("Content-Type", "X-Requested-With", "accept", "Origin",
-                "Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Origin",
-                "Access-Control-Allow-Credentials"));
+        List<String> allowedOrigins = new ArrayList<>();
+        allowedOrigins.add("http://localhost:8080");
+        corsConfiguration.setAllowedOrigins(allowedOrigins);
+        List<String> allowedMethods = new ArrayList<>();
+        allowedMethods.add("OPTIONS");
+        allowedMethods.add("DELETE");
+        allowedMethods.add("POST");
+        allowedMethods.add("GET");
+        allowedMethods.add("PATCH");
+        allowedMethods.add("PUT");
+        corsConfiguration.setAllowedMethods(allowedMethods);
+        List<String> exposedHeaders = new ArrayList<>();
+        exposedHeaders.add("Content-Type");
+        exposedHeaders.add("X-Requested-With");
+        exposedHeaders.add("accept");
+        exposedHeaders.add("Origin");
+        exposedHeaders.add("Access-Control-Request-Method");
+        exposedHeaders.add("Access-Control-Request-Headers");
+        exposedHeaders.add("Access-Control-Allow-Origin");
+        exposedHeaders.add("Access-Control-Allow-Credentials");
+        corsConfiguration.setExposedHeaders(exposedHeaders);
         corsConfiguration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
