@@ -26,7 +26,7 @@ import java.util.*;
 public class FriendsService {
 
     private JwtUtils jwtUtils;
-    private PersonRepositoryFriends personRepository;
+    private PersonRepository personRepository;
 
     private FriendsShipsRepository friendsShipsRepository;
 
@@ -104,32 +104,13 @@ public class FriendsService {
     public List<PersonRs> createPersonRsList(List<Person> personList) {
         List<PersonRs> personRsList = new ArrayList<>();
         for (Person person : personList) {
-            PersonRs rs = new PersonRs();
-            rs.setAbout(person.getAbout());
-            rs.setBirthDate(person.getBirthDate().toString());
-            rs.setCity(person.getCity());
-            rs.setCountry(person.getCountry());
-            rs.setCurrency(null);
-            rs.setEmail(person.getEmail());
-            rs.setFirstName(person.getFirstName());
-            rs.setFriendStatus("FRIEND");
-            rs.setId(person.getId());
-            rs.setIsBlocked(person.getIsBlocked());
-            rs.setIsBlockedByCurrentUser(false);
-            rs.setLastOnlineTime(person.getLastOnlineTime().toString());
-            rs.setMessagesPermission(null);
-            if (person.getOnlineStatus().equals(true)) {
-                rs.setOnline(true);
-            } else {
-                rs.setOnline(false);
-            }
-            rs.setPhone(person.getPhone());
-            rs.setPhoto(person.getPhoto());
-            rs.setRegDate(person.getRegDate().toString());
-            rs.setToken(null);
-            rs.setUserDeleted(person.getIsDeleted());
-            rs.setWeather(null);
-            personRsList.add(rs);
+            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+            personRs.setOnline(null);
+            personRs.setWeather(new WeatherRs());
+            personRs.setIsBlockedByCurrentUser(null);
+            personRs.setFriendStatus(FriendshipStatusTypes.FRIEND.name());
+            personRs.setCurrency(new CurrencyRs());
+            personRsList.add(personRs);
         }
         return personRsList;
     }
@@ -304,7 +285,7 @@ public class FriendsService {
         });
         if (friendFriendsNew.size() < 10) {
             int limit = 10 - friendFriendsNew.size();
-            List<Person> personAll = personRepository.findPersonAll(limit);
+            List<Person> personAll = personRepository.findPersonAll((long) limit);
             if (personAll == null) {
                 personAll = new ArrayList<>();
             }
