@@ -4,15 +4,19 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CommonRsListPersonRs;
+import socialnet.api.response.CurrencyRs;
 import socialnet.api.response.PersonRs;
+import socialnet.api.response.WeatherRs;
 import socialnet.dto.CommonRsComplexRs;
 import socialnet.dto.ComplexRs;
 
 import socialnet.exception.EmptyEmailException;
+import socialnet.mappers.PersonMapper;
 import socialnet.model.Friendships;
 import socialnet.model.Person;
+import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
-import socialnet.repository.PersonRepositoryFriends;
+import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.*;
@@ -22,7 +26,7 @@ import java.util.*;
 public class FriendsService {
 
     private JwtUtils jwtUtils;
-    private PersonRepositoryFriends personRepository;
+    private PersonRepository personRepository;
 
     private FriendsShipsRepository friendsShipsRepository;
 
@@ -100,32 +104,13 @@ public class FriendsService {
     public List<PersonRs> createPersonRsList(List<Person> personList) {
         List<PersonRs> personRsList = new ArrayList<>();
         for (Person person : personList) {
-            PersonRs rs = new PersonRs();
-            rs.setAbout(person.getAbout());
-            rs.setBirthDate(person.getBirthDate().toString());
-            rs.setCity(person.getCity());
-            rs.setCountry(person.getCountry());
-            rs.setCurrency(null);
-            rs.setEmail(person.getEmail());
-            rs.setFirstName(person.getFirstName());
-            rs.setFriendStatus("FRIEND");
-            rs.setId(person.getId());
-            rs.setIsBlocked(person.getIsBlocked());
-            rs.setIsBlockedByCurrentUser(false);
-            rs.setLastOnlineTime(person.getLastOnlineTime().toString());
-            rs.setMessagesPermission(null);
-            if (person.getOnlineStatus().equals(true)) {
-                rs.setOnline(true);
-            } else {
-                rs.setOnline(false);
-            }
-            rs.setPhone(person.getPhone());
-            rs.setPhoto(person.getPhoto());
-            rs.setRegDate(person.getRegDate().toString());
-            rs.setToken(null);
-            rs.setUserDeleted(person.getIsDeleted());
-            rs.setWeather(null);
-            personRsList.add(rs);
+            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+            personRs.setOnline(null);
+            personRs.setWeather(new WeatherRs());
+            personRs.setIsBlockedByCurrentUser(null);
+            personRs.setFriendStatus(FriendshipStatusTypes.FRIEND.name());
+            personRs.setCurrency(new CurrencyRs());
+            personRsList.add(personRs);
         }
         return personRsList;
     }
@@ -204,9 +189,9 @@ public class FriendsService {
             List<Long> friendsId = new ArrayList<>();
             Long idNewSrcPersonId = 0L;
             Long idNewDstPersonId = 0L;
-            for (int i = 0; i < allFriendships.size(); i++) {
-                idNewSrcPersonId = allFriendships.get(i).getSrcPersonId();
-                idNewDstPersonId = allFriendships.get(i).getDstPersonId();
+            for (Friendships allFriendship : allFriendships) {
+                idNewSrcPersonId = allFriendship.getSrcPersonId();
+                idNewDstPersonId = allFriendship.getDstPersonId();
                 if (!friendsId.contains(idNewSrcPersonId) && !idNewSrcPersonId.equals(personsEmail.get(0).getId())) {
                     friendsId.add(idNewSrcPersonId);
                 }
@@ -215,9 +200,9 @@ public class FriendsService {
                 }
             }
             List<Friendships> personList = new ArrayList<>();
-            for (int i = 0; i < friendsId.size(); i++) {
+            for (Long aLong : friendsId) {
                 List<Friendships> allFriendships1 = friendsShipsRepository
-                        .findAllFriendships(friendsId.get(i));
+                        .findAllFriendships(aLong);
                 if (allFriendships1 == null) {
                     allFriendships1 = new ArrayList<>();
                 }
@@ -257,28 +242,28 @@ public class FriendsService {
         HashSet<Long> friendsFriendsId = new HashSet<>();
         boolean flagDst;
         boolean flagSrc;
-        for (int i = 0; i < personList.size(); i++) {
+        for (Friendships friendships : personList) {
             flagSrc = false;
             flagDst = false;
             for (int a = 0; a < friendsId.size(); a++) {
-                if (personList.get(i).getSrcPersonId() == friendsId.get(a)) {
+                if (friendships.getSrcPersonId().equals(friendsId.get(a))) {
                     flagSrc = true;
                 }
-                if (personList.get(i).getDstPersonId().equals(friendsId.get(a))) {
+                if (friendships.getDstPersonId().equals(friendsId.get(a))) {
                     flagDst = true;
                 }
-                if (personList.get(i).getSrcPersonId().equals(personsEmail.get(0).getId())) {
+                if (friendships.getSrcPersonId().equals(personsEmail.get(0).getId())) {
                     flagSrc = true;
                 }
-                if (personList.get(i).getDstPersonId().equals(personsEmail.get(0).getId())) {
+                if (friendships.getDstPersonId().equals(personsEmail.get(0).getId())) {
                     flagDst = true;
                 }
             }
             if (!flagSrc) {
-                friendsFriendsId.add(personList.get(i).getSrcPersonId());
+                friendsFriendsId.add(friendships.getSrcPersonId());
             }
             if (!flagDst) {
-                friendsFriendsId.add(personList.get(i).getDstPersonId());
+                friendsFriendsId.add(friendships.getDstPersonId());
             }
         }
         return friendsFriendsId;
@@ -299,7 +284,7 @@ public class FriendsService {
             friendsId.add(idRecommended.getId());
         });
         if (friendFriendsNew.size() < 10) {
-            int limit = 10 - friendFriendsNew.size();
+            Long limit = (long) (10 - friendFriendsNew.size());
             List<Person> personAll = personRepository.findPersonAll(limit);
             if (personAll == null) {
                 personAll = new ArrayList<>();
@@ -522,7 +507,7 @@ public class FriendsService {
                 }
             }
             if (!sendFriends.isEmpty() && flagFriends) {
-                friendsShipsRepository.deleteFriendUsing(Long.valueOf(idFriends));
+                friendsShipsRepository.deleteFriendUsing(idFriends);
             }
             return fillingCommonRsComplexRs(id, idFriends);
         }
