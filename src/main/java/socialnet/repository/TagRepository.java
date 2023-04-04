@@ -40,4 +40,11 @@ public class TagRepository {
 
         return tag;
     };
+
+    public void deleteAll(List<Tag> tags) {
+        for (Tag tag : tags) {
+            String delete = String.format("DELETE FROM tags WHERE id = %d", tag.getId());
+            jdbcTemplate.execute(delete);
+        }
+    }
 }

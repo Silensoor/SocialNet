@@ -37,6 +37,10 @@ public class PostService {
     private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
     private final TagService tagService;
+    private final Post2TagRepository post2TagRepository;
+    private final LikesService likesService;
+    private final CommentService commentService;
+
 
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
@@ -193,6 +197,7 @@ public class PostService {
     public CommonRs<PostRs> markAsDelete(int id, String jwtToken) {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(true);
+        postFromDB.setTimeDelete(new Timestamp(System.currentTimeMillis()));
         postRepository.updateById(id, postFromDB);
         Person author = getAuthor(postFromDB.getId());
         Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
@@ -257,6 +262,15 @@ public class PostService {
     private void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
         postRepository.deleteAll(deletingPosts);
+        List<Tag> tags = new ArrayList<>();
+        List<Like> likes = new ArrayList<>();
+        for (Post deletingPost : deletingPosts) {
+            tags.addAll(tagRepository.getTagsByPostId(deletingPost.getId()));
+            likes.addAll(likeRepository.getLikesByEntityId(deletingPost.getId()));
+        }
+        tagRepository.deleteAll(tags);
+        likeRepository.deleteAll(likes);
+
     }
 
     @Data
