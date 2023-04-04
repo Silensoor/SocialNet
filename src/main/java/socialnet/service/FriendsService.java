@@ -26,7 +26,7 @@ import java.util.*;
 public class FriendsService {
 
     private JwtUtils jwtUtils;
-    private PersonRepository personRepository;
+    private PersonRepositoryFriends personRepository;
 
     private FriendsShipsRepository friendsShipsRepository;
 
@@ -104,13 +104,32 @@ public class FriendsService {
     public List<PersonRs> createPersonRsList(List<Person> personList) {
         List<PersonRs> personRsList = new ArrayList<>();
         for (Person person : personList) {
-            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-            personRs.setOnline(null);
-            personRs.setWeather(new WeatherRs());
-            personRs.setIsBlockedByCurrentUser(null);
-            personRs.setFriendStatus(FriendshipStatusTypes.FRIEND.name());
-            personRs.setCurrency(new CurrencyRs());
-            personRsList.add(personRs);
+            PersonRs rs = new PersonRs();
+            rs.setAbout(person.getAbout());
+            rs.setBirthDate(person.getBirthDate().toString());
+            rs.setCity(person.getCity());
+            rs.setCountry(person.getCountry());
+            rs.setCurrency(null);
+            rs.setEmail(person.getEmail());
+            rs.setFirstName(person.getFirstName());
+            rs.setFriendStatus("FRIEND");
+            rs.setId(person.getId());
+            rs.setIsBlocked(person.getIsBlocked());
+            rs.setIsBlockedByCurrentUser(false);
+            rs.setLastOnlineTime(person.getLastOnlineTime().toString());
+            rs.setMessagesPermission(null);
+            if (person.getOnlineStatus().equals(true)) {
+                rs.setOnline(true);
+            } else {
+                rs.setOnline(false);
+            }
+            rs.setPhone(person.getPhone());
+            rs.setPhoto(person.getPhoto());
+            rs.setRegDate(person.getRegDate().toString());
+            rs.setToken(null);
+            rs.setUserDeleted(person.getIsDeleted());
+            rs.setWeather(null);
+            personRsList.add(rs);
         }
         return personRsList;
     }
@@ -189,9 +208,9 @@ public class FriendsService {
             List<Long> friendsId = new ArrayList<>();
             Long idNewSrcPersonId = 0L;
             Long idNewDstPersonId = 0L;
-            for (Friendships allFriendship : allFriendships) {
-                idNewSrcPersonId = allFriendship.getSrcPersonId();
-                idNewDstPersonId = allFriendship.getDstPersonId();
+            for (int i = 0; i < allFriendships.size(); i++) {
+                idNewSrcPersonId = allFriendships.get(i).getSrcPersonId();
+                idNewDstPersonId = allFriendships.get(i).getDstPersonId();
                 if (!friendsId.contains(idNewSrcPersonId) && !idNewSrcPersonId.equals(personsEmail.get(0).getId())) {
                     friendsId.add(idNewSrcPersonId);
                 }
@@ -200,9 +219,9 @@ public class FriendsService {
                 }
             }
             List<Friendships> personList = new ArrayList<>();
-            for (Long aLong : friendsId) {
+            for (int i = 0; i < friendsId.size(); i++) {
                 List<Friendships> allFriendships1 = friendsShipsRepository
-                        .findAllFriendships(aLong);
+                        .findAllFriendships(friendsId.get(i));
                 if (allFriendships1 == null) {
                     allFriendships1 = new ArrayList<>();
                 }
@@ -242,28 +261,28 @@ public class FriendsService {
         HashSet<Long> friendsFriendsId = new HashSet<>();
         boolean flagDst;
         boolean flagSrc;
-        for (Friendships friendships : personList) {
+        for (int i = 0; i < personList.size(); i++) {
             flagSrc = false;
             flagDst = false;
             for (int a = 0; a < friendsId.size(); a++) {
-                if (friendships.getSrcPersonId().equals(friendsId.get(a))) {
+                if (personList.get(i).getSrcPersonId() == friendsId.get(a)) {
                     flagSrc = true;
                 }
-                if (friendships.getDstPersonId().equals(friendsId.get(a))) {
+                if (personList.get(i).getDstPersonId().equals(friendsId.get(a))) {
                     flagDst = true;
                 }
-                if (friendships.getSrcPersonId().equals(personsEmail.get(0).getId())) {
+                if (personList.get(i).getSrcPersonId().equals(personsEmail.get(0).getId())) {
                     flagSrc = true;
                 }
-                if (friendships.getDstPersonId().equals(personsEmail.get(0).getId())) {
+                if (personList.get(i).getDstPersonId().equals(personsEmail.get(0).getId())) {
                     flagDst = true;
                 }
             }
             if (!flagSrc) {
-                friendsFriendsId.add(friendships.getSrcPersonId());
+                friendsFriendsId.add(personList.get(i).getSrcPersonId());
             }
             if (!flagDst) {
-                friendsFriendsId.add(friendships.getDstPersonId());
+                friendsFriendsId.add(personList.get(i).getDstPersonId());
             }
         }
         return friendsFriendsId;
@@ -284,7 +303,7 @@ public class FriendsService {
             friendsId.add(idRecommended.getId());
         });
         if (friendFriendsNew.size() < 10) {
-            Long limit = (long) (10 - friendFriendsNew.size());
+            int limit = 10 - friendFriendsNew.size();
             List<Person> personAll = personRepository.findPersonAll(limit);
             if (personAll == null) {
                 personAll = new ArrayList<>();
@@ -507,7 +526,7 @@ public class FriendsService {
                 }
             }
             if (!sendFriends.isEmpty() && flagFriends) {
-                friendsShipsRepository.deleteFriendUsing(idFriends);
+                friendsShipsRepository.deleteFriendUsing(Long.valueOf(idFriends));
             }
             return fillingCommonRsComplexRs(id, idFriends);
         }
