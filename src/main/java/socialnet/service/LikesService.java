@@ -1,6 +1,7 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import socialnet.api.request.LikeRq;
 import socialnet.api.response.LikeRs;
 import socialnet.dto.CommonRs;
@@ -12,7 +13,7 @@ import socialnet.security.jwt.JwtUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Service
 @RequiredArgsConstructor
 public class LikesService {
 
@@ -30,7 +31,6 @@ public class LikesService {
         }
         return new CommonRs<>(new LikeRs(likes.size(), users), (int) System.currentTimeMillis());
     }
-
 
     public CommonRs<LikeRs> putLike(String jwtToken, LikeRq likeRq) {
         Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));

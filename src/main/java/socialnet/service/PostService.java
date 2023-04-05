@@ -16,7 +16,6 @@ import socialnet.model.*;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
-
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,15 +32,9 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final JwtUtils jwtUtils;
     private final PostCommentRepository postCommentRepository;
-    private final PostMapper postMapper;
     private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
     private final TagService tagService;
-    private final Post2TagRepository post2TagRepository;
-    private final LikesService likesService;
-    private final CommentService commentService;
-
-
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -147,7 +140,7 @@ public class PostService {
         tagService.createTags(postRq.getTags(), postId);
         Person author = personRepository.findById((long) id);
         Details details = getDetails(author.getId(), postId, jwtToken);
-        PostRs postRs = postsMapper.toRs(post,details);
+        PostRs postRs = postsMapper.toRs(post, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
@@ -156,24 +149,29 @@ public class PostService {
         Person author = getAuthor(post.getAuthorId());
         Details details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
+        postRs.setTags(tagRepository.findByPostId((long) postId).stream().map(Tag::getTag).collect(Collectors.toList()));
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
     private Person getAuthor(long id) {
         return personRepository.findById(id);
     }
+
     private List<Like> getLikes(int id) {
         return likeRepository.getLikesByEntityId(id);
     }
+
     private List<Tag> getTags(int id) {
-        return tagRepository.getTagsByPostId(id);
+        return tagRepository.findByPostId((long) id);
     }
+
     private Person getAuthUser(String jwtToken) {
 
         Person person = new Person();
         person.setId(1L);
         return person;
     }
+
     private List<PostComment> getPostComments(int id) {
         return postCommentRepository.getCommentsByPostId(id);
     }
@@ -183,6 +181,7 @@ public class PostService {
         int publishDate = (int) postFromDB.getTime().getTime();
         Post post = postsMapper.toModel(postRq, publishDate, id);
         postRepository.updateById(id, post);
+        tagRepository.saveAll(postRq.getTags(), id);
         Post newPost = postRepository.findById(id);
         Person author = getAuthor(newPost.getAuthorId());
         List<Like> likes = getLikes(newPost.getId().intValue());
@@ -250,7 +249,7 @@ public class PostService {
             }
         }
         postRsList.removeAll(tempPostRsList);
-        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(),(long) postRsList.size());
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
     private Timestamp parseDate(String str) throws ParseException {
@@ -258,6 +257,7 @@ public class PostService {
         Date date = parser.parse(str);
         return new Timestamp(date.getTime());
     }
+
     @Scheduled(cron = "0 0 1 * * *")
     private void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
@@ -265,7 +265,7 @@ public class PostService {
         List<Tag> tags = new ArrayList<>();
         List<Like> likes = new ArrayList<>();
         for (Post deletingPost : deletingPosts) {
-            tags.addAll(tagRepository.getTagsByPostId(deletingPost.getId()));
+            tags.addAll(tagRepository.findByPostId(deletingPost.getId()));
             likes.addAll(likeRepository.getLikesByEntityId(deletingPost.getId()));
         }
         tagRepository.deleteAll(tags);

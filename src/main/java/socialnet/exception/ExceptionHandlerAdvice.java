@@ -41,14 +41,14 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorRs> handleBadRequestException(Exception exception) {
-        ErrorRs errorRs = new ErrorRs();
-        errorRs.setError("/api/v1/feeds returned exception");
-        errorRs.setErrorDescription(exception.getLocalizedMessage());
-        errorRs.setTimestamp(System.currentTimeMillis());
-
-        return ResponseEntity.badRequest().body(errorRs);
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ResponseEntity<ErrorRs> handleBadRequestException(Exception exception) {
+//        ErrorRs errorRs = new ErrorRs();
+//        errorRs.setError("/api/v1/feeds returned exception");
+//        errorRs.setErrorDescription(exception.getLocalizedMessage());
+//        errorRs.setTimestamp(System.currentTimeMillis());
+//
+//        return ResponseEntity.badRequest().body(errorRs);
+//    }
 }
