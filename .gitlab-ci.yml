@@ -1,0 +1,59 @@
+image: maven:3.8.6-jdk-11-slim
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+build:
+  stage: build
+  only:
+    - dev
+    - merge_requests
+  script:
+    - echo "Compiling the code..."
+    - mvn compile -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+    - merge_requests
+  script:
+    - echo "Testing the code..."
+    - mvn test -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+package:
+  stage: package
+  only:
+    - dev
+    - merge_requests
+  script:
+    - echo "Packging the code..."
+    - mvn package -am -o -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
+  artifacts:
+    paths:
+      - target/backend.jar
+  cache:
+    policy: pull
+    paths:
+      - ./target
+      - ./.m2
+
+deploy:
+  stage: deploy
+  only:
+    - dev
+    - merge_requests
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
