@@ -26,4 +26,14 @@ public class CommonRs<T> {
         this.data = data;
         this.timestamp = timestamp;
     }
+
+    public CommonRs(T data) {
+        this.data = data;
+        this.itemPerPage = 20;
+        this.offset = 0;
+        this.perPage = 20;
+        this.timestamp = System.currentTimeMillis();
+        this.total = 0L;
+    }
+
 }

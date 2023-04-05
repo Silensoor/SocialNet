@@ -2,10 +2,12 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Person;
+import socialnet.utils.Reflection;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ import java.util.List;
 public class PersonRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final Reflection reflection;
 
     public void save(Person person) {
         jdbcTemplate.update(
@@ -74,6 +77,12 @@ public class PersonRepository {
         }
     }
 
+    public void deleteUser(String email) {
+        //jdbcTemplate.update("Update Persons set user_deleted = true Where email = ?", email);
+        jdbcTemplate.update("Delete from Persons Where email = ?", email);
+    }
+
+
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {
         Person person = new Person();
         person.setId(resultSet.getLong("id"));
@@ -104,5 +113,42 @@ public class PersonRepository {
         return person;
     };
 
+    public Boolean setPassword(Long userId, String password) {
+        Integer rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", password, userId);
+        return rowCount == 1 ? true : false;
+    }
+
+    public Boolean setEmail(Long userId, String email) {
+        Integer rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", email, userId);
+        return rowCount == 1 ? true : false;
+    }
+
+    public Person getPersonByEmail(String email) {
+        return jdbcTemplate.query("Select * from Persons where email = ?",
+                new Object[]{email},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+    }
+
+    public void updatePersonInfo(socialnet.dto.users.UserUpdateDto userData, String email) {
+        String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = '" + email + "'";
+
+        Object[] objects = reflection.getObjectsArray(userData);
+        int[] types = reflection.getTypesArray(userData);
+
+        jdbcTemplate.update(sql,
+                objects,
+                types);
+    }
+
+    public void updatePersonInfo_new(socialnet.dto.users.UserUpdateDto userData, String email) {
+        String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = ?";
+
+        Object[] objects = reflection.getObjectsArray(userData);
+        Object[] paramObjects = new Object[objects.length + 1];
+        System.arraycopy(objects,0,paramObjects, 0, paramObjects.length);
+        paramObjects[paramObjects.length - 1] = email;
+
+        jdbcTemplate.update(sql, paramObjects);
+    }
 
 }
