@@ -2,7 +2,6 @@ package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import socialnet.service.LoginService;
 import socialnet.service.PersonService;
 
 @RestController
@@ -10,12 +9,11 @@ import socialnet.service.PersonService;
 @RequiredArgsConstructor
 public class UsersController {
 
-    private final LoginService loginService;
     private final PersonService personService;
 
     @GetMapping("/me")
     public Object Me(@RequestHeader(name = "authorization") String authorization) {
-        return loginService.getMe(authorization);
+        return personService.getMe(authorization);
     }
 
     @GetMapping("/{id}")
