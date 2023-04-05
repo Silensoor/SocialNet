@@ -3,7 +3,7 @@ package socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.service.LoginService;
-import socialnet.service.UserByIdService;
+import socialnet.service.PersonService;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -11,7 +11,7 @@ import socialnet.service.UserByIdService;
 public class UsersController {
 
     private final LoginService loginService;
-    private final UserByIdService userByIdService;
+    private final PersonService personService;
 
     @GetMapping("/me")
     public Object Me(@RequestHeader(name = "authorization") String authorization) {
@@ -20,6 +20,6 @@ public class UsersController {
 
     @GetMapping("/{id}")
     public Object Id(@RequestHeader(name = "authorization") String authorization, @PathVariable(name = "id") Integer id) {
-        return userByIdService.getUserById(authorization, id);
+        return personService.getUserById(authorization, id);
     }
 }

@@ -9,7 +9,7 @@ import socialnet.repository.PersonRepository;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserByIdService {
+public class PersonService {
 
     private final PersonRepository personRepository;
     private final LoginService loginService;
