@@ -14,6 +14,9 @@ import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.Converter;
+
+import java.sql.Timestamp;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class UpdateService {
     private final PersonMapper personMapper;
     private final UserDtoMapper userDtoMapper;
     private final JwtUtils jwtUtils;
+    private final Converter converter;
     public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
 
         if (!jwtUtils.validateJwtToken(authorization)) {//401
