@@ -69,6 +69,12 @@ public class PostRepository {
         return true;
     }
 
+    public List<Post> findPostsByUserId(Long id) {
+        return jdbcTemplate.query("Select * from Posts Where id = ?",
+                new Object[]{id},
+                new BeanPropertyRowMapper<>(Post.class));
+    }
+
     private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
         Post post = new Post();
         post.setId(resultSet.getLong("id"));
