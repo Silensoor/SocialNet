@@ -1,6 +1,7 @@
 package socialnet.service.users;
 
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,6 @@ import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.Converter;
-
-import java.sql.Timestamp;
 
 @Service
 @RequiredArgsConstructor
@@ -55,12 +54,17 @@ public class UpdateService {
     }
 
     private void setPersonNames(UserUpdateDto userUpdateDto, Person person) {
-        if (userUpdateDto.getFirstName() == null) {
-            userUpdateDto.setFirstName(person.getFirstName());
+
+        if (userUpdateDto.getPhoto() == null) {
+            userUpdateDto.setPhoto("/image/man.png");
         }
 
-        if (userUpdateDto.getLastName() == null) {
-            userUpdateDto.setLastName(person.getLastName());
-        }
+//        if (userUpdateDto.getFirstName() == null) {
+//            userUpdateDto.setFirstName(person.getFirstName());
+//        }
+//
+//        if (userUpdateDto.getLastName() == null) {
+//            userUpdateDto.setLastName(person.getLastName());
+//        }
     }
 }
