@@ -1,11 +1,11 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import socialnet.service.LoginService;
-import socialnet.service.UserByIdService;
-
-import javax.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -13,15 +13,9 @@ import javax.websocket.server.PathParam;
 public class UsersController {
 
     private final LoginService loginService;
-    private final UserByIdService userByIdService;
 
     @GetMapping("/me")
     public Object Me(@RequestHeader(name = "authorization") String authorization) {
         return loginService.getMe(authorization);
-    }
-
-    @GetMapping("/{id}")
-    public Object Id(@RequestHeader(name = "authorization") String authorization, @PathVariable(name = "id") Integer id) {
-        return userByIdService.getUserById(authorization, id);
     }
 }
