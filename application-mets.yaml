@@ -1,0 +1,28 @@
+server:
+  port: ${PORT:8086}
+  servlet:
+    context-path: /
+
+spring:
+  config:
+    activate:
+      on-profile: mets
+  datasource:
+    hikari:
+      data-source-properties:
+        useConfigs: maxPerformance
+        rewriteBatchedInserts: true
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/socialnet
+    username: postgres
+    password: test
+    driverClassName: org.postgresql.Driver
+  liquibase:
+    enabled: true
+  security:
+    user:
+      name: admin
+      password: admin
+auth:
+  secret: socialNet
+  timeLive: 216000

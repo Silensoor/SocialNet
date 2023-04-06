@@ -1,21 +1,23 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import socialnet.service.LoginService;
+import org.springframework.web.bind.annotation.*;
+import socialnet.service.PersonService;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UsersController {
 
-    private final LoginService loginService;
+    private final PersonService personService;
 
     @GetMapping("/me")
     public Object Me(@RequestHeader(name = "authorization") String authorization) {
-        return loginService.getMe(authorization);
+        return personService.getMe(authorization);
+    }
+
+    @GetMapping("/{id}")
+    public Object Id(@RequestHeader(name = "authorization") String authorization, @PathVariable(name = "id") Integer id) {
+        return personService.getUserById(authorization, id);
     }
 }

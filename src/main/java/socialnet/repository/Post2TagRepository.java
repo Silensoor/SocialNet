@@ -1,12 +1,15 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Post2Tag;
+import socialnet.model.Tag;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -22,5 +25,14 @@ public class Post2TagRepository {
         values.put("post_id", post2Tag.getPostId());
 
         simpleJdbcInsert.execute(values);
+    }
+
+    public List<Tag> findTagsByPostId(Long postId) {
+        return jdbcTemplate.query(
+                "Select t.id, t.tag From post2tag p\n" +
+                        "join tags t on (p.post_id = t.id)\n" +
+                        "Where p.post_id = ?",
+                new Object[]{postId},
+                new BeanPropertyRowMapper<>(Tag.class));
     }
 }
