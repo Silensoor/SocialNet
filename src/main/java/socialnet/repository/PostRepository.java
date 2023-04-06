@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -87,4 +88,12 @@ public class PostRepository {
         post.setAuthorId(resultSet.getLong("author_id"));
         return post;
     };
+
+    public List<Post> findPostStringSql(String sql) {
+        try {
+            return this.jdbcTemplate.query(sql, postRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
 }

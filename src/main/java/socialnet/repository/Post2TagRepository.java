@@ -1,10 +1,13 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import socialnet.model.Post;
 import socialnet.model.Post2Tag;
 import socialnet.model.Tag;
 
@@ -35,4 +38,20 @@ public class Post2TagRepository {
                 new Object[]{postId},
                 new BeanPropertyRowMapper<>(Tag.class));
     }
+
+    public List<Post2Tag> getQuery(String sql1) {
+        try {
+            return this.jdbcTemplate.query(sql1, post2TagRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    private final RowMapper<Post2Tag> post2TagRowMapper = (resultSet, rowNum) -> {
+        Post2Tag post2Tag = new Post2Tag();
+        post2Tag.setId(resultSet.getLong("id"));
+        post2Tag.setPostId(resultSet.getLong("post_id"));
+        post2Tag.setTagId(resultSet.getLong("tag_id"));
+        return post2Tag;
+    };
 }

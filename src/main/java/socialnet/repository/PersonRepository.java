@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Person;
+import socialnet.model.Post;
 import socialnet.utils.Reflection;
 
 import java.util.List;
@@ -78,7 +79,6 @@ public class PersonRepository {
     }
 
     public void deleteUser(String email) {
-        //jdbcTemplate.update("Update Persons set user_deleted = true Where email = ?", email);
         jdbcTemplate.update("Delete from Persons Where email = ?", email);
     }
 
@@ -151,4 +151,11 @@ public class PersonRepository {
         jdbcTemplate.update(sql, paramObjects);
     }
 
+    public List<Person> findPersonsQuery(String sql) {
+        try {
+            return this.jdbcTemplate.query(sql, personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
 }

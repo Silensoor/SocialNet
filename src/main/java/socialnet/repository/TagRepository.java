@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.RowMapper;
@@ -40,4 +41,12 @@ public class TagRepository {
 
         return tag;
     };
+
+    public List<Tag> getTagsByQuery(String sql) {
+        try {
+            return this.jdbcTemplate.query(sql, tagRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
 }

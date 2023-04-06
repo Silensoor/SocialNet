@@ -9,6 +9,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.PostRs;
 import socialnet.dto.PostRq;
 import socialnet.service.PostService;
+import socialnet.service.users.FindPostService;
 
 import java.text.ParseException;
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostsController {
     private final PostService postsService;
+
+    private final FindPostService findPostService;
 
     @GetMapping("/api/v1/feeds")
     public ResponseEntity<CommonRs<List<PostRs>>> getFeeds(
@@ -70,7 +73,7 @@ public class PostsController {
             @RequestParam(required = false) int perPage,
             @RequestParam(required = false) String[] tags,
             @RequestParam(required = false) String text) throws ParseException {
-        return postsService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
+        return findPostService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
 
     }
 }
