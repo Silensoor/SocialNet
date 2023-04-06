@@ -12,43 +12,61 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class PersonRepository {
-
     private final JdbcTemplate jdbcTemplate;
 
     public void save(Person person) {
         jdbcTemplate.update(
-                "INSERT INTO persons " +
-                        "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
-                person.getFirstName(),
-                person.getLastName(),
-                person.getPassword(),
-                person.getRegDate(),
-                person.getIsApproved(),
-                person.getIsBlocked(),
-                person.getIsDeleted()
+            "INSERT INTO persons " +
+            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            person.getEmail(),
+            person.getFirstName(),
+            person.getLastName(),
+            person.getPassword(),
+            person.getRegDate(),
+            person.getIsApproved(),
+            person.getIsBlocked(),
+            person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
-        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE email = ?", personRowMapper, email);
-    }
-
-    public Person findById(Long authorId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?", personRowMapper, authorId);
-    }
-
-    public List<Person> findPersonAll(Long limit) {
         try {
-            return this.jdbcTemplate.query("SELECT * FROM persons LIMIT ?", new Object[]{limit}, personRowMapper);
-
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
+            );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    public List<Person> findPersonFriendsAll(String sql) {
+    public Person findById(Long authorId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE id = ?",
+                personRowMapper,
+                authorId
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findAll(Long limit) {
+        try {
+            return this.jdbcTemplate.query(
+                "SELECT * FROM persons LIMIT ?",
+                new Object[] { limit },
+                personRowMapper
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findFriendsAll(String sql) {
         try {
             return this.jdbcTemplate.query(sql, personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
@@ -58,17 +76,23 @@ public class PersonRepository {
 
     public List<Person> findPersonsEmail(String email) {
         try {
-            return this.jdbcTemplate.query("SELECT * FROM persons WHERE email = ?",
-                    new Object[]{email}, personRowMapper);
+            return this.jdbcTemplate.query(
+                "SELECT * FROM persons WHERE email = ?",
+                new Object[]{email},
+                personRowMapper
+            );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    public List<Person> findPersonsCity(String city) {
+    public List<Person> findByCity(String city) {
         try {
-            return this.jdbcTemplate.query("SELECT * FROM persons WHERE city = ?",
-                    new Object[]{city}, personRowMapper);
+            return this.jdbcTemplate.query(
+                "SELECT * FROM persons WHERE city = ?",
+                new Object[] { city },
+                personRowMapper
+            );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -103,6 +127,4 @@ public class PersonRepository {
 
         return person;
     };
-
-
 }

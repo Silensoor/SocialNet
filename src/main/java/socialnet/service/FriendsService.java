@@ -60,7 +60,7 @@ public class FriendsService {
             if (!friendsId.isEmpty()) {
                 String sql = "SELECT * FROM persons WHERE";
                 String friendsIdString = friendsIdStringMethod(friendsId, sql);
-                personList = personRepository.findPersonFriendsAll(friendsIdString);
+                personList = personRepository.findFriendsAll(friendsIdString);
             }
             if (personList == null) {
                 personList = new ArrayList<>();
@@ -164,7 +164,7 @@ public class FriendsService {
             if (!requestsId.isEmpty()) {
                 String sql = "SELECT * FROM persons WHERE";
                 String friendsIdString = friendsIdStringMethod(requestsId, sql);
-                personList = personRepository.findPersonFriendsAll(friendsIdString);
+                personList = personRepository.findFriendsAll(friendsIdString);
             }
             if (personList == null) {
                 personList = new ArrayList<>();
@@ -215,7 +215,7 @@ public class FriendsService {
             if (!friendsFriendsId2.isEmpty()) {
                 String sql = "SELECT * FROM persons WHERE";
                 String searchIdFriendFriends = friendsIdStringMethod(friendsFriendsId2, sql);
-                friendFriendsNew = personRepository.findPersonFriendsAll(searchIdFriendFriends);
+                friendFriendsNew = personRepository.findFriendsAll(searchIdFriendFriends);
             }
             if (friendFriendsNew == null) {
                 friendFriendsNew = new ArrayList<>();
@@ -273,7 +273,7 @@ public class FriendsService {
                                                         List<Person> personsEmail, List<Friendships> personList) {
         final String city = personsEmail.get(0).getCity();
         List<Person> friendFriendsNewAddCity = new ArrayList<>();
-        List<Person> personsCity = personRepository.findPersonsCity(city);
+        List<Person> personsCity = personRepository.findByCity(city);
         if (personsCity == null) {
             personsCity = new ArrayList<>();
         }
@@ -285,7 +285,7 @@ public class FriendsService {
         });
         if (friendFriendsNew.size() < 10) {
             int limit = 10 - friendFriendsNew.size();
-            List<Person> personAll = personRepository.findPersonAll((long) limit);
+            List<Person> personAll = personRepository.findAll((long) limit);
             if (personAll == null) {
                 personAll = new ArrayList<>();
             }
@@ -316,7 +316,7 @@ public class FriendsService {
             if (!requestsId.isEmpty()) {
                 String sql = "SELECT * FROM persons WHERE";
                 String friendsIdString = friendsIdStringMethod(requestsId, sql);
-                personList = personRepository.findPersonFriendsAll(friendsIdString);
+                personList = personRepository.findFriendsAll(friendsIdString);
                 if (personList == null) {
                     personList = new ArrayList<>();
                 }
