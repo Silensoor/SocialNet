@@ -1,9 +1,9 @@
-image: maven:3.8.6-jdk-11-slim
+#image: maven:3.8.6-jdk-11-slim
 
-variables:
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: "unix:///var/run/docker.sock"
-  DOCKER_DRIVER: overlay2
+#variables:
+#  DOCKER_TLS_CERTDIR: ""
+#  DOCKER_HOST: "unix:///var/run/docker.sock"
+#  DOCKER_DRIVER: overlay2
 
 stages:
   - build
@@ -59,7 +59,7 @@ package:
 
 deploy:
   stage: deploy
-  image: creatiwww/docker-compose:latest
+#  image: creatiwww/docker-compose:latest
   only:
     - dev
   tags:
