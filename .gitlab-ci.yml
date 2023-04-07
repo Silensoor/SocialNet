@@ -58,5 +58,9 @@ deploy:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker-compose down
-    - docker-compose up --build -d
+    - docker stop backend
+    - docker rm backend
+    - docker build -t backend .
+    - docker run --name="backend" -d -p 8086:8086 backend
+    #- docker-compose down
+    #- docker-compose up --build -d
