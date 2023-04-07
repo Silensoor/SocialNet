@@ -57,11 +57,9 @@ deploy:
   tags:
     - socialnet_runner
   script:
-    #- echo "Deploying..."
-    #- (docker ps -a -q --filter="name=backend" | xargs docker stop | xargs docker rm) || echo "No containers to remove"
-    #- (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
-    #- (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
-    #- docker build -t backend .
-    #- docker run --name="backend" -d -p 8086:8086 backend
+    - echo "Deploying..."
     - docker-compose down
+    - (docker ps -a -q --filter="name=backend" | xargs docker stop | xargs docker rm) || echo "No containers to remove"
+    - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
+    - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
