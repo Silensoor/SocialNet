@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestCICDController {
     @GetMapping("/")
     public String test() {
-        return "Test CI/CD completed";
+        return "Test CI/CD completed #2";
     }
 }
