@@ -52,7 +52,7 @@ package:
     - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
-      - target/backend.jar
+      - ./target/backend.jar
   cache:
     policy: pull
     paths:
@@ -62,6 +62,7 @@ package:
 deploy:
   stage: deploy
   #image: creatiwww/docker-compose:latest
+  image: docker:stable
   only:
     - dev
   tags:
