@@ -62,14 +62,14 @@ package:
 deploy:
   stage: deploy
   #image: creatiwww/docker-compose:latest
-  #image: docker:stable
+  image: docker:stable
   only:
     - dev
   tags:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker ps -a -q --filter="name=backend"
+    - docker container prune --filter "name=back"
     - docker build --no-cache -t backend .
     - docker run -d -p 8086:8086 --name back backend
     #- docker-compose down
