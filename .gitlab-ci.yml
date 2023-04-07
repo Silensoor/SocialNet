@@ -58,8 +58,11 @@ deploy:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker stop backend
-    - docker rm backend
+    - docker kill $$(docker ps --filter="name=backend" -q) || true
+    - docker rm -f $$(docker ps -a --filter="name=backend status=exited" -q) || true
+    - docker rmi -f $$(docker images -f "dangling=true" -q) || true
+    - docker rmi -f $$(docker images --filter="reference=backend" -q) || true
+    - docker volume rm -f $$(docker volume ls -q) || true
     - docker build -t backend .
     - docker run --name="backend" -d -p 8086:8086 backend
     #- docker-compose down
