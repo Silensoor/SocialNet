@@ -2,7 +2,8 @@ image: maven:3.8.6-jdk-11-slim
 
 variables:
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: "tcp://localhost:2375"
+  DOCKER_HOST: "unix:///var/run/docker.sock"
+  DOCKER_DRIVER: overlay2
 
 stages:
   - build
