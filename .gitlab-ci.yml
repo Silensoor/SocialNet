@@ -1,6 +1,7 @@
 #image: maven:3.8.6-jdk-11-slim
 
-#variables:
+variables:
+  PASSWORD: kfS154%qre
 #  DOCKER_TLS_CERTDIR: ""
 #  DOCKER_HOST: "unix:///var/run/docker.sock"
 #  DOCKER_DRIVER: overlay2
@@ -66,5 +67,5 @@ deploy:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - sudo docker-compose down
-    - sudo docker-compose up --build -d
+    - echo $PASSOWRD | sudo -S docker-compose down
+    - echo $PASSOWRD | sudo -S docker-compose up --build -d
