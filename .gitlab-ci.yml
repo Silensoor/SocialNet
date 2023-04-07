@@ -42,7 +42,7 @@ package:
     - socialnet_runner
   script:
     - echo "Packging..."
-    - mvn package -am -o -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
+    - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
       - target/backend.jar
