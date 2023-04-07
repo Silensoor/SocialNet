@@ -52,7 +52,7 @@ package:
     - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
-      - /target/backend.jar
+      - target/backend.jar
   cache:
     policy: pull
     paths:
@@ -61,16 +61,12 @@ package:
 
 deploy:
   stage: deploy
-  #image: creatiwww/docker-compose:latest
-  image: docker:stable
+  image: creatiwww/docker-compose:latest
   only:
     - dev
   tags:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker container prune --filter "name=back"
-    - docker build --no-cache -t backend .
-    - docker run -d -p 8086:8086 --name back backend
-    #- docker-compose down
-    #- docker-compose up --build -d
+    - docker-compose down
+    - docker-compose up --build -d
