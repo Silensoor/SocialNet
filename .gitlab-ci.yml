@@ -5,7 +5,7 @@ services:
 
 variables:
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: "tcp://localhost:2375"
+  DOCKER_HOST: "tcp://81.177.6.228:2375"
 
 stages:
   - build
@@ -52,7 +52,7 @@ package:
     - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
-      - /builds/TziXu4xT/0/javapro_team37/javaproteams37backend/target/backend.jar
+      - target/backend.jar
   cache:
     policy: pull
     paths:
