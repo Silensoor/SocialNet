@@ -50,7 +50,7 @@ package:
     - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
-      - target/backend.jar
+      - target/javapro37backend-0.0.1-SNAPSHOT.jar
   cache:
     policy: pull
     paths:
