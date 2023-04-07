@@ -60,8 +60,6 @@ package:
 deploy:
   stage: deploy
   image: creatiwww/docker-compose:latest
-  services:
-    - docker:dind
   only:
     - dev
   tags:
