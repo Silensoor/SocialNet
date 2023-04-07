@@ -1,0 +1,57 @@
+image: maven:3.8.6-jdk-11-slim
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+build:
+  stage: build
+  only:
+    - dev
+  script:
+    - echo "Compiling..."
+    - mvn compile -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+  script:
+    - echo "Testing..."
+    - mvn test -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+package:
+  stage: package
+  only:
+    - dev
+  script:
+    - echo "Packging..."
+    - mvn package -am -o -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
+  artifacts:
+    paths:
+      - target/backend.jar
+  cache:
+    policy: pull
+    paths:
+      - ./target
+      - ./.m2
+
+deploy:
+  stage: deploy
+  image: docker/compose:1.29.2
+  only:
+    - dev
+  script:
+    - echo "Deploying..."
+    - docker-compose down
+    - docker-compose up --build -d
