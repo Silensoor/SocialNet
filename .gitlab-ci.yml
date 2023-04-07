@@ -1,0 +1,70 @@
+image: maven:3.8.6-jdk-11-slim
+
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: "unix:///var/run/docker.sock"
+  DOCKER_DRIVER: overlay2
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+build:
+  stage: build
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Compiling..."
+    - mvn compile -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Testing..."
+    - mvn test -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+package:
+  stage: package
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Packging..."
+    - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
+  artifacts:
+    paths:
+      - target/backend.jar
+  cache:
+    policy: pull
+    paths:
+      - ./target
+      - ./.m2
+
+deploy:
+  stage: deploy
+  image: creatiwww/docker-compose:latest
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Deploying..."
+    - docker-compose down
+    - docker-compose up --build -d
