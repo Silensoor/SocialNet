@@ -1,11 +1,3 @@
-#image: maven:3.8.6-jdk-11-slim
-
-#variables:
-#  PASSWORD: kfS154%qre
-#  DOCKER_TLS_CERTDIR: ""
-#  DOCKER_HOST: "unix:///var/run/docker.sock"
-#  DOCKER_DRIVER: overlay2
-
 stages:
   - build
   - test
@@ -60,7 +52,6 @@ package:
 
 deploy:
   stage: deploy
-#  image: creatiwww/docker-compose:latest
   only:
     - dev
   tags:
@@ -69,5 +60,3 @@ deploy:
     - echo "Deploying..."
     - docker-compose down
     - docker-compose up --build -d
-    #- echo $PASSOWRD | sudo -S docker-compose down
-    #- echo $PASSOWRD | sudo -S docker-compose up --build -d
