@@ -11,7 +11,7 @@ databaseChangeLog:
       id: 13_32
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: message_id
+            baseColumnNames: last_message_id
             baseTableName: dialogs
             constraintName: fk_dialogs-message
             referencedColumnNames: id
