@@ -1,5 +1,8 @@
 image: maven:3.8.6-jdk-11-slim
 
+services:
+  - docker:dind
+
 stages:
   - build
   - test
@@ -61,5 +64,5 @@ deploy:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker-compose down
-    - docker-compose up --build -d
+    - docker-compose -H "81.177.6.228" down
+    - docker-compose -H "81.177.6.228" up --build -d
