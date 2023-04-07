@@ -1,11 +1,8 @@
 image: maven:3.8.6-jdk-11-slim
 
-#services:
-#  - docker:dind
-
 variables:
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: "tcp://81.177.6.228:2375"
+  DOCKER_HOST: "tcp://localhost:2375"
 
 stages:
   - build
@@ -52,7 +49,7 @@ package:
     - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
-      - backend.jar
+      - ./target/backend.jar
   cache:
     policy: pull
     paths:
