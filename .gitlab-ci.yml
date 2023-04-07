@@ -10,6 +10,8 @@ build:
   stage: build
   only:
     - dev
+  tags:
+    - snr
   script:
     - echo "Compiling..."
     - mvn compile -Dmaven.repo.local=./.m2/repository
@@ -22,6 +24,8 @@ test:
   stage: test
   only:
     - dev
+  tags:
+    - snr
   script:
     - echo "Testing..."
     - mvn test -Dmaven.repo.local=./.m2/repository
@@ -34,6 +38,8 @@ package:
   stage: package
   only:
     - dev
+  tags:
+    - snr
   script:
     - echo "Packging..."
     - mvn package -am -o -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
@@ -51,6 +57,8 @@ deploy:
   image: docker/compose:1.29.2
   only:
     - dev
+  tags:
+    - snr
   script:
     - echo "Deploying..."
     - docker-compose down
