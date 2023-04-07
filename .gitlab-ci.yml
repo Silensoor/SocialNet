@@ -64,5 +64,5 @@ deploy:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker-compose -H "81.177.6.228" down
-    - docker-compose -H "81.177.6.228" up --build -d
+    - docker-compose down
+    - docker-compose up --build -d
