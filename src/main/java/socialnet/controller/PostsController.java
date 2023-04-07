@@ -20,11 +20,11 @@ public class PostsController {
     private final PostService postsService;
 
     @GetMapping("/api/v1/feeds")
-    public CommonRs<List<PostRs>> getFeeds(
+    public ResponseEntity<CommonRs<List<PostRs>>> getFeeds(
             @RequestHeader(name = "authorization") String jwtToken,
-            @RequestParam int offset,
-            @RequestParam int perPage) {
-        return postsService.getFeeds(jwtToken, offset, perPage);
+            @RequestParam(required = false, defaultValue = "0") Integer offset,
+            @RequestParam(required = false, defaultValue = "20") Integer perPage) {
+        return new ResponseEntity<>(postsService.getFeeds(jwtToken, offset, perPage), HttpStatus.OK);
     }
     @PostMapping("/api/v1/users/{id}/wall")
     public ResponseEntity<CommonRs<PostRs>> createPost(

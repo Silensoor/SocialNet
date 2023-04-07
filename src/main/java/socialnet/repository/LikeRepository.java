@@ -22,9 +22,8 @@ public class LikeRepository {
     }
 
     public List<Like> getLikesByEntityId(long postId) {
-        String select = "SELECT * FROM likes WHERE entity_id = ?";
-        Object[] objects = new Object[]{postId};
-        return jdbcTemplate.query(select, objects, new BeanPropertyRowMapper<>(Like.class));
+        String select = "SELECT * FROM likes WHERE entity_id = " + postId;
+        return jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Like.class));
     }
 
     public Integer save(Like like) {
@@ -42,7 +41,7 @@ public class LikeRepository {
     }
 
     public void delete(Like like) {
-        String delete = String.format("DELETE FROM likes WHERE id = %d", like.getId());
+        String delete = "DELETE FROM likes WHERE id = " + like.getId();
         jdbcTemplate.execute(delete);
     }
 

@@ -26,8 +26,6 @@ public class LikesController {
     public ResponseEntity<CommonRs<LikeRs>> putLike(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestBody LikeRq likeRq) {
-        System.out.println("like!");
-
         return new ResponseEntity<>(likesService.putLike(jwtToken, likeRq), HttpStatus.OK);
     }
     @DeleteMapping("/api/v1/likes")

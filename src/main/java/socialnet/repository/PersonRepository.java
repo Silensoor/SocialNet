@@ -2,9 +2,11 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import socialnet.exception.PostException;
 import socialnet.model.Person;
 
 import java.util.List;
@@ -36,7 +38,10 @@ public class PersonRepository {
     }
 
     public Person findById(Long authorId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?", personRowMapper, authorId);
+        String select = "SELECT * FROM persons WHERE id = " + authorId;
+        List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
+        if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+        return personList.get(0);
     }
 
     public List<Person> findPersonAll(Long limit) {

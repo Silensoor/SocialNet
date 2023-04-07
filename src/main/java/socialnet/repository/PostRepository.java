@@ -63,6 +63,11 @@ public class PostRepository {
         jdbcTemplate.update(update);
     }
 
+    public void markAsDeleteById(int id, Post post) {
+        String update = "UPDATE posts SET is_deleted = " + post.getIsDeleted() + ", time_delete = \'" + post.getTimeDelete() + "\' WHERE id = " + id;
+        jdbcTemplate.update(update);
+    }
+
     public boolean deleteById(int id) {
         String delete = "DELETE FROM posts WHERE id = " + id;
         jdbcTemplate.execute(delete);

@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Post2Tag;
 import socialnet.model.Tag;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -19,8 +21,8 @@ public class TagRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Tag> findByPostId(Long postId) {
-
-        return jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
+        List<Tag> tags = jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
+        return tags.stream().filter(t -> t.getTag() != null).collect(Collectors.toList());
     }
     public List<Tag> getTagsByPostId(long postId) {
 
@@ -47,7 +49,6 @@ public class TagRepository {
             tag.setId(resultSet.getLong("id"));
             tag.setTag(resultSet.getString("tag"));
         }
-
         return tag;
     };
 

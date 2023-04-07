@@ -97,6 +97,7 @@ public class PostService {
         List<Post> posts = postRepository.findAll();
         List<PostRs> postRsList = new ArrayList<>();
         for (Post post : posts) {
+            if(post.getIsDeleted()) continue;
             int postId = post.getId().intValue();
             Details details = getDetails(post.getAuthorId(), postId, jwtToken);
             PostRs postRs = postsMapper.toRs(post, details);
@@ -166,10 +167,7 @@ public class PostService {
     }
 
     private Person getAuthUser(String jwtToken) {
-
-        Person person = new Person();
-        person.setId(1L);
-        return person;
+        return personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
     }
 
     private List<PostComment> getPostComments(int id) {
@@ -197,8 +195,8 @@ public class PostService {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(true);
         postFromDB.setTimeDelete(new Timestamp(System.currentTimeMillis()));
-        postRepository.updateById(id, postFromDB);
-        Person author = getAuthor(postFromDB.getId());
+        postRepository.markAsDeleteById(id, postFromDB);
+        Person author = getAuthor(postFromDB.getAuthorId());
         Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
