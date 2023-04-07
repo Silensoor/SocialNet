@@ -61,12 +61,15 @@ package:
 
 deploy:
   stage: deploy
-  image: creatiwww/docker-compose:latest
+  #image: creatiwww/docker-compose:latest
   only:
     - dev
   tags:
     - socialnet_runner
   script:
     - echo "Deploying..."
-    - docker-compose down
-    - docker-compose up --build -d
+    - docker ps -a -q --filter="name=backend"
+    - docker build --no-cache -t backend .
+    - docker run -d -p 8086:8086 --name back backend
+    #- docker-compose down
+    #- docker-compose up --build -d
