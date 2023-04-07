@@ -54,7 +54,7 @@ package:
 
 deploy:
   stage: deploy
-  image: docker/compose:1.29.2
+  image: creatiwww/docker-compose:latest
   only:
     - dev
   tags:
