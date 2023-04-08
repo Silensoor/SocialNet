@@ -1,14 +1,12 @@
-package socialnet;
+package socialnet.service.notifications;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import socialnet.service.notification.WebSocketAuthInterceptor;
 
 @Configuration
 @EnableWebSocket
@@ -16,12 +14,11 @@ import socialnet.service.notification.WebSocketAuthInterceptor;
 @RequiredArgsConstructor
 class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final WebSocketAuthInterceptor websocketAuthInterceptor;
-
 
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/queue/");
+        config.enableSimpleBroker("/user");
         config.setUserDestinationPrefix("/user");
+        config.setApplicationDestinationPrefixes("/api/v1");
     }
 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -29,7 +26,4 @@ class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
     }
 
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(websocketAuthInterceptor);
-    }
 }
