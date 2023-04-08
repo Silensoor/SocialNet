@@ -1,4 +1,4 @@
-package socialnet.service.notification;
+package socialnet.service.notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
