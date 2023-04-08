@@ -101,25 +101,25 @@ public class FindUserService {
 
     private String createSqlPerson(Object[] args) throws ParseException {
         String sql = "SELECT * FROM persons WHERE";
-        if (args[1] != null) {
+        if (args[1] != null && (Integer) args[1] > 0) {
             val ageFrom = parseDate((String) args[1]);
             sql = sql + " birth_date < '" + ageFrom + "' AND ";
         }
-        if (args[2] != null) {
+        if (args[2] != null && (Integer) args[2] > 0) {
             val ageTo = parseDate((String) args[1]);
             sql = sql + " birth_date > '" + ageTo + "' AND ";
         }
-        if (args[3] != null) {
+        if (args[3] != null && args[3] != "") {
             sql = sql + " city = '" + args[3] + "' AND ";
         }
-        if (args[4] != null) {
+        if (args[4] != null && args[4] != "") {
             sql = sql + " first_name = '" + args[4] + "' AND ";
         }
-        if (args[5] != null) {
+        if (args[5] != null && args[5] != "") {
             sql = sql + " last_name = '" + args[5] + "' AND ";
         }
         String str = sql.substring(sql.length() - 5);
-        if (str.equals("' AND ")) {
+        if (str.equals(" AND ")) {
             return sql.substring(0, sql.length() - 5);
         }
         return sql;
