@@ -41,5 +41,7 @@ databaseChangeLog:
       file: db/changelog/changelogset/add-constrains-persons-table.yaml
   - include:
       file: db/changelog/changelogset/add-constraints.yaml
+  - include:
+      file: db/changelog/changelogset/correct-fk_dialogs-message.yaml
 #  - include:
 #      file: db/changelog/changelogset/populate-database.yaml
