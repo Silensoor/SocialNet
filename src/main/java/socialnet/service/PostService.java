@@ -4,26 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import socialnet.api.request.PostRq;
 import socialnet.api.response.*;
-import socialnet.dto.PostRq;
 import socialnet.mapper.PostCommentMapper;
 import socialnet.mapper.PostsMapper;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.PostMapper;
 import socialnet.model.*;
-
-import socialnet.model.Comment;
-import socialnet.model.Person;
-import socialnet.model.Post;
-import socialnet.model.Tag;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -186,10 +179,6 @@ public class PostService {
         postRepository.updateById(id, post);
         Post newPost = postRepository.findById(id);
         Person author = getAuthor(newPost.getAuthorId());
-        List<Like> likes = getLikes(newPost.getId().intValue());
-        List<Tag> tags = getTags(newPost.getId().intValue());
-        List<PostComment> postComments = getPostComments(newPost.getId().intValue());
-        List<CommentRs> comments = getComments(postComments, jwtToken);
         Details details = getDetails(author.getId(), newPost.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(newPost, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());

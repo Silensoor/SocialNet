@@ -19,7 +19,7 @@ public class TagRepository {
 
     public List<Tag> findByPostId(Long postId) {
 
-        return jdbcTemplate.query("SELECT tags.tag FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
+        return jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
     }
     public List<Tag> getTagsByPostId(long postId) {
         return jdbcTemplate.queryForList("SELECT * FROM post2tag WHERE post_id = " + postId, Tag.class);

@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import socialnet.api.response.ErrorRs;
 
-import java.sql.Timestamp;
-
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
     @ExceptionHandler(RegisterException.class)
