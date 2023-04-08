@@ -1,10 +1,7 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.RegisterRs;
 import socialnet.service.AccountService;
@@ -20,5 +17,9 @@ public class AccountController {
     @PostMapping("/register")
     public RegisterRs register(@Valid @RequestBody RegisterRq regRequest) {
         return accountService.getRegisterData(regRequest);
+    }
+    @GetMapping("notifications")
+    public Object notifications(@RequestHeader String authorization){
+        return  new Object();
     }
 }
