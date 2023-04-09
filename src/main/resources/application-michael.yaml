@@ -10,7 +10,7 @@ spring:
 
 auth:
   secret: socialNet
-  timeLive: 216000
+  timeLive: 216000000
 
 socialnet:
   sheduled:

@@ -103,7 +103,7 @@ public class PostService {
             PostRs postRs = postsMapper.toRs(post, details);
             postRsList.add(postRs);
         }
-        postRsList.sort(Comparator.comparing(PostRs::getTime));
+        postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
         return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
@@ -113,17 +113,17 @@ public class PostService {
         List<Tag> tags = getTags(postId);
         List<String> tagsStrings = tags.stream().map(Tag::getTag).collect(Collectors.toList());
         Person authUser = getAuthUser(jwtToken);
-        List<PostComment> postComments = getPostComments(postId);
+        List<Comment> postComments = getPostComments(postId);
         List<CommentRs> comments = getComments(postComments, jwtToken);
         return new Details(author, likes, tagsStrings, authUser.getId(), comments);
     }
 
-    private List<CommentRs> getComments(List<PostComment> postComments, String jwtToken) {
+    private List<CommentRs> getComments(List<Comment> postComments, String jwtToken) {
         List<CommentRs> comments = new ArrayList<>();
-        for (PostComment postComment : postComments) {
+        for (Comment postComment : postComments) {
             int commentId = postComment.getId().intValue();
             Person author = getAuthor(postComment.getAuthorId());
-            List<PostComment> subCommentsList = getPostComments(commentId);
+            List<Comment> subCommentsList = getPostComments(commentId);
             List<CommentRs> subComments = getComments(subCommentsList, jwtToken);
             List<Like> likes = getLikes(commentId);
             Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
@@ -138,7 +138,7 @@ public class PostService {
         personRepository.findById((long) id);
         Post post = postsMapper.toModel(postRq, publishDate, id);
         int postId = postRepository.save(post);
-        tagService.createTags(postRq.getTags(), postId);
+        tagRepository.saveAll(postRq.getTags(), postId);
         Person author = personRepository.findById((long) id);
         Details details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
@@ -170,8 +170,8 @@ public class PostService {
         return personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
     }
 
-    private List<PostComment> getPostComments(int id) {
-        return postCommentRepository.getCommentsByPostId(id);
+    private List<Comment> getPostComments(int id) {
+        return commentRepository.findByPostId((long) id);
     }
 
     public CommonRs<PostRs> updatePost(int id, PostRq postRq, String jwtToken) {
@@ -179,13 +179,10 @@ public class PostService {
         int publishDate = (int) postFromDB.getTime().getTime();
         Post post = postsMapper.toModel(postRq, publishDate, id);
         postRepository.updateById(id, post);
+        tagRepository.deleteAll(tagRepository.findByPostId((long) id));
         tagRepository.saveAll(postRq.getTags(), id);
         Post newPost = postRepository.findById(id);
         Person author = getAuthor(newPost.getAuthorId());
-        List<Like> likes = getLikes(newPost.getId().intValue());
-        List<Tag> tags = getTags(newPost.getId().intValue());
-        List<PostComment> postComments = getPostComments(newPost.getId().intValue());
-        List<CommentRs> comments = getComments(postComments, jwtToken);
         Details details = getDetails(author.getId(), newPost.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(newPost, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
@@ -268,7 +265,6 @@ public class PostService {
         }
         tagRepository.deleteAll(tags);
         likeRepository.deleteAll(likes);
-
     }
 
     @Data

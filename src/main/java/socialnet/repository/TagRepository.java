@@ -22,7 +22,8 @@ public class TagRepository {
 
     public List<Tag> findByPostId(Long postId) {
         List<Tag> tags = jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
-        return tags.stream().filter(t -> t.getTag() != null).collect(Collectors.toList());
+        tags = tags.stream().filter(t -> t.getTag() != null).collect(Collectors.toList());
+        return tags;
     }
     public List<Tag> getTagsByPostId(long postId) {
 
@@ -45,17 +46,17 @@ public class TagRepository {
 
     private final RowMapper<Tag> tagRowMapper = (resultSet, rowNum) -> {
         Tag tag = new Tag();
-        while (resultSet.next()) {
-            tag.setId(resultSet.getLong("id"));
-            tag.setTag(resultSet.getString("tag"));
-        }
+        tag.setId(resultSet.getLong("id"));
+        tag.setTag(resultSet.getString("tag"));
         return tag;
     };
 
     public void deleteAll(List<Tag> tags) {
         for (Tag tag : tags) {
-            String delete = String.format("DELETE FROM tags WHERE id = %d", tag.getId());
-            jdbcTemplate.execute(delete);
+            String deleteTag = String.format("DELETE FROM tags WHERE id = %d", tag.getId());
+            String deletePost2Tag = String.format("DELETE FROM post2tag WHERE tag_id = %d", tag.getId());
+            jdbcTemplate.execute(deletePost2Tag);
+            jdbcTemplate.execute(deleteTag);
         }
     }
 
