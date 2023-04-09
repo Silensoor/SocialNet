@@ -53,17 +53,17 @@ public class PersonRepository {
         return personList.get(0);
     }
 
-    public List<Person> findPersonAll(Long limit) {
-        try {
-            return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE id = ?",
-                personRowMapper,
-                authorId
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
-    }
+//    public List<Person> findPersonAll(Long limit) {
+//        try {
+//            return jdbcTemplate.queryForObject(
+//                "SELECT * FROM persons WHERE id = ?",
+//                personRowMapper,
+//                authorId
+//            );
+//        } catch (EmptyResultDataAccessException ignored) {
+//            return null;
+//        }
+//    }
 
     public List<Person> findAll(Long limit) {
         try {
