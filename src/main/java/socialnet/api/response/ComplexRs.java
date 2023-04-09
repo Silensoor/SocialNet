@@ -22,4 +22,11 @@ public class ComplexRs {
     @JsonProperty("message_id")
     private Long messageId;
 
+    public ComplexRs(String message) {
+        this.message = message;
+        this.count = 0L;
+        this.id = 0;
+        this.messageId = 0L;
+    }
+
 }

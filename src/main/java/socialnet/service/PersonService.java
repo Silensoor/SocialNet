@@ -16,7 +16,6 @@ import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
-import javax.validation.constraints.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,7 +24,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 @Validated
-public class LoginService {
+public class PersonService {
     private final JwtUtils jwtUtils;
     private String jwt;
     private final AuthenticationManager authenticationManager;
@@ -56,6 +55,16 @@ public class LoginService {
     public Object getLogout(String authorization) {
 
         return setCommonRs(setComplexRs());
+    }
+
+    public Object getUserById(String authorization, Integer id) {
+        Person person = findUser(id);
+        log.info("вход на страницу пользователя " + person.getFirstName());
+        return setLoginRs(authorization, person);
+    }
+
+    private Person findUser(Integer id) {
+        return personRepository.findById(Long.valueOf(id));
     }
 
     public CommonRs<ComplexRs> setCommonRs(ComplexRs complexRs) {
