@@ -1,13 +1,12 @@
 package socialnet.service.users;
 
 import lombok.RequiredArgsConstructor;
-import lombok.var;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import socialnet.api.response.CommonRs;
-import socialnet.dto.users.UserUpdateDto;
 import socialnet.api.request.UserRq;
+import socialnet.api.request.UserUpdateDto;
+import socialnet.api.response.CommonRs;
 import socialnet.api.response.ErrorRs;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.PersonMapper;

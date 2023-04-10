@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import socialnet.api.response.CommonRs;
 import socialnet.api.response.CommonRsListPersonRs;
-import socialnet.dto.CommonRsComplexRs;
+import socialnet.api.response.ComplexRs;
 import socialnet.service.FriendsService;
 
 import java.util.Optional;
@@ -65,32 +66,32 @@ public class FriendsController {
 
     @PostMapping("/friends/request/{id}")
     @ResponseBody
-    public CommonRsComplexRs addFriendUsingPOST(@RequestHeader String authorization,
-                                                @PathVariable(value = "id") Integer id) {
+    public CommonRs<ComplexRs> addFriendUsingPOST(@RequestHeader String authorization,
+                                                  @PathVariable(value = "id") Integer id) {
 
         return friendsService.addFriendUsingPOST(authorization, id);
     }
 
     @DeleteMapping("/friends/request/{id}")
     @ResponseBody
-    public CommonRsComplexRs deleteSentFriendshipRequestUsingDELETE(@RequestHeader String authorization,
-                                                                    @PathVariable(value = "id") Integer id) {
+    public CommonRs<ComplexRs> deleteSentFriendshipRequestUsingDELETE(@RequestHeader String authorization,
+                                                                      @PathVariable(value = "id") Integer id) {
 
         return friendsService.deleteSentFriendshipRequestUsingDELETE(authorization, id);
     }
 
     @PostMapping("/friends/{id}")
     @ResponseBody
-    public CommonRsComplexRs sendFriendshipRequestUsingPOST(@RequestHeader String authorization,
-                                                            @PathVariable(value = "id") Integer id) {
+    public CommonRs<ComplexRs> sendFriendshipRequestUsingPOST(@RequestHeader String authorization,
+                                                              @PathVariable(value = "id") Integer id) {
 
         return friendsService.sendFriendshipRequestUsingPOST(authorization, id);
     }
 
     @DeleteMapping("/friends/{id}")
     @ResponseBody
-    public CommonRsComplexRs deleteFriendUsingDELETE(@RequestHeader String authorization,
-                                                     @PathVariable(value = "id") Integer id) {
+    public CommonRs<ComplexRs> deleteFriendUsingDELETE(@RequestHeader String authorization,
+                                                       @PathVariable(value = "id") Integer id) {
         return friendsService.deleteFriendUsingDELETE(authorization, id);
     }
 }

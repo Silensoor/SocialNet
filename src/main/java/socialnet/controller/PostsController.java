@@ -5,9 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import socialnet.api.request.PostRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PostRs;
-import socialnet.dto.PostRq;
 import socialnet.service.PostService;
 
 import java.text.ParseException;
@@ -26,6 +26,7 @@ public class PostsController {
             @RequestParam(required = false, defaultValue = "20") Integer perPage) {
         return new ResponseEntity<>(postsService.getFeeds(jwtToken, offset, perPage), HttpStatus.OK);
     }
+
     @PostMapping("/api/v1/users/{id}/wall")
     public ResponseEntity<CommonRs<PostRs>> createPost(
             @RequestHeader(name = "authorization") String jwtToken,
@@ -34,6 +35,7 @@ public class PostsController {
             @PathVariable int id) {
         return new ResponseEntity<>(postsService.createPost(postRq, id, publishDate, jwtToken), HttpStatus.OK);
     }
+
     @GetMapping("/api/v1/post/{id}")
     public ResponseEntity<CommonRs<PostRs>> getPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
         return new ResponseEntity<>(postsService.getPostById(id, jwtToken), HttpStatus.OK);
@@ -46,19 +48,22 @@ public class PostsController {
             @RequestBody PostRq postRq) {
         return new ResponseEntity<>(postsService.updatePost(id, postRq, jwtToken), HttpStatus.OK);
     }
+
     @DeleteMapping("/api/v1/post/{id}")
     public ResponseEntity<CommonRs<PostRs>> deleteById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
         return new ResponseEntity<>(postsService.markAsDelete(id, jwtToken), HttpStatus.OK);
     }
+
     @PutMapping("/api/v1/post/{id}/recover")
     public ResponseEntity<CommonRs<PostRs>> recoverPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
         return new ResponseEntity<>(postsService.recoverPost(id, jwtToken), HttpStatus.OK);
     }
+
     @GetMapping("/api/v1/post")
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestParam(required = false) String author,
-            @RequestParam(required = false, name = "date_from")Integer dateFrom,
+            @RequestParam(required = false, name = "date_from") Integer dateFrom,
             @RequestParam(required = false, name = "date_to") Integer dateTo,
             @RequestParam(required = false) int offset,
             @RequestParam(required = false) int perPage,
