@@ -22,10 +22,9 @@ public class PostsController {
     @GetMapping("/api/v1/feeds")
     public ResponseEntity<CommonRs<List<PostRs>>> getFeeds(
             @RequestHeader(name = "authorization") String jwtToken,
-            @RequestParam int offset,
-            @RequestParam int perPage) {
-        CommonRs<List<PostRs>> commonRs = postsService.getFeeds(jwtToken, offset, perPage);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+            @RequestParam(required = false, defaultValue = "0") Integer offset,
+            @RequestParam(required = false, defaultValue = "20") Integer perPage) {
+        return new ResponseEntity<>(postsService.getFeeds(jwtToken, offset, perPage), HttpStatus.OK);
     }
 
     @PostMapping("/api/v1/users/{id}/wall")
@@ -34,14 +33,12 @@ public class PostsController {
             @RequestBody PostRq postRq,
             @RequestParam(required = false, name = "publish_date") Integer publishDate,
             @PathVariable int id) {
-        CommonRs<PostRs> commonRs = postsService.createPost(postRq, id, publishDate, jwtToken);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+        return new ResponseEntity<>(postsService.createPost(postRq, id, publishDate, jwtToken), HttpStatus.OK);
     }
 
     @GetMapping("/api/v1/post/{id}")
     public ResponseEntity<CommonRs<PostRs>> getPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
-        CommonRs<PostRs> commonRs = postsService.getPostById(id, jwtToken);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+        return new ResponseEntity<>(postsService.getPostById(id, jwtToken), HttpStatus.OK);
     }
 
     @PutMapping("/api/v1/post/{id}")
@@ -49,20 +46,17 @@ public class PostsController {
             @RequestHeader(name = "authorization") String jwtToken,
             @PathVariable int id,
             @RequestBody PostRq postRq) {
-        CommonRs<PostRs> commonRs = postsService.updatePost(id, postRq, jwtToken);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+        return new ResponseEntity<>(postsService.updatePost(id, postRq, jwtToken), HttpStatus.OK);
     }
 
     @DeleteMapping("/api/v1/post/{id}")
     public ResponseEntity<CommonRs<PostRs>> deleteById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
-        CommonRs<PostRs> commonRs = postsService.markAsDelete(id, jwtToken);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+        return new ResponseEntity<>(postsService.markAsDelete(id, jwtToken), HttpStatus.OK);
     }
 
     @PutMapping("/api/v1/post/{id}/recover")
     public ResponseEntity<CommonRs<PostRs>> recoverPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
-        CommonRs<PostRs> commonRs = postsService.recoverPost(id, jwtToken);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+        return new ResponseEntity<>(postsService.recoverPost(id, jwtToken), HttpStatus.OK);
     }
 
     @GetMapping("/api/v1/post")

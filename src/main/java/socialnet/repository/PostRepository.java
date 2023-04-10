@@ -49,6 +49,11 @@ public class PostRepository {
         jdbcTemplate.update(update);
     }
 
+    public void markAsDeleteById(int id, Post post) {
+        String update = "UPDATE posts SET is_deleted = " + post.getIsDeleted() + ", time_delete = \'" + post.getTimeDelete() + "\' WHERE id = " + id;
+        jdbcTemplate.update(update);
+    }
+
     public boolean deleteById(int id) {
         String delete = "DELETE FROM posts WHERE id = " + id;
         jdbcTemplate.execute(delete);
@@ -72,4 +77,15 @@ public class PostRepository {
         post.setAuthorId(resultSet.getLong("author_id"));
         return post;
     };
+
+    public List<Post> findDeletedPosts() {
+        String select = "SELECT * FROM posts WHERE is_deleted = true";
+        return jdbcTemplate.queryForList(select, Post.class);
+    }
+
+    public void deleteAll(List<Post> deletingPosts) {
+        for (Post deletingPost : deletingPosts) {
+            deleteById(deletingPost.getId().intValue());
+        }
+    }
 }

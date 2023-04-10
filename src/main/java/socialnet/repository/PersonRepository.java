@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
+import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
@@ -42,23 +43,18 @@ public class PersonRepository {
     }
 
     public Person findById(Long authorId) {
-        try {
-            return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE id = ?",
-                    personRowMapper,
-                    authorId
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
+        String select = "SELECT * FROM persons WHERE id = " + authorId;
+        List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
+        if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+        return personList.get(0);
     }
 
     public List<Person> findAll(Long limit) {
         try {
             return this.jdbcTemplate.query(
-                    "SELECT * FROM persons LIMIT ?",
-                    new Object[]{limit},
-                    personRowMapper
+                "SELECT * FROM persons LIMIT ?",
+                new Object[] { limit },
+                personRowMapper
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -76,9 +72,9 @@ public class PersonRepository {
     public List<Person> findPersonsEmail(String email) {
         try {
             return this.jdbcTemplate.query(
-                    "SELECT * FROM persons WHERE email = ?",
-                    new Object[]{email},
-                    personRowMapper
+                "SELECT * FROM persons WHERE email = ?",
+                new Object[]{email},
+                personRowMapper
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -88,9 +84,9 @@ public class PersonRepository {
     public List<Person> findByCity(String city) {
         try {
             return this.jdbcTemplate.query(
-                    "SELECT * FROM persons WHERE city = ?",
-                    new Object[]{city},
-                    personRowMapper
+                "SELECT * FROM persons WHERE city = ?",
+                new Object[] { city },
+                personRowMapper
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -149,7 +145,7 @@ public class PersonRepository {
                 new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
 
-    public void updatePersonInfo(UserUpdateDto userData, String email) {
+    public void updatePersonInfo(socialnet.dto.users.UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = '" + email + "'";
 
         Object[] objects = reflection.getObjectsArray(userData);
@@ -160,12 +156,12 @@ public class PersonRepository {
                 types);
     }
 
-    public void updatePersonInfo_new(UserUpdateDto userData, String email) {
+    public void updatePersonInfo_new(socialnet.dto.users.UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = ?";
 
         Object[] objects = reflection.getObjectsArray(userData);
         Object[] paramObjects = new Object[objects.length + 1];
-        System.arraycopy(objects, 0, paramObjects, 0, paramObjects.length);
+        System.arraycopy(objects,0,paramObjects, 0, paramObjects.length);
         paramObjects[paramObjects.length - 1] = email;
 
         jdbcTemplate.update(sql, paramObjects);
