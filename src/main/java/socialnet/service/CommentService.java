@@ -20,6 +20,7 @@ import socialnet.security.jwt.JwtUtils;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,8 @@ public class CommentService {
         List<CommentRs> comments = new ArrayList<>();
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
-            CommentRs commentRs = commentMapper.toDTO(comment);
+            Details details = getToDTODetails(postId, comment, comment.getId());
+            CommentRs commentRs = commentMapper.toDTO(comment, details);
             comments.add(commentRs);
         }
 
@@ -119,6 +121,18 @@ public class CommentService {
             this.isDeleted = isDeleted;
             this.id = id;
             this.authorId = authorId;
+            this.subComments = findSubComments(id);
+            this.likes = likeRepository.getLikesByEntityId(id).size();
+        }
+
+        private List<CommentRs> findSubComments(Long id) {
+            List<Comment> comments = commentRepository.findByPostId(id);
+            List<CommentRs> commentRsList = new ArrayList<>();
+            for (Comment comment : comments) {
+                CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));
+                commentRsList.add(commentRs);
+            }
+            return commentRsList;
         }
 
         public Details(PersonRs author, long postId) {
