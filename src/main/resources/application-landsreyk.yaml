@@ -11,7 +11,9 @@ spring:
     enabled: true
 logging:
   level:
-    root: debug
+    socialnet:
+      controller:
+        NewsController: debug
 auth:
   secret: socialNet
-  timeLive: 216000
+  timeLive: 86400000

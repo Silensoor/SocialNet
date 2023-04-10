@@ -1,7 +1,6 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,6 +11,7 @@ import socialnet.model.Post;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -20,20 +20,7 @@ public class PostRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Post> findAll() {
-        List<Post> posts = jdbcTemplate.query("SELECT * FROM posts", (rs, rowNum) -> {
-            Post post = new Post();
-            post.setId((long) rs.getInt("id"));
-            post.setIsBlocked(rs.getBoolean("is_blocked"));
-            post.setIsDeleted(rs.getBoolean("is_deleted"));
-            post.setPostText(rs.getString("post_text"));
-            post.setTime(rs.getTimestamp("time"));
-            post.setTimeDelete(rs.getTimestamp("time_delete"));
-            post.setTitle(rs.getString("title"));
-            post.setAuthorId((long) rs.getInt("author_id"));
-            return post;
-        });
-
-        return posts;
+        return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
     }
 
     public int save(Post post) {
@@ -52,10 +39,9 @@ public class PostRepository {
     }
 
     public Post findById(int id) {
-        String select = "SELECT * FROM posts WHERE id = " + id;
-        List<Post> posts = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Post.class));
-        if (posts.isEmpty()) throw new PostException("Поста с id = " + id + " не существует");
-        return posts.get(0);
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
+                "SELECT * FROM posts WHERE id = ?", postRowMapper, id))
+                .orElseThrow(() -> new PostException("Поста с id = " + id + " не существует"));
     }
 
     public void updateById(int id, Post post) {
@@ -76,8 +62,7 @@ public class PostRepository {
 
     public List<Post> findPostsByUserId(Long id) {
         return jdbcTemplate.query("Select * from Posts Where id = ?",
-                new Object[]{id},
-                new BeanPropertyRowMapper<>(Post.class));
+                postRowMapper, id);
     }
 
     private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {

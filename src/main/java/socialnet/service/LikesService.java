@@ -3,16 +3,18 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.LikeRq;
+import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
-import socialnet.dto.CommonRs;
 import socialnet.model.Like;
 import socialnet.model.Person;
 import socialnet.repository.LikeRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class LikesService {
@@ -29,7 +31,7 @@ public class LikesService {
         for (Like like : likes) {
             users.add(like.getPersonId().intValue());
         }
-        return new CommonRs<>(new LikeRs(likes.size(), users), (int) System.currentTimeMillis());
+        return new CommonRs<>(new LikeRs(likes.size(), users), System.currentTimeMillis());
     }
 
     public CommonRs<LikeRs> putLike(String jwtToken, LikeRq likeRq) {
@@ -45,7 +47,7 @@ public class LikesService {
         for (Like l : likes) {
             users.add(l.getPersonId().intValue());
         }
-        return new CommonRs<>(new LikeRs(likes.size(), users), (int) System.currentTimeMillis());
+        return new CommonRs<>(new LikeRs(likes.size(), users), System.currentTimeMillis());
     }
 
     public CommonRs<LikeRs> deleteLike(String jwtToken, Integer itemId, String type) {
@@ -63,6 +65,6 @@ public class LikesService {
         for (Like l : likesAfterDelete) {
             users.add(l.getPersonId().intValue());
         }
-        return new CommonRs<>(new LikeRs(likesAfterDelete.size(), users), (int) System.currentTimeMillis());
+        return new CommonRs<>(new LikeRs(likesAfterDelete.size(), users), System.currentTimeMillis());
     }
 }
