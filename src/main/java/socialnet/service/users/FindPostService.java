@@ -94,10 +94,11 @@ public class FindPostService {
 //
 //    }
 
-    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom,
-                                                  Integer dateTo, Integer offset, Integer perPage,
+    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, String dateFrom,
+                                                  String dateTo, Integer offset, Integer perPage,
                                                   String[] tags, String text) throws ParseException {
         String email = jwtUtils.getUserEmail(jwtToken);
+        //String email = "nwickey2@ibm.com";
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         List<Post> postTotal = new ArrayList<>();
         List<PostRs> postRsList = new ArrayList<>();
@@ -110,10 +111,12 @@ public class FindPostService {
             List<Post> postList = new ArrayList<>();
             String sql = createSqlPost(author, dateFrom,
                     dateTo, offset, perPage, tags, text);
-            if (!sql.equals("SELECT * FROM persons WHERE")) {
+            if (!sql.equals("SELECT * FROM posts WHERE")) {
                 postList = postsRepository.findPostStringSql(sql);
                 if (postList == null) {
                     postList = new ArrayList<>();
+                } else {
+                    postTotal.addAll(postList);
                 }
             }
             if (tags != null) {
@@ -149,27 +152,27 @@ public class FindPostService {
         return postTotal;
     }
 
-    private String createSqlPost(String author, Integer dateFrom,
-                                 Integer dateTo, Integer offset, Integer perPage,
+    private String createSqlPost(String author, String dateFrom,
+                                 String dateTo, Integer offset, Integer perPage,
                                  String[] tags, String text) throws ParseException {
-        String sql = "SELECT * FROM post WHERE";
-        if (!author.equals("") && author != null) {
+        String sql = "SELECT * FROM posts WHERE";
+        if (author != null && !author.equals("")) {
             sql = sql + " author_id = '" + author + "' AND ";
         }
-        if (dateFrom > 0) {
+        if (dateFrom != null) {
             Timestamp dateFrom1 = parseDate(dateFrom);
             sql = sql + " time > '" + dateFrom1 + "' AND ";
         }
-        if (dateTo > 0) {
+        if (dateTo != null) {
             Timestamp dateTo1 = parseDate(dateTo);
             sql = sql + " time < '" + dateTo1  + "' AND ";
         }
-        if (text != "" && text != null) {
+        if (text != null && text != "") {
             sql = sql + " post_text LIKE '%" + text + "%' AND ";
         }
         String str = sql.substring(sql.length() - 5);
-        if (str.equals("' AND ")){
-            return sql.substring(0, sql.length() - 5);
+        if (str.equals(" AND ")){
+            sql = sql.substring(0, sql.length() - 5);
         }
         return sql;
     }
@@ -187,9 +190,10 @@ public class FindPostService {
         return sql.toString();
     }
 
-    private Timestamp parseDate(Integer str) throws ParseException {
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date date = parser.parse(String.valueOf(str));
+    private Timestamp parseDate(String str) throws ParseException {
+        //SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Long parseInt = Long.parseLong(str);
+        Date date = new Date(parseInt);
         return new Timestamp(date.getTime());
     }
 

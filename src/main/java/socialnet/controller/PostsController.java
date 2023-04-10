@@ -67,10 +67,10 @@ public class PostsController {
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestParam(required = false) String author,
-            @RequestParam(required = false, name = "date_from")Integer dateFrom,
-            @RequestParam(required = false, name = "date_to") Integer dateTo,
-            @RequestParam(required = false) int offset,
-            @RequestParam(required = false) int perPage,
+            @RequestParam(required = false, name = "date_from") String dateFrom,
+            @RequestParam(required = false, name = "date_to") String dateTo,
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(required = false) Integer perPage,
             @RequestParam(required = false) String[] tags,
             @RequestParam(required = false) String text) throws ParseException {
         return findPostService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
