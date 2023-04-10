@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.*;
-import socialnet.dto.PostRq;
 import socialnet.mapper.PostCommentMapper;
 import socialnet.mapper.PostsMapper;
 import socialnet.mappers.CommentMapper;

@@ -145,7 +145,7 @@ public class PersonRepository {
                 new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
 
-    public void updatePersonInfo(socialnet.dto.users.UserUpdateDto userData, String email) {
+    public void updatePersonInfo(UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = '" + email + "'";
 
         Object[] objects = reflection.getObjectsArray(userData);
@@ -156,7 +156,7 @@ public class PersonRepository {
                 types);
     }
 
-    public void updatePersonInfo_new(socialnet.dto.users.UserUpdateDto userData, String email) {
+    public void updatePersonInfo_new(UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = ?";
 
         Object[] objects = reflection.getObjectsArray(userData);

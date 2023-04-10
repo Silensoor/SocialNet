@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LikeRq;
+import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
-import socialnet.dto.CommonRs;
 import socialnet.service.LikesService;
 @Controller
 @RequiredArgsConstructor

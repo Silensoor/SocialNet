@@ -2,17 +2,14 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import socialnet.model.Post2Tag;
 import socialnet.model.Tag;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -23,14 +20,13 @@ public class TagRepository {
     public List<Tag> findByPostId(Long postId) {
 
         return jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
-        List<Tag> tags = jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
-        tags = tags.stream().filter(t -> t.getTag() != null).collect(Collectors.toList());
-        return tags;
     }
+
     public List<Tag> getTagsByPostId(long postId) {
 
         return jdbcTemplate.queryForList("SELECT * FROM post2tag WHERE post_id = " + postId, Tag.class);
     }
+
     public long save(Tag tag, long postId) {
         SimpleJdbcInsert simpleJdbcInsert1 = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert1.withTableName("tags").usingGeneratedKeyColumns("id");
