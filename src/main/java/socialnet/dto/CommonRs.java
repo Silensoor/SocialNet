@@ -15,8 +15,8 @@ public class CommonRs<T> {
     private Integer timestamp;
     private Integer total;
 
-    public CommonRs(T postRs, int currentTimeMillis) {
-        this.data = postRs;
+    public CommonRs(T data, int currentTimeMillis) {
+        this.data = data;
         this.timestamp = currentTimeMillis;
     }
 }

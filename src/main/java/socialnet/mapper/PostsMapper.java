@@ -52,7 +52,7 @@ public abstract class PostsMapper {
 
     boolean itLikesMe(List<Like> likes, long authUserId) {
         for (Like like : likes) {
-            if (like.getPersonId() == authUserId) return true;
+            if (like.getPersonId().equals(authUserId)) return true;
         }
         return false;
     }
