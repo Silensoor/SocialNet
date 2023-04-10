@@ -59,10 +59,12 @@ public class DialogsService {
         CommonRs<ComplexRs> result = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
         Message message = messageRepository.findByAuthorId(person.getId());
-        complexRs.setMessageId(message.getId());
-        long count =messageRepository.findCountByAuthorIdAndReadStatus(person.getId(), "UNREAD");
-        complexRs.setCount(count);
-        complexRs.setMessage(message.getMessageText());
+        long count = messageRepository.findCountByAuthorIdAndReadStatus(person.getId(), "UNREAD");
+        if (message != null) {
+            complexRs.setMessageId(message.getId());
+            complexRs.setCount(count);
+            complexRs.setMessage(message.getMessageText());
+        }
         result.setData(complexRs);
         result.setTotal(count);
         result.setTimestamp(System.currentTimeMillis());
