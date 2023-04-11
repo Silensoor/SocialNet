@@ -44,10 +44,14 @@ public class PersonRepository {
     }
 
     public Person findById(Long authorId) {
-        String select = "SELECT * FROM persons WHERE id = " + authorId;
-        List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
-        if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
-        return personList.get(0);
+        try {
+            String select = "SELECT * FROM persons WHERE id = " + authorId;
+            List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
+            if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+            return personList.get(0);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Person> findAll(Long limit) {

@@ -63,4 +63,9 @@ public class TagRepository {
             save(new Tag(tag), postId);
         }
     }
+
+    public List<Tag> getTagsByQuery(String sql) {
+        return this.jdbcTemplate.query(sql, tagRowMapper);
+    }
+
 }

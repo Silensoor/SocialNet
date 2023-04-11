@@ -88,4 +88,9 @@ public class PostRepository {
             deleteById(deletingPost.getId().intValue());
         }
     }
+
+    public List<Post> findPostStringSql(String sql) {
+        return this.jdbcTemplate.query(sql, postRowMapper);
+    }
+
 }

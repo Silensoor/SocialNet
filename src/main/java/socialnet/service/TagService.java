@@ -48,9 +48,4 @@ public class TagService {
         }
         return post2TagRepository.getQuery(sql1.toString());
     }
-
-//    List<Tag> getTags(int id) {
-//        return tagRepository.getTagsByPostId(id);
-//    }
-
 }

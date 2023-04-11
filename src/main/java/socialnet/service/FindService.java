@@ -9,11 +9,11 @@ import socialnet.api.response.PostRs;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mapper.PostsMapper;
 import socialnet.mappers.PersonMapper;
-import socialnet.model.*;
-import socialnet.repository.LikeRepository;
+import socialnet.model.Person;
+import socialnet.model.Post;
+import socialnet.model.Post2Tag;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
-import socialnet.repository.TagRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.sql.Timestamp;
@@ -32,24 +32,22 @@ public class FindService {
     private final PostService postService;
     private final TagService tagService;
     private final PersonMapper personMapper;
-    private final LikeRepository likeRepository;
-    private final TagRepository tagRepository;
     private final PostsMapper postsMapper;
 
-    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, String dateFrom,
-                                                  String dateTo, Integer offset, Integer perPage,
+    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
+                                                  Long dateTo, Integer offset, Integer perPage,
                                                   String[] tags, String text) throws ParseException {
         String email = jwtUtils.getUserEmail(jwtToken);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         List<Post> postTotal = new ArrayList<>();
         List<PostRs> postRsList = new ArrayList<>();
+        List<Post> postList = new ArrayList<>();
         if (personsEmail == null) {
             personsEmail = new ArrayList<>();
         }
         if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            List<Post> postList = new ArrayList<>();
             String sql = createSqlPost(author, dateFrom,
                     dateTo, text);
             if (!sql.equals("SELECT * FROM posts WHERE")) {
@@ -64,15 +62,18 @@ public class FindService {
                 postTotal.addAll(comparisonOfSelectionWithTags(postList, tags));
             }
         }
+        int count = 0;
         for (Post post2 : postTotal) {
-            int postId = post2.getId().intValue();
-            PostService.Details details1 = postService.getDetails(post2.getAuthorId(), postId, jwtToken);
-            PostRs postRs = postsMapper.toRs(post2, details1);
-            postRsList.add(postRs);
+            if (count >= offset && count < offset + perPage) {
+                int postId = post2.getId().intValue();
+                PostService.Details details1 = postService.getDetails(post2.getAuthorId(), postId, jwtToken);
+                PostRs postRs = postsMapper.toRs(post2, details1);
+                postRsList.add(postRs);
+            }
+            count = count + 1;
         }
         postRsList.sort(Comparator.comparing(PostRs::getTime));
-        return new CommonRs<>(postRsList, perPage, offset, perPage,
-                System.currentTimeMillis(), (long) postRsList.size());
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postList.size());
     }
 
     private List<Post> comparisonOfSelectionWithTags(List<Post> postList, String[] tags) {
@@ -92,7 +93,7 @@ public class FindService {
         return postTotal;
     }
 
-    private String createSqlPost(String author, String dateFrom, String dateTo, String text) throws ParseException {
+    private String createSqlPost(String author, Long dateFrom, Long dateTo, String text) {
         String sql = "SELECT * FROM posts WHERE";
         if (author.indexOf(" ") > 0) {
             String firstName = author.substring(0, author.indexOf(" ")).trim();
@@ -101,11 +102,11 @@ public class FindService {
             Long idPerson = personsName.getId();
             sql = sql + " author_id = " + idPerson + " AND ";
         }
-        if (!dateFrom.equals("")) {
+        if (dateFrom > 0) {
             Timestamp dateFrom1 = parseDate(dateFrom);
             sql = sql + " time > '" + dateFrom1 + "' AND ";
         }
-        if (!dateTo.equals("")) {
+        if (dateTo > 0) {
             Timestamp dateTo1 = parseDate(dateTo);
             sql = sql + " time < '" + dateTo1 + "' AND ";
         }
@@ -132,9 +133,8 @@ public class FindService {
         return sql.toString();
     }
 
-    private Timestamp parseDate(String str) {
-        long parseInt = Long.parseLong(str);
-        Date date = new Date(parseInt);
+    private Timestamp parseDate(Long str) {
+        Date date = new Date(str);
         return new Timestamp(date.getTime());
     }
 
@@ -150,20 +150,24 @@ public class FindService {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             String sql = createSqlPerson(args);
-            if (!sql.equals("SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false AND ")) {
+            if (!sql.equals("SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false")){
                 personList = personRepository.findPersonsQuery(sql);
                 if (personList == null) {
                     personList = new ArrayList<>();
                 }
             }
+            int count = 0;
             for (Person person : personList) {
-                PersonRs personRs = personMapper.toDTO(person);
-                personRsList.add(personRs);
+                if (count >= (Integer) args[7] && count < (Integer) args[7] + (Integer) args[8]) {
+                    PersonRs personRs = personMapper.toDTO(person);
+                    personRsList.add(personRs);
+                }
+                count = count + 1;
             }
         }
         personRsList.sort(Comparator.comparing(PersonRs::getRegDate));
         return new CommonRs<>(personRsList, (Integer) args[8], (Integer) args[7], (Integer) args[8],
-                System.currentTimeMillis(), (long) personRsList.size());
+                System.currentTimeMillis(), (long) personList.size());
     }
 
 

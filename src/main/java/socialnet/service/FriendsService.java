@@ -3,12 +3,7 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import socialnet.api.response.CommonRsListPersonRs;
-import socialnet.api.response.CurrencyRs;
-import socialnet.api.response.PersonRs;
-import socialnet.api.response.WeatherRs;
-import socialnet.dto.CommonRsComplexRs;
-import socialnet.dto.ComplexRs;
+import socialnet.api.response.*;
 
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
@@ -30,7 +25,7 @@ public class FriendsService {
 
     private final FriendsShipsRepository friendsShipsRepository;
 
-    public CommonRsListPersonRs getFriends(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -81,8 +76,8 @@ public class FriendsService {
         return friendsIdString.toString();
     }
 
-    public CommonRsListPersonRs fillingCommonRsListPersonRs(List<Person> personList, Integer offset, Integer perPage) {
-        CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
+    public CommonRs<List<PersonRs>> fillingCommonRsListPersonRs(List<Person> personList, Integer offset, Integer perPage) {
+        CommonRs<List<PersonRs>> commonRsListPersonRsFilling = new CommonRs<>();
         List<Person> personListOffset = new ArrayList<>();
         for (int i = offset; i < offset + perPage; i++) {
             if (i < personList.size()) {
@@ -142,7 +137,7 @@ public class FriendsService {
         }
     }
 
-    public CommonRsListPersonRs getOutgoingRequests(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PersonRs>> getOutgoingRequests(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -173,7 +168,7 @@ public class FriendsService {
         }
     }
 
-    public CommonRsListPersonRs getRecommendedFriends(String authorization) {
+    public CommonRs<List<PersonRs>> getRecommendedFriends(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -225,7 +220,7 @@ public class FriendsService {
                 friendFriendsNewTotal.addAll(addRecommendedFriendsCityAndAll(friendFriendsNew, personsEmail
                 ));
             }
-            CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
+            CommonRs<List<PersonRs>> commonRsListPersonRsFilling = new CommonRs<>();
             List<PersonRs> personRsList = createPersonRsList(friendFriendsNew);
             commonRsListPersonRsFilling.setData(personRsList);
             Date date = new Date();
@@ -292,7 +287,7 @@ public class FriendsService {
         return friendFriendsNew;
     }
 
-    public CommonRsListPersonRs getPotentialFriends(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -325,7 +320,7 @@ public class FriendsService {
         }
     }
 
-    public CommonRsComplexRs addFriend(String authorization, Integer id) {
+    public CommonRs<ComplexRs> addFriend(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -400,16 +395,16 @@ public class FriendsService {
         return Long.valueOf(id);
     }
 
-    private CommonRsComplexRs fillingCommonRsComplexRs(Integer id, Long friendships) {
-        CommonRsComplexRs commonRsComplexRs = new CommonRsComplexRs();
+    private CommonRs<ComplexRs> fillingCommonRsComplexRs(Integer id, Long friendships) {
+        CommonRs<ComplexRs> commonRsComplexRs = new CommonRs();
         ComplexRs complexRs = new ComplexRs();
         complexRs.setId(id);
         Date date = new Date();
-        commonRsComplexRs.setTimestamp((int) date.getTime());
+        commonRsComplexRs.setTimestamp((long) date.getTime());
         return commonRsComplexRs;
     }
 
-    public CommonRsComplexRs deleteFriendsRequest(String authorization, Integer id) {
+    public CommonRs<ComplexRs> deleteFriendsRequest(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -439,7 +434,7 @@ public class FriendsService {
     }
 
 
-    public CommonRsComplexRs sendFriendsRequest(String authorization, Integer id) {
+    public CommonRs<ComplexRs> sendFriendsRequest(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
@@ -476,7 +471,7 @@ public class FriendsService {
     }
 
 
-    public CommonRsComplexRs deleteFriend(String authorization, Integer id) {
+    public CommonRs<ComplexRs> deleteFriend(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {

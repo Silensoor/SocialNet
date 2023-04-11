@@ -46,7 +46,7 @@ public class UsersController {
                                                 String last_name,
                                                 @RequestParam(required = false, defaultValue = "0")
                                                 Integer offset,
-                                                @RequestParam(required = false, defaultValue = "0")
+                                                @RequestParam(required = false, defaultValue = "20")
                                                 Integer perPage) {
 
         return findService.findPersons(
