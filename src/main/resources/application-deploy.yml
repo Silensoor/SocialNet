@@ -33,4 +33,4 @@ server:
 
 auth:
   secret: socialNet
-  timeLive: 9999999
+  timeLive: 216000000
