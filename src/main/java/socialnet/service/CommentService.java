@@ -40,7 +40,7 @@ public class CommentService {
             CommentRs commentRs = commentMapper.toDTO(comment, details);
             comments.add(commentRs);
         }
-
+        comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
         return new CommonRs<>(comments, perPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
     }
 
@@ -126,7 +126,7 @@ public class CommentService {
         }
 
         private List<CommentRs> findSubComments(Long id) {
-            List<Comment> comments = commentRepository.findByPostId(id);
+            List<Comment> comments = commentRepository.findByPostIdParentId(id);
             List<CommentRs> commentRsList = new ArrayList<>();
             for (Comment comment : comments) {
                 CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));

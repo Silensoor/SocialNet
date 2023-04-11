@@ -34,7 +34,7 @@ public class CommentRepository {
         return result;
     }
 
-    public List<Comment> findByPostIdParentId(Long postId, Long parentId) {
+    public List<Comment> findByPostIdParentId(Long parentId) {
         List<Comment> result = jdbcTemplate.query("SELECT * FROM post_comments WHERE parent_id = " + parentId, (rs, rowNum) -> {
             Comment comment = new Comment();
             comment.setId(rs.getLong("id"));
