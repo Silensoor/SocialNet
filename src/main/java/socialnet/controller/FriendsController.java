@@ -1,54 +1,67 @@
 package socialnet.controller;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import socialnet.api.response.CommonRs;
 import socialnet.api.response.CommonRsListPersonRs;
-import socialnet.dto.CommonRsComplexRs;
+import socialnet.api.response.ComplexRs;
 import socialnet.service.FriendsService;
 
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api/v1")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class FriendsController {
 
-    private final FriendsService friendsService;
+    FriendsService friendsService;
 
     @GetMapping("/friends")
-    public CommonRsListPersonRs getFriends(@RequestHeader String authorization,
-                                           @RequestParam(required = false, defaultValue = "0") Integer offset,
-                                           @RequestParam(required = false, defaultValue = "20") Integer perPage) {
-        return friendsService.getFriends(authorization, offset, perPage);
+    @ResponseBody
+    public CommonRsListPersonRs getFriendsUsingGET(@RequestHeader String authorization,
+                                                   @RequestParam Optional<Integer> offset,
+                                                   @RequestParam Optional<Integer> perPage) {
+        return friendsService.getFriendsUsing(authorization,
+                offset.orElse(0),
+                perPage.orElse(20));
     }
 
     @PostMapping("/friends/block_unblock/{id}")
-    public HttpStatus userBlocks(@RequestHeader String authorization,
-                                 @PathVariable(value = "id") Integer id) {
-        return friendsService.userBlocks(authorization, id);
+    @ResponseBody
+    public HttpStatus userBlocksUserUsingPOST(@RequestHeader String authorization,
+                                              @PathVariable(value = "id") Integer id) {
+        return friendsService.userBlocksUserUsingPOST(authorization, id);
     }
 
     @GetMapping("/friends/outgoing_requests")
-    public CommonRsListPersonRs getOutgoingRequests(@RequestHeader String authorization,
-                                                    @RequestParam(required = false, defaultValue = "0") Integer offset,
-                                                    @RequestParam(required = false, defaultValue = "20") Integer perPage) {
-        return friendsService.getOutgoingRequests(authorization, offset, perPage);
+    @ResponseBody
+    public CommonRsListPersonRs getOutgoingRequestsUsingGET(@RequestHeader String authorization,
+                                                            @RequestParam Optional<Integer> offset,
+                                                            @RequestParam Optional<Integer> perPage) {
+
+        return friendsService.getOutgoingRequestsUsingGET(authorization,
+                offset.orElse(0),
+                perPage.orElse(20));
     }
 
     @GetMapping("/friends/recommendations")
-    public CommonRsListPersonRs getRecommendedFriends(@RequestHeader String authorization) {
-        return friendsService.getRecommendedFriends(authorization);
+    @ResponseBody
+    public CommonRsListPersonRs getRecommendedFriendsUsingGET(@RequestHeader String authorization) {
+        friendsService.getRecommendedFriendsUsingGET(authorization);
+        return friendsService.getRecommendedFriendsUsingGET(authorization);
     }
 
     @GetMapping("/friends/request")
-    public CommonRsListPersonRs getPotentialFriends(@RequestHeader String authorization,
-                                                    @RequestParam(required = false, defaultValue = "0")
-                                                    Integer offset,
-                                                    @RequestParam(required = false, defaultValue = "20")
-                                                    Integer perPage) {
-        return friendsService.getPotentialFriends(authorization, offset, perPage);
+    @ResponseBody
+    public CommonRsListPersonRs getPotentialFriendsUsingGET(@RequestHeader String authorization,
+                                                            @RequestParam Optional<Integer> offset,
+                                                            @RequestParam Optional<Integer> perPage) {
+
+        return friendsService.getPotentialFriendsUsingGET(authorization,
+                offset.orElse(0),
+                perPage.orElse(20));
     }
 
     @PostMapping("/friends/request/{id}")
@@ -70,8 +83,9 @@ public class FriendsController {
     }
 
     @DeleteMapping("/friends/{id}")
-    public CommonRsComplexRs deleteFriend(@RequestHeader String authorization,
-                                          @PathVariable(value = "id") Integer id) {
-        return friendsService.deleteFriend(authorization, id);
+    @ResponseBody
+    public CommonRsComplexRs deleteFriendUsingDELETE(@RequestHeader String authorization,
+                                                     @PathVariable(value = "id") Integer id) {
+        return friendsService.deleteFriendUsingDELETE(authorization, id);
     }
 }

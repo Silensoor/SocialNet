@@ -3,11 +3,8 @@ package socialnet.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import socialnet.api.response.ErrorRs;
-
-import java.sql.Timestamp;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
@@ -41,12 +38,11 @@ public class ExceptionHandlerAdvice {
         return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorRs> handleBadRequestException(Exception exception) {
+    @ExceptionHandler(DialogsException.class)
+    public ResponseEntity<ErrorRs> handleBadRequestException(DialogsException e) {
         ErrorRs errorRs = new ErrorRs();
-        errorRs.setError("/api/v1/feeds returned exception");
-        errorRs.setErrorDescription(exception.getLocalizedMessage());
+        errorRs.setError("Exception in API: /api/v1/dialogs");
+        errorRs.setErrorDescription(e.getLocalizedMessage());
         errorRs.setTimestamp(System.currentTimeMillis());
 
         return ResponseEntity.badRequest().body(errorRs);

@@ -6,11 +6,14 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import socialnet.api.request.UserUpdateDto;
+import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.model.Post;
 import socialnet.utils.Reflection;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -20,42 +23,31 @@ public class PersonRepository {
 
     public void save(Person person) {
         jdbcTemplate.update(
-            "INSERT INTO persons " +
-            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            person.getEmail(),
-            person.getFirstName(),
-            person.getLastName(),
-            person.getPassword(),
-            person.getRegDate(),
-            person.getIsApproved(),
-            person.getIsBlocked(),
-            person.getIsDeleted()
+                "INSERT INTO persons " +
+                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                person.getEmail(),
+                person.getFirstName(),
+                person.getLastName(),
+                person.getPassword(),
+                person.getRegDate(),
+                person.getIsApproved(),
+                person.getIsBlocked(),
+                person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
-        try {
-            return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
-                personRowMapper,
-                email
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
+                        "SELECT * FROM persons WHERE email = ?", personRowMapper, email))
+                .orElseThrow(() -> new RuntimeException("Пользователя с email = " + email + " не существует"));
     }
 
     public Person findById(Long authorId) {
-        try {
-            return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE id = ?",
-                personRowMapper,
-                authorId
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
+        String select = "SELECT * FROM persons WHERE id = " + authorId;
+        List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
+        if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+        return personList.get(0);
     }
 
     public List<Person> findAll(Long limit) {
@@ -153,7 +145,7 @@ public class PersonRepository {
                 new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
 
-    public void updatePersonInfo(socialnet.dto.users.UserUpdateDto userData, String email) {
+    public void updatePersonInfo(UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = '" + email + "'";
 
         Object[] objects = reflection.getObjectsArray(userData);
@@ -164,7 +156,7 @@ public class PersonRepository {
                 types);
     }
 
-    public void updatePersonInfo_new(socialnet.dto.users.UserUpdateDto userData, String email) {
+    public void updatePersonInfo_new(UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = ?";
 
         Object[] objects = reflection.getObjectsArray(userData);
