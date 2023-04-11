@@ -101,6 +101,7 @@ public class PostService {
             int postId = post.getId().intValue();
             Details details = getDetails(post.getAuthorId(), postId, jwtToken);
             PostRs postRs = postsMapper.toRs(post, details);
+//            postRs.setComments(postRs.getComments().stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList()));
             postRsList.add(postRs);
         }
         postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
@@ -109,12 +110,13 @@ public class PostService {
 
     private Details getDetails(long authorId, int postId, String jwtToken) {
         Person author = getAuthor(authorId);
-        List<Like> likes = getLikes(postId);
+        List<Like> likes = getLikes(postId).stream().filter(l -> l.getType().equals("Post")).collect(Collectors.toList());
         List<Tag> tags = getTags(postId);
         List<String> tagsStrings = tags.stream().map(Tag::getTag).collect(Collectors.toList());
         Person authUser = getAuthUser(jwtToken);
         List<Comment> postComments = getPostComments(postId);
         List<CommentRs> comments = getComments(postComments, jwtToken);
+        comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
         return new Details(author, likes, tagsStrings, authUser.getId(), comments);
     }
 
@@ -123,15 +125,20 @@ public class PostService {
         for (Comment postComment : postComments) {
             int commentId = postComment.getId().intValue();
             Person author = getAuthor(postComment.getAuthorId());
-            List<Comment> subCommentsList = getPostComments(commentId);
+            List<Comment> subCommentsList = getSubComments(commentId, postComment.getId());
+            assert subCommentsList != null;
             List<CommentRs> subComments = getComments(subCommentsList, jwtToken);
-            List<Like> likes = getLikes(commentId);
+            List<Like> likes = getLikes(commentId).stream().filter(l -> l.getType().equals("Comment")).collect(Collectors.toList());
             Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
             long authUserId = authUser.getId();
             CommentRs commentRs = postCommentMapper.toDTO(author, postComment, subComments, likes, authUserId);
             comments.add(commentRs);
         }
         return comments;
+    }
+
+    private List<Comment> getSubComments(long commentId, long parentId) {
+        return commentRepository.findByPostIdParentId(commentId, parentId);
     }
 
     public CommonRs<PostRs> createPost(PostRq postRq, int id, Integer publishDate, String jwtToken) {
@@ -150,6 +157,7 @@ public class PostService {
         Person author = getAuthor(post.getAuthorId());
         Details details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
+//        postRs.setComments(postRs.getComments().stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList()));
         postRs.setTags(tagRepository.findByPostId((long) postId).stream().map(Tag::getTag).collect(Collectors.toList()));
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
