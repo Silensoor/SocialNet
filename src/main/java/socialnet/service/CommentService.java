@@ -32,7 +32,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final LikeRepository likeRepository;
     public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage, String jwtToken) {
-        List<Comment> commentList = commentRepository.findByPostId(postId);
+        List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
         List<CommentRs> comments = new ArrayList<>();
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
@@ -41,7 +41,8 @@ public class CommentService {
             comments.add(commentRs);
         }
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        return new CommonRs<>(comments, perPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
+        int itemPerPage = offset / perPage;
+        return new CommonRs<>(comments, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
     }
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {

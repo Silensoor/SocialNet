@@ -94,18 +94,17 @@ public class PostService {
     }
 
     public CommonRs<List<PostRs>> getFeeds(String jwtToken, int offset, int perPage) {
-        List<Post> postList = postRepository.findAll();
+        List<Post> postList = postRepository.findAll(offset, perPage);
         postList.sort(Comparator.comparing(Post::getTime).reversed());
-        List<Post> posts = postList.subList(offset, perPage);
         List<PostRs> postRsList = new ArrayList<>();
-        for (Post post : posts) {
-            if(post.getIsDeleted()) continue;
+        for (Post post : postList) {
             int postId = post.getId().intValue();
             Details details = getDetails(post.getAuthorId(), postId, jwtToken);
             PostRs postRs = postsMapper.toRs(post, details);
             postRsList.add(postRs);
         }
-        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postList.size());
+        int itemPerPage = offset / perPage;
+        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
     private Details getDetails(long authorId, int postId, String jwtToken) {
