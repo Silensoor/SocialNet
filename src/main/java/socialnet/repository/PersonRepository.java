@@ -182,4 +182,10 @@ public class PersonRepository {
             return null;
         }
     }
+
+    public Person findPersonsName(String nameFirst, String nameLast) {
+            return this.jdbcTemplate.query("SELECT * FROM persons WHERE first_name = ? AND last_name = ?",
+                    new Object[]{nameFirst, nameLast},
+                    new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+    }
 }

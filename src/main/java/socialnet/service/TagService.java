@@ -7,7 +7,6 @@ import socialnet.model.Tag;
 import socialnet.repository.Post2TagRepository;
 import socialnet.repository.TagRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,23 +31,24 @@ public class TagService {
         if (sql.substring(sql.length() - 5).equals("' AND ")){
             sql.substring(0, sql.length() - 5);
         }
-        String sql1 = "SELECT * FROM post2tag WHERE";
-        if (sql.toString() != "SELECT * FROM tags WHERE") {
+        StringBuilder sql1 = new StringBuilder("SELECT * FROM post2tag WHERE");
+        if (!sql.toString().equals("SELECT * FROM tags WHERE")) {
             List<Tag> tagList = tagRepository.getTagsByQuery(sql.toString());
             if (tagList != null && !tagList.isEmpty()) {
 
                 for (Tag tag1 : tagList) {
-                    sql1 = sql1 + " tag_id = '" + tag1 + "' AND ";
+                    sql1.append(" tag_id = '").append(tag1).append("' AND ");
                 }
                 if (sql1.substring(sql1.length() - 5).equals("' AND ")){
-                    sql1.substring(0, sql.length() - 5);
+                    sql1 = new StringBuilder(sql1.substring(0, sql.length() - 5));
                 }
-                //List<Post2Tag> post2TagList = post2TagRepository.getQuery(sql1);
-
             }
         }
-        return post2TagRepository.getQuery(sql1);
+        return post2TagRepository.getQuery(sql1.toString());
     }
 
+//    List<Tag> getTags(int id) {
+//        return tagRepository.getTagsByPostId(id);
+//    }
 
 }

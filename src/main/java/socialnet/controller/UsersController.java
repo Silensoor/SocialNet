@@ -3,14 +3,12 @@ package socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.response.CommonRs;
-import socialnet.api.response.CommonRsListPersonRs;
 import socialnet.api.response.PersonRs;
+import socialnet.service.FindService;
 import socialnet.service.PersonService;
 import socialnet.service.users.FindUserService;
 
-import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -19,7 +17,7 @@ public class UsersController {
 
     private final PersonService personService;
 
-    private final FindUserService findUserService;
+    private final FindService findService;
 
     @GetMapping("/me")
     public Object Me(@RequestHeader(name = "authorization") String authorization) {
@@ -33,28 +31,26 @@ public class UsersController {
 
     @GetMapping("/search")
     @ResponseBody
-    public CommonRs<List<PersonRs>> findPersonsUsingGET(@RequestHeader String authorization,
-                                                        @RequestParam Optional<Integer> age_from,
-                                                        @RequestParam Optional<Integer> age_to,
-                                                        @RequestParam Optional<String> city,
-                                                        @RequestParam Optional<String> country,
-                                                        @RequestParam Optional<String> first_name,
-                                                        @RequestParam Optional<String> last_name,
-                                                        @RequestParam Optional<Integer> offset,
-                                                        @RequestParam Optional<Integer> perPage) throws ParseException {
+    public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
+                                                @RequestParam(required = false, defaultValue = "0")
+                                                Integer age_from,
+                                                @RequestParam(required = false, defaultValue = "0")
+                                                Integer age_to,
+                                                @RequestParam(required = false, defaultValue = "")
+                                                String city,
+                                                @RequestParam(required = false, defaultValue = "")
+                                                String country,
+                                                @RequestParam(required = false, defaultValue = "")
+                                                String first_name,
+                                                @RequestParam(required = false, defaultValue = "")
+                                                String last_name,
+                                                @RequestParam(required = false, defaultValue = "0")
+                                                Integer offset,
+                                                @RequestParam(required = false, defaultValue = "0")
+                                                Integer perPage) {
 
-        return findUserService.findPersonsUsingGET(
-                new Object[]{
-                        authorization,
-                        age_from.orElse(0),
-                        age_to.orElse(0),
-                        city.orElse(""),
-                        country.orElse(""),
-                        first_name.orElse(""),
-                        last_name.orElse(""),
-                        offset.orElse(0),
-                        perPage.orElse(20)
-                }
+        return findService.findPersons(
+                new Object[]{authorization, age_from, age_to, city, country, first_name, last_name, offset, perPage}
         );
     }
 }

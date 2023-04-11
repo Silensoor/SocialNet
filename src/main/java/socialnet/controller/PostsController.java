@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PostRs;
 import socialnet.dto.PostRq;
+import socialnet.service.FindService;
 import socialnet.service.PostService;
 import socialnet.service.users.FindPostService;
 
@@ -19,8 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostsController {
     private final PostService postsService;
-
-    private final FindPostService findPostService;
+    private final FindService findService;
 
     @GetMapping("/api/v1/feeds")
     public ResponseEntity<CommonRs<List<PostRs>>> getFeeds(
@@ -66,14 +66,14 @@ public class PostsController {
     @GetMapping("/api/v1/post")
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader(name = "authorization") String jwtToken,
-            @RequestParam(required = false) String author,
-            @RequestParam(required = false, name = "date_from") String dateFrom,
-            @RequestParam(required = false, name = "date_to") String dateTo,
-            @RequestParam(required = false) Integer offset,
-            @RequestParam(required = false) Integer perPage,
+            @RequestParam(required = false, defaultValue = "") String author,
+            @RequestParam(required = false, name = "date_from", defaultValue = "") String dateFrom,
+            @RequestParam(required = false, name = "date_to", defaultValue = "") String dateTo,
+            @RequestParam(required = false, defaultValue = "0") Integer offset,
+            @RequestParam(required = false, defaultValue = "20") Integer perPage,
             @RequestParam(required = false) String[] tags,
             @RequestParam(required = false) String text) throws ParseException {
-        return findPostService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
+        return findService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
 
     }
 }
