@@ -1,10 +1,13 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Message;
+
+import java.util.ArrayList;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,10 +39,14 @@ public class MessageRepository {
     }
 
     public Message findByAuthorId(Long authorId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM messages WHERE author_id = ? ORDER BY time DESC LIMIT 1;",
-                messageRowMapper,
-                authorId);
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM messages WHERE author_id = ? ORDER BY time DESC LIMIT 1;",
+                    messageRowMapper,
+                    authorId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public Long findCountByAuthorIdAndReadStatus(Long authorId, String readStatus) {

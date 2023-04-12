@@ -13,7 +13,7 @@ import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class CaptchaService {
     private final CaptchaRepository captchaRepository;
 
     public CaptchaRs getCaptchaData() {

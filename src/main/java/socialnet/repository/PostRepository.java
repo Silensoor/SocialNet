@@ -23,6 +23,10 @@ public class PostRepository {
         return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
     }
 
+    public List<Post> findAll(int offset, int perPage) {
+        return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET " + offset + " ROWS LIMIT " + perPage, postRowMapper);
+    }
+
     public int save(Post post) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert.withTableName("posts").usingGeneratedKeyColumns("id");
