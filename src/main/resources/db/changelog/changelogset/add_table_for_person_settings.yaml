@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id:  add_table_for_table_person_settings
+      author:  Vitaliy
+      changes:
+        - addColumn:
+            tableName: person_settings
+            columns:
+              - column:
+                  name: friend_request
+                  type: BOOLEAN

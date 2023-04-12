@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.NotificationRq;
 import socialnet.api.request.RegisterRq;
+import socialnet.api.response.CommonRs;
+import socialnet.api.response.ComplexRs;
 import socialnet.api.response.RegisterRs;
+import socialnet.model.PersonSettings;
 import socialnet.service.AccountService;
 import socialnet.service.notifications.NotificationsService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -22,11 +26,11 @@ public class AccountController {
         return accountService.getRegisterData(regRequest);
     }
     @GetMapping("/notifications")
-    public Object notifications(@RequestHeader String authorization){
-        return  new Object();
+    public CommonRs<List<PersonSettings>> notifications(@RequestHeader String authorization){
+        return  notificationsService.getNotificationByPerson(authorization);
     }
     @PutMapping("/notifications")
-    public Object notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
-        return notificationsService.putNotification(authorization,notificationRq);
+    public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
+        return notificationsService.putNotificationByPerson(authorization,notificationRq);
     }
 }
