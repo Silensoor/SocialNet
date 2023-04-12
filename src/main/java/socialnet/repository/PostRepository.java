@@ -6,18 +6,19 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.exception.PostException;
+import socialnet.model.Person;
 import socialnet.model.Post;
+import socialnet.model.Post2Tag;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.sql.Timestamp;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Repository
 public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final PersonRepository personRepository;
 
     public List<Post> findAll() {
         return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
@@ -93,8 +94,67 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findPostStringSql(String sql) {
-        return this.jdbcTemplate.query(sql, postRowMapper);
+    public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo, String text) {
+        String sql = createSqlPost(author, dateFrom, dateTo, text);
+        if (!sql.equals("SELECT * FROM posts WHERE")) {
+            return this.jdbcTemplate.query(sql, postRowMapper);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private String createSqlPost(String author, Long dateFrom, Long dateTo, String text) {
+        String sql = "SELECT * FROM posts WHERE";
+        if (author.indexOf(" ") > 0) {
+            String firstName = author.substring(0, author.indexOf(" ")).trim();
+            String lastName = author.substring(author.indexOf(" ")).trim();
+            final Person personsName = personRepository.findPersonsName(firstName, lastName);
+            Long idPerson = personsName.getId();
+            sql = sql + " author_id = " + idPerson + " AND ";
+        }
+        if (dateFrom > 0) {
+            Timestamp dateFrom1 = parseDate(dateFrom);
+            sql = sql + " time > '" + dateFrom1 + "' AND ";
+        }
+        if (dateTo > 0) {
+            Timestamp dateTo1 = parseDate(dateTo);
+            sql = sql + " time < '" + dateTo1 + "' AND ";
+        }
+        if (!text.equals("")) {
+            sql = sql + " post_text LIKE '%" + text + "%' AND ";
+        }
+        String str = sql.substring(sql.length() - 5);
+        if (str.equals(" AND ")) {
+            sql = sql.substring(0, sql.length() - 5);
+        }
+        return sql;
+    }
+
+    private Timestamp parseDate(Long str) {
+        Date date = new Date(str);
+        return new Timestamp(date.getTime());
+    }
+
+    public List<Post> findPostStringSql2(List<Post2Tag> post2TagList) {
+        String sql2 = createSqlPost2Tag(post2TagList);
+        if (!sql2.equals("SELECT * FROM posts WHERE")) {
+            return this.jdbcTemplate.query(sql2, postRowMapper);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private String createSqlPost2Tag(List<Post2Tag> post2TagList) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM posts WHERE");
+        for (Post2Tag post2Tag : post2TagList) {
+            if (post2Tag.getPostId() != 0) {
+                sql.append(" Id = ").append(post2Tag.getId()).append(" OR ");
+            }
+        }
+        if (sql.substring(sql.length() - 4).equals(" OR ")) {
+            sql.delete(sql.length() - 4, sql.length());
+        }
+        return sql.toString();
     }
 
 }

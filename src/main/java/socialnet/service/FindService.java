@@ -1,7 +1,6 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
@@ -16,11 +15,8 @@ import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -36,27 +32,23 @@ public class FindService {
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
                                                   Long dateTo, Integer offset, Integer perPage,
-                                                  String[] tags, String text) throws ParseException {
+                                                  String[] tags, String text) {
         String email = jwtUtils.getUserEmail(jwtToken);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
         List<Post> postTotal = new ArrayList<>();
         List<PostRs> postRsList = new ArrayList<>();
-        List<Post> postList = new ArrayList<>();
+        List<Post> postList;
         if (personsEmail == null) {
             personsEmail = new ArrayList<>();
         }
         if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            String sql = createSqlPost(author, dateFrom,
-                    dateTo, text);
-            if (!sql.equals("SELECT * FROM posts WHERE")) {
-                postList = postRepository.findPostStringSql(sql);
-                if (postList == null) {
-                    postList = new ArrayList<>();
-                } else {
-                    postTotal.addAll(postList);
-                }
+            postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text);
+            if (postList == null) {
+                postList = new ArrayList<>();
+            } else {
+                postTotal.addAll(postList);
             }
             if (tags != null) {
                 postTotal.addAll(comparisonOfSelectionWithTags(postList, tags));
@@ -79,8 +71,7 @@ public class FindService {
     private List<Post> comparisonOfSelectionWithTags(List<Post> postList, String[] tags) {
         List<Post> postTotal = new ArrayList<>();
         List<Post2Tag> post2TagList = tagService.getPostByQueryTags(tags);
-        String sql2 = createSqlPost2Tag(post2TagList);
-        ArrayList<Post> posts = new ArrayList<>(postRepository.findPostStringSql(sql2));
+        ArrayList<Post> posts = new ArrayList<>(postRepository.findPostStringSql2(post2TagList));
         if (!postList.isEmpty()) {
             for (Post post : postList) {
                 for (Post post1 : posts) {
@@ -93,55 +84,10 @@ public class FindService {
         return postTotal;
     }
 
-    private String createSqlPost(String author, Long dateFrom, Long dateTo, String text) {
-        String sql = "SELECT * FROM posts WHERE";
-        if (author.indexOf(" ") > 0) {
-            String firstName = author.substring(0, author.indexOf(" ")).trim();
-            String lastName = author.substring(author.indexOf(" ")).trim();
-            final Person personsName = personRepository.findPersonsName(firstName, lastName);
-            Long idPerson = personsName.getId();
-            sql = sql + " author_id = " + idPerson + " AND ";
-        }
-        if (dateFrom > 0) {
-            Timestamp dateFrom1 = parseDate(dateFrom);
-            sql = sql + " time > '" + dateFrom1 + "' AND ";
-        }
-        if (dateTo > 0) {
-            Timestamp dateTo1 = parseDate(dateTo);
-            sql = sql + " time < '" + dateTo1 + "' AND ";
-        }
-        if (!text.equals("")) {
-            sql = sql + " post_text LIKE '%" + text + "%' AND ";
-        }
-        String str = sql.substring(sql.length() - 5);
-        if (str.equals(" AND ")) {
-            sql = sql.substring(0, sql.length() - 5);
-        }
-        return sql;
-    }
-
-    private String createSqlPost2Tag(List<Post2Tag> post2TagList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM post WHERE");
-        for (Post2Tag post2Tag : post2TagList) {
-            if (post2Tag.getPostId() != 0) {
-                sql.append(" Id = '").append(post2Tag).append("' OR ");
-            }
-        }
-        if (sql.substring(sql.length() - 4).equals("' OR ")) {
-            sql.delete(sql.length() - 4, sql.length());
-        }
-        return sql.toString();
-    }
-
-    private Timestamp parseDate(Long str) {
-        Date date = new Date(str);
-        return new Timestamp(date.getTime());
-    }
-
     public CommonRs<List<PersonRs>> findPersons(Object[] args) {
         String email = jwtUtils.getUserEmail((String) args[0]);
         List<Person> personsEmail = personRepository.findPersonsEmail(email);
-        List<Person> personList = new ArrayList<>();
+        List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();
         if (personsEmail == null) {
             personsEmail = new ArrayList<>();
@@ -149,12 +95,9 @@ public class FindService {
         if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            String sql = createSqlPerson(args);
-            if (!sql.equals("SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false")){
-                personList = personRepository.findPersonsQuery(sql);
-                if (personList == null) {
-                    personList = new ArrayList<>();
-                }
+            personList = personRepository.findPersonsQuery(args);
+            if (personList == null) {
+                personList = new ArrayList<>();
             }
             int count = 0;
             for (Person person : personList) {
@@ -168,42 +111,6 @@ public class FindService {
         personRsList.sort(Comparator.comparing(PersonRs::getRegDate));
         return new CommonRs<>(personRsList, (Integer) args[8], (Integer) args[7], (Integer) args[8],
                 System.currentTimeMillis(), (long) personList.size());
-    }
-
-
-    private String createSqlPerson(Object[] args) {
-        String sql = "SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false AND ";
-        if ((Integer) args[1] > 0) {
-            val ageFrom = searchDate((Integer) args[1]);
-            sql = sql + " birth_date < '" + ageFrom + "' AND ";
-        }
-        if ((Integer) args[2] > 0) {
-            val ageTo = searchDate((Integer) args[2]);
-            sql = sql + " birth_date > '" + ageTo + "' AND ";
-        }
-        if (!args[3].equals("")) {
-            sql = sql + " city = '" + args[3] + "' AND ";
-        }
-        if (!args[4].equals("")) {
-            sql = sql + " country = '" + args[4] + "' AND ";
-        }
-        if (!args[5].equals("")) {
-            sql = sql + " first_name = '" + args[5] + "' AND ";
-        }
-        if (!args[6].equals("")) {
-            sql = sql + " last_name = '" + args[6] + "' AND ";
-        }
-        String str = sql.substring(sql.length() - 5);
-        if (str.equals(" AND ")) {
-            return sql.substring(0, sql.length() - 5);
-        }
-        return sql;
-    }
-
-    private Timestamp searchDate(Integer age) {
-        val timestamp = new Timestamp(new Date().getTime());
-        timestamp.setYear(timestamp.getYear() - age);
-        return timestamp;
     }
 }
 

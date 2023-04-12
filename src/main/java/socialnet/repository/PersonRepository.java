@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,8 @@ import socialnet.model.Person;
 import socialnet.model.Post;
 import socialnet.utils.Reflection;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,12 +69,26 @@ public class PersonRepository {
         }
     }
 
-    public List<Person> findFriendsAll(String sql) {
+    public List<Person> findFriendsAll(List<Long> friendsId) {
+        String sql = "SELECT * FROM persons WHERE";
+        String friendsIdString = friendsIdStringMethod(friendsId, sql);
         try {
-            return this.jdbcTemplate.query(sql, personRowMapper);
+            return this.jdbcTemplate.query(friendsIdString, personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+    }
+
+    private String friendsIdStringMethod(List<Long> friendsId, String sql) {
+        StringBuilder friendsIdString = new StringBuilder(sql);
+        for (int i = 0; i < friendsId.size(); i++) {
+            if (i < friendsId.size() - 1) {
+                friendsIdString.append(" id =").append(friendsId.get(i)).append(" OR");
+            } else {
+                friendsIdString.append(" id =").append(friendsId.get(i));
+            }
+        }
+        return friendsIdString.toString();
     }
 
     public List<Person> findPersonsEmail(String email) {
@@ -171,13 +188,53 @@ public class PersonRepository {
         jdbcTemplate.update(sql, paramObjects);
     }
 
-    public List<Person> findPersonsQuery(String sql) {
-        try {
-            return this.jdbcTemplate.query(sql, personRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
+    public List<Person> findPersonsQuery(Object[] args) {
+        String sql = createSqlPerson(args);
+        if (!sql.equals("SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false")) {
+            try {
+                return this.jdbcTemplate.query(sql, personRowMapper);
+            } catch (EmptyResultDataAccessException ignored) {
+                return null;
+            }
         }
+        return null;
     }
+
+    private String createSqlPerson(Object[] args) {
+        String sql = "SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false AND ";
+        if ((Integer) args[1] > 0) {
+            val ageFrom = searchDate((Integer) args[1]);
+            sql = sql + " birth_date < '" + ageFrom + "' AND ";
+        }
+        if ((Integer) args[2] > 0) {
+            val ageTo = searchDate((Integer) args[2]);
+            sql = sql + " birth_date > '" + ageTo + "' AND ";
+        }
+        if (!args[3].equals("")) {
+            sql = sql + " city = '" + args[3] + "' AND ";
+        }
+        if (!args[4].equals("")) {
+            sql = sql + " country = '" + args[4] + "' AND ";
+        }
+        if (!args[5].equals("")) {
+            sql = sql + " first_name = '" + args[5] + "' AND ";
+        }
+        if (!args[6].equals("")) {
+            sql = sql + " last_name = '" + args[6] + "' AND ";
+        }
+        String str = sql.substring(sql.length() - 5);
+        if (str.equals(" AND ")) {
+            return sql.substring(0, sql.length() - 5);
+        }
+        return sql;
+    }
+
+    private Timestamp searchDate(Integer age) {
+        val timestamp = new Timestamp(new Date().getTime());
+        timestamp.setYear(timestamp.getYear() - age);
+        return timestamp;
+    }
+
 
     public Person findPersonsName(String nameFirst, String nameLast) {
             return this.jdbcTemplate.query("SELECT * FROM persons WHERE first_name = ? AND last_name = ?",
