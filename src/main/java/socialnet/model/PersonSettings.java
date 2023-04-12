@@ -10,6 +10,8 @@ public class PersonSettings {
 
     private Boolean friendBirthdayNotification;
 
+    private Boolean friendRequest;
+
     private Boolean likeNotification;
 
     private Boolean messageNotification;
