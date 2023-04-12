@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://81.177.6.228:5432/socialnet
+    username: snuser
+    password: snpassword
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: false
+  main:
+    allow-circular-references: true
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+        temp:
+          use_jdbc_metadata_defaults: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+
+server:
+  port: 8086
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+auth:
+  secret: socialNet
+  timeLive: 216000000

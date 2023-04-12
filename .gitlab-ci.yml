@@ -1,0 +1,65 @@
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+build:
+  stage: build
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Compiling..."
+    - mvn compile -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Testing..."
+    - mvn test -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+package:
+  stage: package
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Packging..."
+    - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
+  artifacts:
+    paths:
+      - target/javapro37backend-0.0.1-SNAPSHOT.jar
+  cache:
+    policy: pull
+    paths:
+      - ./target
+      - ./.m2
+
+deploy:
+  stage: deploy
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Deploying..."
+    - docker-compose down
+    - (docker ps -a -q --filter="name=backend" | xargs docker stop | xargs docker rm) || echo "No containers to remove"
+    - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
+    - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
+    - docker-compose up --build -d
