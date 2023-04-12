@@ -43,25 +43,28 @@ public class PostsTest {
 
     @Test
     @WithAnonymousUser
-    public void accessDeniedTest() throws Exception {
+    public void accessDenied() throws Exception {
         mockMvc
             .perform(get("/api/v1/post/1"))
             .andDo(print())
-            .andExpect(unauthenticated());
+            .andExpect(unauthenticated())
+            .andReturn();
     }
 
     @Test
-    public void getPostByIdTest() throws Exception {
+    public void getPostByExistsId() throws Exception {
         mockMvc
             .perform(get("/api/v1/post/1").header("Authorization", getToken()))
+            .andDo(print())
             .andExpect(status().isOk())
             .andReturn();
     }
 
     @Test
-    public void getPostByWrongIdTest() throws Exception {
+    public void getPostByNotExistsId() throws Exception {
         mockMvc
             .perform(get("/api/v1/post/0").header("Authorization", getToken()))
+            .andDo(print())
             .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
             .andReturn();
     }
