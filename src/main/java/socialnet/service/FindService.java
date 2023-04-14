@@ -34,14 +34,11 @@ public class FindService {
                                                   Long dateTo, Integer offset, Integer perPage,
                                                   String[] tags, String text) {
         String email = jwtUtils.getUserEmail(jwtToken);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         List<Post> postTotal = new ArrayList<>();
         List<PostRs> postRsList = new ArrayList<>();
         List<Post> postList;
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text);
@@ -73,26 +70,23 @@ public class FindService {
         List<Post2Tag> post2TagList = tagService.getPostByQueryTags(tags);
         ArrayList<Post> posts = new ArrayList<>(postRepository.findPostStringSql2(post2TagList));
         if (!postList.isEmpty()) {
-            for (Post post : postList) {
-                for (Post post1 : posts) {
+            postList.forEach((post) -> {
+                posts.forEach((post1) -> {
                     if (post.getId().equals(post1.getId())) {
                         postTotal.add(post);
                     }
-                }
-            }
+                });
+            });
         }
         return postTotal;
     }
 
     public CommonRs<List<PersonRs>> findPersons(Object[] args) {
         String email = jwtUtils.getUserEmail((String) args[0]);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             personList = personRepository.findPersonsQuery(args);

@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: populate-databaseCountryAndCity
+      author: isakov
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            path: dataCountryAndCity.sql

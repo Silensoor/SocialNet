@@ -2,6 +2,7 @@ package socialnet.model;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.sql.Timestamp;
 

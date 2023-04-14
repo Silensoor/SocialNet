@@ -48,8 +48,8 @@ public class PersonRepository {
 
     public Person findById(Long authorId) {
         try {
-            String select = "SELECT * FROM persons WHERE id = " + authorId;
-            List<Person> personList = jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Person.class));
+            List<Person> personList = jdbcTemplate.query("SELECT * FROM persons WHERE id = ?",
+                    new Object[] { authorId }, new BeanPropertyRowMapper<>(Person.class));
             if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
             return personList.get(0);
         } catch (EmptyResultDataAccessException ignored) {
@@ -91,9 +91,9 @@ public class PersonRepository {
         return friendsIdString.toString();
     }
 
-    public List<Person> findPersonsEmail(String email) {
+    public Person findPersonsEmail(String email) {
         try {
-            return this.jdbcTemplate.query(
+            return this.jdbcTemplate.queryForObject(
                 "SELECT * FROM persons WHERE email = ?",
                 new Object[]{email},
                 personRowMapper

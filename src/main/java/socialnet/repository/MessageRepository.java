@@ -26,10 +26,14 @@ public class MessageRepository {
             .build();
 
     public Message findByDialogId(Long dialogId) {
-        return jdbcTemplate.queryForObject(
-                        "SELECT * FROM messages WHERE dialog_id = ? ORDER BY time DESC LIMIT 1;",
-                        messageRowMapper,
-                        dialogId);
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM messages WHERE dialog_id = ? ORDER BY time DESC LIMIT 1;", new Object[]{dialogId},
+                    messageRowMapper
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public Long findCountByDialogIdAndReadStatus(Long dialogId, String readStatus) {
