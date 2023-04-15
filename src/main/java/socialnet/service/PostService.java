@@ -94,27 +94,28 @@ public class PostService {
     }
 
     public CommonRs<List<PostRs>> getFeeds(String jwtToken, int offset, int perPage) {
-        List<Post> posts = postRepository.findAll();
+        List<Post> postList = postRepository.findAll(offset, perPage);
+        postList.sort(Comparator.comparing(Post::getTime).reversed());
         List<PostRs> postRsList = new ArrayList<>();
-        for (Post post : posts) {
-            if(post.getIsDeleted()) continue;
+        for (Post post : postList) {
             int postId = post.getId().intValue();
             Details details = getDetails(post.getAuthorId(), postId, jwtToken);
             PostRs postRs = postsMapper.toRs(post, details);
             postRsList.add(postRs);
         }
-        postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
-        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
+        int itemPerPage = offset / perPage;
+        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
     private Details getDetails(long authorId, int postId, String jwtToken) {
         Person author = getAuthor(authorId);
-        List<Like> likes = getLikes(postId);
+        List<Like> likes = getLikes(postId).stream().filter(l -> l.getType().equals("Post")).collect(Collectors.toList());
         List<Tag> tags = getTags(postId);
         List<String> tagsStrings = tags.stream().map(Tag::getTag).collect(Collectors.toList());
         Person authUser = getAuthUser(jwtToken);
         List<Comment> postComments = getPostComments(postId);
         List<CommentRs> comments = getComments(postComments, jwtToken);
+        comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
         return new Details(author, likes, tagsStrings, authUser.getId(), comments);
     }
 
@@ -123,15 +124,36 @@ public class PostService {
         for (Comment postComment : postComments) {
             int commentId = postComment.getId().intValue();
             Person author = getAuthor(postComment.getAuthorId());
-            List<Comment> subCommentsList = getPostComments(commentId);
-            List<CommentRs> subComments = getComments(subCommentsList, jwtToken);
-            List<Like> likes = getLikes(commentId);
+            List<Comment> subCommentsList = getSubCommentList(postComment.getId());
+            assert subCommentsList != null;
+            List<CommentRs> subComments = getSubComments(subCommentsList, jwtToken);
+            List<Like> likes = getLikes(commentId).stream().filter(l -> l.getType().equals("Comment")).collect(Collectors.toList());
             Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
             long authUserId = authUser.getId();
             CommentRs commentRs = postCommentMapper.toDTO(author, postComment, subComments, likes, authUserId);
             comments.add(commentRs);
         }
         return comments;
+    }
+
+    private List<CommentRs> getSubComments(List<Comment> parentCommentsList, String jwtToken) {
+        List<CommentRs> comments = new ArrayList<>();
+        for (Comment parentComment : parentCommentsList) {
+            int commentId = parentComment.getId().intValue();
+            Person author = getAuthor(parentComment.getAuthorId());
+            List<Comment> subCommentsList = getSubCommentList(parentComment.getId());
+            assert subCommentsList != null;
+            List<Like> likes = getLikes(commentId).stream().filter(l -> l.getType().equals("Comment")).collect(Collectors.toList());
+            Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+            long authUserId = authUser.getId();
+            CommentRs commentRs = postCommentMapper.toDTO(author, parentComment, new ArrayList<>(), likes, authUserId);
+            comments.add(commentRs);
+        }
+        return comments;
+    }
+
+    private List<Comment> getSubCommentList(long parentId) {
+        return commentRepository.findByPostIdParentId(parentId);
     }
 
     public CommonRs<PostRs> createPost(PostRq postRq, int id, Integer publishDate, String jwtToken) {

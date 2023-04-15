@@ -4,19 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LoginRq;
 import socialnet.api.response.CaptchaRs;
-import socialnet.service.AuthService;
+import socialnet.service.CaptchaService;
 import socialnet.service.PersonService;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
+    private final CaptchaService captchaService;
     private final PersonService personService;
 
     @GetMapping("/captcha")
     public CaptchaRs captcha() {
-        return authService.getCaptchaData();
+        return captchaService.getCaptchaData();
     }
 
     @PostMapping("/login")
