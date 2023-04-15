@@ -3,6 +3,7 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import socialnet.api.request.MessageCommonWs;
 import socialnet.api.request.MessageWs;
 import socialnet.model.Dialog;
 import socialnet.model.Message;
@@ -33,5 +34,15 @@ public class MessageService {
         messageRepository.save(messageModel);
 
         return message;
+    }
+
+    public void deleteMessages(MessageCommonWs messageCommonWs) {
+        for (Long messageId : messageCommonWs.getMessageIds()) {
+            messageRepository.markDeleted(messageId, true);
+        }
+    }
+
+    public void recoverMessages(MessageCommonWs messageCommonWs) {
+        messageRepository.markDeleted(messageCommonWs.getMessageId(), false);
     }
 }

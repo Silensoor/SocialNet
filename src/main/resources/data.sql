@@ -1715,8 +1715,8 @@ insert into dialogs (first_person_id, second_person_id, last_active_time, last_m
 -- insert into dialogs (first_person_id, second_person_id, last_active_time, last_message_id) values (42, 57, '2022-11-11 01:34:45', 30);
 -- insert into dialogs (first_person_id, second_person_id, last_active_time, last_message_id) values (29, 96, '2022-10-29 09:05:04', 67);
 
-insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (false, 'user1 ===> user2', 'UNREAD', '1997-08-28 07:16:00', 1, 1, 2);
-insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (false, 'user2 ===> user1', 'UNREAD', '1997-08-28 10:56:32', 1, 2, 1);
+insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (false, 'message1 ===> user2', 'UNREAD', '1997-08-28 07:16:00', 1, 1, 2);
+insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (false, 'message2 ===> user1', 'UNREAD', '1997-08-28 10:56:32', 1, 2, 1);
 -- insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (true, 'Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.', 'UNREAD', '2022-05-22 07:19:23', 28, 93, 66);
 -- insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (true, 'Maecenas tristique, est et tempus semper, est quam pharetra magna, ac consequat metus sapien ut nunc.', 'READ', '2023-03-17 23:53:23', 20, 58, 43);
 -- insert into messages (is_deleted, message_text, read_status, time, dialog_id, author_id, recipient_id) values (true, 'Fusce consequat.', 'UNREAD', '2022-07-14 19:42:32', 80, 6, 29);

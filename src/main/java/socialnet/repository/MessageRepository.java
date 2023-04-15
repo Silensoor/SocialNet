@@ -32,7 +32,7 @@ public class MessageRepository {
     }
 
     public List<Message> findByDialogId(Long dialogId, Integer itemPerPage) {
-        return jdbcTemplate.query("SELECT * FROM messages WHERE dialog_id = ? LIMIT ?",
+        return jdbcTemplate.query("SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false LIMIT ?",
                 messageRowMapper,
                 dialogId, itemPerPage);
     }
@@ -76,5 +76,9 @@ public class MessageRepository {
                 message.getDialogId(),
                 message.getAuthorId(),
                 message.getRecipientId());
+    }
+
+    public void markDeleted(Long messageId, Boolean isDeletedState) {
+        jdbcTemplate.update("UPDATE messages SET is_deleted = ? WHERE id = ?", isDeletedState, messageId);
     }
 }
