@@ -1,6 +1,10 @@
 package socialnet.repository;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.jooq.DSLContext;
+import org.jooq.RowCountQuery;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,13 +12,15 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 
-import java.util.*;
+import java.util.List;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FriendsShipsRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    private final DSLContext context = DSL.using(SQLDialect.POSTGRES);
 
 
     public List<Friendships> findAllFriendships(Long id) {
@@ -25,6 +31,7 @@ public class FriendsShipsRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+
     }
 
     private final RowMapper<Friendships> friendshipsRowMapper = (resultSet, rowNum) -> {

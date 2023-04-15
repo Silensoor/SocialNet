@@ -2,6 +2,14 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.jooq.*;
+
+import static org.jooq.impl.DSL.*;
+
+import org.jooq.Record;
+import org.jooq.impl.DSL;
+//import Tables.*;
+import org.jooq.meta.postgres.information_schema.tables.Tables;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,10 +18,13 @@ import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
 import socialnet.exception.PostException;
 import socialnet.model.Person;
-import socialnet.model.Post;
+import socialnet.service.PersonService;
 import socialnet.utils.Reflection;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +34,9 @@ import java.util.Optional;
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
+
+    private Connection connection;
+    private final DSLContext dsl;
 
     public void save(Person person) {
         jdbcTemplate.update(
@@ -189,6 +203,13 @@ public class PersonRepository {
     }
 
     public List<Person> findPersonsQuery(Object[] args) {
+        List<Person> persons = Collections.singletonList(dsl.select().from("PERSONS")
+//                .where(param(field("first_name").equals(field("last_name")))
+//                        .and(persons.getLastName()).equals((String) args[6])))
+                .fetchAny()
+                .into(Person.class));
+
+
         String sql = createSqlPerson(args);
         if (!sql.equals("SELECT * FROM persons WHERE is_deleted=false AND is_blocked=false")) {
             try {
@@ -237,7 +258,14 @@ public class PersonRepository {
 
 
     public Person findPersonsName(String nameFirst, String nameLast) {
-            return this.jdbcTemplate.query("SELECT * FROM persons WHERE first_name = ? AND last_name = ?",
+        Person persons = dsl.select()
+                .from("persons")
+//                .where(nameFirst.equals(persons.getFirstName()))
+//                .or(nameLast.equals(persons.getLastName()))
+                .fetchAny()
+                .into(Person.class);
+
+        return this.jdbcTemplate.query("SELECT * FROM persons WHERE first_name = ? AND last_name = ?",
                     new Object[]{nameFirst, nameLast},
                     new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
     }
