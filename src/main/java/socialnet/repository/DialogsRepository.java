@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Dialog;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,11 +22,23 @@ public class DialogsRepository {
             .build();
 
     public List<Dialog> findByAuthorId(Long authorId) {
-        return Optional.of(jdbcTemplate.query(
-                        "SELECT * FROM dialogs WHERE first_person_id = ?",
-                        dialogRowMapper,
-                        authorId))
-                .filter(list -> !list.isEmpty())
-                .orElseThrow(() -> new RuntimeException("Диалога с автором = " + authorId + " не существует"));
+        return jdbcTemplate.query(
+                "SELECT * FROM dialogs WHERE first_person_id = ?",
+                dialogRowMapper,
+                authorId);
+    }
+
+
+    public List<Dialog> findByRecipientId(Long recipientId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM dialogs WHERE second_person_id = ?",
+                dialogRowMapper,
+                recipientId);
+    }
+
+    public Dialog findByDialogId(Long dialogId) {
+        return jdbcTemplate.queryForObject("SELECT * FROM dialogs WHERE id = ?",
+                dialogRowMapper,
+                dialogId);
     }
 }

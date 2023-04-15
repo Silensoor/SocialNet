@@ -2,8 +2,13 @@ package socialnet.security.jwt;
 
 
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -11,6 +16,7 @@ import java.util.Date;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtUtils {
 
 
@@ -19,6 +25,8 @@ public class JwtUtils {
 
     @Value("${auth.timeLive}")
     private int jwtExpirationMs;
+
+    private final UserDetailsService userDetailsService;
 
     public String generateJwtToken(String email) {
 
@@ -30,15 +38,17 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
+
     public String getUserEmail(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
+
     public boolean validateJwtToken(String authToken) {
         try {
             Claims body = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody();
             Date expiration = body.getExpiration();
             Date now = new Date();
-            if(expiration.after(now)){
+            if (expiration.after(now)) {
                 return true;
             }
         } catch (SignatureException e) {
@@ -53,5 +63,18 @@ public class JwtUtils {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
         return false;
+    }
+
+    public Authentication getAuth(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(extractUserName(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String extractUserName(String token) {
+        return getTokenBody(token).getSubject();
+    }
+
+    private Claims getTokenBody(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
     }
 }

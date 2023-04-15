@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Message;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class MessageRepository {
@@ -22,11 +24,17 @@ public class MessageRepository {
             .recipientId(rs.getLong("recipient_id"))
             .build();
 
-    public Message findByDialogId(Long dialogId) {
+    public Message findLastMessageByDialogId(Long dialogId) {
         return jdbcTemplate.queryForObject(
                         "SELECT * FROM messages WHERE dialog_id = ? ORDER BY time DESC LIMIT 1;",
                         messageRowMapper,
                         dialogId);
+    }
+
+    public List<Message> findByDialogId(Long dialogId, Integer itemPerPage) {
+        return jdbcTemplate.query("SELECT * FROM messages WHERE dialog_id = ? LIMIT ?",
+                messageRowMapper,
+                dialogId, itemPerPage);
     }
 
     public Long findCountByDialogIdAndReadStatus(Long dialogId, String readStatus) {
@@ -46,5 +54,27 @@ public class MessageRepository {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM messages WHERE author_id = ? AND read_status = ?",
                 Long.class,
                 authorId, readStatus);
+    }
+
+    public Integer updateReadStatusByDialogId(Long dialogId, String readStatus) {
+        return jdbcTemplate.update("UPDATE messages SET read_status = ? WHERE dialog_id = ?", readStatus, dialogId);
+    }
+
+    public int save(Message message) {
+        return jdbcTemplate.update("INSERT INTO messages (is_deleted, " +
+                            "message_text, " +
+                            "read_status, " +
+                            "time, " +
+                            "dialog_id, " +
+                            "author_id, " +
+                            "recipient_id) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                message.getIsDeleted(),
+                message.getMessageText(),
+                message.getReadStatus(),
+                message.getTime(),
+                message.getDialogId(),
+                message.getAuthorId(),
+                message.getRecipientId());
     }
 }
