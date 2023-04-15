@@ -2,15 +2,12 @@ package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.DialogRs;
+import socialnet.api.response.MessageRs;
 import socialnet.exception.DialogsException;
 import socialnet.service.DialogsService;
 
@@ -38,6 +35,21 @@ public class DialogsController {
 
     @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
-        return dialogsService.getUnreadDialogs(authorization);
+        return dialogsService.getUnreadedMessages(authorization);
+    }
+
+    @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonRs<List<MessageRs>> getMessagesFromDialog(@RequestHeader String authorization,
+                                                           @PathVariable("dialogId") Long dialogId,
+                                                           @RequestParam(defaultValue = "20") Integer itemPerPage) {
+        log.debug("token = {}", authorization);
+        return dialogsService.getMessagesFromDialog(dialogId, itemPerPage);
+    }
+
+    @PutMapping(value = "/dialogs/{dialogId}/read", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonRs<ComplexRs> readMessagesInDialog(@RequestHeader String authorization,
+                                                    @PathVariable("dialogId") Long dialogId) {
+        log.debug("token = {}", authorization);
+        return dialogsService.readMessagesInDialog(dialogId);
     }
 }
