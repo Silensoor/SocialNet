@@ -74,7 +74,9 @@ public class DialogsService {
         return result;
     }
 
-    public CommonRs<List<MessageRs>> getMessagesFromDialog(Long dialogId, Integer itemPerPage) {
+    public CommonRs<List<MessageRs>> getMessagesFromDialog(String token, Long dialogId, Integer itemPerPage) {
+        String userEmail = jwtUtils.getUserEmail(token);
+        Person person = personRepository.getPersonByEmail(userEmail);
         List<Message> messagesModel = messageRepository.findByDialogId(dialogId, itemPerPage);
         List<MessageRs> messagesDto = new ArrayList<>();
         for (Message messageModel : messagesModel) {
@@ -82,7 +84,7 @@ public class DialogsService {
             Person recipientModel = personRepository.findById(messageModel.getRecipientId());
             PersonRs recipientDto = PersonMapper.INSTANCE.toDTO(recipientModel);
             messageDto.setRecipient(recipientDto);
-            messageDto.setIsSentByMe(null);
+            messageDto.setIsSentByMe(messageModel.getAuthorId().equals(person.getId()));
             messagesDto.add(messageDto);
         }
         CommonRs<List<MessageRs>> result = new CommonRs<>();

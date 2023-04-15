@@ -43,7 +43,7 @@ public class DialogsController {
                                                            @PathVariable("dialogId") Long dialogId,
                                                            @RequestParam(defaultValue = "20") Integer itemPerPage) {
         log.debug("token = {}", authorization);
-        return dialogsService.getMessagesFromDialog(dialogId, itemPerPage);
+        return dialogsService.getMessagesFromDialog(authorization, dialogId, itemPerPage);
     }
 
     @PutMapping(value = "/dialogs/{dialogId}/read", produces = MediaType.APPLICATION_JSON_VALUE)

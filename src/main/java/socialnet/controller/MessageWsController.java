@@ -41,12 +41,14 @@ public class MessageWsController {
 
     @MessageMapping("/dialogs/delete_messages")
     public void deleteMessages(@Payload MessageCommonWs messageCommonWs) {
+        messageService.deleteMessages(messageCommonWs);
         messagingTemplate.convertAndSendToUser(
                 messageCommonWs.getDialogId().toString(), "/queue/messages", messageCommonWs);
     }
 
     @MessageMapping("/dialogs/recover_message")
     public void recoverMessage(@Payload MessageCommonWs messageCommonWs) {
+        messageService.recoverMessages(messageCommonWs);
         messagingTemplate.convertAndSendToUser(
                 messageCommonWs.getDialogId().toString(), "/queue/messages", messageCommonWs);
     }
