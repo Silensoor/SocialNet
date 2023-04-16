@@ -21,12 +21,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 //@Sql("/sql/schema.sql")
 //@Sql("/sql/data.sql")
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = TestBase.Initializer.class)
 public abstract class TestBase {
     @ClassRule
-    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14");
+    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14")
+        .withReuse(true);
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
