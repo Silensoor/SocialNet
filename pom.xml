@@ -208,7 +208,7 @@
                     <!-- Configure the database connection here -->
                     <jdbc>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://localhost:5433/social11</url>
+                        <url>jdbc:postgresql://localhost:5433/social12</url>
                         <user>alexsandr</user>
                         <password>Fghtkm11</password>
                     </jdbc>

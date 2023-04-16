@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: populate-databaseCountryAndCity
+      id: populate-databaseFriendsCountryCity
       author: isakov
       changes:
         - sqlFile:

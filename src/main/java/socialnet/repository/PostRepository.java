@@ -9,14 +9,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.exception.EmptyEmailException;
 import socialnet.exception.PostException;
-import socialnet.model.Person;
 import socialnet.model.Post;
 import socialnet.model.Post2Tag;
 
 import java.sql.Timestamp;
 import java.util.*;
 
-import static org.jooq.generated.Tables.PERSONS;
 import static org.jooq.generated.Tables.POSTS;
 
 @RequiredArgsConstructor
@@ -153,24 +151,39 @@ public class PostRepository {
 
     public List<Post> findPostStringSql2(List<Post2Tag> post2TagList) {
         String sql2 = createSqlPost2Tag(post2TagList);
-        if (!sql2.equals("SELECT * FROM posts WHERE")) {
-            return this.jdbcTemplate.query(sql2, postRowMapper);
+        if (sql2 != null) {
+            try {
+                return dsl.select()
+                        .from(POSTS)
+                        .where(POSTS.IS_DELETED.notEqual(true))
+                        .and(POSTS.IS_BLOCKED.notEqual(true))
+                        .and(sql2)
+                        .fetchInto(Post.class);
+            } catch (EmptyResultDataAccessException ignored) {
+                return null;
+            }
         } else {
-            return new ArrayList<>();
+            return null;
         }
     }
 
     private String createSqlPost2Tag(List<Post2Tag> post2TagList) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM posts WHERE");
-        for (Post2Tag post2Tag : post2TagList) {
-            if (post2Tag.getPostId() != 0) {
-                sql.append(" Id = ").append(post2Tag.getId()).append(" OR ");
+        StringBuilder sql = new StringBuilder(" ");
+        if (post2TagList != null && !post2TagList.isEmpty()) {
+            for (Post2Tag post2Tag : post2TagList) {
+                if (post2Tag.getPostId() != 0) {
+                    sql.append(" Id = ").append(post2Tag.getId()).append(" OR ");
+                }
             }
+            if (sql.length() > 4) {
+                if (sql.substring(sql.length() - 4).equals(" OR ")) {
+                    sql.delete(sql.length() - 4, sql.length());
+                }
+            }
+            return sql.toString();
+        } else {
+            return null;
         }
-        if (sql.substring(sql.length() - 4).equals(" OR ")) {
-            sql.delete(sql.length() - 4, sql.length());
-        }
-        return sql.toString();
     }
 
 }

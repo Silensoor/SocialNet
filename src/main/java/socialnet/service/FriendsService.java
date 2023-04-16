@@ -15,6 +15,7 @@ import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -204,32 +205,32 @@ public class FriendsService {
     private HashSet<Long> cleaningTheListOfRecommendationsFromDuplication(List<Friendships> personList,
                                                                           List<Long> friendsId, Person personsEmail) {
         HashSet<Long> friendsFriendsId = new HashSet<>();
-        boolean flagDst;
-        boolean flagSrc;
-        for (Friendships friendships : personList) {
-            flagSrc = false;
-            flagDst = false;
-            for (Long aLong : friendsId) {
+        AtomicBoolean flagDst = new AtomicBoolean(false);
+        AtomicBoolean flagSrc = new AtomicBoolean(false);
+        personList.forEach((friendships) -> {
+            flagSrc.set(false);
+            flagDst.set(false);
+            friendsId.forEach((aLong) ->{
                 if (Objects.equals(friendships.getSrcPersonId(), aLong)) {
-                    flagSrc = true;
+                    flagSrc.set(true);
                 }
                 if (friendships.getDstPersonId().equals(aLong)) {
-                    flagDst = true;
+                    flagDst.set(true);
                 }
                 if (friendships.getSrcPersonId().equals(personsEmail.getId())) {
-                    flagSrc = true;
+                    flagSrc.set(true);
                 }
                 if (friendships.getDstPersonId().equals(personsEmail.getId())) {
-                    flagDst = true;
+                    flagDst.set(true);
                 }
-            }
-            if (!flagSrc) {
+            });
+            if (!flagSrc.get()) {
                 friendsFriendsId.add(friendships.getSrcPersonId());
             }
-            if (!flagDst) {
+            if (!flagDst.get()) {
                 friendsFriendsId.add(friendships.getDstPersonId());
             }
-        }
+        });
         return friendsFriendsId;
     }
 
