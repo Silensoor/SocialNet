@@ -35,7 +35,7 @@ public class FindService {
                                                   String[] tags, String text) {
         String email = jwtUtils.getUserEmail(jwtToken);
         Person personsEmail = personRepository.findPersonsEmail(email);
-        List<Post> postTotal = new ArrayList<>();
+        List<Post> postTotal;
         List<PostRs> postRsList = new ArrayList<>();
         List<Post> postList;
         if (personsEmail == null) {
@@ -43,9 +43,9 @@ public class FindService {
         } else {
             postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text);
             if (postList == null) {
-                postList = new ArrayList<>();
+                throw new EmptyEmailException("Field 'author' not found");
             } else {
-                postTotal.addAll(postList);
+                postTotal = new ArrayList<>(postList);
             }
             if (tags != null) {
                 postTotal.addAll(comparisonOfSelectionWithTags(postList, tags));

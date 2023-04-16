@@ -225,9 +225,9 @@
                         </database>
                         <target>
                             <!-- The destination package of your generated classes (within the destination directory) -->
-                            <packageName>target.generated</packageName>
+<!--                            <packageName>target.generated</packageName>-->
                             <!-- The destination directory of your generated classes. Using Maven directory layout here -->
-                            <directory>/home/alexsandr/IdeaProjects/javaproteams37backend2/target/maven/</directory>
+<!--                            <directory>/home/alexsandr/IdeaProjects/javaproteams37backend2/target/maven/</directory>-->
                         </target>
                     </generator>
                 </configuration>

@@ -30,7 +30,6 @@ public class UsersController {
     }
 
     @GetMapping("/search")
-    @ResponseBody
     public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
                                                 @RequestParam(required = false, defaultValue = "0")
                                                 Integer age_from,

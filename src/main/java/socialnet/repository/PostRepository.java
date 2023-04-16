@@ -1,10 +1,13 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.jooq.DSLContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import socialnet.exception.EmptyEmailException;
 import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.model.Post;
@@ -13,12 +16,17 @@ import socialnet.model.Post2Tag;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static org.jooq.generated.Tables.PERSONS;
+import static org.jooq.generated.Tables.POSTS;
+
 @RequiredArgsConstructor
 @Repository
 public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final PersonRepository personRepository;
+
+    private final DSLContext dsl;
 
     public List<Post> findAll() {
         return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
@@ -96,21 +104,29 @@ public class PostRepository {
 
     public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo, String text) {
         String sql = createSqlPost(author, dateFrom, dateTo, text);
-        if (!sql.equals("SELECT * FROM posts WHERE")) {
-            return this.jdbcTemplate.query(sql, postRowMapper);
-        } else {
-            return new ArrayList<>();
+        try {
+            return dsl.select()
+                    .from(POSTS)
+                    .where(POSTS.IS_DELETED.notEqual(true))
+                    .and(POSTS.IS_BLOCKED.notEqual(true))
+                    .and(sql)
+                    .fetchInto(Post.class);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
         }
     }
 
     private String createSqlPost(String author, Long dateFrom, Long dateTo, String text) {
-        String sql = "SELECT * FROM posts WHERE";
+        String sql = " ";
         if (author.indexOf(" ") > 0) {
-            String firstName = author.substring(0, author.indexOf(" ")).trim();
-            String lastName = author.substring(author.indexOf(" ")).trim();
-            final Person personsName = personRepository.findPersonsName(firstName, lastName);
-            Long idPerson = personsName.getId();
-            sql = sql + " author_id = " + idPerson + " AND ";
+            String firstName = author.substring(0, author.indexOf(" "));
+            String lastName = author.substring(author.indexOf(" "));
+            final Long personsName = personRepository.findPersonsName(firstName.trim(), lastName.trim());
+            if (personsName != null) {
+                sql = sql + " author_id = " + personsName + " AND ";
+            } else {
+                throw new EmptyEmailException("Field 'author' not found");
+            }
         }
         if (dateFrom > 0) {
             Timestamp dateFrom1 = parseDate(dateFrom);
