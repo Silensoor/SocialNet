@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
 import socialnet.controller.PostsController;
 import socialnet.security.jwt.JwtUtils;
 
@@ -17,9 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PostsTest extends TestBase {
-    @Autowired
-    private MockMvc mockMvc;
-
     @Autowired
     private PostsController postsController;
 
