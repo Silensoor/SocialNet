@@ -12,19 +12,16 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @RunWith(SpringRunner.class)
-//@Sql("/sql/schema.sql")
-//@Sql("/sql/data.sql")
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = TestBase.Initializer.class)
-public abstract class TestBase {
+@ContextConfiguration(initializers = AbstractTest.Initializer.class)
+public abstract class AbstractTest {
     @ClassRule
     public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14")
         .withReuse(true);
