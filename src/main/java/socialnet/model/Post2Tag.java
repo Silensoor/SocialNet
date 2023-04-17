@@ -1,6 +1,5 @@
 package socialnet.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
@@ -10,10 +9,6 @@ public class Post2Tag {
     private Long postId;
 
     private Long tagId;
-
-    public Post2Tag() {
-
-    }
 
     public Post2Tag(Long postId, Long tagId) {
         this.postId = postId;

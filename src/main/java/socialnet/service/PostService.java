@@ -107,7 +107,7 @@ public class PostService {
         return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
-    Details getDetails(long authorId, int postId, String jwtToken) {
+    private Details getDetails(long authorId, int postId, String jwtToken) {
         Person author = getAuthor(authorId);
         List<Like> likes = getLikes(postId).stream().filter(l -> l.getType().equals("Post")).collect(Collectors.toList());
         List<Tag> tags = getTags(postId);
@@ -228,6 +228,45 @@ public class PostService {
         Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
+    }
+
+    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Integer dateFrom, Integer dateTo, int offset, int perPage, String[] tags, String text) throws ParseException {
+        List<PostRs> postRsList = getFeeds(jwtToken, offset, perPage).getData();
+        List<PostRs> tempPostRsList = new ArrayList<>();
+        if (author != null) {
+            for (PostRs postRs : postRsList) {
+                String name = postRs.getAuthor().getLastName() + " " + postRs.getAuthor().getFirstName();
+                if (name.contains(author)) continue;
+                tempPostRsList.add(postRs);
+            }
+        }
+        if (dateFrom != null) {
+            for (PostRs postRs : postRsList) {
+
+                if (parseDate(postRs.getTime()).after(new Timestamp(dateFrom))) continue;
+                tempPostRsList.add(postRs);
+            }
+        }
+        if (dateTo != null) {
+            for (PostRs postRs : postRsList) {
+                if (parseDate(postRs.getTime()).before(new Timestamp(dateTo))) continue;
+                tempPostRsList.add(postRs);
+            }
+        }
+        if (tags != null) {
+            for (PostRs postRs : postRsList) {
+                if (postRs.getTags().containsAll(Arrays.stream(tags).collect(Collectors.toList()))) continue;
+                tempPostRsList.add(postRs);
+            }
+        }
+        if (text != null) {
+            for (PostRs postRs : postRsList) {
+                if (postRs.getPostText().contains(text)) continue;
+                tempPostRsList.add(postRs);
+            }
+        }
+        postRsList.removeAll(tempPostRsList);
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
     private Timestamp parseDate(String str) throws ParseException {
