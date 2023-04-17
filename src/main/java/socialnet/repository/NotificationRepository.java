@@ -3,10 +3,13 @@ package socialnet.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Notification;
 import socialnet.model.PersonSettings;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationRepository {
     private final JdbcTemplate jdbcTemplate;
+
+    public void updateIsReadById(Integer notificationId) {
+        jdbcTemplate.update("update notifications set is_read = 'true' where id = ?",
+                notificationId);
+    }
+
+    public void updateIsReadAll(Long id) {
+        jdbcTemplate.update("update notifications set is_read = 'true' where person_id = ?", id);
+    }
+
+    public List<Notification> getNotificationsById(Integer id) {
+        return jdbcTemplate.query("select * from notifications where id = ?",
+                notificationRowMapper, id);
+    }
+
+    public List<Notification> getNotificationsByPersonId(Long id) {
+        return jdbcTemplate.query("select * from notifications where person_id = ? " +
+                "and is_read = false order by sent_time", notificationRowMapper, id);
+    }
 
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {
         jdbcTemplate.update("update person_settings set " + typeNotification + " =? where id =?", enable, id);
@@ -24,8 +46,9 @@ public class NotificationRepository {
     }
 
     public List<Notification> getNotifications(Long id, Integer itemPerPage, Integer offset) {
-        return jdbcTemplate.query("select * from notifications where person_id = ? order by sent_time", notificationRowMapper,
-                id).stream().skip(offset).limit(itemPerPage).collect(Collectors.toList());
+        return jdbcTemplate.query("select * from notifications where person_id = ? " +
+                        "and is_read = false order by sent_time",
+                notificationRowMapper, id).stream().skip(offset).limit(itemPerPage).collect(Collectors.toList());
     }
 
     private final RowMapper<PersonSettings> personSettingRowMapper = (rs, rowNum) -> {
@@ -53,4 +76,29 @@ public class NotificationRepository {
     };
 
 
+    public Long saveNotification(Notification notification) {
+        jdbcTemplate.update("insert into notifications(contact,notification_type,entity_id,is_read,sent_time,person_id) values (?,?,?,?,?,?)",
+                notification.getContact(), notification.getNotificationType(),
+                notification.getEntityId(), notification.getIsRead(),
+                notification.getSentTime(), notification.getPersonId());
+        Long id= jdbcTemplate.query("select * from notifications where id =(select max(id) from notifications)", (rs, rowNum) -> {
+            long idEnd = rs.getLong("id");
+            return idEnd;
+        }).stream().findAny().orElse(null);
+        return id;
+    }
+
+    public Long findEndId(Notification notification) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement("insert into notifications(contact) values (?) ");
+            ps.setString(1, notification.getContact());
+
+            return ps;
+        }, keyHolder);
+
+        return (long) keyHolder.getKey();
+    }
 }

@@ -18,13 +18,13 @@ public class NotificationController {
     public CommonRs<List<NotificationRs>> notifications(@RequestHeader String authorization,
                                                         @RequestParam(required = false, defaultValue = "10")Integer itemPerPage,
                                                         @RequestParam(required = false, defaultValue = "0") Integer offset){
-        return notificationsService.getAllNotification(itemPerPage,authorization,offset);
+        return notificationsService.getAllNotifications(itemPerPage,authorization,offset);
     }
 
-    @PostMapping("/notifications")
+    @PutMapping("/notifications")
     public CommonRs<List<NotificationRs>> notifications(@RequestHeader String authorization,
-                                                        @RequestParam Integer id,
-                                                        @RequestParam(required = false,defaultValue = "false")Boolean all){
-        return null;
+                                                        @RequestParam(required = false)Integer id,
+                                                        @RequestParam(required = false)Boolean all){
+        return notificationsService.putNotifications(all,id,authorization);
     }
 }
