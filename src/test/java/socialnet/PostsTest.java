@@ -1,8 +1,6 @@
 package socialnet;
 
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import socialnet.controller.PostsController;
@@ -22,17 +20,8 @@ public class PostsTest extends AbstractTest {
     @Autowired
     private JwtUtils jwtUtils;
 
-    private String token = "";
-
-    @BeforeEach
-    public void setUp() {
-        if (token.isEmpty()) {
-            token = jwtUtils.generateJwtToken("user@email.com");
-        }
-    }
-
-    @AfterEach
-    public void tearDown() {
+    public String getToken() {
+        return jwtUtils.generateJwtToken("user@email.com");
     }
 
     @Test
@@ -57,7 +46,7 @@ public class PostsTest extends AbstractTest {
     @DisplayName("Получение поста по существующему ID")
     public void getPostByExistsId() throws Exception {
         mockMvc
-            .perform(get("/api/v1/post/1").header("Authorization", token))
+            .perform(get("/api/v1/post/1").header("Authorization", getToken()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
@@ -68,7 +57,7 @@ public class PostsTest extends AbstractTest {
     @DisplayName("Получение поста по несуществующему ID")
     public void getPostByNotExistsId() throws Exception {
         mockMvc
-            .perform(get("/api/v1/post/0").header("Authorization", token))
+            .perform(get("/api/v1/post/0").header("Authorization", getToken()))
             .andDo(print())
             .andExpect(status().isNotFound())
             .andReturn();
