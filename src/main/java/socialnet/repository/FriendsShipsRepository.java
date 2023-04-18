@@ -1,6 +1,6 @@
 package socialnet.repository;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -8,14 +8,13 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 
-import java.util.*;
+import java.util.List;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FriendsShipsRepository {
 
-    private JdbcTemplate jdbcTemplate;
-
+    private final JdbcTemplate jdbcTemplate;
 
     public List<Friendships> findAllFriendships(Long id) {
         try {
@@ -25,6 +24,7 @@ public class FriendsShipsRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+
     }
 
     private final RowMapper<Friendships> friendshipsRowMapper = (resultSet, rowNum) -> {

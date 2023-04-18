@@ -49,3 +49,9 @@ databaseChangeLog:
       file: db/changelog/changelogset/populate-database.yaml
   - include:
       file: db/changelog/changelogset/add_table_for_person_settings.yaml
+  - include:
+      file: db/changelog/changelogset/delete-FriendsCountryCity.yaml
+  - include:
+      file: db/changelog/changelogset/create-FriendsCountryCity-table.yaml
+  - include:
+      file: db/changelog/changelogset/populate-databaseFriendsCountryCity.yaml
