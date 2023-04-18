@@ -232,7 +232,7 @@
                         </goals>
                         <configuration>
                             <files>
-                                <file>application.yml</file>
+                                <file>application-deploy.yml</file>
                             </files>
                         </configuration>
                     </execution>
