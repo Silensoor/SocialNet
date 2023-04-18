@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: delete-FriendsCountryCity
+      author: isakov
+      changes:
+        - dropTable:
+            tableName:  cities
+        - dropTable:
+            tableName:  countries
+        - dropTable:
+            tableName:  friendships
