@@ -1,20 +1,16 @@
 package socialnet.service.users;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import socialnet.api.response.*;
-import socialnet.exception.EmptyEmailException;
+import socialnet.api.response.CommonRs;
+import socialnet.api.response.ErrorRs;
+import socialnet.api.response.PersonRs;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.service.PostService;
-
-import java.sql.Timestamp;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +48,4 @@ public class FindUserService {
 
         return ResponseEntity.ok(new CommonRs(personRs));
     }
-
 }

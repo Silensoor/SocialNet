@@ -63,22 +63,4 @@ public class TagRepository {
             save(new Tag(tag), postId);
         }
     }
-
-    public List<Tag> getTagsByQuery(String[] tags) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tags WHERE");
-        for(Object tag : tags){
-            if (tag != "" && tag != null) {
-                sql.append(" tag = '").append(tag).append("' AND ");
-            }
-        }
-        if (sql.substring(sql.length() - 5).equals(" AND ")){
-            sql = new StringBuilder(sql.substring(0, sql.length() - 5));
-        }
-        if (!sql.toString().equals("SELECT * FROM tags WHERE")) {
-            return this.jdbcTemplate.query(sql.toString(), tagRowMapper);
-        } else {
-            return null;
-        }
-    }
-
 }

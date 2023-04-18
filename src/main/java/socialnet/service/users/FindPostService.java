@@ -5,26 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import socialnet.api.response.CommonRs;
 import socialnet.api.response.ErrorRs;
-import socialnet.api.response.PostRs;
-import socialnet.exception.EmptyEmailException;
 import socialnet.model.Person;
 
 import socialnet.model.Post;
-import socialnet.model.Post2Tag;
 import socialnet.model.Tag;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.service.PostService;
-import socialnet.service.TagService;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,8 +25,6 @@ public class FindPostService {
     private final CommentRepository commentsRepository;
     private final LikeRepository likesRepository;
     private final JwtUtils jwtUtils;
-    private final TagService tagService;
-    private final PostService postService;
 
     public ResponseEntity<?> findPostsByUserId(String authorization,
                                                Long userId,
@@ -85,4 +71,14 @@ public class FindPostService {
 
         return ResponseEntity.ok(posts);
     }
+
+
+
+//    private List<CommentRs> findCommentsByPostId(PersonRs personRs, Long postId) {
+//        List<Comment> comments = commentsRepository.findCommentsByPostId(postId);
+//        CommentRs commentRs = new CommentRs(personRs);
+//
+//    }
+
+
 }
