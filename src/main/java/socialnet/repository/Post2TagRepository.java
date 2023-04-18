@@ -31,7 +31,7 @@ public class Post2TagRepository {
 
     public List<Tag> findTagsByPostId(Long postId) {
         return jdbcTemplate.query(
-                "Select t.id, t.tag From post2tag p\n" +
+                "Select t.id, t.ta  g From post2tag p\n" +
                         "join tags t on (p.post_id = t.id)\n" +
                         "Where p.post_id = ?",
                 new Object[]{postId},
