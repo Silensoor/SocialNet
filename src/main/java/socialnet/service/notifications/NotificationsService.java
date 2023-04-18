@@ -28,24 +28,24 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> putNotifications(Boolean all, Integer notificationId, String token) {
         String email = jwtUtils.getUserEmail(token);
-        List<Person> personList = personRepository.findPersonsEmail(email);
+        Person personList = personRepository.findPersonsEmail(email);
         if (personList == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         }
         List<NotificationRs> notificationRsList = new ArrayList<>();
         if (all) {
-            Long personId = personList.get(0).getId();
+            Long personId = personList.getId();
             List<Notification> notifications = notificationRepository.getNotificationsByPersonId(personId);
             notificationRepository.updateIsReadAll(personId);
             for (Notification notification : notifications) {
-                PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList.get(0));
+                PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList);
                 NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notification, personRs);
                 notificationRsList.add(notificationRs);
             }
         } else if(notificationId!=null) {
             List<Notification> notificationList = notificationRepository.getNotificationsById(notificationId);
             notificationRepository.updateIsReadById(notificationId);
-            PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList.get(0));
+            PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList);
             NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notificationList.get(0), personRs);
             notificationRsList.add(notificationRs);
         }
@@ -55,13 +55,13 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> getAllNotifications(Integer itemPerPage, String token, Integer offset) {
         String email = jwtUtils.getUserEmail(token);
-        List<Person> personList = personRepository.findPersonsEmail(email);
+        Person personList = personRepository.findPersonsEmail(email);
         if (personList == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personList.get(0).getId();
+            Long id = personList.getId();
             List<Notification> notifications = notificationRepository.getNotifications(id, itemPerPage, offset);
-            PersonRs personRs = personMapper.toDTO(personList.get(0));
+            PersonRs personRs = personMapper.toDTO(personList);
             List<NotificationRs> rsList = new ArrayList<>();
             for (Notification notification : notifications) {
                 rsList.add(notificationMapper.INSTANCE.toDTO(notification, personRs));
@@ -74,11 +74,11 @@ public class NotificationsService {
 
     public CommonRs<List<PersonSettings>> getNotificationByPerson(String token) {
         String email = jwtUtils.getUserEmail(token);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personsEmail.get(0).getId();
+            Long id = personsEmail.getId();
             List<PersonSettings> personSettings = notificationRepository.getPersonSettings(id);
             return getResponsePersonSettings(personSettings);
         }
@@ -87,11 +87,11 @@ public class NotificationsService {
 
     public CommonRs<ComplexRs> putNotificationByPerson(String token, NotificationRq notificationRq) {
         String email = jwtUtils.getUserEmail(token);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personsEmail.get(0).getId();
+            Long id = personsEmail.getId();
             String typeNotification = getTypeNotification(notificationRq.getNotificationType());
             notificationRepository.updatePersonSetting(notificationRq.getEnable(), typeNotification, id);
             return getResponseByPutTypeNotification();
