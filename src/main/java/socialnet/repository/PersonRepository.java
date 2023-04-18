@@ -22,24 +22,28 @@ public class PersonRepository {
 
     public void save(Person person) {
         jdbcTemplate.update(
-                "INSERT INTO persons " +
-                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
-                person.getFirstName(),
-                person.getLastName(),
-                person.getPassword(),
-                person.getRegDate(),
-                person.getIsApproved(),
-                person.getIsBlocked(),
-                person.getIsDeleted()
+            "INSERT INTO persons " +
+            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            person.getEmail(),
+            person.getFirstName(),
+            person.getLastName(),
+            person.getPassword(),
+            person.getRegDate(),
+            person.getIsApproved(),
+            person.getIsBlocked(),
+            person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(
-                        "SELECT * FROM persons WHERE email = ?", personRowMapper, email))
-                .orElseThrow(() -> new RuntimeException("Пользователя с email = " + email + " не существует"));
+        return Optional.ofNullable(
+            jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
+            )
+        ).orElse(null);
     }
 
     public Person findById(Long authorId) {
