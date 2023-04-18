@@ -191,7 +191,7 @@
                         </goals>
                         <configuration>
                             <files>
-                                <file>application-deploy.yml</file>
+                                <file>application.yml</file>
                             </files>
                         </configuration>
                     </execution>
