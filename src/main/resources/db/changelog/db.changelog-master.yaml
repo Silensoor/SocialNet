@@ -46,8 +46,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changelogset/delete-fk_dialogs-message.yaml
   - include:
-      file: db/changelog/changelogset/populate-database.yaml
-  - include:
       file: db/changelog/changelogset/add_table_for_person_settings.yaml
   - include:
       file: db/changelog/changelogset/delete-FriendsCountryCity.yaml
