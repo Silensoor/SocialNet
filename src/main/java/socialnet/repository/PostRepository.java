@@ -1,8 +1,6 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,9 +14,6 @@ import socialnet.model.Post2Tag;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.*;
-
-import static org.jooq.impl.DSL.*;
-
 
 @RequiredArgsConstructor
 @Repository

@@ -7,7 +7,7 @@ spring:
     password: admin
     driver-class-name: org.postgresql.Driver
   liquibase:
-    enabled: false
+    enabled: true
   main:
     allow-circular-references: true
   jpa:

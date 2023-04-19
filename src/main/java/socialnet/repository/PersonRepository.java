@@ -2,11 +2,6 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.exception.NoDataFoundException;
-import org.jooq.impl.DSL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,9 +17,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import static org.jooq.impl.DSL.*;
-
 
 @Repository
 @RequiredArgsConstructor
@@ -51,9 +43,9 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    personRowMapper,
-                    email
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -205,7 +197,7 @@ public class PersonRepository {
     public List<Person> findPersonsQuery(Object[] args) {
         String sql = createSqlPerson(args);
         try {
-            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
+            //DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
 //            return  dsl.select()
 //                    .from(table("persons"))
 //                    .where(field("is_deleted").eq(false)
@@ -266,7 +258,7 @@ public class PersonRepository {
 //                    .fetch();
 //            return  (Long) person.get(1).get("id");
             return null;
-         } catch (NoDataFoundException ignored) {
+         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
