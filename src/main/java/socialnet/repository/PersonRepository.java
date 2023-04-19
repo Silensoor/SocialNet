@@ -2,11 +2,6 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.exception.NoDataFoundException;
-import org.jooq.impl.DSL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,13 +12,9 @@ import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
-import static org.jooq.impl.DSL.*;
 
 
 @Repository
@@ -205,15 +196,7 @@ public class PersonRepository {
     public List<Person> findPersonsQuery(Object[] args) {
         String sql = createSqlPerson(args);
         try {
-            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            return  dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("is_deleted").eq(false)
-//                            .and(field("is_blocked").eq(false)
-//                                    .and(sql(sql))))
-//                    .limit((Integer) args[8])
-//                    .offset((Integer) args[7])
-//                    .fetchInto(Person.class);
+
             return null;
         } catch (EmptyResultDataAccessException ignored) {
                 return null;
@@ -257,17 +240,10 @@ public class PersonRepository {
 
 
     public Long findPersonsName(String nameFirst, String nameLast) {
-        try {
-//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            final Result<Record> person = dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("first_name").eq(nameFirst)
-//                            .and(field("last_name").eq(nameLast)))
-//                    .fetch();
-//            return  (Long) person.get(1).get("id");
+
+
             return null;
-         } catch (NoDataFoundException ignored) {
-            return null;
-        }
+
+
     }
 }
