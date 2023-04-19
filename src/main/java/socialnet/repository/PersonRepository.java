@@ -26,8 +26,8 @@ import java.util.Optional;
 import static org.jooq.impl.DSL.*;
 
 
-@RequiredArgsConstructor
 @Repository
+@RequiredArgsConstructor
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
@@ -49,13 +49,15 @@ public class PersonRepository {
     }
 
     public Person findByEmail(String email) {
-        return Optional.ofNullable(
-            jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
-                personRowMapper,
-                email
-            )
-        ).orElse(null);
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM persons WHERE email = ?",
+                    personRowMapper,
+                    email
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public Person findById(Long authorId) {
