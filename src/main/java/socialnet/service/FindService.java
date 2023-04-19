@@ -41,7 +41,7 @@ public class FindService {
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text);
+            postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text, perPage, offset, tags);
             if (postList == null) {
                 throw new EmptyEmailException("Field 'author' not found");
             } else {

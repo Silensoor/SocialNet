@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.exception.NoDataFoundException;
+import org.jooq.impl.DSL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,19 +17,20 @@ import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.jooq.generated.Tables.PERSONS;
+import static org.jooq.impl.DSL.*;
+
 
 @RequiredArgsConstructor
 @Repository
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
-    private final DSLContext dsl;
 
     public void save(Person person) {
         jdbcTemplate.update(
@@ -200,12 +203,16 @@ public class PersonRepository {
     public List<Person> findPersonsQuery(Object[] args) {
         String sql = createSqlPerson(args);
         try {
-            return dsl.select()
-                    .from(PERSONS)
-                    .where(PERSONS.IS_DELETED.notEqual(true))
-                    .and(PERSONS.IS_BLOCKED.notEqual(true))
-                    .and(sql)
-                    .fetchInto(Person.class);
+            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
+//            return  dsl.select()
+//                    .from(table("persons"))
+//                    .where(field("is_deleted").eq(false)
+//                            .and(field("is_blocked").eq(false)
+//                                    .and(sql(sql))))
+//                    .limit((Integer) args[8])
+//                    .offset((Integer) args[7])
+//                    .fetchInto(Person.class);
+            return null;
         } catch (EmptyResultDataAccessException ignored) {
                 return null;
         }
@@ -249,12 +256,14 @@ public class PersonRepository {
 
     public Long findPersonsName(String nameFirst, String nameLast) {
         try {
-            final Record fetch = dsl.select(PERSONS.ID)
-                    .from(PERSONS)
-                    .where(PERSONS.FIRST_NAME.eq(nameFirst))
-                    .and(PERSONS.LAST_NAME.eq(nameLast))
-                    .fetchSingle();
-            return  (Long) fetch.getValue("id");
+//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
+//            final Result<Record> person = dsl.select()
+//                    .from(table("persons"))
+//                    .where(field("first_name").eq(nameFirst)
+//                            .and(field("last_name").eq(nameLast)))
+//                    .fetch();
+//            return  (Long) person.get(1).get("id");
+            return null;
          } catch (NoDataFoundException ignored) {
             return null;
         }
