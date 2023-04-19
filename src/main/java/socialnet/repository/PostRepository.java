@@ -2,6 +2,7 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,10 +13,12 @@ import socialnet.exception.PostException;
 import socialnet.model.Post;
 import socialnet.model.Post2Tag;
 
+import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static org.jooq.generated.Tables.POSTS;
+import static org.jooq.impl.DSL.*;
+
 
 @RequiredArgsConstructor
 @Repository
@@ -23,8 +26,6 @@ public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final PersonRepository personRepository;
-
-    private final DSLContext dsl;
 
     public List<Post> findAll() {
         return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
@@ -100,15 +101,22 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo, String text) {
+    public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo,
+                                        String text, Integer limit, Integer offset, String[] tags) {
         String sql = createSqlPost(author, dateFrom, dateTo, text);
         try {
-            return dsl.select()
-                    .from(POSTS)
-                    .where(POSTS.IS_DELETED.notEqual(true))
-                    .and(POSTS.IS_BLOCKED.notEqual(true))
-                    .and(sql)
-                    .fetchInto(Post.class);
+//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
+//            return dsl.select()
+//                    .from(table("posts"))
+//                    //.join(table("post2tag")).on()
+//                    .where(field("is_deleted").eq(false)
+//                            .and(field("is_blocked").eq(false))
+//                            .and(field("author_id").eq("personsName"))
+//                            .and(sql(sql)))
+//                    .limit(limit)
+//                    .offset(offset)
+//                    .fetchInto(Post.class);
+            return null;
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -153,12 +161,16 @@ public class PostRepository {
         String sql2 = createSqlPost2Tag(post2TagList);
         if (sql2 != null) {
             try {
-                return dsl.select()
-                        .from(POSTS)
-                        .where(POSTS.IS_DELETED.notEqual(true))
-                        .and(POSTS.IS_BLOCKED.notEqual(true))
-                        .and(sql2)
-                        .fetchInto(Post.class);
+//                DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
+//                return dsl.select()
+//                        .from(table("posts"))
+//                        .where(field("is_deleted").eq(false)
+//                                .and(field("is_blocked").eq(false))
+//                                .and(sql(sql2)))
+//                        //.limit(limit)
+//                        //.offset(offset)
+//                        .fetchInto(Post.class);
+                return null;
             } catch (EmptyResultDataAccessException ignored) {
                 return null;
             }
@@ -166,6 +178,7 @@ public class PostRepository {
             return null;
         }
     }
+
 
     private String createSqlPost2Tag(List<Post2Tag> post2TagList) {
         StringBuilder sql = new StringBuilder(" ");
