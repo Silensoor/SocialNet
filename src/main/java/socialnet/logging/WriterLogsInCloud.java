@@ -5,25 +5,40 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimerTask;
+import java.util.Timer;
 
-public class WhatSom {
+@Component
+public class WriterLogsInCloud extends TimerTask {
 
-    public void what() throws IOException {
+    @Bean
+    public void writer () throws IOException {
 
-        pushLogs(getHref());
+        updateTimer();
 
+    }
+    @Override
+    public void run() {
+
+        try {
+            pushLogs(getHref());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getHref () throws IOException {
 
-        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/upload?path=logs.log&overwrite=true");
+        String path = createLogFile();
+        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/upload?path=" + path + "&overwrite=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Authorization", "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA");
@@ -53,6 +68,23 @@ public class WhatSom {
             httpPut.setEntity(new FileEntity(file));
             HttpResponse response = httpclient.execute(httpPut);
         }
+    }
+
+    public void updateTimer () {
+
+        Timer time = new Timer();
+        WriterLogsInCloud writerLogsInCloud = new WriterLogsInCloud();
+//        time.schedule(writerLogsInCloud, 0, 3_600_000);
+        time.schedule(writerLogsInCloud, 0, 3_000);
+    }
+
+    public String createLogFile () {
+
+        SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy_MM_dd");
+        String dateNow = DATE_FORMATTER.format(new Date());
+        String pathLogFile = "log" + dateNow + ".log";
+
+        return pathLogFile;
     }
 
 }
