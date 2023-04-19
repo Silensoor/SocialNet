@@ -16,10 +16,16 @@ import socialnet.model.*;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.service.notifications.NotificationPusher;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -31,10 +37,9 @@ public class PostService {
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
     private final JwtUtils jwtUtils;
-    private final PostCommentRepository postCommentRepository;
     private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
-    private final TagService tagService;
+    private final FriendsShipsRepository friendsShipsRepository;
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -164,6 +169,11 @@ public class PostService {
         Person author = personRepository.findById((long) id);
         Details details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
+
+        Notification notification = getNotification(id,postRq);
+        List<Friendships> allFriendships = friendsShipsRepository.findAllFriendships((long) id);
+        sendAllFriendShips(notification,allFriendships);
+
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
@@ -258,5 +268,24 @@ public class PostService {
         List<String> tags;
         Long authUserId;
         List<CommentRs> comments;
+    }
+    private Notification getNotification(Integer id,PostRq postRq) {
+        Notification notification = new Notification();
+        notification.setSentTime(Timestamp.from(Instant.now()));
+        notification.setNotificationType(NotificationType.POST.toString());
+        notification.setContact(postRq.getTitle());
+        notification.setIsRead(false);
+        notification.setPersonId(Long.valueOf(id));
+        notification.setEntityId(2L);
+        return notification;
+    }
+    private void sendAllFriendShips(Notification notification,List<Friendships>list){
+        for (Friendships friendships: list){
+            if(!notification.getPersonId().equals(friendships.getDstPersonId())){
+                NotificationPusher.sendPush(notification,friendships.getDstPersonId());
+            }else {
+                NotificationPusher.sendPush(notification,friendships.getSrcPersonId());
+            }
+        }
     }
 }
