@@ -1,17 +1,23 @@
-package socialnet.service;
+package socialnet.logging;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
-
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Aspect
 @Component
 public class LoggingConfig {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private WhatSom whatSom = new WhatSom();
 
     @Pointcut("execution(* socialnet.controller.*.*(..))")
     public void methodExecutingDebug() {
@@ -22,7 +28,7 @@ public class LoggingConfig {
     }
 
     @AfterReturning(pointcut = "methodExecutingInfo()", returning = "returningValue")
-    public void recordSuccessfulExecutionInfo(JoinPoint joinPoint, Object returningValue) {
+    public void recordSuccessfulExecutionInfo(JoinPoint joinPoint, Object returningValue) throws IOException {
 
         if (returningValue != null) {
 
@@ -35,6 +41,8 @@ public class LoggingConfig {
             log.info("Старт метода :" + joinPoint.getSignature().getName() +
                     " в классе: " + joinPoint.getSourceLocation().getWithinType().getName());
         }
+
+        whatSom.what();
     }
 
     @AfterReturning(pointcut = "methodExecutingDebug()", returning = "returningValue")
@@ -59,5 +67,10 @@ public class LoggingConfig {
         log.error("Ошибка метода: " + joinPoint.getSignature().getName() +
                 " в классе" + joinPoint.getSourceLocation().getWithinType().getName() +
                 " результат : " + exception);
+    }
+
+    @Bean
+    private void writer() throws IOException {
+        whatSom.what();
     }
 }
