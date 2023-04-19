@@ -26,8 +26,8 @@ import java.util.Optional;
 import static org.jooq.impl.DSL.*;
 
 
-@RequiredArgsConstructor
 @Repository
+@RequiredArgsConstructor
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
