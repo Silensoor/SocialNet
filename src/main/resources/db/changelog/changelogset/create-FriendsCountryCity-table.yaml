@@ -1,0 +1,75 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-FriendsCountryCity
+      author: isakov
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: friendships_key
+                  name: id
+                  type: BIGSERIAL
+              - column:
+                  name: sent_time
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: dst_person_id
+                  type: BIGINT
+              - column:
+                  name: src_person_id
+                  type: BIGINT
+              - column:
+                  name: status_name
+                  type: VARCHAR(255)
+            tableName: friendships
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: countries_key
+                  name: id
+                  type: BIGSERIAL
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+              - column:
+                  name: internationalname
+                  type: VARCHAR(255)
+              - column:
+                  name: code2
+                  type: VARCHAR(255)
+            tableName: countries
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: cities_key
+                  name: id
+                  type: BIGSERIAL
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: gismeteo_id
+                  type: INTEGER
+              - column:
+                  name: country_id
+                  type: BIGINT
+              - column:
+                  name: district
+                  type: VARCHAR(255)
+              - column:
+                  name: sub_district
+                  type: VARCHAR(255)
+            tableName: cities
+

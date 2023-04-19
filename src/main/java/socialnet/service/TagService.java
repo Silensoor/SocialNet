@@ -23,4 +23,12 @@ public class TagService {
         }
     }
 
+    public List<Post2Tag> getPostByQueryTags(String[] tags){
+        List<Tag> tagList = tagRepository.getTagsByQuery(tags);
+        if (!tagList.isEmpty()) {
+            return post2TagRepository.getQuery(tagList);
+        } else {
+            return null;
+        }
+    }
 }

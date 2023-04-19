@@ -160,4 +160,6 @@ public class PersonService {
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+
 }

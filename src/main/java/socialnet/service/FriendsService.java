@@ -1,9 +1,10 @@
 package socialnet.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.*;
+
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Friendships;
@@ -13,51 +14,43 @@ import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FriendsService {
 
-    private JwtUtils jwtUtils;
-    private PersonRepository personRepository;
+    private final JwtUtils jwtUtils;
+    private final PersonRepository personRepository;
 
-    private FriendsShipsRepository friendsShipsRepository;
+    private final FriendsShipsRepository friendsShipsRepository;
 
-    public CommonRsListPersonRs getFriendsUsing(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             List<Friendships> allFriendships = friendsShipsRepository
-                    .findAllFriendships(personsEmail.get(0).getId());
+                    .findAllFriendships(personsEmail.getId());
             if (allFriendships == null) {
                 allFriendships = new ArrayList<>();
             }
             List<Long> friendsId = new ArrayList<>();
-            List<Person> finalPersonsEmail = personsEmail;
             allFriendships.forEach((Friendships friendship) -> {
                 if (!friendsId.contains(friendship.getSrcPersonId()) &&
-                    !friendship.getSrcPersonId().equals(finalPersonsEmail.get(0).getId())) {
+                        !friendship.getSrcPersonId().equals(personsEmail.getId())) {
                     friendsId.add(friendship.getSrcPersonId());
                 }
                 if (!friendsId.contains(friendship.getDstPersonId()) &&
-                    !friendship.getDstPersonId().equals(finalPersonsEmail.get(0).getId())) {
+                        !friendship.getDstPersonId().equals(personsEmail.getId())) {
                     friendsId.add(friendship.getDstPersonId());
                 }
             });
             List<Person> personList = new ArrayList<>();
             if (!friendsId.isEmpty()) {
-                String sql = "SELECT * FROM persons WHERE";
-                String friendsIdString = friendsIdStringMethod(friendsId, sql);
-                personList = personRepository.findFriendsAll(friendsIdString);
+                personList = personRepository.findFriendsAll(friendsId);
             }
             if (personList == null) {
                 personList = new ArrayList<>();
@@ -66,20 +59,8 @@ public class FriendsService {
         }
     }
 
-    private String friendsIdStringMethod(List<Long> friendsId, String sql) {
-        String friendsIdString = sql;
-        for (int i = 0; i < friendsId.size(); i++) {
-            if (i < friendsId.size() - 1) {
-                friendsIdString = friendsIdString + " id =" + friendsId.get(i) + " OR";
-            } else {
-                friendsIdString = friendsIdString + " id =" + friendsId.get(i);
-            }
-        }
-        return friendsIdString;
-    }
-
-    public CommonRsListPersonRs fillingCommonRsListPersonRs(List<Person> personList, Integer offset, Integer perPage) {
-        CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
+    public CommonRs<List<PersonRs>> fillingCommonRsListPersonRs(List<Person> personList, Integer offset, Integer perPage) {
+        CommonRs<List<PersonRs>> commonRsListPersonRsFilling = new CommonRs<>();
         List<Person> personListOffset = new ArrayList<>();
         for (int i = offset; i < offset + perPage; i++) {
             if (i < personList.size()) {
@@ -112,16 +93,13 @@ public class FriendsService {
         return personRsList;
     }
 
-    public HttpStatus userBlocksUserUsingPOST(String authorization, Integer id) {
+    public HttpStatus userBlocks(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            List<Friendships> friend = friendsShipsRepository.findFriend(personsEmail.get(0).getId(), Long.valueOf(id));
+            List<Friendships> friend = friendsShipsRepository.findFriend(personsEmail.getId(), Long.valueOf(id));
             if (friend == null) {
                 friend = new ArrayList<>();
             }
@@ -139,17 +117,14 @@ public class FriendsService {
         }
     }
 
-    public CommonRsListPersonRs getOutgoingRequestsUsingGET(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PersonRs>> getOutgoingRequests(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             List<Friendships> outgoingRequests = friendsShipsRepository
-                    .findAllOutgoingRequests(personsEmail.get(0).getId());
+                    .findAllOutgoingRequests(personsEmail.getId());
             if (outgoingRequests == null) {
                 outgoingRequests = new ArrayList<>();
             }
@@ -159,9 +134,7 @@ public class FriendsService {
             });
             List<Person> personList = new ArrayList<>();
             if (!requestsId.isEmpty()) {
-                String sql = "SELECT * FROM persons WHERE";
-                String friendsIdString = friendsIdStringMethod(requestsId, sql);
-                personList = personRepository.findFriendsAll(friendsIdString);
+                personList = personRepository.findFriendsAll(requestsId);
             }
             if (personList == null) {
                 personList = new ArrayList<>();
@@ -170,36 +143,33 @@ public class FriendsService {
         }
     }
 
-    public CommonRsListPersonRs getRecommendedFriendsUsingGET(String authorization) {
+    public CommonRs<List<PersonRs>> getRecommendedFriends(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            List<Friendships> allFriendships = friendsShipsRepository.findAllFriendships(personsEmail.get(0).getId());
+            List<Friendships> allFriendships = friendsShipsRepository.findAllFriendships(personsEmail.getId());
             if (allFriendships == null) {
                 allFriendships = new ArrayList<>();
             }
             List<Long> friendsId = new ArrayList<>();
             Long idNewSrcPersonId = 0L;
             Long idNewDstPersonId = 0L;
-            for (int i = 0; i < allFriendships.size(); i++) {
-                idNewSrcPersonId = allFriendships.get(i).getSrcPersonId();
-                idNewDstPersonId = allFriendships.get(i).getDstPersonId();
-                if (!friendsId.contains(idNewSrcPersonId) && !idNewSrcPersonId.equals(personsEmail.get(0).getId())) {
+            for (Friendships allFriendship : allFriendships) {
+                idNewSrcPersonId = allFriendship.getSrcPersonId();
+                idNewDstPersonId = allFriendship.getDstPersonId();
+                if (!friendsId.contains(idNewSrcPersonId) && !idNewSrcPersonId.equals(personsEmail.getId())) {
                     friendsId.add(idNewSrcPersonId);
                 }
-                if (!friendsId.contains(idNewDstPersonId) && !idNewDstPersonId.equals(personsEmail.get(0).getId())) {
+                if (!friendsId.contains(idNewDstPersonId) && !idNewDstPersonId.equals(personsEmail.getId())) {
                     friendsId.add(idNewDstPersonId);
                 }
             }
             List<Friendships> personList = new ArrayList<>();
-            for (int i = 0; i < friendsId.size(); i++) {
+            for (Long aLong : friendsId) {
                 List<Friendships> allFriendships1 = friendsShipsRepository
-                        .findAllFriendships(friendsId.get(i));
+                        .findAllFriendships(aLong);
                 if (allFriendships1 == null) {
                     allFriendships1 = new ArrayList<>();
                 }
@@ -210,19 +180,17 @@ public class FriendsService {
             List<Long> friendsFriendsId2 = new ArrayList<>(friendsFriendsId);
             List<Person> friendFriendsNew = new ArrayList<>();
             if (!friendsFriendsId2.isEmpty()) {
-                String sql = "SELECT * FROM persons WHERE";
-                String searchIdFriendFriends = friendsIdStringMethod(friendsFriendsId2, sql);
-                friendFriendsNew = personRepository.findFriendsAll(searchIdFriendFriends);
+                friendFriendsNew = personRepository.findFriendsAll(friendsFriendsId2);
             }
             if (friendFriendsNew == null) {
                 friendFriendsNew = new ArrayList<>();
             }
             List<Person> friendFriendsNewTotal = new ArrayList<>(friendFriendsNew);
             if (friendFriendsNew.size() < 10) {
-                friendFriendsNewTotal.addAll(addRecommendedFriendsCityAndAll(friendFriendsNew, personsEmail,
-                        personList));
+                friendFriendsNewTotal.addAll(addRecommendedFriendsCityAndAll(friendFriendsNew, personsEmail
+                ));
             }
-            CommonRsListPersonRs commonRsListPersonRsFilling = new CommonRsListPersonRs();
+            CommonRs<List<PersonRs>> commonRsListPersonRsFilling = new CommonRs<>();
             List<PersonRs> personRsList = createPersonRsList(friendFriendsNew);
             commonRsListPersonRsFilling.setData(personRsList);
             Date date = new Date();
@@ -235,46 +203,44 @@ public class FriendsService {
     }
 
     private HashSet<Long> cleaningTheListOfRecommendationsFromDuplication(List<Friendships> personList,
-                                                                          List<Long> friendsId, List<Person> personsEmail) {
+                                                                          List<Long> friendsId, Person personsEmail) {
         HashSet<Long> friendsFriendsId = new HashSet<>();
-        boolean flagDst;
-        boolean flagSrc;
-        for (int i = 0; i < personList.size(); i++) {
-            flagSrc = false;
-            flagDst = false;
-            for (int a = 0; a < friendsId.size(); a++) {
-                if (personList.get(i).getSrcPersonId() == friendsId.get(a)) {
-                    flagSrc = true;
+        AtomicBoolean flagDst = new AtomicBoolean(false);
+        AtomicBoolean flagSrc = new AtomicBoolean(false);
+        personList.forEach((friendships) -> {
+            flagSrc.set(false);
+            flagDst.set(false);
+            friendsId.forEach((aLong) ->{
+                if (Objects.equals(friendships.getSrcPersonId(), aLong)) {
+                    flagSrc.set(true);
                 }
-                if (personList.get(i).getDstPersonId().equals(friendsId.get(a))) {
-                    flagDst = true;
+                if (friendships.getDstPersonId().equals(aLong)) {
+                    flagDst.set(true);
                 }
-                if (personList.get(i).getSrcPersonId().equals(personsEmail.get(0).getId())) {
-                    flagSrc = true;
+                if (friendships.getSrcPersonId().equals(personsEmail.getId())) {
+                    flagSrc.set(true);
                 }
-                if (personList.get(i).getDstPersonId().equals(personsEmail.get(0).getId())) {
-                    flagDst = true;
+                if (friendships.getDstPersonId().equals(personsEmail.getId())) {
+                    flagDst.set(true);
                 }
+            });
+            if (!flagSrc.get()) {
+                friendsFriendsId.add(friendships.getSrcPersonId());
             }
-            if (!flagSrc) {
-                friendsFriendsId.add(personList.get(i).getSrcPersonId());
+            if (!flagDst.get()) {
+                friendsFriendsId.add(friendships.getDstPersonId());
             }
-            if (!flagDst) {
-                friendsFriendsId.add(personList.get(i).getDstPersonId());
-            }
-        }
+        });
         return friendsFriendsId;
     }
 
-    public List<Person> addRecommendedFriendsCityAndAll(List<Person> friendFriendsNew,
-                                                        List<Person> personsEmail, List<Friendships> personList) {
-        final String city = personsEmail.get(0).getCity();
-        List<Person> friendFriendsNewAddCity = new ArrayList<>();
+    public List<Person> addRecommendedFriendsCityAndAll(List<Person> friendFriendsNew, Person personsEmail){
+        final String city = personsEmail.getCity();
         List<Person> personsCity = personRepository.findByCity(city);
         if (personsCity == null) {
             personsCity = new ArrayList<>();
         }
-        friendFriendsNewAddCity.addAll(personsCity);
+        List<Person> friendFriendsNewAddCity = new ArrayList<>(personsCity);
         friendFriendsNew.addAll(friendFriendsNewAddCity);
         List<Long> friendsId = new ArrayList<>();
         friendFriendsNew.forEach((idRecommended) -> {
@@ -291,17 +257,14 @@ public class FriendsService {
         return friendFriendsNew;
     }
 
-    public CommonRsListPersonRs getPotentialFriendsUsingGET(String authorization, Integer offset, Integer perPage) {
+    public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             List<Friendships> outgoingRequests = friendsShipsRepository
-                    .findAllPotentialFriends(personsEmail.get(0).getId());
+                    .findAllPotentialFriends(personsEmail.getId());
             if (outgoingRequests == null) {
                 outgoingRequests = new ArrayList<>();
             }
@@ -311,9 +274,7 @@ public class FriendsService {
             });
             List<Person> personList;
             if (!requestsId.isEmpty()) {
-                String sql = "SELECT * FROM persons WHERE";
-                String friendsIdString = friendsIdStringMethod(requestsId, sql);
-                personList = personRepository.findFriendsAll(friendsIdString);
+                personList = personRepository.findFriendsAll(requestsId);
                 if (personList == null) {
                     personList = new ArrayList<>();
                 }
@@ -324,27 +285,24 @@ public class FriendsService {
         }
     }
 
-    public CommonRs<ComplexRs> addFriendUsingPOST(String authorization, Integer id) {
+    public CommonRs<ComplexRs> addFriend(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            List<Friendships> friend = friendsShipsRepository.findAllFriendships(personsEmail.get(0).getId());
+            List<Friendships> friend = friendsShipsRepository.findAllFriendships(personsEmail.getId());
             if (friend == null) {
                 friend = new ArrayList<>();
             }
             Long friendships = addFriendsSelectUpdateOrInsert(friend, personsEmail, id);
-            return fillingCommonRsComplexRs(id, friendships);
+            return fillingCommonRsComplexRs(id);
         }
     }
 
-    private Long addFriendsSelectUpdateOrInsert(List<Friendships> friend, List<Person> personsEmail, Integer id) {
+    private Long addFriendsSelectUpdateOrInsert(List<Friendships> friend, Person personsEmail, Integer id) {
         List<Friendships> friendOutgoingRequests = friendsShipsRepository
-                .findAllOutgoingRequests(personsEmail.get(0).getId());
+                .findAllOutgoingRequests(personsEmail.getId());
         if (friendOutgoingRequests == null) {
             friendOutgoingRequests = new ArrayList<>();
         }
@@ -357,10 +315,10 @@ public class FriendsService {
             }
         }
         if (flagOutgoingRequests) {
-            friendsShipsRepository.updateFriend(personsEmail.get(0).getId(), Long.valueOf(id), "FRIEND", idReQuest);
+            friendsShipsRepository.updateFriend(personsEmail.getId(), Long.valueOf(id), "FRIEND", idReQuest);
         } else {
             List<Friendships> friendPotentialFriends = friendsShipsRepository
-                    .findAllPotentialFriends(personsEmail.get(0).getId());
+                    .findAllPotentialFriends(personsEmail.getId());
             if (friendPotentialFriends == null) {
                 friendPotentialFriends = new ArrayList<>();
             }
@@ -373,7 +331,7 @@ public class FriendsService {
                 }
             }
             if (flagPotentialFriends) {
-                friendsShipsRepository.updateFriend(personsEmail.get(0).getId(), Long.valueOf(id),
+                friendsShipsRepository.updateFriend(personsEmail.getId(), Long.valueOf(id),
                         "FRIEND", idPotential);
             } else {
                 boolean flagFriends = false;
@@ -389,9 +347,9 @@ public class FriendsService {
                     }
                 }
                 if (!flagFriends) {
-                    friendsShipsRepository.addFriend(personsEmail.get(0).getId(), Long.valueOf(id), "FRIEND");
+                    friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), "FRIEND");
                 } else {
-                    friendsShipsRepository.updateFriend(personsEmail.get(0).getId(), Long.valueOf(id),
+                    friendsShipsRepository.updateFriend(personsEmail.getId(), Long.valueOf(id),
                             "FRIEND", idFriend);
                 }
             }
@@ -399,33 +357,23 @@ public class FriendsService {
         return Long.valueOf(id);
     }
 
-    private CommonRs<ComplexRs> fillingCommonRsComplexRs(Integer id, Long friendships) {
-        CommonRs<ComplexRs> commonRs = new CommonRs<>();
+    private CommonRs<ComplexRs> fillingCommonRsComplexRs(Integer id) {
+        CommonRs<ComplexRs> commonRsComplexRs = new CommonRs<>();
         ComplexRs complexRs = new ComplexRs();
         complexRs.setId(id);
-        complexRs.setCount(null);
-        complexRs.setMessage(null);
-        complexRs.setMessageId(null);
         Date date = new Date();
-        commonRs.setTimestamp(date.getTime());
-        commonRs.setTotal(null);
-        commonRs.setPerPage(null);
-        commonRs.setItemPerPage(null);
-        return commonRs;
+        commonRsComplexRs.setTimestamp(date.getTime());
+        return commonRsComplexRs;
     }
 
-    public CommonRs<ComplexRs> deleteSentFriendshipRequestUsingDELETE(String authorization, Integer id) {
+    public CommonRs<ComplexRs> deleteFriendsRequest(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        Long friendships;
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             List<Friendships> addFriend = friendsShipsRepository
-                    .findAllPotentialFriends(personsEmail.get(0).getId());
+                    .findAllPotentialFriends(personsEmail.getId());
             if (addFriend == null) {
                 addFriend = new ArrayList<>();
             }
@@ -435,26 +383,22 @@ public class FriendsService {
                     idPotentialFriend = friendships1.getId();
                 }
             }
-            friendships = addFriend.get(0).getId();
             if (!addFriend.isEmpty()) {
                 friendsShipsRepository.deleteSentFriendshipRequest("DECLINED", idPotentialFriend);
             }
-            return fillingCommonRsComplexRs(id, friendships);
+            return fillingCommonRsComplexRs(id);
         }
     }
 
 
-    public CommonRs<ComplexRs> sendFriendshipRequestUsingPOST(String authorization, Integer id) {
+    public CommonRs<ComplexRs> sendFriendsRequest(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             List<Friendships> sendFriends = friendsShipsRepository
-                    .sendFriendshipRequest(personsEmail.get(0).getId());
+                    .sendFriendshipRequest(personsEmail.getId());
             if (sendFriends == null) {
                 sendFriends = new ArrayList<>();
             }
@@ -467,7 +411,7 @@ public class FriendsService {
                 }
             }
             if (idFriendshipRequest == 0L) {
-                idFriendshipRequest = personsEmail.get(0).getId();
+                idFriendshipRequest = personsEmail.getId();
             }
             if (sendFriends.isEmpty() || !flagFriendshipRequest) {
                 friendsShipsRepository.sendFriendshipRequestUsingPOST(Long.valueOf(id), idFriendshipRequest,
@@ -476,22 +420,19 @@ public class FriendsService {
                 friendsShipsRepository.updateFriend(Long.valueOf(id), idFriendshipRequest, "REQUEST",
                         idFriendshipRequest);
             }
-            return fillingCommonRsComplexRs(id, idFriendshipRequest);
+            return fillingCommonRsComplexRs(id);
         }
     }
 
 
-    public CommonRs<ComplexRs> deleteFriendUsingDELETE(String authorization, Integer id) {
+    public CommonRs<ComplexRs> deleteFriend(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        List<Person> personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
-            personsEmail = new ArrayList<>();
-        }
-        if (personsEmail.isEmpty()) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             List<Friendships> sendFriends = friendsShipsRepository
-                    .findFriend(Long.valueOf(id), personsEmail.get(0).getId());
+                    .findFriend(Long.valueOf(id), personsEmail.getId());
             if (sendFriends == null) {
                 sendFriends = new ArrayList<>();
             }
@@ -504,9 +445,9 @@ public class FriendsService {
                 }
             }
             if (!sendFriends.isEmpty() && flagFriends) {
-                friendsShipsRepository.deleteFriendUsing(Long.valueOf(idFriends));
+                friendsShipsRepository.deleteFriendUsing(idFriends);
             }
-            return fillingCommonRsComplexRs(id, idFriends);
+            return fillingCommonRsComplexRs(id);
         }
     }
 }
