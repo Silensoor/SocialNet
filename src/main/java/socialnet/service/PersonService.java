@@ -55,30 +55,10 @@ public class PersonService {
     }
 
     public Object getMe(String authorization) {
-
-        if (!jwtUtils.validateJwtToken(authorization)) {//401
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
         String email = jwtUtils.getUserEmail(authorization);
-        if (email.isEmpty()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
-        }
-
         Person person = personRepository.findByEmail(email);
-        if (person.getIsDeleted()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
-        }
-
-        PersonRs personRs = personMapper.toDTO(person);
-
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-        personRs.setToken(authorization);
-
-        //return new CommonRs(personRs);
         return setLoginRs(jwt, person);
+
     }
 
     public Object getLogout(String authorization) {
@@ -164,13 +144,15 @@ public class PersonService {
     }
 
     public CommonRs<PersonRs> setLoginRs(String jwt, Person person) {
-        WeatherRs loginWeather = new WeatherRs();
-        CurrencyRs currencyRs = new CurrencyRs();
-        PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, person);
-        CommonRs<PersonRs> commonRs = new CommonRs<>();
-        commonRs.setData(personRs);
-        commonRs.setTimestamp(System.currentTimeMillis());
-        return commonRs;
+
+        WeatherRs loginWeather = weatherService.getWeatherByCity("Sochi");
+        CurrencyRs currencyRs = currencyService.getCurrency(LocalDate.now());
+        PersonRs personRs = setPersonRs(
+                currencyRs,
+                loginWeather,
+                jwt,
+                person);
+        return new CommonRs<>(personRs);
     }
 
     public Person checkLoginAndPassword(String email, String password) {

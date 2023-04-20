@@ -3,6 +3,7 @@ package socialnet.service.users;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponents;
@@ -14,7 +15,9 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 public class WeatherService {
-    private final static String API_KEY = "3d29686077f7a60e5b5714b659a688dd";
+    @Value("${weather.apiKey}")
+    private String apiKey;
+
 
     public WeatherRs getWeatherByCity(String city) {
 
@@ -23,7 +26,7 @@ public class WeatherService {
                 .host("api.openweathermap.org/data/2.5/find")
                 .path("/")
                 .query("q={City}&type={Type}&APPID={ApiKey}")
-                .buildAndExpand(city, "like", "3d29686077f7a60e5b5714b659a688dd");
+                .buildAndExpand(city, "like", apiKey);
 
 
         WebClient webClient = WebClient.builder().build();
