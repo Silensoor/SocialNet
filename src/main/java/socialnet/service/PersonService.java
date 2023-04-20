@@ -61,9 +61,6 @@ public class PersonService {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
 
-        PersonRs personRs = personMapper.toDTO(person);
-
-        UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
