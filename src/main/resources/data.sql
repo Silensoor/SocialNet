@@ -1053,7 +1053,8 @@ insert into countries (name, full_name,international_name, code2) values ('Уо�
 insert into countries (name, full_name,international_name, code2) values ('Западная Сахара','Западная Сахара','Western Sahara [aj]','EH');
 insert into countries (name, full_name,international_name, code2) values ('Йемен','Йемен','Yemen','YE');
 insert into countries (name, full_name,international_name, code2) values ('Замбия','Замбия','Zambia','ZM');
-insert into countries (name, full_name,international_name, code2) values ('Зимбабве','Зимбабве','Zimbabwe','ZW');
+insert into countries (name, full_name,international_name, code2) values ('Зимбабве','Зимбабве','Zimbabwe','ZW');\ninsert into countries (name, full_name,international_name, code2) values ;
+
 
 insert into cities (name, gismeteo_id, country_id, district, sub_district) values ('Vihti', 72, 22, 'Bultman', 'eu');
 insert into cities (name, gismeteo_id, country_id, district, sub_district) values ('Glad', 79, 45, 'Bunting', 'rutrum');
