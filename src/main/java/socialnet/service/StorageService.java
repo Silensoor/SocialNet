@@ -49,7 +49,7 @@ public class StorageService {
         storageRepository.insertStorage(storage);
 
         //Загрузка фотографии в облако
-        uploadFile(file);
+        uploadFile(file, virtualPath);
 
         return new CommonRs<>(storage);
         //return WrapperMapper.wrap(StorageMapper.mapStorageToStorageDto(storage), true);
@@ -62,7 +62,7 @@ public class StorageService {
                 IMAGE_JPEG.getMimeType()).contains(file.getContentType());
     }
 
-    private void uploadFile(MultipartFile file) throws IOException {
+    private void uploadFile(MultipartFile file, String virtualPath) throws IOException {
         Map<String, String> metadata = new HashMap<>();
 
         metadata.put("Content-Type", file.getContentType());
