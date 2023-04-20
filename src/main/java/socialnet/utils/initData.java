@@ -5,14 +5,19 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import socialnet.repository.CountryRepository;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Component
 public class initData {
     @Bean
     public CommandLineRunner commandLineRunner(CityParser cityParser,
+                                               CountryRepository countryRepository,
                                                JdbcTemplate jdbcTemplate) {
         return args -> {
             if (args.length > 1) {
@@ -24,36 +29,23 @@ public class initData {
                         URL url = new URL("https://bulk.openweathermap.org/sample/city.list.json.gz");
                         InputStream inputStream = url.openStream();
 
-                         //TODO Переделать на Pipe InputStream - без сохранения в файл
+                        //TODO Переделать на Pipe InputStream - без сохранения в файл
                         (new GzipFile()).unGZipToFile(inputStream, url.toString().substring(url.toString().lastIndexOf("/") + 1));
                         //Files.copy(inputStream, new File("city.list.json.gz").toPath());
 
-                        jdbcTemplate.update(cityParser.getInsertSqlCityByCountry("city.list.json", args[1].toUpperCase()));
+                        String sqlCities = cityParser.getInsertSqlCityByCountry("city.list.json", args[1].toUpperCase());
+                        jdbcTemplate.update(sqlCities);
 
-//                        Path path = Paths.get("russian_cities.sql");
-//                        byte[] stringToByte = sqlCities.getBytes();
-//                        Files.write(path,stringToByte);
-//                        System.out.println(sqlCities);
+                        if (args.length == 3) {
+                            Path path = Paths.get(String.format("%s_%s.sql", args[1], "cities"));
+                            byte[] stringToByte = sqlCities.getBytes();
+                            Files.write(path, stringToByte);
+                            System.out.println(sqlCities);
+                        }
                         break;
                     }
                 }
-
             }
-
-            //countryRepository.initData();
-
-
-            //Yandex cloud api
-            //yandexCloudService.createKeyService();
-
-//            var dbxClient = dropboxService.getClient("FileBox37");
-//            var dbxName = dropboxService.getDisplayName(dbxClient);
-//            List<String> fileList = dropboxService.getFilesList(dbxClient,"/photo");
-//            fileList.forEach(System.out::println);
-
-
-
         };
     }
-
 }
