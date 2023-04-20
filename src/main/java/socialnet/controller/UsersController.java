@@ -16,7 +16,6 @@ import java.util.List;
 public class UsersController {
 
     private final PersonService personService;
-
     private final FindService findService;
 
     @GetMapping("/me")
