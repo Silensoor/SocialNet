@@ -118,13 +118,13 @@
 20.04.2023 10:46:12.574 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
 20.04.2023 10:46:12.670 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
 20.04.2023 10:46:12.670 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1345 ms
-20.04.2023 10:46:13.488 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
+20.04.2023 10:46:13.488 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
 20.04.2023 10:46:13.491 [main] INFO   o.a.c.c.StandardService - Stopping service [Tomcat]
 20.04.2023 10:46:13.500 [main] INFO   o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
 20.04.2023 10:46:13.517 [main] ERROR  o.s.b.SpringApplication - Application run failed
-org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1341)
@@ -146,12 +146,12 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1247)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1236)
 	at socialnet.SocialNetApp.main(SocialNetApp.java:9)
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:185)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
-Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:19)
+Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:19)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -164,13 +164,13 @@ Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int
 20.04.2023 10:46:25.412 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
 20.04.2023 10:46:25.507 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
 20.04.2023 10:46:25.507 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1305 ms
-20.04.2023 10:46:26.282 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
+20.04.2023 10:46:26.282 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
 20.04.2023 10:46:26.285 [main] INFO   o.a.c.c.StandardService - Stopping service [Tomcat]
 20.04.2023 10:46:26.293 [main] INFO   o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
 20.04.2023 10:46:26.307 [main] ERROR  o.s.b.SpringApplication - Application run failed
-org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1341)
@@ -192,12 +192,12 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1247)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1236)
 	at socialnet.SocialNetApp.main(SocialNetApp.java:9)
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:185)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
-Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.logging.CleanLogsInCloud.getListLogsFiles()" is null
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:19)
+Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:19)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -257,8 +257,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class org.apache.tomcat.util.json.JSONParser cannot be cast to class org.json.JSONObject (org.apache.tomcat.util.json.JSONParser and org.json.JSONObject are in unnamed module of loader 'app')
-	at socialnet.logging.CleanLogsInCloud.getListLogsFiles(CleanLogsInCloud.java:41)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:21)
+	at socialnet.service.logging.CleanLogsInCloud.getListLogsFiles(CleanLogsInCloud.java:41)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:21)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -318,8 +318,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class org.apache.tomcat.util.json.JSONParser cannot be cast to class org.json.JSONObject (org.apache.tomcat.util.json.JSONParser and org.json.JSONObject are in unnamed module of loader 'app')
-	at socialnet.logging.CleanLogsInCloud.getListLogsFiles(CleanLogsInCloud.java:41)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:21)
+	at socialnet.service.logging.CleanLogsInCloud.getListLogsFiles(CleanLogsInCloud.java:41)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:21)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -467,8 +467,8 @@ Caused by: java.time.format.DateTimeParseException: Text '2023-04-20T08:24:23+00
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1958)
 	at java.base/java.time.LocalDate.parse(LocalDate.java:430)
 	at java.base/java.time.LocalDate.parse(LocalDate.java:415)
-	at socialnet.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
+	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -518,8 +518,8 @@ Caused by: java.time.format.DateTimeParseException: Text '2023-04-20T08:24:23+00
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1958)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:494)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:479)
-	at socialnet.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
+	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -569,8 +569,8 @@ Caused by: java.time.format.DateTimeParseException: Text 'log_2023-04-20_.log' c
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1958)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:494)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:479)
-	at socialnet.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
+	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -619,8 +619,8 @@ Caused by: java.lang.IllegalArgumentException: Illegal pattern component: T
 	at org.joda.time.format.DateTimeFormat.parsePatternTo(DateTimeFormat.java:566)
 	at org.joda.time.format.DateTimeFormat.createFormatterForPattern(DateTimeFormat.java:687)
 	at org.joda.time.format.DateTimeFormat.forPattern(DateTimeFormat.java:177)
-	at socialnet.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:67)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:67)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -668,8 +668,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 Caused by: java.lang.IllegalArgumentException: Invalid format: "2023-04-20T08:24:23+00:00" is malformed at "T08:24:23+00:00"
 	at org.joda.time.format.DateTimeFormatter.parseDateTime(DateTimeFormatter.java:945)
 	at org.joda.time.DateTime.parse(DateTime.java:160)
-	at socialnet.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:71)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:71)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -850,8 +850,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.util.Date (java.util.ArrayList and java.util.Date are in module java.base of loader 'bootstrap')
-	at socialnet.logging.CleanLogsInCloud.cleanLogs(CleanLogsInCloud.java:84)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.CleanLogsInCloud.cleanLogs(CleanLogsInCloud.java:84)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -897,8 +897,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.util.Date (java.util.ArrayList and java.util.Date are in module java.base of loader 'bootstrap')
-	at socialnet.logging.CleanLogsInCloud.cleanLogs(CleanLogsInCloud.java:84)
-	at socialnet.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.CleanLogsInCloud.cleanLogs(CleanLogsInCloud.java:84)
+	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -1617,3 +1617,479 @@ Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cas
 20.04.2023 13:32:56.622 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
 20.04.2023 13:32:56.630 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.562 seconds (JVM running for 2.969)
 20.04.2023 13:35:24.909 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:36:44.327 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 2560 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:36:44.329 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:36:45.898 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:36:45.909 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:36:45.909 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:36:45.910 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:36:46.029 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:36:46.029 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1633 ms
+20.04.2023 18:36:46.652 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7af0affa, org.springframework.security.web.context.SecurityContextPersistenceFilter@611e5819, org.springframework.security.web.header.HeaderWriterFilter@2b6c7012, org.springframework.web.filter.CorsFilter@71560f51, org.springframework.security.web.authentication.logout.LogoutFilter@4a89ef44, socialnet.security.jwt.AuthTokenFilter@383c3eb3, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@73ca34e7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@541bf968, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3e1f1046, org.springframework.security.web.session.SessionManagementFilter@4fba8eec, org.springframework.security.web.access.ExceptionTranslationFilter@740dcae3, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@8fd91d1]
+20.04.2023 18:36:46.811 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:36:47.086 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:36:47.104 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:36:47.114 [main] INFO   s.SocialNetApp - Started SocialNetApp in 3.209 seconds (JVM running for 3.757)
+20.04.2023 18:41:02.761 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:44:04.185 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:44:07.679 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 15476 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:44:07.680 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:44:09.027 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:44:09.042 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:44:09.042 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:44:09.042 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:44:09.129 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:44:09.130 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1399 ms
+20.04.2023 18:44:09.644 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@193eb1ba, org.springframework.security.web.context.SecurityContextPersistenceFilter@577bf0aa, org.springframework.security.web.header.HeaderWriterFilter@49cd946c, org.springframework.web.filter.CorsFilter@2be818da, org.springframework.security.web.authentication.logout.LogoutFilter@188a5fc2, socialnet.security.jwt.AuthTokenFilter@20ab76ee, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7634f2b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4d98e41b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@46320c9a, org.springframework.security.web.session.SessionManagementFilter@50b46e24, org.springframework.security.web.access.ExceptionTranslationFilter@29d405e6, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@1320e68a]
+20.04.2023 18:44:10.244 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:44:10.493 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:44:10.512 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:44:10.520 [main] INFO   s.SocialNetApp - Started SocialNetApp in 3.128 seconds (JVM running for 3.559)
+20.04.2023 18:44:34.482 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:44:37.640 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 9448 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:44:37.642 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:44:38.929 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:44:38.938 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:44:38.938 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:44:38.939 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:44:39.030 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:44:39.031 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1341 ms
+20.04.2023 18:44:39.573 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@69c532af, org.springframework.security.web.context.SecurityContextPersistenceFilter@51c65a43, org.springframework.security.web.header.HeaderWriterFilter@4b87074a, org.springframework.web.filter.CorsFilter@45a1d057, org.springframework.security.web.authentication.logout.LogoutFilter@1a2e0d57, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4e140497, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1c30cb85, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@51a16adf, org.springframework.security.web.session.SessionManagementFilter@40bf4386, org.springframework.security.web.access.ExceptionTranslationFilter@477021ee, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@7e5b621b]
+20.04.2023 18:44:39.752 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:44:39.995 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:44:40.017 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:44:40.025 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.664 seconds (JVM running for 3.093)
+20.04.2023 18:45:18.277 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:45:22.188 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 6036 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:45:22.190 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:45:23.434 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:45:23.443 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:45:23.444 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:45:23.444 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:45:23.540 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:45:23.541 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1305 ms
+20.04.2023 18:45:24.075 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:45:24.245 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:45:24.510 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:45:24.539 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:45:24.550 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.636 seconds (JVM running for 3.084)
+20.04.2023 18:46:37.753 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:46:41.355 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 6424 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:46:41.356 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:46:42.614 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:46:42.623 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:46:42.624 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:46:42.624 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:46:42.707 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:46:42.708 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1306 ms
+20.04.2023 18:46:43.237 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:46:43.413 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:46:43.636 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:46:43.662 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:46:43.670 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.587 seconds (JVM running for 3.026)
+20.04.2023 18:46:48.906 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:46:51.009 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 15968 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:46:51.010 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:46:52.273 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:46:52.282 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:46:52.282 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:46:52.282 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:46:52.378 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:46:52.378 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1322 ms
+20.04.2023 18:46:52.895 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:46:53.067 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:46:53.323 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:46:53.345 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:46:53.352 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.62 seconds (JVM running for 3.106)
+20.04.2023 18:49:02.658 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:49:05.332 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 1656 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:49:05.334 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:49:06.563 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:49:06.572 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:49:06.572 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:49:06.572 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:49:06.671 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:49:06.671 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1294 ms
+20.04.2023 18:49:07.227 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:49:07.408 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:49:07.669 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:49:07.691 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:49:07.699 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.634 seconds (JVM running for 3.069)
+20.04.2023 18:49:11.925 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:49:14.187 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 10804 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:49:14.189 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:49:15.680 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:49:15.689 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:49:15.690 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:49:15.690 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:49:15.783 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:49:15.784 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1532 ms
+20.04.2023 18:49:16.313 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@385d819, org.springframework.security.web.context.SecurityContextPersistenceFilter@481b2f10, org.springframework.security.web.header.HeaderWriterFilter@285005b8, org.springframework.web.filter.CorsFilter@4315c28c, org.springframework.security.web.authentication.logout.LogoutFilter@739e8b96, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@31acfd4e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7634f2b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8fd91d1, org.springframework.security.web.session.SessionManagementFilter@740dcae3, org.springframework.security.web.access.ExceptionTranslationFilter@4b87074a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6a950a3b]
+20.04.2023 18:49:16.486 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:49:16.773 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:49:16.792 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:49:16.800 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.945 seconds (JVM running for 3.456)
+20.04.2023 18:50:00.056 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:50:03.538 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 10820 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:50:03.540 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:50:04.762 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:50:04.770 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:50:04.771 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:50:04.771 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:50:04.864 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:50:04.865 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1277 ms
+20.04.2023 18:50:05.399 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@385d819, org.springframework.security.web.context.SecurityContextPersistenceFilter@481b2f10, org.springframework.security.web.header.HeaderWriterFilter@285005b8, org.springframework.web.filter.CorsFilter@4315c28c, org.springframework.security.web.authentication.logout.LogoutFilter@739e8b96, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@31acfd4e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7634f2b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8fd91d1, org.springframework.security.web.session.SessionManagementFilter@740dcae3, org.springframework.security.web.access.ExceptionTranslationFilter@4b87074a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6a950a3b]
+20.04.2023 18:50:05.577 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:50:05.847 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:50:05.866 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:50:05.874 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.602 seconds (JVM running for 3.033)
+20.04.2023 18:50:07.662 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:50:10.219 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 15656 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:50:10.221 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:50:11.488 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:50:11.496 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:50:11.497 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:50:11.497 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:50:11.600 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:50:11.600 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1331 ms
+20.04.2023 18:50:12.157 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:50:12.338 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:50:12.608 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:50:12.626 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:50:12.634 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.696 seconds (JVM running for 3.12)
+20.04.2023 18:51:56.914 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:51:59.798 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 4036 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:51:59.800 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:52:01.054 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:52:01.062 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:52:01.063 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:52:01.063 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:52:01.158 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:52:01.158 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1308 ms
+20.04.2023 18:52:01.671 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:52:01.843 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:52:02.095 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:52:02.117 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:52:02.125 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.597 seconds (JVM running for 3.022)
+20.04.2023 18:52:05.688 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:52:08.350 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 8272 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:52:08.351 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:52:09.601 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:52:09.611 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:52:09.611 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:52:09.611 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:52:09.705 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:52:09.706 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1311 ms
+20.04.2023 18:52:10.230 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12d40609, org.springframework.security.web.context.SecurityContextPersistenceFilter@624b523, org.springframework.security.web.header.HeaderWriterFilter@29d405e6, org.springframework.web.filter.CorsFilter@76437e9b, org.springframework.security.web.authentication.logout.LogoutFilter@1953bc95, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1c30cb85, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@611e5819, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@236ae13d, org.springframework.security.web.session.SessionManagementFilter@5f726750, org.springframework.security.web.access.ExceptionTranslationFilter@27585351, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@59303963]
+20.04.2023 18:52:10.441 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:52:10.727 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:52:10.746 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:52:10.754 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.678 seconds (JVM running for 3.099)
+20.04.2023 18:54:11.522 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:54:15.277 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 16228 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:54:15.278 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:54:16.524 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:54:16.533 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:54:16.533 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:54:16.534 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:54:16.616 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:54:16.617 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1293 ms
+20.04.2023 18:54:17.161 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:54:17.335 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:54:17.577 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:54:17.597 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:54:17.606 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.597 seconds (JVM running for 3.013)
+20.04.2023 18:54:20.468 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:54:22.895 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 2256 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:54:22.897 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:54:24.170 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:54:24.179 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:54:24.180 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:54:24.180 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:54:24.278 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:54:24.278 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1335 ms
+20.04.2023 18:54:24.814 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:54:24.999 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:54:25.254 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:54:25.277 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:54:25.285 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.661 seconds (JVM running for 3.075)
+20.04.2023 18:57:35.904 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:57:39.839 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 15032 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:57:39.842 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:57:41.098 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:57:41.108 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:57:41.108 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:57:41.108 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:57:41.212 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:57:41.213 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1323 ms
+20.04.2023 18:57:41.743 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:57:41.934 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:57:42.185 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:57:42.203 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:57:42.211 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.648 seconds (JVM running for 3.056)
+20.04.2023 18:59:35.455 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:59:39.562 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 12444 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 18:59:39.564 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 18:59:41.036 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 18:59:41.047 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:59:41.047 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 18:59:41.047 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 18:59:41.150 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 18:59:41.150 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1534 ms
+20.04.2023 18:59:41.752 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 18:59:41.943 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 18:59:42.215 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 18:59:42.234 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 18:59:42.241 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.951 seconds (JVM running for 3.372)
+20.04.2023 19:01:43.240 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:01:47.847 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 1936 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:01:47.849 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:01:49.217 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:01:49.226 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:01:49.227 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:01:49.227 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:01:49.348 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:01:49.349 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1451 ms
+20.04.2023 19:01:50.128 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4315c28c, org.springframework.security.web.context.SecurityContextPersistenceFilter@2b6c7012, org.springframework.security.web.header.HeaderWriterFilter@5b1efaaf, org.springframework.web.filter.CorsFilter@8fd91d1, org.springframework.security.web.authentication.logout.LogoutFilter@19b07407, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5f726750, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1d15c0a1, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@52d0f583, org.springframework.security.web.session.SessionManagementFilter@4e140497, org.springframework.security.web.access.ExceptionTranslationFilter@d3e3085, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4f7be6c8]
+20.04.2023 19:01:50.333 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:01:50.853 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:01:50.930 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:01:50.939 [main] INFO   s.SocialNetApp - Started SocialNetApp in 3.364 seconds (JVM running for 3.784)
+20.04.2023 19:02:06.337 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:02:10.844 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 11568 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:02:10.846 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:02:12.129 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:02:12.144 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:02:12.144 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:02:12.144 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:02:12.233 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:02:12.234 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1341 ms
+20.04.2023 19:02:12.774 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@385d819, org.springframework.security.web.context.SecurityContextPersistenceFilter@481b2f10, org.springframework.security.web.header.HeaderWriterFilter@285005b8, org.springframework.web.filter.CorsFilter@4315c28c, org.springframework.security.web.authentication.logout.LogoutFilter@739e8b96, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@31acfd4e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7634f2b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8fd91d1, org.springframework.security.web.session.SessionManagementFilter@740dcae3, org.springframework.security.web.access.ExceptionTranslationFilter@4b87074a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6a950a3b]
+20.04.2023 19:02:12.949 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:02:13.195 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:02:13.216 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:02:13.223 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.65 seconds (JVM running for 3.065)
+20.04.2023 19:02:27.194 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:02:31.313 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 10060 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:02:31.315 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:02:32.637 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:02:32.647 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:02:32.647 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:02:32.647 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:02:32.745 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:02:32.746 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1381 ms
+20.04.2023 19:02:33.293 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12d40609, org.springframework.security.web.context.SecurityContextPersistenceFilter@624b523, org.springframework.security.web.header.HeaderWriterFilter@29d405e6, org.springframework.web.filter.CorsFilter@76437e9b, org.springframework.security.web.authentication.logout.LogoutFilter@1953bc95, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1c30cb85, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@611e5819, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@236ae13d, org.springframework.security.web.session.SessionManagementFilter@5f726750, org.springframework.security.web.access.ExceptionTranslationFilter@27585351, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@59303963]
+20.04.2023 19:02:33.478 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:02:33.745 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:02:33.764 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:02:33.771 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.724 seconds (JVM running for 3.137)
+20.04.2023 19:03:03.302 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:03:07.665 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 1388 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:03:07.666 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:03:09.015 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:03:09.024 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:03:09.024 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:03:09.024 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:03:09.107 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:03:09.107 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1391 ms
+20.04.2023 19:03:09.676 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@385d819, org.springframework.security.web.context.SecurityContextPersistenceFilter@481b2f10, org.springframework.security.web.header.HeaderWriterFilter@285005b8, org.springframework.web.filter.CorsFilter@4315c28c, org.springframework.security.web.authentication.logout.LogoutFilter@739e8b96, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@31acfd4e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7634f2b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8fd91d1, org.springframework.security.web.session.SessionManagementFilter@740dcae3, org.springframework.security.web.access.ExceptionTranslationFilter@4b87074a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6a950a3b]
+20.04.2023 19:03:09.872 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:03:10.150 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:03:10.169 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:03:10.177 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.832 seconds (JVM running for 3.262)
+20.04.2023 19:03:42.885 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:03:47.100 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 13728 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:03:47.102 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:03:48.452 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:03:48.463 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:03:48.463 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:03:48.463 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:03:48.562 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:03:48.563 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1402 ms
+20.04.2023 19:03:49.118 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@32256e68, org.springframework.security.web.context.SecurityContextPersistenceFilter@1d15c0a1, org.springframework.security.web.header.HeaderWriterFilter@51c65a43, org.springframework.web.filter.CorsFilter@5e7abaf7, org.springframework.security.web.authentication.logout.LogoutFilter@58f31629, socialnet.security.jwt.AuthTokenFilter@485caa8f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4fba8eec, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7459a21e, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@353f472a, org.springframework.security.web.session.SessionManagementFilter@7455dacb, org.springframework.security.web.access.ExceptionTranslationFilter@49cd946c, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@45a1d057]
+20.04.2023 19:03:49.299 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:03:49.548 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:03:49.572 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:03:49.580 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.751 seconds (JVM running for 3.168)
+20.04.2023 19:04:52.371 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:04:56.860 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 3836 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:04:56.862 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:04:58.180 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:04:58.189 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:04:58.189 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:04:58.189 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:04:58.284 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:04:58.284 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1373 ms
+20.04.2023 19:04:58.829 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@8fd91d1, org.springframework.security.web.context.SecurityContextPersistenceFilter@31acfd4e, org.springframework.security.web.header.HeaderWriterFilter@27585351, org.springframework.web.filter.CorsFilter@52d0f583, org.springframework.security.web.authentication.logout.LogoutFilter@54ffa561, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4e80a001, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@15639d09, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7fb8bad0, org.springframework.security.web.session.SessionManagementFilter@481b2f10, org.springframework.security.web.access.ExceptionTranslationFilter@2ba42204, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@647b9364]
+20.04.2023 19:04:59.017 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:04:59.286 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:04:59.309 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:04:59.316 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.723 seconds (JVM running for 3.146)
+20.04.2023 19:05:27.837 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:05:32.232 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 11836 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:05:32.233 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:05:33.540 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:05:33.549 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:05:33.550 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:05:33.550 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:05:33.653 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:05:33.653 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1372 ms
+20.04.2023 19:05:34.236 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 19:05:34.419 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:05:34.689 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:05:34.707 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:05:34.715 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.752 seconds (JVM running for 3.16)
+20.04.2023 19:07:59.518 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:08:04.188 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 10820 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:08:04.191 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:08:05.493 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:08:05.509 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:08:05.509 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:08:05.509 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:08:05.599 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:08:05.599 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1361 ms
+20.04.2023 19:08:06.156 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@52d0f583, org.springframework.security.web.context.SecurityContextPersistenceFilter@5f726750, org.springframework.security.web.header.HeaderWriterFilter@2de6f1bc, org.springframework.web.filter.CorsFilter@7fb8bad0, org.springframework.security.web.authentication.logout.LogoutFilter@49c099b, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@624b523, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4fba8eec, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@12d40609, org.springframework.security.web.session.SessionManagementFilter@2b6c7012, org.springframework.security.web.access.ExceptionTranslationFilter@285005b8, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@b6bccb4]
+20.04.2023 19:08:06.360 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:08:06.669 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:08:06.688 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:08:06.695 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.778 seconds (JVM running for 3.213)
+20.04.2023 19:09:17.188 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:09:21.831 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 11784 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:09:21.833 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:09:23.136 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:09:23.145 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:09:23.146 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:09:23.146 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:09:23.247 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:09:23.247 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1360 ms
+20.04.2023 19:09:23.792 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1320e68a, org.springframework.security.web.context.SecurityContextPersistenceFilter@40bf4386, org.springframework.security.web.header.HeaderWriterFilter@2180e789, org.springframework.web.filter.CorsFilter@4b033eac, org.springframework.security.web.authentication.logout.LogoutFilter@149c39b, socialnet.security.jwt.AuthTokenFilter@4a8ffd75, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@51c65a43, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@624b523, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@69c532af, org.springframework.security.web.session.SessionManagementFilter@56826a75, org.springframework.security.web.access.ExceptionTranslationFilter@5934ca1e, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2eb60c71]
+20.04.2023 19:09:23.990 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:09:24.265 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:09:24.284 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:09:24.291 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.727 seconds (JVM running for 3.161)
+20.04.2023 19:09:39.808 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:09:43.282 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 15284 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:09:43.284 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:09:44.579 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:09:44.589 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:09:44.589 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:09:44.589 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:09:44.687 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:09:44.687 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1355 ms
+20.04.2023 19:09:45.226 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12d40609, org.springframework.security.web.context.SecurityContextPersistenceFilter@624b523, org.springframework.security.web.header.HeaderWriterFilter@29d405e6, org.springframework.web.filter.CorsFilter@76437e9b, org.springframework.security.web.authentication.logout.LogoutFilter@1953bc95, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1c30cb85, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@611e5819, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@236ae13d, org.springframework.security.web.session.SessionManagementFilter@5f726750, org.springframework.security.web.access.ExceptionTranslationFilter@27585351, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@59303963]
+20.04.2023 19:09:45.407 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:09:45.673 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:09:45.691 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:09:45.699 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.703 seconds (JVM running for 3.129)
+20.04.2023 19:12:04.031 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:12:08.773 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 12956 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:12:08.776 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:12:10.085 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:12:10.095 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:12:10.096 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:12:10.096 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:12:10.195 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:12:10.195 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1370 ms
+20.04.2023 19:12:10.771 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@51a16adf, org.springframework.security.web.context.SecurityContextPersistenceFilter@4e140497, org.springframework.security.web.header.HeaderWriterFilter@2ba42204, org.springframework.web.filter.CorsFilter@385d819, org.springframework.security.web.authentication.logout.LogoutFilter@10980560, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2b6c7012, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7455dacb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4315c28c, org.springframework.security.web.session.SessionManagementFilter@51c65a43, org.springframework.security.web.access.ExceptionTranslationFilter@5e9bbd9d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@e5c2463]
+20.04.2023 19:12:10.951 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:12:11.222 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:12:11.242 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:12:11.250 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.793 seconds (JVM running for 3.211)
+20.04.2023 19:17:57.039 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:18:00.359 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 13616 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:18:00.360 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:18:01.676 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:18:01.686 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:18:01.687 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:18:01.687 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:18:01.799 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:18:01.799 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1382 ms
+20.04.2023 19:18:02.360 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@385d819, org.springframework.security.web.context.SecurityContextPersistenceFilter@481b2f10, org.springframework.security.web.header.HeaderWriterFilter@285005b8, org.springframework.web.filter.CorsFilter@4315c28c, org.springframework.security.web.authentication.logout.LogoutFilter@739e8b96, socialnet.security.jwt.AuthTokenFilter@7f9e8421, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@31acfd4e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7634f2b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8fd91d1, org.springframework.security.web.session.SessionManagementFilter@740dcae3, org.springframework.security.web.access.ExceptionTranslationFilter@4b87074a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6a950a3b]
+20.04.2023 19:18:02.566 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:18:02.818 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:18:02.835 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:18:02.843 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.758 seconds (JVM running for 3.178)
+20.04.2023 19:18:11.326 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:18:16.093 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 11220 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:18:16.095 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:18:17.409 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:18:17.421 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:18:17.421 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:18:17.421 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:18:17.519 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:18:17.519 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1371 ms
+20.04.2023 19:18:18.097 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@61e86192, org.springframework.security.web.context.SecurityContextPersistenceFilter@56826a75, org.springframework.security.web.header.HeaderWriterFilter@5348d83c, org.springframework.web.filter.CorsFilter@34330f77, org.springframework.security.web.authentication.logout.LogoutFilter@6acffb2d, socialnet.security.jwt.AuthTokenFilter@65f40689, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@40bf4386, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5f726750, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1320e68a, org.springframework.security.web.session.SessionManagementFilter@29d405e6, org.springframework.security.web.access.ExceptionTranslationFilter@bd3eff4, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3c19592c]
+20.04.2023 19:18:18.277 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:18:18.536 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:18:18.557 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:18:18.565 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.764 seconds (JVM running for 3.194)
+20.04.2023 19:20:08.331 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:20:12.840 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 10428 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:20:12.841 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:20:14.109 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:20:14.125 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:20:14.126 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:20:14.126 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:20:14.216 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:20:14.217 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1327 ms
+20.04.2023 19:20:14.768 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12d40609, org.springframework.security.web.context.SecurityContextPersistenceFilter@624b523, org.springframework.security.web.header.HeaderWriterFilter@29d405e6, org.springframework.web.filter.CorsFilter@76437e9b, org.springframework.security.web.authentication.logout.LogoutFilter@1953bc95, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1c30cb85, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@611e5819, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@236ae13d, org.springframework.security.web.session.SessionManagementFilter@5f726750, org.springframework.security.web.access.ExceptionTranslationFilter@27585351, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@59303963]
+20.04.2023 19:20:14.952 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:20:15.207 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:20:15.232 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:20:15.240 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.669 seconds (JVM running for 3.084)
+20.04.2023 19:24:56.670 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:25:01.230 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 8248 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:25:01.231 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:25:02.479 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:25:02.487 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:25:02.488 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:25:02.488 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:25:02.582 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:25:02.582 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1301 ms
+20.04.2023 19:25:03.126 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@8fd91d1, org.springframework.security.web.context.SecurityContextPersistenceFilter@31acfd4e, org.springframework.security.web.header.HeaderWriterFilter@27585351, org.springframework.web.filter.CorsFilter@52d0f583, org.springframework.security.web.authentication.logout.LogoutFilter@54ffa561, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4e80a001, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@15639d09, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7fb8bad0, org.springframework.security.web.session.SessionManagementFilter@481b2f10, org.springframework.security.web.access.ExceptionTranslationFilter@2ba42204, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@647b9364]
+20.04.2023 19:25:03.306 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:25:03.548 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:25:03.570 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:25:03.578 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.616 seconds (JVM running for 3.032)
+20.04.2023 19:27:09.321 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:27:14.527 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 12824 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:27:14.529 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:27:15.794 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:27:15.803 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:27:15.804 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:27:15.804 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:27:15.901 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:27:15.901 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1318 ms
+20.04.2023 19:27:16.445 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@8fd91d1, org.springframework.security.web.context.SecurityContextPersistenceFilter@31acfd4e, org.springframework.security.web.header.HeaderWriterFilter@27585351, org.springframework.web.filter.CorsFilter@52d0f583, org.springframework.security.web.authentication.logout.LogoutFilter@54ffa561, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4e80a001, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@15639d09, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7fb8bad0, org.springframework.security.web.session.SessionManagementFilter@481b2f10, org.springframework.security.web.access.ExceptionTranslationFilter@2ba42204, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@647b9364]
+20.04.2023 19:27:16.617 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:27:16.869 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:27:16.888 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:27:16.895 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.647 seconds (JVM running for 3.062)
+20.04.2023 19:28:14.573 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:28:19.128 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 14984 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:28:19.130 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:28:20.382 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:28:20.391 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:28:20.392 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:28:20.392 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:28:20.490 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:28:20.491 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1307 ms
+20.04.2023 19:28:21.012 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@8fd91d1, org.springframework.security.web.context.SecurityContextPersistenceFilter@31acfd4e, org.springframework.security.web.header.HeaderWriterFilter@27585351, org.springframework.web.filter.CorsFilter@52d0f583, org.springframework.security.web.authentication.logout.LogoutFilter@54ffa561, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4e80a001, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@15639d09, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7fb8bad0, org.springframework.security.web.session.SessionManagementFilter@481b2f10, org.springframework.security.web.access.ExceptionTranslationFilter@2ba42204, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@647b9364]
+20.04.2023 19:28:21.193 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:28:21.449 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:28:21.467 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:28:21.474 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.614 seconds (JVM running for 3.021)
+20.04.2023 19:28:29.862 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:28:34.493 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 14092 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:28:34.495 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:28:35.769 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:28:35.777 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:28:35.778 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:28:35.778 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:28:35.876 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:28:35.877 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1333 ms
+20.04.2023 19:28:36.401 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2be818da, org.springframework.security.web.context.SecurityContextPersistenceFilter@7455dacb, org.springframework.security.web.header.HeaderWriterFilter@40bf4386, org.springframework.web.filter.CorsFilter@46320c9a, org.springframework.security.web.authentication.logout.LogoutFilter@1cb9ef52, socialnet.security.jwt.AuthTokenFilter@485caa8f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1d15c0a1, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5ed5b321, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@32256e68, org.springframework.security.web.session.SessionManagementFilter@1c30cb85, org.springframework.security.web.access.ExceptionTranslationFilter@4c731956, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4b033eac]
+20.04.2023 19:28:36.572 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:28:36.816 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:28:36.842 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:28:36.850 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.618 seconds (JVM running for 3.034)

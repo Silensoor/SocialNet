@@ -1,4 +1,4 @@
-package socialnet.logging;
+package socialnet.service.logging;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,16 +19,16 @@ public class CleanLogsInCloud {
     public void deleteOldLogs () throws IOException, ParseException {
 
         Integer afterDayDelete = 2;
-        HashMap<Date, String> logs = getListLogsFiles();
+        HashMap<String, Date> logs = getListLogsFiles();
         cleanLogs(logs, afterDayDelete);
 
     }
 
-    public HashMap<Date, String> getListLogsFiles () throws IOException, ParseException {
+    public HashMap<String, Date> getListLogsFiles () throws IOException, ParseException {
 
-        HashMap<Date, String> logsList = new HashMap<>();
+        HashMap<String, Date> logsList = new HashMap<>();
 
-        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?media_type=text");
+        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?media_type=text&limit=1000");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Authorization", "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA");
@@ -46,13 +46,14 @@ public class CleanLogsInCloud {
         JSONObject obj = new JSONObject(jsonString);
 
         JSONArray arr = obj.getJSONArray("items");
+
         for (int i = 0; i < arr.length(); i++)
         {
             String dateFile = arr.getJSONObject(i).getString("modified");
             String pathFail = arr.getJSONObject(i).getString("path");
             Date dataLog = dateFormat(dateFile);
 
-            logsList.put(dataLog,pathFail);
+            logsList.put(pathFail,dataLog);
         }
 
         return logsList;
@@ -67,20 +68,20 @@ public class CleanLogsInCloud {
         return date;
     }
 
-    public void cleanLogs (HashMap<Date, String> logs, Integer afterDayDelete) throws IOException {
+    public void cleanLogs (HashMap<String, Date> logs, Integer afterDayDelete) throws IOException {
 
         Date today = new Date(System.currentTimeMillis());
         Calendar deleteData = Calendar.getInstance();
         deleteData.setTime(today);
         deleteData.add(Calendar.DATE, - afterDayDelete);
 
-        for (Date date: logs.keySet()) {
+        for (String path: logs.keySet()) {
+            Date date = logs.get(path);
             Calendar logCal = Calendar.getInstance();
             logCal.setTime(date);
-            String pathLog = logs.get(date);
 
             if (logCal.getTime().before(deleteData.getTime())) {
-                delete(pathLog);
+                delete(path);
             }
         }
     }

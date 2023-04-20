@@ -1,4 +1,4 @@
-package socialnet.logging;
+package socialnet.service.logging;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

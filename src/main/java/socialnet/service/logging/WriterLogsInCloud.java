@@ -1,4 +1,4 @@
-package socialnet.logging;
+package socialnet.service.logging;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPut;
@@ -88,8 +88,8 @@ public class WriterLogsInCloud extends TimerTask {
     public String createLogFile() {
 
         SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-        String dateNow = DATE_FORMATTER.format(new Date());
-        String pathLogFile = "log_" + dateNow + "_.log";
+        String dateToday = DATE_FORMATTER.format(new Date());
+        String pathLogFile = "log_" + dateToday + ".log";
 
         return pathLogFile;
     }
