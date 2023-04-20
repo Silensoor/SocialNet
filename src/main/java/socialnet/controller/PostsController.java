@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class PostsController {
     private final PostService postsService;
@@ -25,6 +25,15 @@ public class PostsController {
             @RequestParam(required = false, defaultValue = "0") Integer offset,
             @RequestParam(required = false, defaultValue = "20") Integer perPage) {
         return new ResponseEntity<>(postsService.getFeeds(jwtToken, offset, perPage), HttpStatus.OK);
+    }
+    @GetMapping("/api/v1/users/{id}/wall")
+    public CommonRs<List<PostRs>> getWall(
+            @RequestHeader(name = "authorization") String jwtToken,
+            @PathVariable(name = "id") Long id,
+            @RequestParam(required = false, defaultValue = "0") Integer offset,
+            @RequestParam(required = false, defaultValue = "20") Integer perPage)
+    {
+        return postsService.getFeedsByAuthorId(id, jwtToken, offset, perPage);
     }
 
     @PostMapping("/api/v1/users/{id}/wall")
