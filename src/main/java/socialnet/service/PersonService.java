@@ -41,6 +41,7 @@ public class PersonService {
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
     private final PersonMapper personMapper;
+    private final UserDtoMapper userDtoMapper;
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
