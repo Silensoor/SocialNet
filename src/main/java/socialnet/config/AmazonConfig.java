@@ -1,4 +1,4 @@
-package socialnet.service.amazon;
+package socialnet.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

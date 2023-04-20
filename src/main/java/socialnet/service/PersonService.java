@@ -21,12 +21,9 @@ import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.service.users.CurrencyService;
-import socialnet.service.users.WeatherService;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
 
 
 @Service
@@ -62,6 +59,31 @@ public class PersonService {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
         return setLoginRs(jwt, person);
+    }
+
+    public ResponseEntity<?> getUserInfo(String authorization) {
+
+        if (!jwtUtils.validateJwtToken(authorization)) {//401
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String userName = jwtUtils.getUserEmail(authorization);
+        if (userName.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
+        }
+
+        Person person = personRepository.findByEmail(userName);
+        if (person.getIsDeleted()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
+        }
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+
+        return ResponseEntity.ok(new CommonRs(personRs));
     }
 
     public Object getLogout(String authorization) {
@@ -127,7 +149,10 @@ public class PersonService {
 
         return personRs;
     }
-
+    public Person getAuthPerson() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return personRepository.getPersonByEmail(email);
+    }
     public CommonRs<PersonRs> setLoginRs(String jwt, Person person) {
         WeatherRs loginWeather = weatherService.getWeatherByCity("Sochi");
         CurrencyRs currencyRs = currencyService.getCurrency(LocalDate.now());

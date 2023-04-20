@@ -10,8 +10,7 @@ import socialnet.model.Person;
 import socialnet.model.Storage;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.StorageRepository;
-import socialnet.service.amazon.AmazonService;
-import socialnet.service.users.UserService;
+
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ import static org.apache.http.entity.ContentType.*;
 @Service
 @RequiredArgsConstructor
 public class StorageService {
-    private final UserService userService;
+    private final PersonService personService;
     private final PersonRepository personRepository;
     private final StorageRepository storageRepository;
     private final AmazonService amazonService;
@@ -38,7 +37,7 @@ public class StorageService {
 
         String uniqueFileName = generateUniqueFileName(file);
 
-        Person person = userService.getAuthPerson();
+        Person person = personService.getAuthPerson();
         Storage storage = new Storage(
                 person.getId(),
                 String.format("%s/%s/%s", "https://storage.yandexcloud.net", bucket, uniqueFileName),
@@ -48,7 +47,6 @@ public class StorageService {
         );
         personRepository.setPhoto(storage.getFileName(),person.getId());
         storageRepository.insertStorage(storage);
-
 
         //Загрузка фотографии в облако
         uploadFile(file, uniqueFileName);
@@ -65,7 +63,6 @@ public class StorageService {
 
     private void uploadFile(MultipartFile file, String uniqueFileName) throws IOException {
 
-
         Map<String, String> metadata = new HashMap<>();
 
         metadata.put("Content-Type", file.getContentType());
@@ -74,18 +71,11 @@ public class StorageService {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setUserMetadata(metadata);
 
-        //String fileName = file.getOriginalFilename();
-        //amazonService.upload(fileName, objectMetadata, file.getInputStream());
-
         amazonService.upload(uniqueFileName, objectMetadata, file.getInputStream());
-
     }
     private String generateUniqueFileName(MultipartFile file) {
         UUID uuid = UUID.randomUUID();
         String fileName = file.getOriginalFilename();
         return String.format("%s/%s/%s", "users_photo", uuid, fileName);
     }
-
-
-
 }

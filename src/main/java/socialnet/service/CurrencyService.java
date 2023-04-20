@@ -1,4 +1,4 @@
-package socialnet.service.users;
+package socialnet.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
