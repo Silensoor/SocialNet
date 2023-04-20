@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: cities-table
+      author: mets
+      changes:
+        - addColumn:
+            tableName: cities
+            columns:
+              - column:
+                  name: state
+                  type: varchar(2)
+              - column:
+                  name: lon
+                  type: decimal
+              - column:
+                  name: lat
+                  type: decimal
+              - column:
+                  name: open_weather_id
+                  type: bigint
+              - column:
+                  name: code2
+                  type: varchar(2)
+              - column:
+                  name: international_name
+                  type: varchar(255)
+        - dropColumn:
+            schemaName: public
+            tableName: cities
+            columns:
+              - column:
+                  name: gismeteo_id
+              - column:
+                  name: district
+              - column:
+                  name: sub_district
+        - addUniqueConstraint:
+            columnNames:  open_weather_id
+            constraintName:  unique_weather_id
+            tableName:  cities
