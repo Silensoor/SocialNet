@@ -19,7 +19,7 @@ public class CaptchaService {
 
     public CaptchaRs getCaptchaData() {
         Cage cage = new GCage();
-        String code = randomCode();
+        String code = randomCode(5);
         String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(cage.draw(code));
 
         Captcha captcha = new Captcha();
@@ -32,12 +32,12 @@ public class CaptchaService {
         return new CaptchaRs(code, image);
     }
 
-    private String randomCode() {
+    private String randomCode(int length) {
         final String nums = "0123456789";
         SecureRandom rnd = new SecureRandom();
-        StringBuilder sb = new StringBuilder(5);
+        StringBuilder sb = new StringBuilder(length);
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < length; i++) {
             sb.append(nums.charAt(rnd.nextInt(nums.length())));
         }
 
