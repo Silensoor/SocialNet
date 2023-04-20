@@ -1,7 +1,9 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import socialnet.api.request.UserRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.service.FindService;
@@ -51,4 +53,11 @@ public class UsersController {
                 new Object[]{authorization, age_from, age_to, city, country, first_name, last_name, offset, perPage}
         );
     }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateUserInfo(@RequestHeader("authorization") String authorization,
+                                            @RequestBody UserRq userData) {
+        return personService.updateUserInfo(authorization, userData);
+    }
+
 }
