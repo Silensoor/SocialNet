@@ -173,28 +173,11 @@ public class PersonRepository {
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = '" + email + "'";
-
-        Object[] objects = reflection.getObjectsArray(userData);
-        int[] types = reflection.getTypesArray(userData);
-
-        jdbcTemplate.update(sql,
-                objects,
-                types);
+        String sql = "Update Persons Set " + reflection.getFieldNamesWithQuestionMark(userData) + " where email = ?";
+        Object[] values = reflection.getValuesArray(userData, new Object[] {email});
+        jdbcTemplate.update(sql, values);
     }
 
-
-
-    public void updatePersonInfo_new(UserUpdateDto userData, String email) {
-        String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = ?";
-
-        Object[] objects = reflection.getObjectsArray(userData);
-        Object[] paramObjects = new Object[objects.length + 1];
-        System.arraycopy(objects,0,paramObjects, 0, paramObjects.length);
-        paramObjects[paramObjects.length - 1] = email;
-
-        jdbcTemplate.update(sql, paramObjects);
-    }
 
     public List<Person> findPersonsQuery(Object[] args) {
         String sql = createSqlPerson(args);
