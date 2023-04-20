@@ -60,19 +60,7 @@ public class PersonService {
     public Object getMe(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
-
-        PersonRs personRs = personMapper.toDTO(person);
-
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-        personRs.setToken(jwt);
-        personRs.setOnline(true);
-        personRs.setIsBlocked(false);
-
         return setLoginRs(jwt, person);
-
-
-
     }
 
     public Object getLogout(String authorization) {
@@ -111,28 +99,9 @@ public class PersonService {
                 .build();
     }
 
-    public WeatherRs setLoginWeather(WeatherRs weatherRs, Person person) {
-
-        weatherRs.setCity(person.getCity());
-        weatherRs.setTemp("");
-        weatherRs.setDate(DATE_FORMATTER.format(new Date()));
-        weatherRs.setClouds("");
-
-        return weatherRs;
-    }
-
-    public CurrencyRs setCurrencyRs(CurrencyRs currencyRs) {
-
-        currencyRs.setEuro("");
-        currencyRs.setUsd("");
-
-        return currencyRs;
-    }
-
     public PersonRs setPersonRs(CurrencyRs currencyRs, WeatherRs weatherRs, String jwt, Person person) {
         PersonRs personRs = new PersonRs();
-        weatherRs = setLoginWeather(weatherRs, person);
-        currencyRs = setCurrencyRs(currencyRs);
+
         personRs.setAbout(person.getAbout());
         personRs.setCity(person.getCity());
         personRs.setCountry(person.getCountry());
@@ -154,10 +123,19 @@ public class PersonService {
         personRs.setRegDate(person.getRegDate());
         personRs.setToken(jwt);
         personRs.setUserDeleted(person.getIsDeleted());
+
         return personRs;
     }
 
     public CommonRs<PersonRs> setLoginRs(String jwt, Person person) {
+//
+//        PersonRs personRs = personMapper.toDTO(person);
+//        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+//        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+//        personRs.setToken(jwt);
+//        personRs.setOnline(true);
+//        personRs.setIsBlocked(false);
+
 
         WeatherRs loginWeather = weatherService.getWeatherByCity("Sochi");
         CurrencyRs currencyRs = currencyService.getCurrency(LocalDate.now());
