@@ -197,48 +197,31 @@ public class PersonRepository {
     public List<Person> findPersonsQuery(Object[] args) {
         String sql = createSqlPerson(args);
         try {
-            //DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            return  dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("is_deleted").eq(false)
-//                            .and(field("is_blocked").eq(false)
-//                                    .and(sql(sql))))
-//                    .limit((Integer) args[8])
-//                    .offset((Integer) args[7])
-//                    .fetchInto(Person.class);
-            return null;
+            return this.jdbcTemplate.query(sql, personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
-                return null;
+            return null;
         }
     }
 
     private String createSqlPerson(Object[] args) {
-        String sql = " ";
-        if ((Integer) args[1] > 0) {
-            val ageFrom = searchDate((Integer) args[1]);
-            sql = sql + " birth_date < '" + ageFrom + "' AND ";
-        }
-        if ((Integer) args[2] > 0) {
-            val ageTo = searchDate((Integer) args[2]);
-            sql = sql + " birth_date > '" + ageTo + "' AND ";
-        }
-        if (!args[3].equals("")) {
-            sql = sql + " city = '" + args[3] + "' AND ";
-        }
-        if (!args[4].equals("")) {
-            sql = sql + " country = '" + args[4] + "' AND ";
-        }
-        if (!args[5].equals("")) {
-            sql = sql + " first_name = '" + args[5] + "' AND ";
-        }
-        if (!args[6].equals("")) {
-            sql = sql + " last_name = '" + args[6] + "' AND ";
-        }
-        String str = sql.substring(sql.length() - 5);
+        StringBuilder str = new StringBuilder();
+        String sql = "";
+        str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
+        val ageFrom = searchDate((Integer) args[1]);
+        val ageTo = searchDate((Integer) args[2]);
+        str.append((Integer) args[1] > 0 ? " birth_date < '" + ageFrom + "' AND " : "");
+        str.append((Integer) args[2] > 0 ? " birth_date > '" + ageTo + "' AND " : "");
+        str.append(!args[3].equals("") ? " city = '" + args[3] + "' AND " : "");
+        str.append(!args[4].equals("") ? " country = '" + args[4] + "' AND " : "");
+        str.append(!args[5].equals("") ? " first_name = '" + args[5] + "' AND " : "");
+        str.append(!args[6].equals("") ? " last_name = '" + args[6] + "' AND " : "");
+        String str1 = str.substring(str.length() - 5);
         if (str.equals(" AND ")) {
-            return sql.substring(0, sql.length() - 5);
+            sql = str.substring(0, str.length() - 5);
+        } else {
+            sql = str.toString();
         }
-        return sql;
+        return sql + " OFFSET=" + args[7] + " ROWS LIMIT=" + args[8];
     }
 
     private Timestamp searchDate(Integer age) {
@@ -250,15 +233,17 @@ public class PersonRepository {
 
     public Long findPersonsName(String nameFirst, String nameLast) {
         try {
-//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            final Result<Record> person = dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("first_name").eq(nameFirst)
-//                            .and(field("last_name").eq(nameLast)))
-//                    .fetch();
-//            return  (Long) person.get(1).get("id");
-            return null;
-         } catch (EmptyResultDataAccessException ignored) {
+            final Person person = this.jdbcTemplate.query("SELECT * FROM persons" +
+                    " WHERE is_deleted=false AND is_blocked=false" +
+                    " AND first_name = ? AND last_name = ?",
+                    new Object[]{nameFirst, nameLast}, new BeanPropertyRowMapper<>(Person.class))
+                    .stream().findAny().orElse(null);
+            if (person != null) {
+                return person.getId();
+            } else {
+                return null;
+            }
+        } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }

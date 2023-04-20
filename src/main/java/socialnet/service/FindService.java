@@ -72,23 +72,23 @@ public class FindService {
 
     private List<Post> comparisonOfSelectionWithTags(List<Post> postList, String[] tags) {
         List<Post> postTotal = new ArrayList<>();
-        List<Post2Tag> post2TagList = tagService.getPostByQueryTags(tags);
-        final List<Post> postStringSql2 = postRepository.findPostStringSql2(post2TagList);
-        if (postStringSql2 != null) {
-            ArrayList<Post> posts = new ArrayList<>(postStringSql2);
-            if (!postList.isEmpty()) {
-                postList.forEach((post) -> {
-                    posts.forEach((post1) -> {
-                        if (post.getId().equals(post1.getId())) {
-                            postTotal.add(post);
-                        }
-                    });
-                });
-            }
-            return postTotal;
-        } else {
+        //List<Post2Tag> post2TagList = tagService.getPostByQueryTags(tags);
+        //final List<Post> postStringSql2 = postRepository.findPostStringSql2(post2TagList);
+//        if (postStringSql2 != null) {
+//            ArrayList<Post> posts = new ArrayList<>(postStringSql2);
+//            if (!postList.isEmpty()) {
+//                postList.forEach((post) -> {
+//                    posts.forEach((post1) -> {
+//                        if (post.getId().equals(post1.getId())) {
+//                            postTotal.add(post);
+//                        }
+//                    });
+//                });
+//            }
+//            return postTotal;
+//        } else {
             return null;
-        }
+//        }
     }
 
     public CommonRs<List<PersonRs>> findPersons(Object[] args) {

@@ -10,6 +10,7 @@ import socialnet.exception.EmptyEmailException;
 import socialnet.exception.PostException;
 import socialnet.model.Post;
 import socialnet.model.Post2Tag;
+import socialnet.service.TagService;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -21,6 +22,8 @@ public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final PersonRepository personRepository;
+
+    private final TagService tagService;
 
     public List<Post> findAll() {
         return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
@@ -98,53 +101,39 @@ public class PostRepository {
 
     public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo,
                                         String text, Integer limit, Integer offset, String[] tags) {
-        String sql = createSqlPost(author, dateFrom, dateTo, text);
+        String sql = createSqlPost(author, dateFrom, dateTo, text, limit, offset, tags);
         try {
-//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            return dsl.select()
-//                    .from(table("posts"))
-//                    //.join(table("post2tag")).on()
-//                    .where(field("is_deleted").eq(false)
-//                            .and(field("is_blocked").eq(false))
-//                            .and(field("author_id").eq("personsName"))
-//                            .and(sql(sql)))
-//                    .limit(limit)
-//                    .offset(offset)
-//                    .fetchInto(Post.class);
-            return null;
+            return jdbcTemplate.queryForList(sql, Post.class);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    private String createSqlPost(String author, Long dateFrom, Long dateTo, String text) {
-        String sql = " ";
-        if (author.indexOf(" ") > 0) {
+    private String createSqlPost(String author, Long dateFrom, Long dateTo, String text,
+                                 Integer limit, Integer offset, String[] tags) {
+        String post2TagList = tagService.getPostByQueryTags(tags);
+        ////////////////////////////////
+
+        ////////////////////////////////
+        String sql = "SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC ";
+        if (author.trim().indexOf(" ") > 0) {
             String firstName = author.substring(0, author.indexOf(" "));
             String lastName = author.substring(author.indexOf(" "));
             final Long personsName = personRepository.findPersonsName(firstName.trim(), lastName.trim());
             if (personsName != null) {
                 sql = sql + " author_id = " + personsName + " AND ";
             } else {
-                throw new EmptyEmailException("Field 'author' not found");
+                return null;
             }
         }
-        if (dateFrom > 0) {
-            Timestamp dateFrom1 = parseDate(dateFrom);
-            sql = sql + " time > '" + dateFrom1 + "' AND ";
-        }
-        if (dateTo > 0) {
-            Timestamp dateTo1 = parseDate(dateTo);
-            sql = sql + " time < '" + dateTo1 + "' AND ";
-        }
-        if (!text.equals("")) {
-            sql = sql + " post_text LIKE '%" + text + "%' AND ";
-        }
+            sql = sql + (dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
+            sql = sql + (dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
+            sql = sql + (!text.equals("") ? " post_text LIKE '%" + text + "%'" : "");
         String str = sql.substring(sql.length() - 5);
         if (str.equals(" AND ")) {
             sql = sql.substring(0, sql.length() - 5);
         }
-        return sql;
+        return sql + " OFFSET=" + offset + " ROWS LIMIT=" + limit;
     }
 
     private Timestamp parseDate(Long str) {
@@ -156,16 +145,7 @@ public class PostRepository {
         String sql2 = createSqlPost2Tag(post2TagList);
         if (sql2 != null) {
             try {
-//                DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//                return dsl.select()
-//                        .from(table("posts"))
-//                        .where(field("is_deleted").eq(false)
-//                                .and(field("is_blocked").eq(false))
-//                                .and(sql(sql2)))
-//                        //.limit(limit)
-//                        //.offset(offset)
-//                        .fetchInto(Post.class);
-                return null;
+                return jdbcTemplate.queryForList(sql2, Post.class);
             } catch (EmptyResultDataAccessException ignored) {
                 return null;
             }
