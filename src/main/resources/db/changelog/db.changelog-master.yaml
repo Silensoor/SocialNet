@@ -61,4 +61,5 @@ databaseChangeLog:
       file: db/changelog/changelogset/m-cities-table-trigger.sql
   - include:
       file: db/changelog/changelogset/m-storage-table.sql
-
+  - include:
+      file: db/changelog/changelogset/m-countries-table-modify.sql

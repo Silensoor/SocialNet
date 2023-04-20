@@ -50,12 +50,7 @@ public class CityParser {
 */
     }
 
-    //private Set<CityDto> getAllCity(String resourceFileName) throws FileNotFoundException {
     private Set<CityDto> getAllCity(String fileName) throws FileNotFoundException {
-
-//        InputStream inputStream = getClass()
-//                .getClassLoader().getResourceAsStream(resourceFileName);
-//        JSONParser parser = new JSONParser(inputStream);
 
         FileReader fileReader = new FileReader(fileName);
         JSONParser parser = new JSONParser(fileReader);
