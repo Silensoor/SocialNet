@@ -12,11 +12,9 @@ import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -156,14 +154,17 @@ public class PersonRepository {
         return person;
     };
 
+    public void setPhoto(String photoHttpLink, Long userId) {
+        int rowCount = jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
+    }
     public Boolean setPassword(Long userId, String password) {
-        Integer rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", password, userId);
-        return rowCount == 1 ? true : false;
+        int rowCount = jdbcTemplate.update("Update Persons Set password = ? Where id = ?", password, userId);
+        return rowCount == 1;
     }
 
     public Boolean setEmail(Long userId, String email) {
-        Integer rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", email, userId);
-        return rowCount == 1 ? true : false;
+        int rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", email, userId);
+        return rowCount == 1;
     }
 
     public Person getPersonByEmail(String email) {

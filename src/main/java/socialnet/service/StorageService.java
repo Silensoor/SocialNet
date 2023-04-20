@@ -2,11 +2,13 @@ package socialnet.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import socialnet.api.response.CommonRs;
 import socialnet.model.Person;
 import socialnet.model.Storage;
+import socialnet.repository.PersonRepository;
 import socialnet.repository.StorageRepository;
 import socialnet.service.amazon.AmazonService;
 import socialnet.service.users.UserService;
@@ -24,35 +26,34 @@ import static org.apache.http.entity.ContentType.*;
 @RequiredArgsConstructor
 public class StorageService {
     private final UserService userService;
+    private final PersonRepository personRepository;
     private final StorageRepository storageRepository;
     private final AmazonService amazonService;
+    @Value("${s3.bucket}")
+    private String bucket;
 
     public CommonRs photoUpload(String fileType, MultipartFile file) throws IOException {
         if (file.getSize() == 0) return null;
         if (!isImage(file)) return null;
 
-        UUID uuid = UUID.randomUUID();
-        String fileName = file.getOriginalFilename();
-        String contentType = file.getContentType();
+        String uniqueFileName = generateUniqueFileName(file);
+
         Person person = userService.getAuthPerson();
-
-        String virtualPath = String.format("%S/%S", "users_photo", uuid);
-
         Storage storage = new Storage(
                 person.getId(),
-                fileName,
+                String.format("%s/%s/%s", "https://storage.yandexcloud.net", bucket, uniqueFileName),
                 file.getSize(),
-                "IMAGE",
+                fileType,
                 LocalDateTime.now()
         );
-
+        personRepository.setPhoto(storage.getFileName(),person.getId());
         storageRepository.insertStorage(storage);
 
+
         //Загрузка фотографии в облако
-        uploadFile(file, virtualPath);
+        uploadFile(file, uniqueFileName);
 
         return new CommonRs<>(storage);
-        //return WrapperMapper.wrap(StorageMapper.mapStorageToStorageDto(storage), true);
     }
 
     private boolean isImage(MultipartFile file) {
@@ -62,7 +63,9 @@ public class StorageService {
                 IMAGE_JPEG.getMimeType()).contains(file.getContentType());
     }
 
-    private void uploadFile(MultipartFile file, String virtualPath) throws IOException {
+    private void uploadFile(MultipartFile file, String uniqueFileName) throws IOException {
+
+
         Map<String, String> metadata = new HashMap<>();
 
         metadata.put("Content-Type", file.getContentType());
@@ -71,8 +74,16 @@ public class StorageService {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setUserMetadata(metadata);
 
+        //String fileName = file.getOriginalFilename();
+        //amazonService.upload(fileName, objectMetadata, file.getInputStream());
+
+        amazonService.upload(uniqueFileName, objectMetadata, file.getInputStream());
+
+    }
+    private String generateUniqueFileName(MultipartFile file) {
+        UUID uuid = UUID.randomUUID();
         String fileName = file.getOriginalFilename();
-        amazonService.upload(fileName, objectMetadata, file.getInputStream());
+        return String.format("%s/%s/%s", "users_photo", uuid, fileName);
     }
 
 
