@@ -8,7 +8,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.model.Person;
 import socialnet.model.Storage;
 import socialnet.repository.StorageRepository;
-import socialnet.service.amazon.FileStore;
+import socialnet.service.amazon.AmazonService;
 import socialnet.service.users.UserService;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ import static org.apache.http.entity.ContentType.*;
 public class StorageService {
     private final UserService userService;
     private final StorageRepository storageRepository;
-    private final FileStore fileStore;
+    private final AmazonService amazonService;
 
     public CommonRs photoUpload(String fileType, MultipartFile file) throws IOException {
         if (file.getSize() == 0) return null;
@@ -70,7 +70,7 @@ public class StorageService {
         objectMetadata.setUserMetadata(metadata);
 
         String fileName = file.getOriginalFilename();
-        fileStore.upload(fileName, objectMetadata, file.getInputStream());
+        amazonService.upload(fileName, objectMetadata, file.getInputStream());
     }
 
 

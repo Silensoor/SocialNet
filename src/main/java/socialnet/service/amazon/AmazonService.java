@@ -11,11 +11,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
-public class FileStore {
+public class AmazonService {
     @Value("${s3.bucket}")
     private String bucket;
     private final AmazonS3 amazonS3;
