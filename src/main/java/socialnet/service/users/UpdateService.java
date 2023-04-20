@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import socialnet.api.request.UserUpdateDto;
 import socialnet.api.response.CommonRs;
-import socialnet.dto.UserUpdateDto;
+
 import socialnet.api.request.UserRq;
 import socialnet.api.response.ErrorRs;
 import socialnet.api.response.PersonRs;

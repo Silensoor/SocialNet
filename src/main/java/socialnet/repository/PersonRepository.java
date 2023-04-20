@@ -183,6 +183,8 @@ public class PersonRepository {
                 types);
     }
 
+
+
     public void updatePersonInfo_new(UserUpdateDto userData, String email) {
         String sql = "Update Persons Set " + reflection.getSqlFieldNames(userData) + " where email = ?";
 
