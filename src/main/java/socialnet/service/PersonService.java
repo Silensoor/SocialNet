@@ -77,7 +77,8 @@ public class PersonService {
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
         personRs.setToken(authorization);
 
-        return new CommonRs(personRs);
+        //return new CommonRs(personRs);
+        return setLoginRs(jwt, person);
     }
 
     public Object getLogout(String authorization) {
