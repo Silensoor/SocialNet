@@ -12,9 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import socialnet.api.request.LoginRq;
+import socialnet.api.request.UserUpdateDto;
 import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
+import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -38,6 +40,7 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
+    private final UserDtoMapper userDtoMapper;
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
@@ -57,6 +60,15 @@ public class PersonService {
     public Object getMe(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
+        setPersonNames(userUpdateDto,person);
+
+        personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
+
+
         return setLoginRs(jwt, person);
 
     }
