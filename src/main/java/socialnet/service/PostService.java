@@ -21,7 +21,6 @@ import socialnet.service.notifications.NotificationPusher;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -170,9 +169,11 @@ public class PostService {
         Details details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
 
-        Notification notification = getNotification(id,postRq);
-        List<Friendships> allFriendships = friendsShipsRepository.findAllFriendships((long) id);
-        sendAllFriendShips(notification,allFriendships);
+
+
+
+        List<Friendships> allFriendships = friendsShipsRepository.findAllFriendships(author.getId());
+        sendAllFriendShips(allFriendships, author.getId());
 
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
@@ -269,23 +270,19 @@ public class PostService {
         Long authUserId;
         List<CommentRs> comments;
     }
-    private Notification getNotification(Integer id,PostRq postRq) {
-        Notification notification = new Notification();
-        notification.setSentTime(Timestamp.from(Instant.now()));
-        notification.setNotificationType(NotificationType.POST.toString());
-        notification.setContact(postRq.getTitle());
-        notification.setIsRead(false);
-        notification.setPersonId(Long.valueOf(id));
-        notification.setEntityId(2L);
-        return notification;
-    }
-    private void sendAllFriendShips(Notification notification,List<Friendships>list){
-        for (Friendships friendships: list){
-            if(!notification.getPersonId().equals(friendships.getDstPersonId())){
-                NotificationPusher.sendPush(notification,friendships.getDstPersonId());
-            }else {
-                NotificationPusher.sendPush(notification,friendships.getSrcPersonId());
+
+
+
+    private void sendAllFriendShips(List<Friendships> list,Long id) {
+        for (Friendships friendships : list) {
+            if (!id.equals(friendships.getDstPersonId())) {
+                Notification notification = NotificationPusher.getNotification(NotificationType.POST,friendships.getDstPersonId(),id);
+                NotificationPusher.sendPush(notification, id);
+            } else {
+                Notification notification = NotificationPusher.getNotification(NotificationType.POST,friendships.getSrcPersonId(),id);
+                NotificationPusher.sendPush(notification, id);
             }
         }
     }
+
 }

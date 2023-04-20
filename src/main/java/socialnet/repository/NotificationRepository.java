@@ -3,13 +3,10 @@ package socialnet.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Notification;
 import socialnet.model.PersonSettings;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,24 +78,11 @@ public class NotificationRepository {
                 notification.getContact(), notification.getNotificationType(),
                 notification.getEntityId(), notification.getIsRead(),
                 notification.getSentTime(), notification.getPersonId());
-        Long id= jdbcTemplate.query("select * from notifications where id =(select max(id) from notifications)", (rs, rowNum) -> {
-            long idEnd = rs.getLong("id");
-            return idEnd;
+        return jdbcTemplate.query("select * from notifications where id =(select max(id) from notifications)", (rs, rowNum) -> {
+            return rs.getLong("id");
         }).stream().findAny().orElse(null);
-        return id;
     }
 
-    public Long findEndId(Notification notification) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement("insert into notifications(contact) values (?) ");
-            ps.setString(1, notification.getContact());
 
-            return ps;
-        }, keyHolder);
-
-        return (long) keyHolder.getKey();
-    }
 }

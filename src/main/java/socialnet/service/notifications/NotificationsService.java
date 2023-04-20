@@ -42,7 +42,7 @@ public class NotificationsService {
                 NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notification, personRs);
                 notificationRsList.add(notificationRs);
             }
-        } else if(notificationId!=null) {
+        } else if (notificationId != null) {
             List<Notification> notificationList = notificationRepository.getNotificationsById(notificationId);
             notificationRepository.updateIsReadById(notificationId);
             PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList);
@@ -55,18 +55,24 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> getAllNotifications(Integer itemPerPage, String token, Integer offset) {
         String email = jwtUtils.getUserEmail(token);
-        Person personList = personRepository.findPersonsEmail(email);
-        if (personList == null) {
+        Person person = personRepository.findPersonsEmail(email);
+        if (person == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personList.getId();
+            Long id = person.getId();
             List<Notification> notifications = notificationRepository.getNotifications(id, itemPerPage, offset);
-            PersonRs personRs = personMapper.toDTO(personList);
-            List<NotificationRs> rsList = new ArrayList<>();
-            for (Notification notification : notifications) {
-                rsList.add(notificationMapper.INSTANCE.toDTO(notification, personRs));
+            if (!notifications.isEmpty()) {
+                PersonRs personRs = personMapper.toDTO(personRepository.findById(notifications.get(0).getEntityId()));
+                List<NotificationRs> rsList = new ArrayList<>();
+                for (Notification notification : notifications) {
+                    rsList.add(notificationMapper.INSTANCE.toDTO(notification, personRs));
+                }
+                return getResponseNotifications(rsList);
+            }else {
+                List<NotificationRs> rsList = new ArrayList<>();
+                return getResponseNotifications(rsList);
             }
-            return getResponseNotifications(rsList);
+
 
         }
     }

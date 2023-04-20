@@ -6,18 +6,14 @@ import socialnet.api.request.LikeRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
 import socialnet.api.response.NotificationType;
-import socialnet.model.Like;
-import socialnet.model.Notification;
-import socialnet.model.Person;
-import socialnet.model.Post;
+import socialnet.model.*;
 import socialnet.repository.LikeRepository;
+import socialnet.repository.NotificationRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.service.notifications.NotificationPusher;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +26,7 @@ public class LikesService {
     private final PersonRepository personRepository;
     private final JwtUtils jwtUtils;
     private final PostRepository postRepository;
+    private final NotificationRepository notificationRepository;
 
     public CommonRs<LikeRs> getLikes(String jwtToken, Integer itemId, String type) {
         Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
@@ -55,11 +52,12 @@ public class LikesService {
         for (Like l : likes) {
             users.add(l.getPersonId().intValue());
         }
-
-        Notification notification = getNotification(likeRq, authUser.getId());
         Post post = postRepository.findById(likeRq.getItem_id());
-        NotificationPusher.sendPush(notification, post.getAuthorId());
-
+        List<PersonSettings> personSettings = notificationRepository.getPersonSettings(post.getAuthorId());
+        if (!personSettings.isEmpty() && personSettings.get(0).getLikeNotification()) {
+            Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,post.getAuthorId(),authUser.getId());
+            NotificationPusher.sendPush(notification, authUser.getId());
+        }
         return new CommonRs<>(new LikeRs(likes.size(), users), System.currentTimeMillis());
     }
 
@@ -80,17 +78,4 @@ public class LikesService {
         }
         return new CommonRs<>(new LikeRs(likesAfterDelete.size(), users), System.currentTimeMillis());
     }
-
-    private Notification getNotification(LikeRq likeRq, Long personId) {
-        Notification notification = new Notification();
-        notification.setSentTime(Timestamp.from(Instant.now()));
-        notification.setNotificationType(NotificationType.POST_LIKE.toString());
-        notification.setContact(likeRq.getItem_id().toString());
-        notification.setIsRead(false);
-        notification.setPersonId(personId);
-        notification.setEntityId(1L);
-        return notification;
-    }
-
-
 }
