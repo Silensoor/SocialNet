@@ -37,10 +37,8 @@ public class PersonService {
     private String jwt;
     private final AuthenticationManager authenticationManager;
     private final PersonRepository personRepository;
-    private final PersonMapper personMapper;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-    private final UserDtoMapper userDtoMapper;
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
@@ -128,15 +126,6 @@ public class PersonService {
     }
 
     public CommonRs<PersonRs> setLoginRs(String jwt, Person person) {
-//
-//        PersonRs personRs = personMapper.toDTO(person);
-//        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-//        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-//        personRs.setToken(jwt);
-//        personRs.setOnline(true);
-//        personRs.setIsBlocked(false);
-
-
         WeatherRs loginWeather = weatherService.getWeatherByCity("Sochi");
         CurrencyRs currencyRs = currencyService.getCurrency(LocalDate.now());
         PersonRs personRs = setPersonRs(
