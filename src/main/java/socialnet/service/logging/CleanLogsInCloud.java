@@ -16,6 +16,8 @@ import java.util.HashMap;
 
 public class CleanLogsInCloud {
 
+    private final AuthCloud authCloud = new AuthCloud();
+
     public void deleteOldLogs () throws IOException, ParseException {
 
         Integer afterDayDelete = 2;
@@ -31,7 +33,7 @@ public class CleanLogsInCloud {
         URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?media_type=text&limit=1000");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        con.setRequestProperty("Authorization", "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA");
+        con.setRequestProperty("Authorization", authCloud.getYandexToken());
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -90,7 +92,7 @@ public class CleanLogsInCloud {
         URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources?path=" + path + "&permanently=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("DELETE");
-        con.setRequestProperty("Authorization", "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA");
+        con.setRequestProperty("Authorization", authCloud.getYandexToken());
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

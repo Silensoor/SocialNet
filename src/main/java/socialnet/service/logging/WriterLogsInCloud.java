@@ -23,6 +23,7 @@ import java.util.TimerTask;
 @Component
 public class WriterLogsInCloud extends TimerTask {
 
+    private final AuthCloud authCloud = new AuthCloud();
     private final CleanLogsInCloud cleanLogsInCloud = new CleanLogsInCloud();
 
     @Bean
@@ -47,7 +48,7 @@ public class WriterLogsInCloud extends TimerTask {
         URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/upload?path=" + path + "&overwrite=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        con.setRequestProperty("Authorization", "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA");
+        con.setRequestProperty("Authorization", authCloud.getYandexToken());
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
