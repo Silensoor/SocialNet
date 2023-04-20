@@ -24,7 +24,6 @@ public class FriendsShipsRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
-
     }
 
     private final RowMapper<Friendships> friendshipsRowMapper = (resultSet, rowNum) -> {

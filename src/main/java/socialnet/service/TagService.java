@@ -26,7 +26,7 @@ public class TagService {
 
     public String getPostByQueryTags(String[] tags){
         List<Tag> tagList = tagRepository.getTagsByQuery(tags);
-        List<Post2Tag> query = new ArrayList<>();
+        List<Post2Tag> query;
         if (tagList != null) {
             query = post2TagRepository.getQuery(tagList);
         } else {
@@ -36,12 +36,12 @@ public class TagService {
         if (query != null && !query.isEmpty()) {
             for (Post2Tag post2Tag : query) {
                 if (post2Tag.getPostId() != 0) {
-                    sqlTags.append(" Id = ").append(post2Tag.getId()).append(" OR ");
+                    sqlTags.append(" ").append(post2Tag.getId()).append(", ");
                 }
             }
             if (sqlTags.length() > 4) {
-                if (sqlTags.substring(sqlTags.length() - 4).equals(" OR ")) {
-                    sqlTags.delete(sqlTags.length() - 4, sqlTags.length());
+                if (sqlTags.substring(sqlTags.length() - 2).equals(", ")) {
+                    sqlTags.delete(sqlTags.length() - 2, sqlTags.length());
                 }
             }
             return sqlTags.toString();
