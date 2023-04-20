@@ -81,4 +81,8 @@ public class MessageRepository {
     public void markDeleted(Long messageId, Boolean isDeletedState) {
         jdbcTemplate.update("UPDATE messages SET is_deleted = ? WHERE id = ?", isDeletedState, messageId);
     }
+
+    public Integer updateTextById(String text, Long messageId) {
+        return jdbcTemplate.update("UPDATE messages SET message_text = ? WHERE id = ?", text, messageId);
+    }
 }
