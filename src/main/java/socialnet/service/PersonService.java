@@ -60,13 +60,7 @@ public class PersonService {
     public Object getMe(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
-
-
-        personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
-
-
         return setLoginRs(jwt, person);
-
     }
 
     public Object getLogout(String authorization) {
