@@ -21,10 +21,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @Component
-public class WriterLogsInCloud extends TimerTask {
+public class LogWriter extends TimerTask {
 
     private final AuthCloud authCloud = new AuthCloud();
-    private final CleanLogsInCloud cleanLogsInCloud = new CleanLogsInCloud();
+    private final LogClean cleanLogsInCloud = new LogClean();
 
     @Bean
     public void writer() {
@@ -82,7 +82,7 @@ public class WriterLogsInCloud extends TimerTask {
     public void updateTimer() {
 
         Timer time = new Timer();
-        WriterLogsInCloud writerLogsInCloud = new WriterLogsInCloud();
+        LogWriter writerLogsInCloud = new LogWriter();
         time.schedule(writerLogsInCloud, 0, 3_600_000);
     }
 

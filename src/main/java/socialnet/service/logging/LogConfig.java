@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @Aspect
 @Component
-public class LoggingConfig {
+public class LogConfig {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 

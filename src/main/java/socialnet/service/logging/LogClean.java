@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-public class CleanLogsInCloud {
+public class LogClean {
 
     private final AuthCloud authCloud = new AuthCloud();
 

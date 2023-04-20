@@ -118,13 +118,13 @@
 20.04.2023 10:46:12.574 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
 20.04.2023 10:46:12.670 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
 20.04.2023 10:46:12.670 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1345 ms
-20.04.2023 10:46:13.488 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+20.04.2023 10:46:13.488 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
 20.04.2023 10:46:13.491 [main] INFO   o.a.c.c.StandardService - Stopping service [Tomcat]
 20.04.2023 10:46:13.500 [main] INFO   o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
 20.04.2023 10:46:13.517 [main] ERROR  o.s.b.SpringApplication - Application run failed
-org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1341)
@@ -146,12 +146,12 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1247)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1236)
 	at socialnet.SocialNetApp.main(SocialNetApp.java:9)
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:185)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
-Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:19)
+Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:19)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -164,13 +164,13 @@ Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int
 20.04.2023 10:46:25.412 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
 20.04.2023 10:46:25.507 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
 20.04.2023 10:46:25.507 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1305 ms
-20.04.2023 10:46:26.282 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+20.04.2023 10:46:26.282 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
 20.04.2023 10:46:26.285 [main] INFO   o.a.c.c.StandardService - Stopping service [Tomcat]
 20.04.2023 10:46:26.293 [main] INFO   o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
 
 Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
 20.04.2023 10:46:26.307 [main] ERROR  o.s.b.SpringApplication - Application run failed
-org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'deleteOldLogs' defined in class path resource [socialnet/logging/CleanLogsInCloud.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:657)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1341)
@@ -192,12 +192,12 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1247)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1236)
 	at socialnet.SocialNetApp.main(SocialNetApp.java:9)
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [void]: Factory method 'deleteOldLogs' threw exception; nested exception is java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:185)
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
-Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.CleanLogsInCloud.getListLogsFiles()" is null
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:19)
+Caused by: java.lang.NullPointerException: Cannot invoke "java.util.List.get(int)" because the return value of "socialnet.service.logging.LogClean.getListLogsFiles()" is null
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:19)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -257,8 +257,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class org.apache.tomcat.util.json.JSONParser cannot be cast to class org.json.JSONObject (org.apache.tomcat.util.json.JSONParser and org.json.JSONObject are in unnamed module of loader 'app')
-	at socialnet.service.logging.CleanLogsInCloud.getListLogsFiles(CleanLogsInCloud.java:41)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:21)
+	at socialnet.service.logging.LogClean.getListLogsFiles(CleanLogsInCloud.java:41)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:21)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -318,8 +318,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class org.apache.tomcat.util.json.JSONParser cannot be cast to class org.json.JSONObject (org.apache.tomcat.util.json.JSONParser and org.json.JSONObject are in unnamed module of loader 'app')
-	at socialnet.service.logging.CleanLogsInCloud.getListLogsFiles(CleanLogsInCloud.java:41)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:21)
+	at socialnet.service.logging.LogClean.getListLogsFiles(CleanLogsInCloud.java:41)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:21)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -467,8 +467,8 @@ Caused by: java.time.format.DateTimeParseException: Text '2023-04-20T08:24:23+00
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1958)
 	at java.base/java.time.LocalDate.parse(LocalDate.java:430)
 	at java.base/java.time.LocalDate.parse(LocalDate.java:415)
-	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
+	at socialnet.service.logging.LogClean.sortLogsDate(CleanLogsInCloud.java:65)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:25)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -518,8 +518,8 @@ Caused by: java.time.format.DateTimeParseException: Text '2023-04-20T08:24:23+00
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1958)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:494)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:479)
-	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
+	at socialnet.service.logging.LogClean.sortLogsDate(CleanLogsInCloud.java:65)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:25)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -569,8 +569,8 @@ Caused by: java.time.format.DateTimeParseException: Text 'log_2023-04-20_.log' c
 	at java.base/java.time.format.DateTimeFormatter.parse(DateTimeFormatter.java:1958)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:494)
 	at java.base/java.time.LocalDateTime.parse(LocalDateTime.java:479)
-	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:65)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:25)
+	at socialnet.service.logging.LogClean.sortLogsDate(CleanLogsInCloud.java:65)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:25)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -619,8 +619,8 @@ Caused by: java.lang.IllegalArgumentException: Illegal pattern component: T
 	at org.joda.time.format.DateTimeFormat.parsePatternTo(DateTimeFormat.java:566)
 	at org.joda.time.format.DateTimeFormat.createFormatterForPattern(DateTimeFormat.java:687)
 	at org.joda.time.format.DateTimeFormat.forPattern(DateTimeFormat.java:177)
-	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:67)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.LogClean.sortLogsDate(CleanLogsInCloud.java:67)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -668,8 +668,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 Caused by: java.lang.IllegalArgumentException: Invalid format: "2023-04-20T08:24:23+00:00" is malformed at "T08:24:23+00:00"
 	at org.joda.time.format.DateTimeFormatter.parseDateTime(DateTimeFormatter.java:945)
 	at org.joda.time.DateTime.parse(DateTime.java:160)
-	at socialnet.service.logging.CleanLogsInCloud.sortLogsDate(CleanLogsInCloud.java:71)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.LogClean.sortLogsDate(CleanLogsInCloud.java:71)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -850,8 +850,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.util.Date (java.util.ArrayList and java.util.Date are in module java.base of loader 'bootstrap')
-	at socialnet.service.logging.CleanLogsInCloud.cleanLogs(CleanLogsInCloud.java:84)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.LogClean.cleanLogs(CleanLogsInCloud.java:84)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -897,8 +897,8 @@ Caused by: org.springframework.beans.BeanInstantiationException: Failed to insta
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:652)
 	... 20 common frames omitted
 Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.util.Date (java.util.ArrayList and java.util.Date are in module java.base of loader 'bootstrap')
-	at socialnet.service.logging.CleanLogsInCloud.cleanLogs(CleanLogsInCloud.java:84)
-	at socialnet.service.logging.CleanLogsInCloud.deleteOldLogs(CleanLogsInCloud.java:27)
+	at socialnet.service.logging.LogClean.cleanLogs(CleanLogsInCloud.java:84)
+	at socialnet.service.logging.LogClean.deleteOldLogs(CleanLogsInCloud.java:27)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:577)
 	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154)
@@ -2135,3 +2135,16 @@ Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cas
 20.04.2023 19:41:41.683 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
 20.04.2023 19:41:41.700 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
 20.04.2023 19:41:41.708 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.686 seconds (JVM running for 3.1)
+20.04.2023 19:44:24.864 [main] INFO   s.SocialNetApp - Starting SocialNetApp on DESKTOP-UG6SHMA with PID 12576 (A:\Skillbox\javaproteams37backend\target\classes started by Anton in A:\Skillbox\javaproteams37backend)
+20.04.2023 19:44:24.866 [main] INFO   s.SocialNetApp - The following profiles are active: anton
+20.04.2023 19:44:26.183 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+20.04.2023 19:44:26.191 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:44:26.192 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+20.04.2023 19:44:26.192 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+20.04.2023 19:44:26.295 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+20.04.2023 19:44:26.295 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1383 ms
+20.04.2023 19:44:26.862 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@52d0f583, org.springframework.security.web.context.SecurityContextPersistenceFilter@5f726750, org.springframework.security.web.header.HeaderWriterFilter@2de6f1bc, org.springframework.web.filter.CorsFilter@7fb8bad0, org.springframework.security.web.authentication.logout.LogoutFilter@49c099b, socialnet.security.jwt.AuthTokenFilter@1da4b3f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@624b523, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4fba8eec, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@12d40609, org.springframework.security.web.session.SessionManagementFilter@2b6c7012, org.springframework.security.web.access.ExceptionTranslationFilter@285005b8, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@b6bccb4]
+20.04.2023 19:44:27.044 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'applicationTaskExecutor'
+20.04.2023 19:44:27.301 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+20.04.2023 19:44:27.318 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+20.04.2023 19:44:27.326 [main] INFO   s.SocialNetApp - Started SocialNetApp in 2.73 seconds (JVM running for 3.208)
