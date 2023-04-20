@@ -1,7 +1,6 @@
 package socialnet.utils;
 
 
-import lombok.var;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;

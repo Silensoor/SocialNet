@@ -1,7 +1,6 @@
 server:
   port: 8086
 
-
 spring:
   liquibase:
     enabled: true
@@ -9,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: testtest55
-    url: jdbc:postgresql://localhost:5432/public
+    url: jdbc:postgresql://localhost:5432/test
 
 auth:
   secret: socialNet

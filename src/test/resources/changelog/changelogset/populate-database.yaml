@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: database_population
+      author: landsreyk
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            path: data.sql
