@@ -2,9 +2,11 @@ package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,11 +14,15 @@ import org.springframework.validation.annotation.Validated;
 import socialnet.api.request.LoginRq;
 import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
+import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.service.users.CurrencyService;
+import socialnet.service.users.WeatherService;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -29,6 +35,9 @@ public class PersonService {
     private String jwt;
     private final AuthenticationManager authenticationManager;
     private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
+    private final WeatherService weatherService;
+    private final CurrencyService currencyService;
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
@@ -47,9 +56,28 @@ public class PersonService {
 
     public Object getMe(String authorization) {
 
+        if (!jwtUtils.validateJwtToken(authorization)) {//401
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         String email = jwtUtils.getUserEmail(authorization);
+        if (email.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
+        }
+
         Person person = personRepository.findByEmail(email);
-        return setLoginRs(jwt, person);
+        if (person.getIsDeleted()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
+        }
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+        personRs.setToken(authorization);
+
+        return new CommonRs(personRs);
     }
 
     public Object getLogout(String authorization) {
