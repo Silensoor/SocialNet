@@ -60,7 +60,19 @@ public class PersonService {
     public Object getMe(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+        personRs.setToken(jwt);
+        personRs.setOnline(true);
+        personRs.setIsBlocked(false);
+
         return setLoginRs(jwt, person);
+
+
+
     }
 
     public Object getLogout(String authorization) {
