@@ -177,7 +177,6 @@ public class PersonService {
         PersonRs personRs = personMapper.toDTO(person);
 
         UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
-        setProp(userUpdateDto,person);
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
