@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import socialnet.api.request.LoginRq;
+import socialnet.api.request.UserRq;
 import socialnet.api.request.UserUpdateDto;
 import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
@@ -39,6 +40,7 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
+    private final PersonMapper personMapper;
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
@@ -153,5 +155,32 @@ public class PersonService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+    public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
+
+        if (!jwtUtils.validateJwtToken(authorization)) {//401
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String userName = jwtUtils.getUserEmail(authorization);
+        if (userName.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ErrorRs("EmptyEmailException","Field 'email' is empty"),
+                    HttpStatus.BAD_REQUEST);  //400
+        }
+
+        Person person = personRepository.findByEmail(userName);
+        if (person.getIsBlocked()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
+        }
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
+        setProp(userUpdateDto,person);
+
+        personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
+
+        return ResponseEntity.ok(new CommonRs(personRs));
+    }
 
 }
