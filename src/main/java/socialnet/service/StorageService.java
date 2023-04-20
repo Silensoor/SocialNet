@@ -1,4 +1,4 @@
-package socialnet.service.users;
+package socialnet.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,7 @@ import socialnet.model.Person;
 import socialnet.model.Storage;
 import socialnet.repository.StorageRepository;
 import socialnet.service.amazon.FileStore;
+import socialnet.service.users.UserService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
