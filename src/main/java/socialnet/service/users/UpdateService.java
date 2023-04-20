@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import socialnet.api.request.UserRq;
-import socialnet.api.request.UserUpdateDto;
 import socialnet.api.response.CommonRs;
+import socialnet.dto.UserUpdateDto;
+import socialnet.api.request.UserRq;
 import socialnet.api.response.ErrorRs;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.PersonMapper;
@@ -14,7 +14,6 @@ import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.utils.Converter;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class UpdateService {
     private final PersonMapper personMapper;
     private final UserDtoMapper userDtoMapper;
     private final JwtUtils jwtUtils;
-    private final Converter converter;
+
     public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
 
         if (!jwtUtils.validateJwtToken(authorization)) {//401
@@ -45,25 +44,17 @@ public class UpdateService {
         PersonRs personRs = personMapper.toDTO(person);
 
         UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
-        setPersonNames(userUpdateDto,person);
+        setProp(userUpdateDto,person);
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
         return ResponseEntity.ok(new CommonRs(personRs));
     }
 
-    private void setPersonNames(UserUpdateDto userUpdateDto, Person person) {
+    private void setProp(UserUpdateDto userUpdateDto, Person person) {
 
         if (userUpdateDto.getPhoto() == null) {
             userUpdateDto.setPhoto("/image/man.png");
         }
-
-//        if (userUpdateDto.getFirstName() == null) {
-//            userUpdateDto.setFirstName(person.getFirstName());
-//        }
-//
-//        if (userUpdateDto.getLastName() == null) {
-//            userUpdateDto.setLastName(person.getLastName());
-//        }
     }
 }

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ErrorRs;
 import socialnet.api.response.PersonRs;
@@ -13,12 +12,16 @@ import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class GetUserInfoService {
     private final PersonMapper personMapper;
     private final PersonRepository personRepository;
     private final JwtUtils jwtUtils;
+    private final WeatherService weatherService;
+    private final CurrencyService currencyService;
 
     public ResponseEntity<?> getUserInfo(String authorization) {
 
@@ -38,6 +41,9 @@ public class GetUserInfoService {
         }
 
         PersonRs personRs = personMapper.toDTO(person);
+
+        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
 
         return ResponseEntity.ok(new CommonRs(personRs));
     }

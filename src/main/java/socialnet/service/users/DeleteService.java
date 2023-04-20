@@ -19,7 +19,6 @@ public class DeleteService {
 
     public ResponseEntity<?> deleteUser(String authorization) {
 
-
         if (!jwtUtils.validateJwtToken(authorization)) {//401
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
