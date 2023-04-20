@@ -36,6 +36,8 @@ public class StorageService {
         String contentType = file.getContentType();
         Person person = userService.getAuthPerson();
 
+        String virtualPath = String.format("%S/%S", "users_photo", uuid);
+
         Storage storage = new Storage(
                 person.getId(),
                 fileName,
