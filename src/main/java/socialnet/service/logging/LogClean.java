@@ -20,7 +20,7 @@ public class LogClean {
 
     public void deleteOldLogs () throws IOException, ParseException {
 
-        Integer afterDayDelete = 2;
+        Integer afterDayDelete = 14;
         HashMap<String, Date> logs = getListLogsFiles();
         cleanLogs(logs, afterDayDelete);
 

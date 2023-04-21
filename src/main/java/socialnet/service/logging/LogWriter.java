@@ -29,7 +29,8 @@ public class LogWriter extends TimerTask {
     @Bean
     public void writer() {
 
-        updateTimer();
+        Integer timeLoadingInCloud = 3_600_000;
+        updateTimer(timeLoadingInCloud);
     }
 
     @Override
@@ -79,11 +80,11 @@ public class LogWriter extends TimerTask {
         }
     }
 
-    public void updateTimer() {
+    public void updateTimer(Integer timeLoadingInCloud) {
 
         Timer time = new Timer();
         LogWriter writerLogsInCloud = new LogWriter();
-        time.schedule(writerLogsInCloud, 0, 3_600_000);
+        time.schedule(writerLogsInCloud, 0, timeLoadingInCloud);
     }
 
     public String createLogFile() {
