@@ -28,8 +28,7 @@ public class LogWriter extends TimerTask {
     @Bean
     public void writer() throws IOException {
 
-        logArchiving();
-        Integer timeLoadingInCloud = 3_600_000;
+        Integer timeLoadingInCloud = 3000;
         updateTimer(timeLoadingInCloud);
     }
 
@@ -73,6 +72,7 @@ public class LogWriter extends TimerTask {
 
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 
+            logArchiving();
             File file = new File("logs/logs.zip");
             HttpPut httpPut = new HttpPut(href);
             httpPut.setEntity(new FileEntity(file));
