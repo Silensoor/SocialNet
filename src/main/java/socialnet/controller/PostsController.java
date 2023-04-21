@@ -1,9 +1,6 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.CommonRs;
@@ -20,11 +17,11 @@ public class PostsController {
     private final PostService postsService;
 
     @GetMapping("/api/v1/feeds")
-    public ResponseEntity<CommonRs<List<PostRs>>> getFeeds(
+    public CommonRs<List<PostRs>> getFeeds(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestParam(required = false, defaultValue = "0") Integer offset,
             @RequestParam(required = false, defaultValue = "20") Integer perPage) {
-        return new ResponseEntity<>(postsService.getFeeds(jwtToken, offset, perPage), HttpStatus.OK);
+        return postsService.getFeeds(jwtToken, offset, perPage);
     }
     @GetMapping("/api/v1/users/{id}/wall")
     public CommonRs<List<PostRs>> getWall(
@@ -37,35 +34,38 @@ public class PostsController {
     }
 
     @PostMapping("/api/v1/users/{id}/wall")
-    public ResponseEntity<CommonRs<PostRs>> createPost(
+    public CommonRs<PostRs> createPost(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestBody PostRq postRq,
             @RequestParam(required = false, name = "publish_date") Integer publishDate,
             @PathVariable int id) {
-        return new ResponseEntity<>(postsService.createPost(postRq, id, publishDate, jwtToken), HttpStatus.OK);
+        return postsService.createPost(postRq, id, publishDate, jwtToken);
     }
 
     @GetMapping("/api/v1/post/{id}")
-    public ResponseEntity<CommonRs<PostRs>> getPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
-        return new ResponseEntity<>(postsService.getPostById(id, jwtToken), HttpStatus.OK);
+    public CommonRs<PostRs> getPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
+        return postsService.getPostById(id, jwtToken);
     }
 
     @PutMapping("/api/v1/post/{id}")
-    public ResponseEntity<CommonRs<PostRs>> updateById(
+    public CommonRs<PostRs> updateById(
             @RequestHeader(name = "authorization") String jwtToken,
             @PathVariable int id,
             @RequestBody PostRq postRq) {
-        return new ResponseEntity<>(postsService.updatePost(id, postRq, jwtToken), HttpStatus.OK);
+
+        return postsService.updatePost(id, postRq, jwtToken);
     }
 
     @DeleteMapping("/api/v1/post/{id}")
-    public ResponseEntity<CommonRs<PostRs>> deleteById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
-        return new ResponseEntity<>(postsService.markAsDelete(id, jwtToken), HttpStatus.OK);
+    public CommonRs<PostRs> deleteById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
+        return postsService.markAsDelete(id, jwtToken);
     }
 
     @PutMapping("/api/v1/post/{id}/recover")
-    public ResponseEntity<CommonRs<PostRs>> recoverPostById(@RequestHeader(name = "authorization") String jwtToken, @PathVariable int id) {
-        return new ResponseEntity<>(postsService.recoverPost(id, jwtToken), HttpStatus.OK);
+    public CommonRs<PostRs> recoverPostById(@RequestHeader(name = "authorization") String jwtToken,
+                                                            @PathVariable int id)
+    {
+        return postsService.recoverPost(id, jwtToken);
     }
 
     @GetMapping("/api/v1/post")
