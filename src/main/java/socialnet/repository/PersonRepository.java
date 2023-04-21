@@ -100,11 +100,6 @@ public class PersonRepository {
 
     public Person findPersonsEmail(String email) {
         try {
-            return this.jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    new Object[]{email},
-                    personRowMapper
-            );
             return jdbcTemplate.queryForObject(
                 "SELECT * FROM persons WHERE email = ?", personRowMapper, email);
         } catch (EmptyResultDataAccessException ignored) {
@@ -205,7 +200,6 @@ public class PersonRepository {
             return jdbcTemplate.queryForObject(createSqlPerson(age_from, age_to, city,
                     country, first_name, last_name, flagQueryAll), Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
             return 0;
         }
     }
@@ -248,15 +242,6 @@ public class PersonRepository {
 
     public Person findPersonsName(String author) {
         try {
-//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            final Result<Record> person = dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("first_name").eq(nameFirst)
-//                            .and(field("last_name").eq(nameLast)))
-//                    .fetch();
-//            return  (Long) person.get(1).get("id");
-            return null;
-        } catch (EmptyResultDataAccessException ignored) {
             final String x1 = author.substring(0, author.indexOf(" ")).toLowerCase();
             final String x = author.substring(author.indexOf(" ") + 1).toLowerCase();
             return jdbcTemplate.queryForObject("SELECT * FROM persons" +
