@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
-    searchPath: target/classes
+    searchPath: ./target/classes
 
 server:
   port: 8086
