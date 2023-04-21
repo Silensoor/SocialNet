@@ -18,5 +18,4 @@ public class CountryRepository {
                 new Object[]{},
                 new BeanPropertyRowMapper<>(Country.class));
     }
-
 }

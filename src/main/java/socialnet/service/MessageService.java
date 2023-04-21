@@ -45,4 +45,10 @@ public class MessageService {
     public void recoverMessages(MessageCommonWs messageCommonWs) {
         messageRepository.markDeleted(messageCommonWs.getMessageId(), false);
     }
+
+    public void editMessage(MessageCommonWs messageCommonWs) {
+        Message message = messageRepository.findByAuthorId(messageCommonWs.getUserId());
+        messageRepository.updateTextById(messageCommonWs.getMessageText(), messageCommonWs.getMessageId());
+        messageCommonWs.setDialogId(message.getDialogId());
+    }
 }
