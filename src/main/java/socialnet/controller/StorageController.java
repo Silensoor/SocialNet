@@ -26,7 +26,7 @@ public class StorageController {
     )
     public ResponseEntity<?> addFile(@RequestParam String type,
                                      @RequestBody MultipartFile file)
-            throws ExecutionException, InterruptedException, IOException {
+            throws InterruptedException, IOException {
         return ResponseEntity.ok(storageService.photoUpload(type, file));
     }
 }
