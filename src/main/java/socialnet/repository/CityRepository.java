@@ -17,16 +17,16 @@ public class CityRepository {
         return jdbcTemplate.query("Select C1.* from Cities C1\n" +
                         "join Countries C2 on C1.country_id = C2.id\n" +
                         "Where C2.name = ?\n" +
-                        "  and C1.name like ?",
-                new Object[]{country, starts},
-                new BeanPropertyRowMapper<>(City.class));
+                        "  and C1.name like ?\n" +
+                        "Order by Name",
+                new BeanPropertyRowMapper<>(City.class),country, starts);
     }
 
     public List<City> getCitiesByCountry(String country) {
         return jdbcTemplate.query("Select C1.* from Cities C1\n" +
                         "join Countries C2 on C1.country_id = C2.id\n" +
-                        "Where C2.name = ?",
-                new Object[]{country},
-                new BeanPropertyRowMapper<>(City.class));
+                        "Where C2.name = ?\n" +
+                        "Order by Name",
+                new BeanPropertyRowMapper<>(City.class), country);
     }
 }
