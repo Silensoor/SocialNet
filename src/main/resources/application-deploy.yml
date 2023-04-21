@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://81.177.6.228:5432/socialnet
+    username: snuser
+    password: snpassword
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+
+server:
+  port: 8086
+
+auth:
+  secret: socialNet
+  timeLive: 216000000
+
+schedules:
+  deleteOldCaptchasInterval: 0 0 0 * * *

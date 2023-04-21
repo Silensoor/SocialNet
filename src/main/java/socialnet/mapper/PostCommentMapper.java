@@ -3,6 +3,7 @@ package socialnet.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import socialnet.api.response.CommentRs;
+import socialnet.model.Comment;
 import socialnet.model.Like;
 import socialnet.model.Person;
 import socialnet.model.PostComment;
@@ -19,7 +20,7 @@ public abstract class PostCommentMapper {
     @Mapping(target = "likes", expression = "java(likes.size())")
     @Mapping(target = "author", source = "author")
     @Mapping(target = "id", source = "postComment.id")
-    public abstract CommentRs toDTO(Person author, PostComment postComment, List<CommentRs> subComments, List<Like> likes, long authUserId);
+    public abstract CommentRs toDTO(Person author, Comment postComment, List<CommentRs> subComments, List<Like> likes, long authUserId);
 
     boolean itLikesMe(List<Like> likes, long authUserId) {
         for (Like like : likes) {

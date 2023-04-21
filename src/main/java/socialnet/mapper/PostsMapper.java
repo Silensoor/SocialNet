@@ -2,12 +2,13 @@ package socialnet.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import socialnet.api.request.PostRq;
 import socialnet.api.response.PostRs;
-import socialnet.dto.PostRq;
 import socialnet.model.Like;
 import socialnet.model.Post;
 import socialnet.model.enums.PostType;
 import socialnet.service.PostService;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public abstract class PostsMapper {
 
     boolean itLikesMe(List<Like> likes, long authUserId) {
         for (Like like : likes) {
-            if (like.getPersonId() == authUserId) return true;
+            if (like.getPersonId().equals(authUserId)) return true;
         }
         return false;
     }

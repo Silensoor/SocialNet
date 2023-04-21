@@ -1,0 +1,20 @@
+app.services.greeting.message: Social NET
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/socialnet
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: false
+
+server:
+  port: 8086
+
+auth:
+  secret: socialNet
+  timeLive: 216000000
+
+schedules:
+  deleteOldCaptchasInterval: 0 0 0 * * *

@@ -209,3 +209,21 @@ databaseChangeLog:
             constraintName: fk_posts-person
             referencedColumnNames: id
             referencedTableName: persons
+  - changeSet:
+      id: 10_2(2)
+      author: Michael
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: post2tag
+            constraintName: fk_post2tag-tags
+
+  - changeSet:
+      id: 10_2(1)
+      author: Michael
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: tag_id
+            baseTableName: post2tag
+            constraintName: fk_post2tag-tags
+            referencedColumnNames: id
+            referencedTableName: tags
