@@ -7,7 +7,7 @@ spring:
     password: admin
     driver-class-name: org.postgresql.Driver
   liquibase:
-    enabled: true
+    enabled: false
 
 server:
   port: 8086
@@ -15,3 +15,6 @@ server:
 auth:
   secret: socialNet
   timeLive: 216000000
+
+schedules:
+  deleteOldCaptchasInterval: 0 0 0 * * *

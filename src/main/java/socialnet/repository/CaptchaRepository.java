@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,6 +31,13 @@ public class CaptchaRepository {
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
+        }
+    }
+
+    public void removeOldCaptchas() {
+        try {
+            jdbcTemplate.update("DELETE FROM captcha WHERE time < now() - interval '1 day'");
+        } catch (DataAccessException ignored) {
         }
     }
 
