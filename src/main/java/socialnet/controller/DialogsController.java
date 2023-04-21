@@ -32,13 +32,11 @@ public class DialogsController {
         }
         return dialogs;
     }
-/*
 
     @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
         return dialogsService.getUnreadedMessages(authorization);
     }
-*/
 
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<List<MessageRs>> getMessagesFromDialog(@RequestHeader String authorization,
