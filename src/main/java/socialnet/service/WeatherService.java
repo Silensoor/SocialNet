@@ -21,6 +21,8 @@ public class WeatherService {
 
     public WeatherRs getWeatherByCity(String city) {
 
+        if (city == null) return new WeatherRs();
+
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https")
                 .host("api.openweathermap.org/data/2.5/find")
