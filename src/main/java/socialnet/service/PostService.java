@@ -237,7 +237,7 @@ public class PostService {
     }
 
     @Scheduled(cron = "0 0 1 * * *")
-    private void hardDeletingPosts() {
+    protected void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
         postRepository.deleteAll(deletingPosts);
         List<Tag> tags = new ArrayList<>();
