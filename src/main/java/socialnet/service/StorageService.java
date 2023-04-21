@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import socialnet.api.response.CommonRs;
 import socialnet.model.Person;
@@ -12,6 +13,7 @@ import socialnet.repository.PersonRepository;
 import socialnet.repository.StorageRepository;
 
 
+import java.beans.Transient;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -31,6 +33,7 @@ public class StorageService {
     @Value("${s3.bucket}")
     private String bucket;
 
+    @Transactional
     public CommonRs photoUpload(String fileType, MultipartFile file) throws IOException {
         if ((file.getSize() == 0) || (!isImage(file)))
             return new CommonRs<>(new Storage());
