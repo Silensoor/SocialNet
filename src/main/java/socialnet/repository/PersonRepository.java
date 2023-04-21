@@ -12,11 +12,11 @@ import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
-import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -99,11 +99,8 @@ public class PersonRepository {
 
     public Person findPersonsEmail(String email) {
         try {
-            return this.jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
-                new Object[]{email},
-                personRowMapper
-            );
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE email = ?", personRowMapper, email);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -194,51 +191,55 @@ public class PersonRepository {
         jdbcTemplate.update(sql, paramObjects);
     }
 
-    public List<Person> findPersonsQuery(Object[] args) {
-        String sql = createSqlPerson(args);
+    public List<Person> findPersonsQuery(Integer age_from,
+                                         Integer age_to, String city, String country,
+                                         String first_name, String last_name,
+                                         Integer offset, Integer perPage, Boolean flagQueryAll) {
         try {
-            //DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            return  dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("is_deleted").eq(false)
-//                            .and(field("is_blocked").eq(false)
-//                                    .and(sql(sql))))
-//                    .limit((Integer) args[8])
-//                    .offset((Integer) args[7])
-//                    .fetchInto(Person.class);
-            return null;
+            return jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
+                    flagQueryAll), personRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-                return null;
+            return null;
         }
     }
 
-    private String createSqlPerson(Object[] args) {
-        String sql = " ";
-        if ((Integer) args[1] > 0) {
-            val ageFrom = searchDate((Integer) args[1]);
-            sql = sql + " birth_date < '" + ageFrom + "' AND ";
+    public Integer findPersonsQueryAll(Integer age_from, Integer age_to, String city, String country,
+                                       String first_name, String last_name, Boolean flagQueryAll) {
+        try {
+            return jdbcTemplate.queryForObject(createSqlPerson(age_from, age_to, city,
+                    country, first_name, last_name, flagQueryAll), Integer.class);
+        } catch (EmptyResultDataAccessException ignored) {
+            return 0;
         }
-        if ((Integer) args[2] > 0) {
-            val ageTo = searchDate((Integer) args[2]);
-            sql = sql + " birth_date > '" + ageTo + "' AND ";
+    }
+
+    private String createSqlPerson(Integer age_from, Integer age_to, String city, String country,
+                                   String first_name, String last_name, Boolean flagQueryAll) {
+        StringBuilder str = new StringBuilder();
+        String sql;
+        if (flagQueryAll){
+            str.append("SELECT COUNT(*) FROM persons WHERE is_deleted=false AND ");
+        } else {
+            str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
         }
-        if (!args[3].equals("")) {
-            sql = sql + " city = '" + args[3] + "' AND ";
+        val ageFrom = searchDate(age_from);
+        val ageTo = searchDate(age_to);
+        str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "");
+        str.append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "");
+        str.append(!city.equals("") ? " city = '" + city + "' AND " : "");
+        str.append(!country.equals("") ? " country = '" + country + "' AND " : "");
+        str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "");
+        str.append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
+        if (str.substring(str.length() - 5).equals(" AND ")) {
+            sql = str.substring(0, str.length() - 5);
+        } else {
+            sql = str.toString();
         }
-        if (!args[4].equals("")) {
-            sql = sql + " country = '" + args[4] + "' AND ";
+        if (flagQueryAll) {
+            return sql;
+        } else {
+            return sql + " OFFSET ? LIMIT ?";
         }
-        if (!args[5].equals("")) {
-            sql = sql + " first_name = '" + args[5] + "' AND ";
-        }
-        if (!args[6].equals("")) {
-            sql = sql + " last_name = '" + args[6] + "' AND ";
-        }
-        String str = sql.substring(sql.length() - 5);
-        if (str.equals(" AND ")) {
-            return sql.substring(0, sql.length() - 5);
-        }
-        return sql;
     }
 
     private Timestamp searchDate(Integer age) {
@@ -248,17 +249,14 @@ public class PersonRepository {
     }
 
 
-    public Long findPersonsName(String nameFirst, String nameLast) {
+    public Person findPersonsName(String author) {
         try {
-//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
-//            final Result<Record> person = dsl.select()
-//                    .from(table("persons"))
-//                    .where(field("first_name").eq(nameFirst)
-//                            .and(field("last_name").eq(nameLast)))
-//                    .fetch();
-//            return  (Long) person.get(1).get("id");
-            return null;
-         } catch (EmptyResultDataAccessException ignored) {
+            final String x1 = author.substring(0, author.indexOf(" ")).toLowerCase();
+            final String x = author.substring(author.indexOf(" ") + 1).toLowerCase();
+            return jdbcTemplate.queryForObject("SELECT * FROM persons" +
+                            " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
+                    personRowMapper, x1, x);
+        } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }

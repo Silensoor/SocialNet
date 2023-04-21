@@ -71,8 +71,8 @@ public class PostsController {
             @RequestParam(required = false, defaultValue = "0") Integer offset,
             @RequestParam(required = false, defaultValue = "20") Integer perPage,
             @RequestParam(required = false) String[] tags,
-            @RequestParam(required = false, defaultValue = "") String text) throws ParseException {
+            @RequestParam(required = false, defaultValue = "") String text)
+    {
         return findService.getPostsByQuery(jwtToken, author, dateFrom, dateTo, offset, perPage, tags, text);
-
     }
 }

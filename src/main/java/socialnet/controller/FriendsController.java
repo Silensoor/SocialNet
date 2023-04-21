@@ -23,14 +23,16 @@ public class FriendsController {
                                                @RequestParam(required = false, defaultValue = "0")
                                                Integer offset,
                                                @RequestParam(required = false, defaultValue = "20")
-                                               Integer perPage) {
+                                               Integer perPage)
+    {
         return friendsService.getFriends(authorization, offset, perPage);
     }
 
     @PostMapping("/friends/block_unblock/{id}")
     @ResponseBody
     public HttpStatus userBlocks(@RequestHeader String authorization,
-                                 @PathVariable(value = "id") Integer id) {
+                                 @PathVariable(value = "id") Integer id)
+    {
         return friendsService.userBlocks(authorization, id);
     }
 
@@ -40,14 +42,15 @@ public class FriendsController {
                                                         @RequestParam(required = false, defaultValue = "0")
                                                         Integer offset,
                                                         @RequestParam(required = false, defaultValue = "20")
-                                                        Integer perPage) {
-
+                                                        Integer perPage)
+    {
         return friendsService.getOutgoingRequests(authorization, offset, perPage);
     }
 
     @GetMapping("/friends/recommendations")
     @ResponseBody
-    public CommonRs<List<PersonRs>> getRecommendedFriends(@RequestHeader String authorization) {
+    public CommonRs<List<PersonRs>> getRecommendedFriends(@RequestHeader String authorization)
+    {
         return friendsService.getRecommendedFriends(authorization);
     }
 
@@ -57,32 +60,36 @@ public class FriendsController {
                                                         @RequestParam(required = false, defaultValue = "0")
                                                         Integer offset,
                                                         @RequestParam(required = false, defaultValue = "20")
-                                                        Integer perPage) {
-
+                                                        Integer perPage)
+    {
         return friendsService.getPotentialFriends(authorization, offset, perPage);
     }
 
     @PostMapping("/friends/request/{id}")
     public CommonRs<ComplexRs> addFriend(@RequestHeader String authorization,
-                                         @PathVariable(value = "id") Integer id) {
+                                         @PathVariable(value = "id") Integer id)
+    {
         return friendsService.addFriend(authorization, id);
     }
 
     @DeleteMapping("/friends/request/{id}")
     public CommonRs<ComplexRs> deleteFriendsRequest(@RequestHeader String authorization,
-                                                    @PathVariable(value = "id") Integer id) {
+                                                    @PathVariable(value = "id") Integer id)
+    {
         return friendsService.deleteFriendsRequest(authorization, id);
     }
 
     @PostMapping("/friends/{id}")
     public CommonRs<ComplexRs> sendFriendsRequest(@RequestHeader String authorization,
-                                                  @PathVariable(value = "id") Integer id) {
+                                                  @PathVariable(value = "id") Integer id)
+    {
         return friendsService.sendFriendsRequest(authorization, id);
     }
 
     @DeleteMapping("/friends/{id}")
     public CommonRs<ComplexRs> deleteFriend(@RequestHeader String authorization,
-                                            @PathVariable(value = "id") Integer id) {
+                                            @PathVariable(value = "id") Integer id)
+    {
         return friendsService.deleteFriend(authorization, id);
     }
 }
