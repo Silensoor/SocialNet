@@ -18,3 +18,10 @@ auth:
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
+
+s3:
+  accessKey: YCAJE83YiyNT766OLADHNeObE
+  secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
+  bucket: socnet37
+weather:
+  apiKey: 3d29686077f7a60e5b5714b659a688dd
