@@ -28,7 +28,7 @@ public class LogWriter extends TimerTask {
     @Bean
     public void writer() throws IOException {
 
-        Integer timeLoadingInCloud = 3000;
+        Integer timeLoadingInCloud = 3_600_000;
         updateTimer(timeLoadingInCloud);
     }
 
