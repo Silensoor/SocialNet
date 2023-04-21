@@ -8,10 +8,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
@@ -19,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Component
 public class LogWriter extends TimerTask {
@@ -27,8 +26,9 @@ public class LogWriter extends TimerTask {
     private final LogClean cleanLogsInCloud = new LogClean();
 
     @Bean
-    public void writer() {
+    public void writer() throws IOException {
 
+        logArchiving();
         Integer timeLoadingInCloud = 3_600_000;
         updateTimer(timeLoadingInCloud);
     }
@@ -73,7 +73,7 @@ public class LogWriter extends TimerTask {
 
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 
-            File file = new File("logs.log");
+            File file = new File("logs/logs.zip");
             HttpPut httpPut = new HttpPut(href);
             httpPut.setEntity(new FileEntity(file));
             HttpResponse response = httpclient.execute(httpPut);
@@ -91,9 +91,31 @@ public class LogWriter extends TimerTask {
 
         SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
         String dateToday = DATE_FORMATTER.format(new Date());
-        String pathLogFile = "log_" + dateToday + ".log";
+        String pathLogFile = "log_" + dateToday + ".zip";
 
         return pathLogFile;
+    }
+
+    public void logArchiving() throws IOException {
+
+        String sourceFile = "logs/logs.log";
+        FileOutputStream fos = new FileOutputStream("logs/logs.zip");
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+
+        File fileToZip = new File(sourceFile);
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+        zipOut.putNextEntry(zipEntry);
+
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+
+        zipOut.close();
+        fis.close();
+        fos.close();
     }
 
 }

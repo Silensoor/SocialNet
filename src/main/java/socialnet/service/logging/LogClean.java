@@ -18,7 +18,7 @@ public class LogClean {
 
     private final AuthCloud authCloud = new AuthCloud();
 
-    public void deleteOldLogs () throws IOException, ParseException {
+    public void deleteOldLogs() throws IOException, ParseException {
 
         Integer afterDayDelete = 14;
         HashMap<String, Date> logs = getListLogsFiles();
@@ -26,11 +26,12 @@ public class LogClean {
 
     }
 
-    public HashMap<String, Date> getListLogsFiles () throws IOException, ParseException {
+    public HashMap<String, Date> getListLogsFiles() throws IOException, ParseException {
 
         HashMap<String, Date> logsList = new HashMap<>();
 
-        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?media_type=text&limit=1000");
+        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?" +
+                "media_type=compressed&limit=1000");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Authorization", authCloud.getYandexToken());
@@ -49,35 +50,34 @@ public class LogClean {
 
         JSONArray arr = obj.getJSONArray("items");
 
-        for (int i = 0; i < arr.length(); i++)
-        {
+        for (int i = 0; i < arr.length(); i++) {
             String dateFile = arr.getJSONObject(i).getString("modified");
             String pathFail = arr.getJSONObject(i).getString("path");
             Date dataLog = dateFormat(dateFile);
 
-            logsList.put(pathFail,dataLog);
+            logsList.put(pathFail, dataLog);
         }
 
         return logsList;
     }
 
-    public Date dateFormat (String dateFile) throws ParseException {
+    public Date dateFormat(String dateFile) throws ParseException {
 
-            Date date=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").
-                    parse(dateFile.
-                            replace("T"," ").substring(0,19));
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").
+                parse(dateFile.
+                        replace("T", " ").substring(0, 19));
 
         return date;
     }
 
-    public void cleanLogs (HashMap<String, Date> logs, Integer afterDayDelete) throws IOException {
+    public void cleanLogs(HashMap<String, Date> logs, Integer afterDayDelete) throws IOException {
 
         Date today = new Date(System.currentTimeMillis());
         Calendar deleteData = Calendar.getInstance();
         deleteData.setTime(today);
-        deleteData.add(Calendar.DATE, - afterDayDelete);
+        deleteData.add(Calendar.DATE, -afterDayDelete);
 
-        for (String path: logs.keySet()) {
+        for (String path : logs.keySet()) {
             Date date = logs.get(path);
             Calendar logCal = Calendar.getInstance();
             logCal.setTime(date);
@@ -88,7 +88,7 @@ public class LogClean {
         }
     }
 
-    public void delete (String path) throws IOException {
+    public void delete(String path) throws IOException {
         URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources?path=" + path + "&permanently=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("DELETE");

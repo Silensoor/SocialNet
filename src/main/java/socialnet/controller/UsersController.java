@@ -21,8 +21,8 @@ public class UsersController {
     private final FindService findService;
 
     @GetMapping("/me")
-    public Object Me(@RequestHeader(name = "authorization") String authorization) {
-        return personService.getMe(authorization);
+    public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
+        return personService.getMyProfile(authorization);
     }
 
     @GetMapping("/{id}")

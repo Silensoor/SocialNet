@@ -33,8 +33,7 @@ public class LogConfig {
             log.info("Старт метода :" + joinPoint.getSignature().getName() +
                     " в классе: " + joinPoint.getSourceLocation().getWithinType().getName() +
                     " результат: " + returningValue);
-        }
-        else {
+        } else {
 
             log.info("Старт метода :" + joinPoint.getSignature().getName() +
                     " в классе: " + joinPoint.getSourceLocation().getWithinType().getName());
@@ -49,8 +48,7 @@ public class LogConfig {
                     " в классе : " + joinPoint.getSourceLocation().getWithinType().getName() +
                     " результат : " + returningValue);
 
-        }
-        else {
+        } else {
 
             log.debug("Старт метода :" + joinPoint.getSignature().getName() +
                     " в классе: " + joinPoint.getSourceLocation().getWithinType().getName());
