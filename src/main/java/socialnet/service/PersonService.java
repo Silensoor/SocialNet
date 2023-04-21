@@ -2,22 +2,29 @@ package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import socialnet.api.request.LoginRq;
+import socialnet.api.request.UserRq;
+import socialnet.api.request.UserUpdateDto;
 import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
+import socialnet.mappers.PersonMapper;
+import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 
 @Service
@@ -29,6 +36,10 @@ public class PersonService {
     private String jwt;
     private final AuthenticationManager authenticationManager;
     private final PersonRepository personRepository;
+    private final WeatherService weatherService;
+    private final CurrencyService currencyService;
+    private final PersonMapper personMapper;
+    private final UserDtoMapper userDtoMapper;
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 
@@ -46,10 +57,34 @@ public class PersonService {
     }
 
     public Object getMe(String authorization) {
-
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
         return setLoginRs(jwt, person);
+    }
+
+    public ResponseEntity<?> getUserInfo(String authorization) {
+
+        if (!jwtUtils.validateJwtToken(authorization)) {//401
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String userName = jwtUtils.getUserEmail(authorization);
+        if (userName.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
+        }
+
+        Person person = personRepository.findByEmail(userName);
+        if (person.getIsDeleted()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
+        }
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+
+        return ResponseEntity.ok(new CommonRs(personRs));
     }
 
     public Object getLogout(String authorization) {
@@ -88,28 +123,9 @@ public class PersonService {
                 .build();
     }
 
-    public WeatherRs setLoginWeather(WeatherRs weatherRs, Person person) {
-
-        weatherRs.setCity(person.getCity());
-        weatherRs.setTemp("");
-        weatherRs.setDate(DATE_FORMATTER.format(new Date()));
-        weatherRs.setClouds("");
-
-        return weatherRs;
-    }
-
-    public CurrencyRs setCurrencyRs(CurrencyRs currencyRs) {
-
-        currencyRs.setEuro("");
-        currencyRs.setUsd("");
-
-        return currencyRs;
-    }
-
     public PersonRs setPersonRs(CurrencyRs currencyRs, WeatherRs weatherRs, String jwt, Person person) {
         PersonRs personRs = new PersonRs();
-        weatherRs = setLoginWeather(weatherRs, person);
-        currencyRs = setCurrencyRs(currencyRs);
+
         personRs.setAbout(person.getAbout());
         personRs.setCity(person.getCity());
         personRs.setCountry(person.getCountry());
@@ -131,17 +147,22 @@ public class PersonService {
         personRs.setRegDate(person.getRegDate());
         personRs.setToken(jwt);
         personRs.setUserDeleted(person.getIsDeleted());
+
         return personRs;
     }
-
+    public Person getAuthPerson() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return personRepository.getPersonByEmail(email);
+    }
     public CommonRs<PersonRs> setLoginRs(String jwt, Person person) {
-        WeatherRs loginWeather = new WeatherRs();
-        CurrencyRs currencyRs = new CurrencyRs();
-        PersonRs personRs = setPersonRs(currencyRs, loginWeather, jwt, person);
-        CommonRs<PersonRs> commonRs = new CommonRs<>();
-        commonRs.setData(personRs);
-        commonRs.setTimestamp(System.currentTimeMillis());
-        return commonRs;
+        WeatherRs loginWeather = weatherService.getWeatherByCity("Sochi");
+        CurrencyRs currencyRs = currencyService.getCurrency(LocalDate.now());
+        PersonRs personRs = setPersonRs(
+                currencyRs,
+                loginWeather,
+                jwt,
+                person);
+        return new CommonRs<>(personRs);
     }
 
     public Person checkLoginAndPassword(String email, String password) {
@@ -161,5 +182,31 @@ public class PersonService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+    public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
+
+        if (!jwtUtils.validateJwtToken(authorization)) {//401
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        String userName = jwtUtils.getUserEmail(authorization);
+        if (userName.isEmpty()) {
+            return new ResponseEntity<>(
+                    new ErrorRs("EmptyEmailException","Field 'email' is empty"),
+                    HttpStatus.BAD_REQUEST);  //400
+        }
+
+        Person person = personRepository.findByEmail(userName);
+        if (person.getIsBlocked()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
+        }
+
+        PersonRs personRs = personMapper.toDTO(person);
+
+        UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
+
+        personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
+
+        return ResponseEntity.ok(new CommonRs(personRs));
+    }
 
 }
