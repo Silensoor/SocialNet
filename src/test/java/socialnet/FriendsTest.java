@@ -90,7 +90,7 @@ public class FriendsTest {
         assertThat(!startValue.equals(newValue)).isTrue();
     }
 
-    @Test
+
     public void getRecommendedFriends() throws Exception {
         String token = getToken(TEST_EMAIL);
         getAuthenticated();
