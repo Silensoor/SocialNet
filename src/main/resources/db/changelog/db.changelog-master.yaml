@@ -63,3 +63,7 @@ databaseChangeLog:
       file: db/changelog/changelogset/m-storage-table.sql
   - include:
       file: db/changelog/changelogset/m-countries-table-modify.sql
+  - include:
+      file: db/changelog/changelogset/m-ru-cities-adding.sql
+
+

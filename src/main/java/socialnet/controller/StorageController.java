@@ -5,6 +5,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import socialnet.api.response.CommonRs;
+import socialnet.model.Storage;
 import socialnet.service.StorageService;
 
 import java.io.IOException;

@@ -2,6 +2,7 @@ package socialnet.utils;
 
 
 import lombok.var;
+import org.apache.commons.collections4.map.SingletonMap;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -10,8 +11,10 @@ import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Character.isDigit;
+import static java.lang.Character.toLowerCase;
 
 @Component
 public class Reflection {
@@ -88,6 +91,49 @@ public class Reflection {
                     .concat(" = ? ");
             delemitter = ", ";
         }
+        return result;
+    }
+
+    public String getFieldNamesWithQuestionMark(Object object, String[] excludeFields) {
+        String result = "";
+        String delemitter = "";
+
+        List<String> exludeList = Arrays.asList(excludeFields);
+        exludeList = exludeList.stream().map(String::toLowerCase).collect(Collectors.toList());
+
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (!exludeList.contains(field.getName().toLowerCase())) {
+                result = result.concat(delemitter)
+                        .concat(getSqlName(field.getName()))
+                        .concat(" = ? ");
+                delemitter = ", ";
+            }
+        }
+        return result;
+    }
+
+    public Map<String, Object> getSqlWithoutNullable(Object object, Object[] addValues) {
+
+        StringBuilder fieldNames = new StringBuilder();
+        Map<String, Object> result = new HashMap<>();
+        String delemitter = "";
+
+        List<Object> values = new ArrayList<>();
+
+        for (Field field : object.getClass().getDeclaredFields()) {
+            Object fieldValue = methodInvoke(object, getMethodName("get", field.getName()));;
+
+            if (fieldValue != null) {
+                fieldNames.append(String.format("%s%s%s", delemitter, getSqlName(field.getName()), " = ? "));
+                delemitter = ", ";
+                values.add(fieldValue);
+            }
+        }
+
+        Collections.addAll(values, addValues);
+
+        result.put("sql", fieldNames.toString());
+        result.put("values", values.toArray());
         return result;
     }
 

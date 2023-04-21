@@ -1,10 +1,12 @@
 package socialnet.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 public class Storage {
     private Long id;
     private Long ownerId;

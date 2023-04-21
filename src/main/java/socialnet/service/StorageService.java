@@ -32,8 +32,8 @@ public class StorageService {
     private String bucket;
 
     public CommonRs photoUpload(String fileType, MultipartFile file) throws IOException {
-        if (file.getSize() == 0) return null;
-        if (!isImage(file)) return null;
+        if ((file.getSize() == 0) || (!isImage(file)))
+            return new CommonRs<>(new Storage());
 
         String uniqueFileName = generateUniqueFileName(file);
 
@@ -48,7 +48,7 @@ public class StorageService {
         personRepository.setPhoto(storage.getFileName(),person.getId());
         storageRepository.insertStorage(storage);
 
-        //Загрузка фотографии в облако
+        //Загрузка фотографии в Yandex object storage
         uploadFile(file, uniqueFileName);
 
         return new CommonRs<>(storage);
