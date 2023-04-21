@@ -1,5 +1,0 @@
-truncate persons;
-insert into persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) values ('Duis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa.', '1980-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Helenka', true, false, false, 'Cowherd', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'accumsan', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Bourg-en-Bresse', 'France', 93, 633);
-
-truncate posts;
-insert into posts (is_blocked, is_deleted, post_text, time, time_delete, title, author_id) values (false, false, 'Closed [percutaneous] [needle] biopsy of prostate', '2022-05-25 03:42:13', '2023-02-13 07:13:20', 'Ms', 1);
