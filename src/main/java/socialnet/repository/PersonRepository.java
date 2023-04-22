@@ -157,7 +157,7 @@ public class PersonRepository {
     };
 
     public void setPhoto(String photoHttpLink, Long userId) {
-        int rowCount = jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
+        jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
     }
 
     public Boolean setPassword(Long userId, String password) {
