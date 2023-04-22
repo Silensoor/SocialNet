@@ -3,7 +3,6 @@ package socialnet.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.CommonRs;
@@ -11,11 +10,10 @@ import socialnet.api.response.PostRs;
 import socialnet.service.FindService;
 import socialnet.service.PostService;
 
-import java.text.ParseException;
 import java.util.List;
 
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class PostsController {
     private final PostService postsService;
@@ -62,7 +60,6 @@ public class PostsController {
     }
 
     @GetMapping("/api/v1/post")
-    @ResponseBody
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader(name = "authorization") String jwtToken,
             @RequestParam(required = false, defaultValue = "") String author,

@@ -100,50 +100,43 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo,
-                                        String text, Integer limit, Integer offset, String[] tags, Boolean flagQueryAll) {
+    public List<Post> findPostStringSql(Integer authorId, Long dateFrom, Long dateTo, String text,
+                                        Integer limit, Integer offset, String[] tags, Boolean flagQueryAll) {
         try {
-            return jdbcTemplate.query(createSqlPost(author, dateFrom, dateTo, text, tags, flagQueryAll),
+            return jdbcTemplate.query(createSqlPost(authorId, dateFrom, dateTo, text, tags, flagQueryAll),
                     postRowMapper, offset, limit);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    public Integer findPostStringSqlAll(String author, Long dateFrom, Long dateTo,
+    public Integer findPostStringSqlAll(Integer authorId, Long dateFrom, Long dateTo,
                                         String text, String[] tags, Boolean flagQueryAll) {
         try {
-            return jdbcTemplate.queryForObject(createSqlPost(author, dateFrom, dateTo, text, tags, flagQueryAll),
+            return jdbcTemplate.queryForObject(createSqlPost(authorId, dateFrom, dateTo, text, tags, flagQueryAll),
                     Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    private String createSqlPost(String author, Long dateFrom, Long dateTo,
+    private String createSqlPost(Integer authorId, Long dateFrom, Long dateTo,
                                  String text, String[] tags, Boolean flagQueryAll) {
         String post2TagList = "";
         String sql = "";
         if (tags != null) {
             post2TagList = tagService.getPostByQueryTags(tags);
         }
-        if (flagQueryAll){
-            sql = "SELECT COUNT(posts.id) FROM posts" +
+        if (flagQueryAll) {
+            sql = "SELECT DISTINCT COUNT(posts.id) FROM posts" +
                     " JOIN post2tag ON posts.id=post2tag.post_id WHERE is_deleted = false AND ";
         } else {
-            sql = "SELECT posts.id, posts.is_blocked, posts.is_deleted, posts.post_text," +
+            sql = "SELECT DISTINCT posts.id, posts.is_blocked, posts.is_deleted, posts.post_text," +
                     " posts.time, posts.time_delete, posts.title, posts.author_id FROM posts" +
                     " JOIN post2tag ON posts.id=post2tag.post_id WHERE is_deleted = false AND ";
         }
-
-        if (author.trim().indexOf(" ") > 0) {
-            Long personId = 0L;
-            if (personRepository.findPersonsName(author) != null) {
-                personId = personRepository.findPersonsName(author).getId();
-                sql = sql + (personId != null ? " author_id = " + personId + " AND " : "");
-            } else {
-                sql = sql + " author_id = 0 AND ";
-            }
+        if (authorId != null) {
+            sql = sql + " author_id = " + authorId + " AND ";
         }
         sql = sql + (dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
         sql = sql + (dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");

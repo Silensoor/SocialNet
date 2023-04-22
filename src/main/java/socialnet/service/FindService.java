@@ -34,14 +34,14 @@ public class FindService {
         String email = jwtUtils.getUserEmail(jwtToken);
         Person personsEmail = personRepository.findPersonsEmail(email);
         List<PostRs> postRsList = new ArrayList<>();
-        Long postListAll;
+        long postListAll;
         List<Post> postList;
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text,
+            postList = postRepository.findPostStringSql(findAuthor(author), dateFrom, dateTo, text,
                     perPage, offset, tags, false);
-            postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(author, dateFrom,
+            postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthor(author), dateFrom,
                     dateTo, text, tags, true));
             postList.forEach(post -> {
                 int postId = post.getId().intValue();
@@ -60,7 +60,7 @@ public class FindService {
                                                 Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
         Person personsEmail = personRepository.findPersonsEmail(email);
-        Long findPersonQueryAll = 0L;
+        long findPersonQueryAll = 0L;
         List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();
         if (personsEmail == null) {
@@ -68,8 +68,8 @@ public class FindService {
         } else {
             personList = personRepository.findPersonsQuery(age_from, age_to, city, country,
                     first_name, last_name, offset, perPage, false);
-            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(age_from, age_to, city, country,
-                    first_name, last_name, true));
+            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(age_from,
+                    age_to, city, country, first_name, last_name, true));
             if (personList == null) {
                 personList = new ArrayList<>();
             }
@@ -81,6 +81,18 @@ public class FindService {
         personRsList.sort(Comparator.comparing(PersonRs::getRegDate).reversed());
         return new CommonRs<>(personRsList, personRsList.size(), offset, perPage, System.currentTimeMillis(),
                 findPersonQueryAll);
+    }
+
+    public Integer findAuthor(String author) {
+        if (author.trim().indexOf(" ") > 0) {
+            if (personRepository.findPersonsName(author) != null) {
+                return Math.toIntExact(personRepository.findPersonsName(author).getId());
+            } else {
+                return 0;
+            }
+        } else {
+            return null;
+        }
     }
 }
 

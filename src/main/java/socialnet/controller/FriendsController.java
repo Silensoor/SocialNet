@@ -18,7 +18,6 @@ public class FriendsController {
     private final FriendsService friendsService;
 
     @GetMapping("/friends")
-    @ResponseBody
     public CommonRs<List<PersonRs>> getFriends(@RequestHeader String authorization,
                                                @RequestParam(required = false, defaultValue = "0")
                                                Integer offset,
@@ -29,7 +28,6 @@ public class FriendsController {
     }
 
     @PostMapping("/friends/block_unblock/{id}")
-    @ResponseBody
     public HttpStatus userBlocks(@RequestHeader String authorization,
                                  @PathVariable(value = "id") Integer id)
     {
@@ -37,7 +35,6 @@ public class FriendsController {
     }
 
     @GetMapping("/friends/outgoing_requests")
-    @ResponseBody
     public CommonRs<List<PersonRs>> getOutgoingRequests(@RequestHeader String authorization,
                                                         @RequestParam(required = false, defaultValue = "0")
                                                         Integer offset,
@@ -48,14 +45,12 @@ public class FriendsController {
     }
 
     @GetMapping("/friends/recommendations")
-    @ResponseBody
     public CommonRs<List<PersonRs>> getRecommendedFriends(@RequestHeader String authorization)
     {
         return friendsService.getRecommendedFriends(authorization);
     }
 
     @GetMapping("/friends/request")
-    @ResponseBody
     public CommonRs<List<PersonRs>> getPotentialFriends(@RequestHeader String authorization,
                                                         @RequestParam(required = false, defaultValue = "0")
                                                         Integer offset,

@@ -68,7 +68,7 @@ public class TagRepository {
         StringBuilder sql = new StringBuilder("SELECT * FROM tags WHERE");
         for(Object tag : tags){
             if (tag != "" && tag != null) {
-                sql.append(" (lower) tag = '").append(tag.toString().toLowerCase()).append("' AND ");
+                sql.append(" lower (tag) = '").append(tag.toString().toLowerCase()).append("' AND ");
             }
         }
         if (sql.substring(sql.length() - 5).equals(" AND ")){
