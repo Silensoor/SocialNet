@@ -26,26 +26,26 @@ public class PersonRepository {
 
     public void save(Person person) {
         jdbcTemplate.update(
-                "INSERT INTO persons " +
-                        "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
-                person.getFirstName(),
-                person.getLastName(),
-                person.getPassword(),
-                person.getRegDate(),
-                person.getIsApproved(),
-                person.getIsBlocked(),
-                person.getIsDeleted()
+            "INSERT INTO persons " +
+            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            person.getEmail(),
+            person.getFirstName(),
+            person.getLastName(),
+            person.getPassword(),
+            person.getRegDate(),
+            person.getIsApproved(),
+            person.getIsBlocked(),
+            person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    personRowMapper,
-                    email
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -171,8 +171,9 @@ public class PersonRepository {
     }
 
     public Person getPersonByEmail(String email) {
-        return jdbcTemplate.query("Select * from Persons where email = ?",
-                new BeanPropertyRowMapper<>(Person.class), email).stream().findAny().orElse(null);
+        return jdbcTemplate.queryForObject("SELECT * FROM Persons WHERE email = ?",
+                personRowMapper,
+                email);
     }
 
     public Long getPersonIdByEmail(String email) {

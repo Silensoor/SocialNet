@@ -9,7 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: testtest55
-    url: jdbc:postgresql://localhost:5432/test
+    url: jdbc:postgresql://localhost:5432/public
 
 auth:
   secret: socialNet
