@@ -145,7 +145,7 @@ public class PersonService {
         return personRepository.getPersonByEmail(email);
     }
 
-    public Optional<Long> getAuthPersonId() {
+    public Long getAuthPersonId() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return personRepository.getPersonIdByEmail(email);
     }

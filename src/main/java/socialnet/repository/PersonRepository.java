@@ -175,9 +175,9 @@ public class PersonRepository {
                 new BeanPropertyRowMapper<>(Person.class), email).stream().findAny().orElse(null);
     }
 
-    public Optional<Long> getPersonIdByEmail(String email) {
-        return jdbcTemplate.query("Select id from Persons where email = ?",
-                new BeanPropertyRowMapper<>(Long.class), email).stream().findAny();
+    public Long getPersonIdByEmail(String email) {
+        return jdbcTemplate.queryForObject("Select id from Persons where email = ?",
+                new Object[] {email}, Long.class);
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
