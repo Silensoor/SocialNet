@@ -2,6 +2,7 @@ package socialnet.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +34,20 @@ public class StorageService {
     @Value("${s3.bucket}")
     private String bucket;
 
-    @Transactional
     public CommonRs photoUpload(String fileType, MultipartFile file) throws IOException {
-        if ((file.getSize() == 0) || (!isImage(file)))
+        if (file.getSize() == 0) { //загрузка из Yandex Object Storage
+            var personId = personService.getAuthPersonId();
+            personId.ifPresent(id -> {
+                var photoUrl = storageRepository.getPhotoUrl(id);
+                if (photoUrl.isPresent()) {
+                    amazonService.downloadFileByName("defaultUserPhoto.png");
+                } else
+                    setDefaultPhoto();
+            });
+
+
+        }
+        if (!isImage(file))
             return new CommonRs<>(new Storage());
 
         String uniqueFileName = generateUniqueFileName(file);

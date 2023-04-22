@@ -26,6 +26,7 @@ import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 
 @Service
@@ -143,6 +144,12 @@ public class PersonService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return personRepository.getPersonByEmail(email);
     }
+
+    public Optional<Long> getAuthPersonId() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return personRepository.getPersonIdByEmail(email);
+    }
+
 
     public Person checkLoginAndPassword(String email, String password) {
 

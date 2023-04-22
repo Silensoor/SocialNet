@@ -16,6 +16,7 @@ import socialnet.utils.Reflection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -174,12 +175,15 @@ public class PersonRepository {
                 new BeanPropertyRowMapper<>(Person.class), email).stream().findAny().orElse(null);
     }
 
-    public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[] {email});
-        String sql = "Update Persons Set " + sqlParam.get("sql") + " where email = ?";
-        Object[] values = (Object[]) sqlParam.get("values");
+    public Optional<Long> getPersonIdByEmail(String email) {
+        return jdbcTemplate.query("Select id from Persons where email = ?",
+                new BeanPropertyRowMapper<>(Long.class), email).stream().findAny();
+    }
 
-        jdbcTemplate.update(sql, values);
+    public void updatePersonInfo(UserUpdateDto userData, String email) {
+        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[]{email});
+        jdbcTemplate.update("Update Persons Set " + sqlParam.get("sql") + " where email = ?",
+                (Object[]) sqlParam.get("values"));
     }
 
 
