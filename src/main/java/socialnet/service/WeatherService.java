@@ -48,6 +48,7 @@ public class WeatherService {
     private WeatherRs getWeatherRs(JSONObject jsonObject) {
 
         JSONObject weather = (JSONObject) jsonObject.getJSONArray("weather").get(0);
+
         //String cityId = weather.getString("id");
 
         JSONObject main = jsonObject.getJSONObject("main");
