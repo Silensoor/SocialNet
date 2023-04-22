@@ -82,7 +82,6 @@ public class CommentService {
         CommentRs commentRs = commentMapper.toDTO(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
-    @Scheduled(cron = "0 0 1 * * *")
     public void hardDeleteComments() {
         List<Comment> deletingComments = commentRepository.findDeletedPosts();
         commentRepository.deleteAll(deletingComments);

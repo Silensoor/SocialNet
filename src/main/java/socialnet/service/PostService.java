@@ -3,12 +3,11 @@ package socialnet.service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.*;
-import socialnet.mapper.PostCommentMapper;
-import socialnet.mapper.PostsMapper;
+import socialnet.repository.mapper.PostCommentMapper;
+import socialnet.repository.mapper.PostsMapper;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.PostMapper;
@@ -16,10 +15,11 @@ import socialnet.model.*;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
+
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -228,14 +228,7 @@ public class PostService {
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
-    private Timestamp parseDate(String str) throws ParseException {
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date date = parser.parse(str);
-        return new Timestamp(date.getTime());
-    }
-
-    @Scheduled(cron = "0 0 1 * * *")
-    protected void hardDeletingPosts() {
+    public void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
         postRepository.deleteAll(deletingPosts);
         List<Tag> tags = new ArrayList<>();

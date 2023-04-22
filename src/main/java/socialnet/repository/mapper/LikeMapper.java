@@ -1,4 +1,4 @@
-package socialnet.mapper;
+package socialnet.repository.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

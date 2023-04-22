@@ -1,7 +1,9 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Comment;
@@ -88,21 +90,12 @@ public class CommentRepository {
     }
 
     public Comment findById(Long commentId) {
-        String select = "SELECT * FROM post_comments WHERE id = " + commentId;
-        List<Comment> comments = jdbcTemplate.query(select, (rs, rowNum) -> {
-            Comment comment = new Comment();
-            comment.setId(rs.getLong("id"));
-            comment.setCommentText(rs.getString("comment_text"));
-            comment.setIsBlocked(rs.getBoolean("is_blocked"));
-            comment.setIsDeleted(rs.getBoolean("is_deleted"));
-            comment.setTime(rs.getTimestamp("time"));
-            comment.setParentId(rs.getLong("parent_id"));
-            comment.setAuthorId(rs.getLong("author_id"));
-            comment.setPostId(rs.getLong("post_id"));
-            return comment;
-        });
-
-        return comments.get(0);
+        String select = "SELECT * FROM post_comments WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(select, commentRowMapper, commentId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public void updateById(Comment comment, Long commentId) {
@@ -137,4 +130,17 @@ public class CommentRepository {
             delete(deletingComment);
         }
     }
+
+    private final RowMapper<Comment> commentRowMapper = (rs, rowNum) -> {
+        Comment comment = new Comment();
+        comment.setId(rs.getLong("id"));
+        comment.setCommentText(rs.getString("comment_text"));
+        comment.setIsBlocked(rs.getBoolean("is_blocked"));
+        comment.setIsDeleted(rs.getBoolean("is_deleted"));
+        comment.setTime(rs.getTimestamp("time"));
+        comment.setParentId(rs.getLong("parent_id"));
+        comment.setAuthorId(rs.getLong("author_id"));
+        comment.setPostId(rs.getLong("post_id"));
+        return comment;
+    };
 }

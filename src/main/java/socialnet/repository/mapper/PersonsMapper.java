@@ -1,4 +1,4 @@
-package socialnet.mapper;
+package socialnet.repository.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

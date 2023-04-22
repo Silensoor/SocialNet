@@ -6,7 +6,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.api.response.PostRs;
 import socialnet.exception.EmptyEmailException;
-import socialnet.mapper.PostsMapper;
+import socialnet.repository.mapper.PostsMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.model.Post;
