@@ -13,7 +13,7 @@ import socialnet.service.CommentService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class CommentsController {
 

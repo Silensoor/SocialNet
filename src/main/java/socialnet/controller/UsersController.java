@@ -1,12 +1,14 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import socialnet.api.request.UserRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.service.FindService;
 import socialnet.service.PersonService;
-import socialnet.service.users.FindUserService;
+
 
 import java.util.List;
 
@@ -16,12 +18,11 @@ import java.util.List;
 public class UsersController {
 
     private final PersonService personService;
-
     private final FindService findService;
 
     @GetMapping("/me")
-    public Object Me(@RequestHeader(name = "authorization") String authorization) {
-        return personService.getMe(authorization);
+    public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
+        return personService.getMyProfile(authorization);
     }
 
     @GetMapping("/{id}")
@@ -52,4 +53,11 @@ public class UsersController {
                 new Object[]{authorization, age_from, age_to, city, country, first_name, last_name, offset, perPage}
         );
     }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateUserInfo(@RequestHeader("authorization") String authorization,
+                                            @RequestBody UserRq userData) {
+        return personService.updateUserInfo(authorization, userData);
+    }
+
 }

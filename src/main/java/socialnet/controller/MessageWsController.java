@@ -35,6 +35,7 @@ public class MessageWsController {
 
     @MessageMapping("/dialogs/edit_message")
     public void editMessage(@Payload MessageCommonWs messageCommonWs) {
+        messageService.editMessage(messageCommonWs);
         messagingTemplate.convertAndSendToUser(
                 messageCommonWs.getDialogId().toString(), "/queue/messages", messageCommonWs);
     }
