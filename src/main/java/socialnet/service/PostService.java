@@ -191,6 +191,8 @@ public class PostService {
     }
 
     private List<Comment> getPostComments(int id) {
+        List<Comment> comments = commentRepository.findByPostId((long) id);
+        if (comments == null) return new ArrayList<>();
         return commentRepository.findByPostId((long) id);
     }
 

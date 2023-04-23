@@ -3,7 +3,6 @@ package socialnet.service;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
@@ -11,7 +10,9 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
-import socialnet.model.*;
+import socialnet.model.Comment;
+import socialnet.model.Like;
+import socialnet.model.Person;
 import socialnet.repository.CommentRepository;
 import socialnet.repository.LikeRepository;
 import socialnet.repository.PersonRepository;
@@ -32,7 +33,9 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final LikeRepository likeRepository;
     public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage, String jwtToken) {
+        int itemPerPage = offset / perPage;
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
+        if (commentList == null) return new CommonRs<>(new ArrayList<>(), itemPerPage, offset, perPage, System.currentTimeMillis(), 0L);
         List<CommentRs> comments = new ArrayList<>();
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
@@ -41,7 +44,6 @@ public class CommentService {
             comments.add(commentRs);
         }
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        int itemPerPage = offset / perPage;
         return new CommonRs<>(comments, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
     }
 
@@ -84,7 +86,7 @@ public class CommentService {
     }
     public void hardDeleteComments() {
         List<Comment> deletingComments = commentRepository.findDeletedPosts();
-        commentRepository.deleteAll(deletingComments);
+        deletingComments.forEach(commentRepository::delete);
         List<Like> likes = new ArrayList<>();
         for (Comment deletingComment : deletingComments) {
             likes.addAll(likeRepository.getLikesByEntityId(deletingComment.getId()));
