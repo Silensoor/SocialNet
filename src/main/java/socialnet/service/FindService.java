@@ -6,7 +6,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.api.response.PostRs;
 import socialnet.exception.EmptyEmailException;
-import socialnet.repository.mapper.PostsMapper;
+import socialnet.mapper.PostsMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.model.Post;
@@ -14,6 +14,7 @@ import socialnet.model.Post2Tag;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.PostServiceDetails;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -60,7 +61,7 @@ public class FindService {
         for (Post post2 : postTotal) {
             if (count >= offset && count < offset + perPage) {
                 int postId = post2.getId().intValue();
-                PostService.Details details1 = postService.getDetails(post2.getAuthorId(), postId, jwtToken);
+                PostServiceDetails details1 = postService.getDetails(post2.getAuthorId(), postId, jwtToken);
                 PostRs postRs = postsMapper.toRs(post2, details1);
                 postRsList.add(postRs);
             }

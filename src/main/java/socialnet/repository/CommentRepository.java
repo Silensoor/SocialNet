@@ -20,7 +20,7 @@ public class CommentRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Comment> findByPostId(Long postId) {
-        String select = "SELECT * FROM post_comments WHERE post_id = " + postId;
+        String select = "SELECT * FROM post_comments WHERE post_id = ?";
         try {
             return jdbcTemplate.query(select, commentRowMapper, postId);
         } catch (EmptyResultDataAccessException ex) {
