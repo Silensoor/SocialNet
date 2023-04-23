@@ -13,7 +13,6 @@ import socialnet.repository.PersonRepository;
 import socialnet.repository.StorageRepository;
 
 
-import java.beans.Transient;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;

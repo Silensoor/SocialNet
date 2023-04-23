@@ -2,7 +2,6 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import lombok.var;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -51,11 +50,11 @@ public class PersonRepository {
         }
     }
 
-    public Person findById(Long authorId) {
+    public Person findById(Long personId) {
         try {
             List<Person> personList = jdbcTemplate.query("SELECT * FROM persons WHERE id = ?",
-                    new Object[]{authorId}, new BeanPropertyRowMapper<>(Person.class));
-            if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+                    new Object[]{personId}, new BeanPropertyRowMapper<>(Person.class));
+            if (personList.isEmpty()) throw new PostException("Person с id " + personId + " не существует");
             return personList.get(0);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -69,6 +68,14 @@ public class PersonRepository {
                     new Object[]{limit},
                     personRowMapper
             );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findAll() {
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -251,5 +258,13 @@ public class PersonRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+    }
+
+    public void updateOnlineStatus(Long personId, String status) {
+        jdbcTemplate.update("UPDATE persons SET online_status = ? WHERE id = ?", status, personId);
+    }
+
+    public void updateLastOnlineTime(Long personId, Timestamp lastOnlineTime) {
+        jdbcTemplate.update("UPDATE persons SET last_online_time = ? WHERE id = ?", lastOnlineTime, personId);
     }
 }

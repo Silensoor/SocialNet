@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public Object logout(@RequestHeader(name = "authorization") String authorization) {
+    public Object logout(@RequestHeader String authorization) {
         return personService.getLogout(authorization);
     }
 }
