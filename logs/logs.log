@@ -1243,3 +1243,401 @@ Caused by: liquibase.exception.ValidationFailedException: Validation Failed:
 21.04.2023 20:15:56.403 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'clientInboundChannelExecutor'
 21.04.2023 20:15:56.412 [SpringContextShutdownHook] INFO   c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated...
 21.04.2023 20:15:56.424 [SpringContextShutdownHook] INFO   c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed.
+23.04.2023 12:29:05.269 [main] INFO   s.SocialNetApp - Starting SocialNetApp on Vitaliy-Mor with PID 21375 (/home/vitaliy/Общедоступные/javaproteams37backend/target/classes started by vitaliy in /home/vitaliy/Общедоступные/javaproteams37backend)
+23.04.2023 12:29:05.270 [main] INFO   s.SocialNetApp - The following profiles are active: vitaliy
+23.04.2023 12:29:06.042 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+23.04.2023 12:29:06.050 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+23.04.2023 12:29:06.051 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+23.04.2023 12:29:06.051 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+23.04.2023 12:29:06.105 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+23.04.2023 12:29:06.105 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 813 ms
+23.04.2023 12:29:06.175 [main] INFO   c.z.h.HikariDataSource - HikariPool-1 - Starting...
+23.04.2023 12:29:06.335 [main] INFO   c.z.h.HikariDataSource - HikariPool-1 - Start completed.
+23.04.2023 12:29:06.431 [main] INFO   liquibase.database - Set default schema name to public
+23.04.2023 12:29:06.496 [main] INFO   l.lockservice - Successfully acquired change log lock
+23.04.2023 12:29:06.705 [main] INFO   liquibase.changelog - Reading from public.databasechangelog
+23.04.2023 12:29:06.797 [main] INFO   l.lockservice - Successfully released change log lock
+23.04.2023 12:29:06.800 [main] ERROR  o.s.b.w.e.t.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'authTokenFilter' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/jwt/AuthTokenFilter.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtUtils' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/jwt/JwtUtils.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userDetailsServiceImpl' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/UserDetailsServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'personRepository' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/repository/PersonRepository.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'liquibase' defined in class path resource [org/springframework/boot/autoconfigure/liquibase/LiquibaseAutoConfiguration$LiquibaseConfiguration.class]: Invocation of init method failed; nested exception is liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+23.04.2023 12:29:06.808 [main] INFO   o.a.c.c.StandardService - Stopping service [Tomcat]
+23.04.2023 12:29:06.810 [main] WARN   o.a.c.l.WebappClassLoaderBase - The web application [ROOT] appears to have started a thread named [HikariPool-1 housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base@11.0.18/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base@11.0.18/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:234)
+ java.base@11.0.18/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2123)
+ java.base@11.0.18/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1182)
+ java.base@11.0.18/java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:899)
+ java.base@11.0.18/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1054)
+ java.base@11.0.18/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1114)
+ java.base@11.0.18/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+ java.base@11.0.18/java.lang.Thread.run(Thread.java:829)
+23.04.2023 12:29:06.811 [main] WARN   o.a.c.l.WebappClassLoaderBase - The web application [ROOT] appears to have started a thread named [HikariPool-1 connection adder] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base@11.0.18/jdk.internal.misc.Unsafe.park(Native Method)
+ java.base@11.0.18/java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:234)
+ java.base@11.0.18/java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2123)
+ java.base@11.0.18/java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:458)
+ java.base@11.0.18/java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1053)
+ java.base@11.0.18/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1114)
+ java.base@11.0.18/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+ java.base@11.0.18/java.lang.Thread.run(Thread.java:829)
+23.04.2023 12:29:06.811 [main] WARN   o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+23.04.2023 12:29:06.812 [main] INFO   c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated...
+23.04.2023 12:29:06.817 [main] INFO   c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed.
+23.04.2023 12:29:06.822 [main] INFO   o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+23.04.2023 12:29:06.830 [main] ERROR  o.s.b.SpringApplication - Application run failed
+org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:161)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:545)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:755)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:402)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:312)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1247)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1236)
+	at socialnet.SocialNetApp.main(SocialNetApp.java:11)
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:142)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:104)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:440)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:193)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:178)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:158)
+	... 9 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'authTokenFilter' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/jwt/AuthTokenFilter.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtUtils' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/jwt/JwtUtils.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userDetailsServiceImpl' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/UserDetailsServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'personRepository' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/repository/PersonRepository.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'liquibase' defined in class path resource [org/springframework/boot/autoconfigure/liquibase/LiquibaseAutoConfiguration$LiquibaseConfiguration.class]: Invocation of init method failed; nested exception is liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:228)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:211)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:174)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:169)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:154)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:86)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:255)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:229)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:53)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:5161)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1384)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1374)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:140)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:909)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:829)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1384)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1374)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:140)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:909)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:262)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:930)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:486)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:123)
+	... 14 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtUtils' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/jwt/JwtUtils.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userDetailsServiceImpl' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/UserDetailsServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'personRepository' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/repository/PersonRepository.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'liquibase' defined in class path resource [org/springframework/boot/autoconfigure/liquibase/LiquibaseAutoConfiguration$LiquibaseConfiguration.class]: Invocation of init method failed; nested exception is liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:228)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 55 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userDetailsServiceImpl' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/security/UserDetailsServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'personRepository' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/repository/PersonRepository.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'liquibase' defined in class path resource [org/springframework/boot/autoconfigure/liquibase/LiquibaseAutoConfiguration$LiquibaseConfiguration.class]: Invocation of init method failed; nested exception is liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:228)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 69 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'personRepository' defined in file [/home/vitaliy/Общедоступные/javaproteams37backend/target/classes/socialnet/repository/PersonRepository.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'liquibase' defined in class path resource [org/springframework/boot/autoconfigure/liquibase/LiquibaseAutoConfiguration$LiquibaseConfiguration.class]: Invocation of init method failed; nested exception is liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:799)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:228)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1361)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1208)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 83 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'liquibase' defined in class path resource [org/springframework/boot/autoconfigure/liquibase/LiquibaseAutoConfiguration$LiquibaseConfiguration.class]: Invocation of init method failed; nested exception is liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1799)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:311)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:886)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:790)
+	... 97 common frames omitted
+Caused by: liquibase.exception.ValidationFailedException: Validation Failed:
+     1 changesets check sum
+          db/changelog/changelogset/populate-database.yaml::database_population::landsreyk was: 8:fda99f03765b277b3c9b6d74d12688ae but is now: 8:fd3661e11090e50480dcc274c5fcfde5
+
+	at liquibase.changelog.DatabaseChangeLog.validate(DatabaseChangeLog.java:345)
+	at liquibase.Liquibase.lambda$update$1(Liquibase.java:255)
+	at liquibase.Scope.lambda$child$0(Scope.java:180)
+	at liquibase.Scope.child(Scope.java:189)
+	at liquibase.Scope.child(Scope.java:179)
+	at liquibase.Scope.child(Scope.java:158)
+	at liquibase.Liquibase.runInScope(Liquibase.java:2445)
+	at liquibase.Liquibase.update(Liquibase.java:235)
+	at liquibase.Liquibase.update(Liquibase.java:220)
+	at liquibase.integration.spring.SpringLiquibase.performUpdate(SpringLiquibase.java:328)
+	at liquibase.integration.spring.SpringLiquibase.afterPropertiesSet(SpringLiquibase.java:283)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1858)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1795)
+	... 110 common frames omitted
+23.04.2023 12:30:33.998 [main] INFO   s.SocialNetApp - Starting SocialNetApp on Vitaliy-Mor with PID 21657 (/home/vitaliy/Общедоступные/javaproteams37backend/target/classes started by vitaliy in /home/vitaliy/Общедоступные/javaproteams37backend)
+23.04.2023 12:30:34.000 [main] INFO   s.SocialNetApp - The following profiles are active: vitaliy
+23.04.2023 12:30:34.664 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat initialized with port(s): 8086 (http)
+23.04.2023 12:30:34.668 [main] INFO   o.a.c.h.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8086"]
+23.04.2023 12:30:34.668 [main] INFO   o.a.c.c.StandardService - Starting service [Tomcat]
+23.04.2023 12:30:34.668 [main] INFO   o.a.c.c.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.46]
+23.04.2023 12:30:34.715 [main] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring embedded WebApplicationContext
+23.04.2023 12:30:34.715 [main] INFO   o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 693 ms
+23.04.2023 12:30:34.780 [main] INFO   c.z.h.HikariDataSource - HikariPool-1 - Starting...
+23.04.2023 12:30:34.919 [main] INFO   c.z.h.HikariDataSource - HikariPool-1 - Start completed.
+23.04.2023 12:30:35.002 [main] INFO   liquibase.database - Set default schema name to public
+23.04.2023 12:30:35.049 [main] INFO   l.lockservice - Successfully acquired change log lock
+23.04.2023 12:30:35.187 [main] INFO   liquibase.changelog - Creating database history table with name: public.databasechangelog
+23.04.2023 12:30:35.192 [main] INFO   liquibase.changelog - Reading from public.databasechangelog
+23.04.2023 12:30:35.311 [main] INFO   liquibase.changelog - Table persons created
+23.04.2023 12:30:35.313 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-persons-table.yaml::3(1)::Michael ran successfully in 12ms
+23.04.2023 12:30:35.318 [main] INFO   liquibase.changelog - Table post_comments created
+23.04.2023 12:30:35.318 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-post_comments-table.yaml::6(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.321 [main] INFO   liquibase.changelog - Table block_history created
+23.04.2023 12:30:35.322 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-block_history-table.yaml::2(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.325 [main] INFO   liquibase.changelog - Table post_files created
+23.04.2023 12:30:35.325 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-post_files-table.yaml::7(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.329 [main] INFO   liquibase.changelog - Table posts created
+23.04.2023 12:30:35.329 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-posts-table.yaml::8(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.332 [main] INFO   liquibase.changelog - Table likes created
+23.04.2023 12:30:35.332 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-likes-table.yaml::9(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.335 [main] INFO   liquibase.changelog - Table post2tag created
+23.04.2023 12:30:35.336 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-post2tag-table.yaml::10(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.339 [main] INFO   liquibase.changelog - Table tags created
+23.04.2023 12:30:35.340 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-tags-table.yaml::11(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.344 [main] INFO   liquibase.changelog - Table messages created
+23.04.2023 12:30:35.344 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-messages-table.yaml::12(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.347 [main] INFO   liquibase.changelog - Table dialogs created
+23.04.2023 12:30:35.347 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-dialogs-table.yaml::13(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.350 [main] INFO   liquibase.changelog - Table friendships created
+23.04.2023 12:30:35.350 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-friendships-table.yaml::14(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.353 [main] INFO   liquibase.changelog - Table notifications created
+23.04.2023 12:30:35.354 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-notifications-table.yaml::15(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.357 [main] INFO   liquibase.changelog - Table cities created
+23.04.2023 12:30:35.358 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-cities-table.yaml::16(2)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.361 [main] INFO   liquibase.changelog - Table countries created
+23.04.2023 12:30:35.361 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-countries-table.yaml::17(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.364 [main] INFO   liquibase.changelog - Table person_settings created
+23.04.2023 12:30:35.364 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-personal_settings-table.yaml::18(1)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.367 [main] INFO   liquibase.changelog - Table weather created
+23.04.2023 12:30:35.367 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-weather-table.yaml::19::Michael ran successfully in 2ms
+23.04.2023 12:30:35.370 [main] INFO   liquibase.changelog - Table currencies created
+23.04.2023 12:30:35.371 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-currencies-table.yaml::20(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.375 [main] INFO   liquibase.changelog - Table captcha created
+23.04.2023 12:30:35.375 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-captha-table.yaml::21(1)::Michael ran successfully in 3ms
+23.04.2023 12:30:35.377 [main] INFO   liquibase.changelog - Foreign key constraint added to block_history (comment_id)
+23.04.2023 12:30:35.378 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::2_1(2)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.379 [main] INFO   liquibase.changelog - Foreign key constraint added to block_history (person_id)
+23.04.2023 12:30:35.380 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::22::Michael ran successfully in 1ms
+23.04.2023 12:30:35.381 [main] INFO   liquibase.changelog - Foreign key constraint added to block_history (post_id)
+23.04.2023 12:30:35.382 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::23::Michael ran successfully in 1ms
+23.04.2023 12:30:35.384 [main] INFO   liquibase.changelog - Foreign key constraint added to cities (country_id)
+23.04.2023 12:30:35.385 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::161::Michael ran successfully in 2ms
+23.04.2023 12:30:35.387 [main] INFO   liquibase.changelog - Foreign key constraint added to dialogs (first_person_id)
+23.04.2023 12:30:35.387 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::131::Michael ran successfully in 1ms
+23.04.2023 12:30:35.389 [main] INFO   liquibase.changelog - Foreign key constraint added to dialogs (second_person_id)
+23.04.2023 12:30:35.389 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::132::Michael ran successfully in 1ms
+23.04.2023 12:30:35.391 [main] INFO   liquibase.changelog - Foreign key constraint added to dialogs (second_person_id)
+23.04.2023 12:30:35.392 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::133::Michael ran successfully in 2ms
+23.04.2023 12:30:35.394 [main] INFO   liquibase.changelog - Foreign key constraint added to friendships (dst_person_id)
+23.04.2023 12:30:35.394 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::141::Michael ran successfully in 1ms
+23.04.2023 12:30:35.396 [main] INFO   liquibase.changelog - Foreign key constraint added to friendships (src_person_id)
+23.04.2023 12:30:35.397 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::142::Michael ran successfully in 2ms
+23.04.2023 12:30:35.398 [main] INFO   liquibase.changelog - Foreign key constraint added to likes (person_id)
+23.04.2023 12:30:35.399 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::91::Michael ran successfully in 1ms
+23.04.2023 12:30:35.401 [main] INFO   liquibase.changelog - Foreign key constraint added to messages (author_id)
+23.04.2023 12:30:35.401 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::121::Michael ran successfully in 1ms
+23.04.2023 12:30:35.403 [main] INFO   liquibase.changelog - Foreign key constraint added to messages (dialog_id)
+23.04.2023 12:30:35.404 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::122::Michael ran successfully in 1ms
+23.04.2023 12:30:35.406 [main] INFO   liquibase.changelog - Foreign key constraint added to messages (recipient_id)
+23.04.2023 12:30:35.406 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::123::Michael ran successfully in 1ms
+23.04.2023 12:30:35.408 [main] INFO   liquibase.changelog - Foreign key constraint added to notifications (person_id)
+23.04.2023 12:30:35.408 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::151::Michael ran successfully in 1ms
+23.04.2023 12:30:35.410 [main] INFO   liquibase.changelog - Foreign key constraint added to post2tag (post_id)
+23.04.2023 12:30:35.411 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::101::Michael ran successfully in 2ms
+23.04.2023 12:30:35.412 [main] INFO   liquibase.changelog - Foreign key constraint added to post2tag (post_id)
+23.04.2023 12:30:35.413 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::102::Michael ran successfully in 1ms
+23.04.2023 12:30:35.414 [main] INFO   liquibase.changelog - Foreign key constraint added to post_comments (parent_id)
+23.04.2023 12:30:35.415 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::6_1(1)::Michael ran successfully in 1ms
+23.04.2023 12:30:35.417 [main] INFO   liquibase.changelog - Foreign key constraint added to post_comments (author_id)
+23.04.2023 12:30:35.418 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::62::Michael ran successfully in 1ms
+23.04.2023 12:30:35.419 [main] INFO   liquibase.changelog - Foreign key constraint added to post_comments (post_id)
+23.04.2023 12:30:35.420 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::63::Michael ran successfully in 1ms
+23.04.2023 12:30:35.422 [main] INFO   liquibase.changelog - Foreign key constraint added to post_files (post_id)
+23.04.2023 12:30:35.422 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::71::Michael ran successfully in 1ms
+23.04.2023 12:30:35.424 [main] INFO   liquibase.changelog - Foreign key constraint added to posts (author_id)
+23.04.2023 12:30:35.424 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::81::Michael ran successfully in 1ms
+23.04.2023 12:30:35.426 [main] INFO   liquibase.changelog - Foreign key fk_post2tag-tags dropped
+23.04.2023 12:30:35.427 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::10_2(2)::Michael ran successfully in 2ms
+23.04.2023 12:30:35.429 [main] INFO   liquibase.changelog - Foreign key constraint added to post2tag (tag_id)
+23.04.2023 12:30:35.429 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-fk-constraints.yaml::10_2(1)::Michael ran successfully in 1ms
+23.04.2023 12:30:35.432 [main] INFO   liquibase.changelog - Unique constraint added to persons(email)
+23.04.2023 12:30:35.433 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/add-constrains-persons-table.yaml::addUniqueConstraint-person_email::Michael ran successfully in 3ms
+23.04.2023 12:30:35.435 [main] INFO   liquibase.changelog - NOT NULL constraint "is_blocked_constraint" has been added to persons.is_blocked
+23.04.2023 12:30:35.436 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/add-constrains-persons-table.yaml::addNotNullConstraint-person-isBlocked::Michael ran successfully in 2ms
+23.04.2023 12:30:35.438 [main] INFO   liquibase.changelog - NOT NULL constraint "is_approved_constraint" has been added to persons.is_approved
+23.04.2023 12:30:35.439 [main] INFO   liquibase.changelog - NOT NULL constraint "is_deleted_constraint" has been added to persons.is_deleted
+23.04.2023 12:30:35.439 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/add-constrains-persons-table.yaml::addNotNullConstraint-person-isApproved::Michael ran successfully in 2ms
+23.04.2023 12:30:35.441 [main] INFO   liquibase.changelog - NOT NULL constraint "is_deleted_message_constraint" has been added to messages.is_deleted
+23.04.2023 12:30:35.442 [main] INFO   liquibase.changelog - NOT NULL constraint "is_read_nitification_constraint" has been added to notifications.is_read
+23.04.2023 12:30:35.443 [main] INFO   liquibase.changelog - NOT NULL constraint "comment_comment_notification_constraint" has been added to person_settings.comment_comment_notification
+23.04.2023 12:30:35.443 [main] INFO   liquibase.changelog - NOT NULL constraint "friend_birthday_notification_constraint" has been added to person_settings.friend_birthday_notification
+23.04.2023 12:30:35.444 [main] INFO   liquibase.changelog - NOT NULL constraint "like_notification_constraint" has been added to person_settings.like_notification
+23.04.2023 12:30:35.444 [main] INFO   liquibase.changelog - NOT NULL constraint "message_notification_constraint" has been added to person_settings.message_notification
+23.04.2023 12:30:35.445 [main] INFO   liquibase.changelog - NOT NULL constraint "post_comment_notification_constraint" has been added to person_settings.post_comment_notification
+23.04.2023 12:30:35.445 [main] INFO   liquibase.changelog - NOT NULL constraint "post_notification_constraint" has been added to person_settings.post_notification
+23.04.2023 12:30:35.446 [main] INFO   liquibase.changelog - NOT NULL constraint "is_blocked_post_comments_constraint" has been added to post_comments.is_blocked
+23.04.2023 12:30:35.446 [main] INFO   liquibase.changelog - NOT NULL constraint "is_deleted_post_comments_constraint" has been added to post_comments.is_deleted
+23.04.2023 12:30:35.447 [main] INFO   liquibase.changelog - NOT NULL constraint "is_blocked_posts_constraint" has been added to posts.is_blocked
+23.04.2023 12:30:35.447 [main] INFO   liquibase.changelog - NOT NULL constraint "is_deleted_posts_constraint" has been added to posts.is_deleted
+23.04.2023 12:30:35.448 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/add-constraints.yaml::addNotNullConstraints-all-tables::Michael ran successfully in 7ms
+23.04.2023 12:30:35.450 [main] INFO   liquibase.changelog - Foreign key fk_dialogs-message dropped
+23.04.2023 12:30:35.450 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/correct-fk_dialogs-message.yaml::1331::Michael ran successfully in 1ms
+23.04.2023 12:30:35.452 [main] INFO   liquibase.changelog - Foreign key constraint added to dialogs (last_message_id)
+23.04.2023 12:30:35.453 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/correct-fk_dialogs-message.yaml::1332::Michael ran successfully in 1ms
+23.04.2023 12:30:35.455 [main] INFO   liquibase.changelog - Foreign key fk_dialogs-message dropped
+23.04.2023 12:30:35.455 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/delete-fk_dialogs-message.yaml::1333::landsreyk ran successfully in 1ms
+23.04.2023 12:30:35.457 [main] INFO   liquibase.changelog - Columns friend_request(BOOLEAN) added to person_settings
+23.04.2023 12:30:35.457 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/add_table_for_person_settings.yaml::add_table_for_table_person_settings::Vitaliy ran successfully in 1ms
+23.04.2023 12:30:35.459 [main] INFO   liquibase.changelog - Table cities dropped
+23.04.2023 12:30:35.459 [main] INFO   liquibase.changelog - Table countries dropped
+23.04.2023 12:30:35.460 [main] INFO   liquibase.changelog - Table friendships dropped
+23.04.2023 12:30:35.461 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/delete-FriendsCountryCity.yaml::delete-FriendsCountryCity::isakov ran successfully in 3ms
+23.04.2023 12:30:35.465 [main] INFO   liquibase.changelog - Table friendships created
+23.04.2023 12:30:35.469 [main] INFO   liquibase.changelog - Table countries created
+23.04.2023 12:30:35.471 [main] INFO   liquibase.changelog - Table cities created
+23.04.2023 12:30:35.471 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/create-FriendsCountryCity-table.yaml::create-FriendsCountryCity::isakov ran successfully in 9ms
+23.04.2023 12:30:35.810 [main] INFO   liquibase.changelog - SQL in file data.sql executed
+23.04.2023 12:30:35.817 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/populate-database.yaml::database_population::landsreyk ran successfully in 343ms
+23.04.2023 12:30:35.849 [main] INFO   liquibase.changelog - SQL in file dataCountryAndCity.sql executed
+23.04.2023 12:30:35.849 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/populate-databaseFriendsCountryCity.yaml::populate-databaseFriendsCountryCity::isakov ran successfully in 31ms
+23.04.2023 12:30:35.851 [main] INFO   liquibase.changelog - Columns state(varchar(2)),lon(decimal),lat(decimal),open_weather_id(bigint),code2(varchar(2)),international_name(varchar(255)) added to cities
+23.04.2023 12:30:35.852 [main] INFO   liquibase.changelog - Columns gismeteo_id,district,sub_district dropped from cities
+23.04.2023 12:30:35.853 [main] INFO   liquibase.changelog - Unique constraint added to cities(open_weather_id)
+23.04.2023 12:30:35.854 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/m-cities-table-modify.yaml::cities-table::mets ran successfully in 4ms
+23.04.2023 12:30:35.862 [main] INFO   liquibase.changelog - Custom SQL executed
+23.04.2023 12:30:35.862 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/m-cities-table-trigger.sql::raw::includeAll ran successfully in 7ms
+23.04.2023 12:30:35.864 [main] INFO   liquibase.changelog - Custom SQL executed
+23.04.2023 12:30:35.864 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/m-storage-table.sql::raw::includeAll ran successfully in 1ms
+23.04.2023 12:30:35.873 [main] INFO   liquibase.changelog - Custom SQL executed
+23.04.2023 12:30:35.874 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/m-countries-table-modify.sql::raw::includeAll ran successfully in 9ms
+23.04.2023 12:30:36.345 [main] INFO   liquibase.changelog - Custom SQL executed
+23.04.2023 12:30:36.354 [main] INFO   liquibase.changelog - ChangeSet db/changelog/changelogset/m-ru-cities-adding.sql::raw::includeAll ran successfully in 479ms
+23.04.2023 12:30:36.357 [main] INFO   l.lockservice - Successfully released change log lock
+23.04.2023 12:30:36.605 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'clientInboundChannelExecutor'
+23.04.2023 12:30:36.612 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'clientOutboundChannelExecutor'
+23.04.2023 12:30:36.926 [main] INFO   o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'messageBrokerTaskScheduler'
+23.04.2023 12:30:36.944 [main] INFO   o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'brokerChannelExecutor'
+23.04.2023 12:30:37.047 [main] INFO   o.s.s.w.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5192b301, org.springframework.security.web.context.SecurityContextPersistenceFilter@6b9fc5c7, org.springframework.security.web.header.HeaderWriterFilter@5274acd1, org.springframework.web.filter.CorsFilter@1a99692, org.springframework.security.web.authentication.logout.LogoutFilter@6d94a966, socialnet.security.jwt.AuthTokenFilter@eb695e8, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6b30ff23, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@75559cd9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2a0881f1, org.springframework.security.web.session.SessionManagementFilter@612531a3, org.springframework.security.web.access.ExceptionTranslationFilter@5f7bd970, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2b441609]
+23.04.2023 12:30:37.276 [main] INFO   o.a.c.h.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8086"]
+23.04.2023 12:30:37.285 [main] INFO   o.s.b.w.e.t.TomcatWebServer - Tomcat started on port(s): 8086 (http) with context path ''
+23.04.2023 12:30:37.286 [main] INFO   o.s.m.s.b.SimpleBrokerMessageHandler - Starting...
+23.04.2023 12:30:37.286 [main] INFO   o.s.m.s.b.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+23.04.2023 12:30:37.286 [main] INFO   o.s.m.s.b.SimpleBrokerMessageHandler - Started.
+23.04.2023 12:30:37.290 [main] INFO   o.s.s.a.ScheduledAnnotationBeanPostProcessor - More than one TaskScheduler bean exists within the context, and none is named 'taskScheduler'. Mark one of them as primary or name it 'taskScheduler' (possibly as an alias); or implement the SchedulingConfigurer interface and call ScheduledTaskRegistrar#setScheduler explicitly within the configureTasks() callback: [defaultSockJsTaskScheduler, messageBrokerTaskScheduler]
+23.04.2023 12:30:37.294 [main] INFO   s.SocialNetApp - Started SocialNetApp in 3.487 seconds (JVM running for 3.925)
+23.04.2023 12:30:39.511 [http-nio-8086-exec-1] INFO   o.a.c.c.C.[.[.[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+23.04.2023 12:30:39.512 [http-nio-8086-exec-1] INFO   o.s.w.s.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+23.04.2023 12:30:39.517 [http-nio-8086-exec-1] INFO   o.s.w.s.DispatcherServlet - Completed initialization in 5 ms
+23.04.2023 12:30:44.044 [http-nio-8086-exec-3] INFO   s.s.l.LogConfig - Старт метода :getAllNotifications в классе: socialnet.service.NotificationsService результат: CommonRs(data=[NotificationRs(entityAuthor=PersonRs(about=Vestibulum rutrum rutrum neque., birthDate=2002-09-23 04:00:06.0, city=Jixiang, country=China, currency=null, email=akerwin2r@blinklist.com, firstName=Aeriell, friendStatus=null, id=100, isBlocked=false, isBlockedByCurrentUser=null, lastName=Kerwin, lastOnlineTime=2023-02-21 06:15:29.0, messagesPermission=augue, online=null, phone=542-480-2951, photo=mb33cqdudpirkoqlfb, regDate=2008-10-12 04:17:01.0, token=ymgdbv535, userDeleted=false, weather=null), id=37, info=null, notificationType=ante, sentTime=2022-05-05 04:57:45.0)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242244043, total=500)
+23.04.2023 12:30:44.044 [http-nio-8086-exec-1] INFO   s.s.l.LogConfig - Старт метода :findAllCountry в классе: socialnet.service.CountryService результат: [socialnet.dto.geolocation.GeolocationRs@107ad468, socialnet.dto.geolocation.GeolocationRs@f2a48a5, socialnet.dto.geolocation.GeolocationRs@6f81b82c, socialnet.dto.geolocation.GeolocationRs@68896f3b, socialnet.dto.geolocation.GeolocationRs@2e163fd6, socialnet.dto.geolocation.GeolocationRs@73a425d1, socialnet.dto.geolocation.GeolocationRs@1106b351, socialnet.dto.geolocation.GeolocationRs@3255e6fd, socialnet.dto.geolocation.GeolocationRs@2da287ee, socialnet.dto.geolocation.GeolocationRs@7f7aa526, socialnet.dto.geolocation.GeolocationRs@5b420da3, socialnet.dto.geolocation.GeolocationRs@46bd7a38, socialnet.dto.geolocation.GeolocationRs@7f1918f6, socialnet.dto.geolocation.GeolocationRs@55e0d1a6, socialnet.dto.geolocation.GeolocationRs@1e04f1ac, socialnet.dto.geolocation.GeolocationRs@33c524ee, socialnet.dto.geolocation.GeolocationRs@4ac44c8, socialnet.dto.geolocation.GeolocationRs@5712c81a, socialnet.dto.geolocation.GeolocationRs@6ea2cac5, socialnet.dto.geolocation.GeolocationRs@74da61ab, socialnet.dto.geolocation.GeolocationRs@1236e1fc, socialnet.dto.geolocation.GeolocationRs@5325a9b8, socialnet.dto.geolocation.GeolocationRs@2b29b5fb, socialnet.dto.geolocation.GeolocationRs@c594e0c, socialnet.dto.geolocation.GeolocationRs@29c5777a, socialnet.dto.geolocation.GeolocationRs@57d36393, socialnet.dto.geolocation.GeolocationRs@31b392ff, socialnet.dto.geolocation.GeolocationRs@775c93eb, socialnet.dto.geolocation.GeolocationRs@75a054dd, socialnet.dto.geolocation.GeolocationRs@39236e01, socialnet.dto.geolocation.GeolocationRs@14aa27b0, socialnet.dto.geolocation.GeolocationRs@77a3d05, socialnet.dto.geolocation.GeolocationRs@700b978b, socialnet.dto.geolocation.GeolocationRs@527abced, socialnet.dto.geolocation.GeolocationRs@172896b5, socialnet.dto.geolocation.GeolocationRs@41ec1340, socialnet.dto.geolocation.GeolocationRs@6df76339, socialnet.dto.geolocation.GeolocationRs@6a6d37be, socialnet.dto.geolocation.GeolocationRs@39a38978, socialnet.dto.geolocation.GeolocationRs@18f4fb1f, socialnet.dto.geolocation.GeolocationRs@4e4cad93, socialnet.dto.geolocation.GeolocationRs@4d1fa323, socialnet.dto.geolocation.GeolocationRs@68520bb1, socialnet.dto.geolocation.GeolocationRs@574139a7, socialnet.dto.geolocation.GeolocationRs@7cca36e9, socialnet.dto.geolocation.GeolocationRs@4c7c84e8, socialnet.dto.geolocation.GeolocationRs@340b1155, socialnet.dto.geolocation.GeolocationRs@6a598a72, socialnet.dto.geolocation.GeolocationRs@470984ae, socialnet.dto.geolocation.GeolocationRs@6f7a1363, socialnet.dto.geolocation.GeolocationRs@3172660, socialnet.dto.geolocation.GeolocationRs@25bb266a, socialnet.dto.geolocation.GeolocationRs@2e9cfa87, socialnet.dto.geolocation.GeolocationRs@11c2153c, socialnet.dto.geolocation.GeolocationRs@2bdc0542, socialnet.dto.geolocation.GeolocationRs@57a8ee25, socialnet.dto.geolocation.GeolocationRs@1e296e95, socialnet.dto.geolocation.GeolocationRs@1fc3e399, socialnet.dto.geolocation.GeolocationRs@547e0336, socialnet.dto.geolocation.GeolocationRs@44b7165a, socialnet.dto.geolocation.GeolocationRs@113f859f, socialnet.dto.geolocation.GeolocationRs@11e0630a, socialnet.dto.geolocation.GeolocationRs@3523a5b3, socialnet.dto.geolocation.GeolocationRs@49da608b, socialnet.dto.geolocation.GeolocationRs@24a41752, socialnet.dto.geolocation.GeolocationRs@36cec8ff, socialnet.dto.geolocation.GeolocationRs@1ee8fda8, socialnet.dto.geolocation.GeolocationRs@42c18c6, socialnet.dto.geolocation.GeolocationRs@b68196, socialnet.dto.geolocation.GeolocationRs@407f284f, socialnet.dto.geolocation.GeolocationRs@19238855, socialnet.dto.geolocation.GeolocationRs@7dad599f, socialnet.dto.geolocation.GeolocationRs@4923cd8d, socialnet.dto.geolocation.GeolocationRs@7027b9b6, socialnet.dto.geolocation.GeolocationRs@75c3e6c7, socialnet.dto.geolocation.GeolocationRs@62352841, socialnet.dto.geolocation.GeolocationRs@35adde2f, socialnet.dto.geolocation.GeolocationRs@788a3b25, socialnet.dto.geolocation.GeolocationRs@12150f2d, socialnet.dto.geolocation.GeolocationRs@59294a0e, socialnet.dto.geolocation.GeolocationRs@22eaba2, socialnet.dto.geolocation.GeolocationRs@2bd4fbd1, socialnet.dto.geolocation.GeolocationRs@1182f5e1, socialnet.dto.geolocation.GeolocationRs@268b4e5, socialnet.dto.geolocation.GeolocationRs@75ec6cb1, socialnet.dto.geolocation.GeolocationRs@796a1bae, socialnet.dto.geolocation.GeolocationRs@7f41d49f, socialnet.dto.geolocation.GeolocationRs@3849980e, socialnet.dto.geolocation.GeolocationRs@2ed6f252, socialnet.dto.geolocation.GeolocationRs@7c82b4d, socialnet.dto.geolocation.GeolocationRs@76dcf207, socialnet.dto.geolocation.GeolocationRs@2219d3a, socialnet.dto.geolocation.GeolocationRs@1bfcbb4e, socialnet.dto.geolocation.GeolocationRs@5da8793f, socialnet.dto.geolocation.GeolocationRs@4c75f447, socialnet.dto.geolocation.GeolocationRs@42b368be, socialnet.dto.geolocation.GeolocationRs@3ceb9d6d, socialnet.dto.geolocation.GeolocationRs@22946a4e, socialnet.dto.geolocation.GeolocationRs@41206597, socialnet.dto.geolocation.GeolocationRs@188f1395, socialnet.dto.geolocation.GeolocationRs@786ff51c, socialnet.dto.geolocation.GeolocationRs@79a82645, socialnet.dto.geolocation.GeolocationRs@3b66f83a, socialnet.dto.geolocation.GeolocationRs@5b954778, socialnet.dto.geolocation.GeolocationRs@5c559e03, socialnet.dto.geolocation.GeolocationRs@64f701c2, socialnet.dto.geolocation.GeolocationRs@68dc824e, socialnet.dto.geolocation.GeolocationRs@1983b6aa, socialnet.dto.geolocation.GeolocationRs@69d6961f, socialnet.dto.geolocation.GeolocationRs@35f363f6, socialnet.dto.geolocation.GeolocationRs@393159f4, socialnet.dto.geolocation.GeolocationRs@3d038e9e, socialnet.dto.geolocation.GeolocationRs@6038814f, socialnet.dto.geolocation.GeolocationRs@4e7ab26d, socialnet.dto.geolocation.GeolocationRs@7d37acaf, socialnet.dto.geolocation.GeolocationRs@5c61aae9, socialnet.dto.geolocation.GeolocationRs@78f76ad3, socialnet.dto.geolocation.GeolocationRs@6305467a, socialnet.dto.geolocation.GeolocationRs@2397dc61, socialnet.dto.geolocation.GeolocationRs@72f00c18, socialnet.dto.geolocation.GeolocationRs@31125167, socialnet.dto.geolocation.GeolocationRs@78edf7a9, socialnet.dto.geolocation.GeolocationRs@65044801, socialnet.dto.geolocation.GeolocationRs@17661875, socialnet.dto.geolocation.GeolocationRs@345cfa97, socialnet.dto.geolocation.GeolocationRs@239b130a, socialnet.dto.geolocation.GeolocationRs@64980338, socialnet.dto.geolocation.GeolocationRs@439a0a6e, socialnet.dto.geolocation.GeolocationRs@10c1c8c8, socialnet.dto.geolocation.GeolocationRs@6bb99a99, socialnet.dto.geolocation.GeolocationRs@4f1cc515, socialnet.dto.geolocation.GeolocationRs@5c466fe2, socialnet.dto.geolocation.GeolocationRs@425f6b2a, socialnet.dto.geolocation.GeolocationRs@65154caa, socialnet.dto.geolocation.GeolocationRs@4c080970, socialnet.dto.geolocation.GeolocationRs@235e566c, socialnet.dto.geolocation.GeolocationRs@1a617f16, socialnet.dto.geolocation.GeolocationRs@555e00ec, socialnet.dto.geolocation.GeolocationRs@5991d0be, socialnet.dto.geolocation.GeolocationRs@82d00d6, socialnet.dto.geolocation.GeolocationRs@1925570a, socialnet.dto.geolocation.GeolocationRs@3c597da2, socialnet.dto.geolocation.GeolocationRs@6b9a5eb7, socialnet.dto.geolocation.GeolocationRs@bd1c8a2, socialnet.dto.geolocation.GeolocationRs@38ff53d5, socialnet.dto.geolocation.GeolocationRs@4f3c9d05, socialnet.dto.geolocation.GeolocationRs@76ea0db3, socialnet.dto.geolocation.GeolocationRs@73fb4f14, socialnet.dto.geolocation.GeolocationRs@31d8cb45, socialnet.dto.geolocation.GeolocationRs@1a27bcce, socialnet.dto.geolocation.GeolocationRs@3c86bdac, socialnet.dto.geolocation.GeolocationRs@152cc6c7, socialnet.dto.geolocation.GeolocationRs@62d9b5c4, socialnet.dto.geolocation.GeolocationRs@45bfa49d, socialnet.dto.geolocation.GeolocationRs@4c5d1a5b, socialnet.dto.geolocation.GeolocationRs@3fb4e7e9, socialnet.dto.geolocation.GeolocationRs@10ec024e, socialnet.dto.geolocation.GeolocationRs@28cfd782, socialnet.dto.geolocation.GeolocationRs@c648f02, socialnet.dto.geolocation.GeolocationRs@1477bac8, socialnet.dto.geolocation.GeolocationRs@64f9347a, socialnet.dto.geolocation.GeolocationRs@325c8ca0, socialnet.dto.geolocation.GeolocationRs@1ae81976, socialnet.dto.geolocation.GeolocationRs@33e04119, socialnet.dto.geolocation.GeolocationRs@1e17e9fb, socialnet.dto.geolocation.GeolocationRs@48785f15, socialnet.dto.geolocation.GeolocationRs@1201dcc5, socialnet.dto.geolocation.GeolocationRs@2358bf15, socialnet.dto.geolocation.GeolocationRs@2a1c2b4, socialnet.dto.geolocation.GeolocationRs@8abb502, socialnet.dto.geolocation.GeolocationRs@1450b726, socialnet.dto.geolocation.GeolocationRs@729612ae, socialnet.dto.geolocation.GeolocationRs@7e2eda2a, socialnet.dto.geolocation.GeolocationRs@2bf86348, socialnet.dto.geolocation.GeolocationRs@3a000896, socialnet.dto.geolocation.GeolocationRs@78416e1a, socialnet.dto.geolocation.GeolocationRs@703614b2, socialnet.dto.geolocation.GeolocationRs@183ccbdf, socialnet.dto.geolocation.GeolocationRs@224234f6, socialnet.dto.geolocation.GeolocationRs@5100bf1a, socialnet.dto.geolocation.GeolocationRs@11d3a20c, socialnet.dto.geolocation.GeolocationRs@6f4ff1da, socialnet.dto.geolocation.GeolocationRs@5c998d41, socialnet.dto.geolocation.GeolocationRs@83501a7, socialnet.dto.geolocation.GeolocationRs@47a116f, socialnet.dto.geolocation.GeolocationRs@142bf11b, socialnet.dto.geolocation.GeolocationRs@4c8955a, socialnet.dto.geolocation.GeolocationRs@24d0845d, socialnet.dto.geolocation.GeolocationRs@70f508c1, socialnet.dto.geolocation.GeolocationRs@3b9d8ced, socialnet.dto.geolocation.GeolocationRs@7b3fbc81, socialnet.dto.geolocation.GeolocationRs@5bed2dd7, socialnet.dto.geolocation.GeolocationRs@386956b, socialnet.dto.geolocation.GeolocationRs@542b9b12, socialnet.dto.geolocation.GeolocationRs@5276eea2, socialnet.dto.geolocation.GeolocationRs@60c7f2ae, socialnet.dto.geolocation.GeolocationRs@575d1e10, socialnet.dto.geolocation.GeolocationRs@5f26fce2, socialnet.dto.geolocation.GeolocationRs@3ac00a5a, socialnet.dto.geolocation.GeolocationRs@65cdcd2e, socialnet.dto.geolocation.GeolocationRs@5a5fe219, socialnet.dto.geolocation.GeolocationRs@32f6d45c, socialnet.dto.geolocation.GeolocationRs@8de8a82, socialnet.dto.geolocation.GeolocationRs@3f1920a, socialnet.dto.geolocation.GeolocationRs@269be747, socialnet.dto.geolocation.GeolocationRs@22cb93fc, socialnet.dto.geolocation.GeolocationRs@5ebd97bd, socialnet.dto.geolocation.GeolocationRs@51d33fa2, socialnet.dto.geolocation.GeolocationRs@280b4b00, socialnet.dto.geolocation.GeolocationRs@56a1698e, socialnet.dto.geolocation.GeolocationRs@64130c98, socialnet.dto.geolocation.GeolocationRs@2cf50197, socialnet.dto.geolocation.GeolocationRs@5ed40c42, socialnet.dto.geolocation.GeolocationRs@3e4e30f, socialnet.dto.geolocation.GeolocationRs@7f6f5827, socialnet.dto.geolocation.GeolocationRs@7b9207e4, socialnet.dto.geolocation.GeolocationRs@55ab2c8, socialnet.dto.geolocation.GeolocationRs@2182c5f7, socialnet.dto.geolocation.GeolocationRs@24a91f80, socialnet.dto.geolocation.GeolocationRs@4f6f91d6, socialnet.dto.geolocation.GeolocationRs@1ff3a601, socialnet.dto.geolocation.GeolocationRs@28e97575, socialnet.dto.geolocation.GeolocationRs@44d02af7, socialnet.dto.geolocation.GeolocationRs@7702f29a, socialnet.dto.geolocation.GeolocationRs@754381d5, socialnet.dto.geolocation.GeolocationRs@16e210d5, socialnet.dto.geolocation.GeolocationRs@5320176c, socialnet.dto.geolocation.GeolocationRs@3356b9b0, socialnet.dto.geolocation.GeolocationRs@5a72db26, socialnet.dto.geolocation.GeolocationRs@5c900c05, socialnet.dto.geolocation.GeolocationRs@fd8fb8c, socialnet.dto.geolocation.GeolocationRs@9c558fe, socialnet.dto.geolocation.GeolocationRs@45a2090b, socialnet.dto.geolocation.GeolocationRs@190ed59e, socialnet.dto.geolocation.GeolocationRs@51c249a8, socialnet.dto.geolocation.GeolocationRs@7263f9c6, socialnet.dto.geolocation.GeolocationRs@27dc4cd0, socialnet.dto.geolocation.GeolocationRs@4811cf90, socialnet.dto.geolocation.GeolocationRs@b5d4033, socialnet.dto.geolocation.GeolocationRs@669d3557, socialnet.dto.geolocation.GeolocationRs@23e25f98, socialnet.dto.geolocation.GeolocationRs@6549793b, socialnet.dto.geolocation.GeolocationRs@474e179, socialnet.dto.geolocation.GeolocationRs@b4c4b2d, socialnet.dto.geolocation.GeolocationRs@3a63db43, socialnet.dto.geolocation.GeolocationRs@144ded95, socialnet.dto.geolocation.GeolocationRs@3711b94c, socialnet.dto.geolocation.GeolocationRs@5eed89a0, socialnet.dto.geolocation.GeolocationRs@7af0e8fd]
+23.04.2023 12:30:45.713 [http-nio-8086-exec-4] INFO   s.s.l.LogConfig - Старт метода :getWeatherByCity в классе: socialnet.service.WeatherService результат: WeatherRs(city=Arrondissement de Bourg-en-Bresse, clouds=overcast clouds, date=2023-04-23, temp=16)
+23.04.2023 12:30:46.013 [http-nio-8086-exec-4] INFO   s.s.l.LogConfig - Старт метода :getCurrency в классе: socialnet.service.CurrencyService результат: CurrencyRs(euro=null, usd=null)
+23.04.2023 12:30:46.013 [http-nio-8086-exec-4] INFO   s.s.l.LogConfig - Старт метода :getMyProfile в классе: socialnet.service.PersonService результат: CommonRs(data=PersonRs(about=A rookie, who started his day with a wrong foot., birthDate=1972-11-14 21:25:19.0, city=Bourg-en-Bresse, country=France, currency=CurrencyRs(euro=null, usd=null), email=user1@email.com, firstName=Leon, friendStatus=null, id=1, isBlocked=false, isBlockedByCurrentUser=false, lastName=Kennedy, lastOnlineTime=2022-07-21 14:45:29.0, messagesPermission=adipiscing, online=true, phone=966-998-0544, photo=go86atavdxhcvcagbv, regDate=2000-07-26 16:21:43.0, token=null, userDeleted=false, weather=WeatherRs(city=Arrondissement de Bourg-en-Bresse, clouds=overcast clouds, date=2023-04-23, temp=16)), itemPerPage=20, offset=0, perPage=20, timestamp=1682242246013, total=0)
+23.04.2023 12:30:46.047 [http-nio-8086-exec-6] INFO   s.s.l.LogConfig - Старт метода :getCitiesByCountry в классе: socialnet.service.CityService результат: []
+23.04.2023 12:30:46.881 [http-nio-8086-exec-1] INFO   s.s.l.LogConfig - Старт метода :putNotifications в классе: socialnet.service.NotificationsService результат: CommonRs(data=[NotificationRs(entityAuthor=PersonRs(about=A rookie, who started his day with a wrong foot., birthDate=1972-11-14 21:25:19.0, city=Bourg-en-Bresse, country=France, currency=null, email=user1@email.com, firstName=Leon, friendStatus=null, id=1, isBlocked=false, isBlockedByCurrentUser=null, lastName=Kennedy, lastOnlineTime=2022-07-21 14:45:29.0, messagesPermission=adipiscing, online=null, phone=966-998-0544, photo=go86atavdxhcvcagbv, regDate=2000-07-26 16:21:43.0, token=xfolip091, userDeleted=false, weather=null), id=37, info=null, notificationType=ante, sentTime=2022-05-05 04:57:45.0)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242246881, total=500)
+23.04.2023 12:30:46.893 [http-nio-8086-exec-4] INFO   s.s.l.LogConfig - Старт метода :getAllNotifications в классе: socialnet.service.NotificationsService результат: CommonRs(data=[], itemPerPage=20, offset=0, perPage=20, timestamp=1682242246893, total=500)
+23.04.2023 12:30:47.798 [http-nio-8086-exec-8] INFO   s.s.l.LogConfig - Старт метода :getNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=[PersonSettingsRs(enable=true, type=COMMENT_COMMENT), PersonSettingsRs(enable=false, type=FRIEND_BIRTHDAY), PersonSettingsRs(enable=false, type=FRIEND_REQUEST), PersonSettingsRs(enable=true, type=MESSAGE), PersonSettingsRs(enable=false, type=POST), PersonSettingsRs(enable=false, type=POST_COMMENT), PersonSettingsRs(enable=true, type=POST_LIKE)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242247798, total=500)
+23.04.2023 12:30:49.087 [http-nio-8086-exec-1] INFO   s.s.l.LogConfig - Старт метода :putNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=ComplexRs(count=0, id=0, message=string, messageId=0), itemPerPage=20, offset=0, perPage=20, timestamp=1682242249087, total=500)
+23.04.2023 12:30:49.122 [http-nio-8086-exec-4] INFO   s.s.l.LogConfig - Старт метода :getNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=[PersonSettingsRs(enable=true, type=COMMENT_COMMENT), PersonSettingsRs(enable=false, type=FRIEND_BIRTHDAY), PersonSettingsRs(enable=false, type=FRIEND_REQUEST), PersonSettingsRs(enable=true, type=MESSAGE), PersonSettingsRs(enable=true, type=POST), PersonSettingsRs(enable=false, type=POST_COMMENT), PersonSettingsRs(enable=true, type=POST_LIKE)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242249122, total=500)
+23.04.2023 12:30:49.920 [http-nio-8086-exec-7] INFO   s.s.l.LogConfig - Старт метода :putNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=ComplexRs(count=0, id=0, message=string, messageId=0), itemPerPage=20, offset=0, perPage=20, timestamp=1682242249920, total=500)
+23.04.2023 12:30:49.933 [http-nio-8086-exec-8] INFO   s.s.l.LogConfig - Старт метода :getNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=[PersonSettingsRs(enable=true, type=COMMENT_COMMENT), PersonSettingsRs(enable=false, type=FRIEND_BIRTHDAY), PersonSettingsRs(enable=false, type=FRIEND_REQUEST), PersonSettingsRs(enable=true, type=MESSAGE), PersonSettingsRs(enable=true, type=POST), PersonSettingsRs(enable=true, type=POST_COMMENT), PersonSettingsRs(enable=true, type=POST_LIKE)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242249932, total=500)
+23.04.2023 12:30:51.258 [http-nio-8086-exec-9] INFO   s.s.l.LogConfig - Старт метода :putNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=ComplexRs(count=0, id=0, message=string, messageId=0), itemPerPage=20, offset=0, perPage=20, timestamp=1682242251258, total=500)
+23.04.2023 12:30:51.307 [http-nio-8086-exec-1] INFO   s.s.l.LogConfig - Старт метода :getNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=[PersonSettingsRs(enable=true, type=COMMENT_COMMENT), PersonSettingsRs(enable=false, type=FRIEND_BIRTHDAY), PersonSettingsRs(enable=true, type=FRIEND_REQUEST), PersonSettingsRs(enable=true, type=MESSAGE), PersonSettingsRs(enable=true, type=POST), PersonSettingsRs(enable=true, type=POST_COMMENT), PersonSettingsRs(enable=true, type=POST_LIKE)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242251307, total=500)
+23.04.2023 12:31:01.210 [http-nio-8086-exec-7] INFO   s.s.l.LogConfig - Старт метода :putNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=ComplexRs(count=0, id=0, message=string, messageId=0), itemPerPage=20, offset=0, perPage=20, timestamp=1682242261210, total=500)
+23.04.2023 12:31:01.240 [http-nio-8086-exec-8] INFO   s.s.l.LogConfig - Старт метода :getNotificationByPerson в классе: socialnet.service.NotificationsService результат: CommonRs(data=[PersonSettingsRs(enable=true, type=COMMENT_COMMENT), PersonSettingsRs(enable=true, type=FRIEND_BIRTHDAY), PersonSettingsRs(enable=true, type=FRIEND_REQUEST), PersonSettingsRs(enable=true, type=MESSAGE), PersonSettingsRs(enable=true, type=POST), PersonSettingsRs(enable=true, type=POST_COMMENT), PersonSettingsRs(enable=true, type=POST_LIKE)], itemPerPage=20, offset=0, perPage=20, timestamp=1682242261240, total=500)
+23.04.2023 12:31:08.964 [SpringContextShutdownHook] INFO   o.s.m.s.b.SimpleBrokerMessageHandler - Stopping...
+23.04.2023 12:31:08.964 [SpringContextShutdownHook] INFO   o.s.m.s.b.SimpleBrokerMessageHandler - BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [DefaultSubscriptionRegistry[cache[0 destination(s)], registry[0 sessions]]]]
+23.04.2023 12:31:08.964 [SpringContextShutdownHook] INFO   o.s.m.s.b.SimpleBrokerMessageHandler - Stopped.
+23.04.2023 12:31:10.994 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'brokerChannelExecutor'
+23.04.2023 12:31:10.994 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'messageBrokerTaskScheduler'
+23.04.2023 12:31:10.995 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'clientOutboundChannelExecutor'
+23.04.2023 12:31:10.995 [SpringContextShutdownHook] INFO   o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'clientInboundChannelExecutor'
+23.04.2023 12:31:10.997 [SpringContextShutdownHook] INFO   c.z.h.HikariDataSource - HikariPool-1 - Shutdown initiated...
+23.04.2023 12:31:11.001 [SpringContextShutdownHook] INFO   c.z.h.HikariDataSource - HikariPool-1 - Shutdown completed.

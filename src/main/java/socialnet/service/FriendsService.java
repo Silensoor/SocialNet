@@ -9,11 +9,13 @@ import socialnet.mappers.PersonMapper;
 import socialnet.model.Friendships;
 import socialnet.model.Notification;
 import socialnet.model.Person;
+import socialnet.model.PersonSettings;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
+import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.service.notifications.NotificationPusher;
+import socialnet.utils.NotificationPusher;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,8 +26,8 @@ public class FriendsService {
 
     private final JwtUtils jwtUtils;
     private final PersonRepository personRepository;
-
     private final FriendsShipsRepository friendsShipsRepository;
+    private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
@@ -421,11 +423,12 @@ public class FriendsService {
                 friendsShipsRepository.updateFriend(Long.valueOf(id), idFriendshipRequest, "REQUEST",
                         idFriendshipRequest);
             }
-
-            Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
-                    (long)id,personsEmail.getId());
-            NotificationPusher.sendPush(notification,personsEmail.getId());
-
+            PersonSettings personSettings = personSettingRepository.getPersonSettings(id.longValue());
+            if (personSettings.getFriendRequest()) {
+                Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
+                        (long) id, personsEmail.getId());
+                NotificationPusher.sendPush(notification, personsEmail.getId());
+            }
             return fillingCommonRsComplexRs(id);
         }
     }
