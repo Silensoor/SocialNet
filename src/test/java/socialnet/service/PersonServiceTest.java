@@ -8,16 +8,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.test.util.ReflectionTestUtils;
 import socialnet.AbstractTest;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.CurrencyRs;
 import socialnet.api.response.PersonRs;
+import socialnet.api.response.WeatherRs;
+import socialnet.mappers.PersonMapper;
+import socialnet.mappers.UserDtoMapper;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
@@ -33,18 +39,38 @@ class PersonServiceTest extends AbstractTest {
     @Autowired
     private PersonRepository personRepository;
 
+    @Mock
+    private WeatherService weatherService;
+
+    @Mock
+    private CurrencyService currencyService;
+
+    private UserDtoMapper userDtoMapper;
+
     private PersonService personService;
 
     @BeforeEach
     void setUp() {
-        personService = new PersonService(jwtUtils, authenticationManager, personRepository);
+        personService = new PersonService(
+                jwtUtils,
+                authenticationManager,
+                personRepository,
+                weatherService,
+                currencyService,
+                userDtoMapper);
     }
 
     @Test
-    void getMeOnSuccess() {
+    void getMyProfileOnSuccess() {
+        WeatherRs weatherRs = new WeatherRs("city", "clouds", "date", "temp");
+        CurrencyRs currencyRs = new CurrencyRs("eur", "usd");
+        String token = "tokenJWT";
         doReturn("user1@email.com").when(jwtUtils).getUserEmail(anyString());
+        doReturn(weatherRs).when(weatherService).getWeatherByCity(anyString());
+        doReturn(currencyRs).when(currencyService).getCurrency(any(LocalDate.class));
+        ReflectionTestUtils.setField(personService, "jwt", token);
 
-        CommonRs<PersonRs> result = (CommonRs<PersonRs>) personService.getMe("some_token");
+        CommonRs<PersonRs> result = personService.getMyProfile("some_token");
 
         PersonRs actualPerson = result.getData();
 
@@ -53,10 +79,9 @@ class PersonServiceTest extends AbstractTest {
         expectedPerson.setBirthDate(Timestamp.valueOf("1972-11-14 21:25:19"));
         expectedPerson.setCity("Bourg-en-Bresse");
         expectedPerson.setCountry("France");
-        expectedPerson.setCurrency(new CurrencyRs());
         expectedPerson.setEmail("user1@email.com");
         expectedPerson.setFirstName("Leon");
-        expectedPerson.setFriendStatus(StringUtils.EMPTY);
+        expectedPerson.setFriendStatus(null);
         expectedPerson.setId(1L);
         expectedPerson.setIsBlocked(false);
         expectedPerson.setIsBlockedByCurrentUser(false);
@@ -67,9 +92,10 @@ class PersonServiceTest extends AbstractTest {
         expectedPerson.setPhone("966-998-0544");
         expectedPerson.setPhoto("go86atavdxhcvcagbv");
         expectedPerson.setRegDate(Timestamp.valueOf("2000-07-26 16:21:43"));
-        expectedPerson.setToken("xfolip091");
+        expectedPerson.setToken(token);
         expectedPerson.setUserDeleted(false);
-        expectedPerson.setWeather(actualPerson.getWeather());
+        expectedPerson.setWeather(weatherRs);
+        expectedPerson.setCurrency(currencyRs);
 
         assertEquals(expectedPerson, actualPerson);
     }
