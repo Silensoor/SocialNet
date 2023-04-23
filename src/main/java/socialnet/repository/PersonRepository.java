@@ -15,6 +15,7 @@ import socialnet.utils.Reflection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -163,7 +164,7 @@ public class PersonRepository {
     };
 
     public void setPhoto(String photoHttpLink, Long userId) {
-        int rowCount = jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
+        jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
     }
 
     public Boolean setPassword(Long userId, String password) {
@@ -182,12 +183,15 @@ public class PersonRepository {
                 email);
     }
 
-    public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[] {email});
-        String sql = "Update Persons Set " + sqlParam.get("sql") + " where email = ?";
-        Object[] values = (Object[]) sqlParam.get("values");
+    public Long getPersonIdByEmail(String email) {
+        return jdbcTemplate.queryForObject("Select id from Persons where email = ?",
+                new Object[] {email}, Long.class);
+    }
 
-        jdbcTemplate.update(sql, values);
+    public void updatePersonInfo(UserUpdateDto userData, String email) {
+        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[]{email});
+        jdbcTemplate.update("Update Persons Set " + sqlParam.get("sql") + " where email = ?",
+                (Object[]) sqlParam.get("values"));
     }
 
 

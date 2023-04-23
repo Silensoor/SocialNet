@@ -2,9 +2,9 @@ package socialnet.service;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import socialnet.api.response.CommonRs;
 import socialnet.model.Person;
@@ -15,10 +15,7 @@ import socialnet.repository.StorageRepository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.apache.http.entity.ContentType.*;
 
@@ -29,13 +26,22 @@ public class StorageService {
     private final PersonRepository personRepository;
     private final StorageRepository storageRepository;
     private final AmazonService amazonService;
+    private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
     @Value("${s3.bucket}")
     private String bucket;
 
-    @Transactional
-    public CommonRs photoUpload(String fileType, MultipartFile file) throws IOException {
-        if ((file.getSize() == 0) || (!isImage(file)))
-            return new CommonRs<>(new Storage());
+    public CommonRs<Storage> photoUpload(String fileType, MultipartFile file) throws IOException {
+
+        if (file == null) { //загрузка из Yandex Object Storage
+            var personId = personService.getAuthPersonId();
+            var photoUrl = storageRepository.getUserPhotoUrl(personId);
+
+            return photoUrl.map(url -> new CommonRs<>(getPhotoUrl(personId, url)))
+                    .orElseGet(() -> new CommonRs<>(getPhotoUrl(personId, null)));
+        }
+
+//        if (!isImage(file))
+//            return new CommonRs<>(new Storage());
 
         String uniqueFileName = generateUniqueFileName(file);
 
@@ -79,5 +85,16 @@ public class StorageService {
         UUID uuid = UUID.randomUUID();
         String fileName = file.getOriginalFilename();
         return String.format("%s/%s/%s", "users_photo", uuid, fileName);
+    }
+
+    private Storage getPhotoUrl(Long personId, String url) {
+        if (url == null) url = textProperties.getString("default.photo");
+        return new Storage(
+                personId,
+                url,
+                0L,
+                "IMAGE",
+                LocalDateTime.now()
+        );
     }
 }

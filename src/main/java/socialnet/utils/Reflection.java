@@ -70,8 +70,9 @@ public class Reflection {
         String values = "";
 
         for (Field field : object.getClass().getDeclaredFields()) {
+            String fieldName = getSqlName(field.getName());
             if (!field.getName().equalsIgnoreCase(excludeField)) {
-                result = result.concat(delemitter).concat(field.getName());
+                result = result.concat(delemitter).concat(fieldName);
                 values += delemitter.concat(" ?");
                 delemitter = ", ";
             }
