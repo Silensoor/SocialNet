@@ -3,6 +3,7 @@ package socialnet.service;
 import com.github.cage.Cage;
 import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CaptchaRs;
 import socialnet.model.Captcha;
@@ -18,7 +19,7 @@ public class CaptchaService {
 
     public CaptchaRs getCaptchaData() {
         Cage cage = new GCage();
-        String code = cage.getTokenGenerator().next();
+        String code = RandomStringUtils.randomNumeric(5);
         String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(cage.draw(code));
 
         Captcha captcha = new Captcha();

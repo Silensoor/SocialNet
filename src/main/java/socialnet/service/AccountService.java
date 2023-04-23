@@ -24,6 +24,18 @@ public class AccountService {
     public RegisterRs getRegisterData(RegisterRq regRequest) {
         validateFields(regRequest);
 
+        personRepository.save(getPerson(regRequest));
+
+        RegisterRs registerRs = new RegisterRs();
+        ComplexRs complexRs = ComplexRs.builder().message("OK").build();
+        registerRs.setData(complexRs);
+        registerRs.setEmail(regRequest.getEmail());
+        registerRs.setTimestamp((int) System.currentTimeMillis());
+
+        return registerRs;
+    }
+
+    private Person getPerson(RegisterRq regRequest) {
         Person person = new Person();
         person.setEmail(regRequest.getEmail());
         person.setFirstName(regRequest.getFirstName());
@@ -34,15 +46,7 @@ public class AccountService {
         person.setIsBlocked(false);
         person.setIsDeleted(false);
 
-        personRepository.save(person);
-
-        RegisterRs registerRs = new RegisterRs();
-        ComplexRs complexRs = ComplexRs.builder().message("OK").build();
-        registerRs.setData(complexRs);
-        registerRs.setEmail(regRequest.getEmail());
-        registerRs.setTimestamp((int) System.currentTimeMillis());
-
-        return registerRs;
+        return person;
     }
 
     private void validateFields(RegisterRq regRequest) {

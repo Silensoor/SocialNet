@@ -7,5 +7,5 @@ Dockerfile
 /.jpb/
 application-dim.yml
 .gitlab-ci.yml
-
-
+src/main/resources/application.yaml
+logs/

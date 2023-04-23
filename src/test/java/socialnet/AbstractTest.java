@@ -24,15 +24,15 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public abstract class AbstractTest {
     @ClassRule
     public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14")
-            .withReuse(true);
+        .withReuse(true);
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
         public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues.of(
-                    "spring.datasource.url=" + container.getJdbcUrl(),
-                    "spring.datasource.username=" + container.getUsername(),
-                    "spring.datasource.password=" + container.getPassword()
+                "spring.datasource.url=" + container.getJdbcUrl(),
+                "spring.datasource.username=" + container.getUsername(),
+                "spring.datasource.password=" + container.getPassword()
             ).applyTo(configurableApplicationContext);
         }
     }
