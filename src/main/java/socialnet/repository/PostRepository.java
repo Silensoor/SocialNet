@@ -11,7 +11,6 @@ import socialnet.exception.PostException;
 import socialnet.model.Post;
 import socialnet.model.Post2Tag;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.*;
 

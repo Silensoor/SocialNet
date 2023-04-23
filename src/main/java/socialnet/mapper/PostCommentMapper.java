@@ -6,7 +6,6 @@ import socialnet.api.response.CommentRs;
 import socialnet.model.Comment;
 import socialnet.model.Like;
 import socialnet.model.Person;
-import socialnet.model.PostComment;
 
 import java.util.List;
 

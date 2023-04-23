@@ -6,13 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import socialnet.controller.PostsController;
 import socialnet.security.jwt.JwtUtils;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 public class PostsControllerTest extends AbstractTest {
     @Autowired
     private PostsController postsController;
