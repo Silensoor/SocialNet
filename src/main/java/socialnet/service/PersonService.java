@@ -26,7 +26,6 @@ import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 
