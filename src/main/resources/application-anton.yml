@@ -21,3 +21,5 @@ weather:
   apiKey: 3d29686077f7a60e5b5714b659a688dd
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
+  deletePostsInterval: 0 0 1 * * *
+  deleteLikesInterval: 0 0 1 * * *
