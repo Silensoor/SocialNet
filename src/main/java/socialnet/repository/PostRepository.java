@@ -11,7 +11,6 @@ import socialnet.exception.PostException;
 import socialnet.model.Post;
 import socialnet.model.Post2Tag;
 
-import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -27,7 +26,11 @@ public class PostRepository {
     }
 
     public List<Post> findAll(int offset, int perPage) {
-        return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET " + offset + " ROWS LIMIT " + perPage, postRowMapper);
+        try {
+            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public int save(Post post) {

@@ -9,7 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: testtest55
-    url: jdbc:postgresql://localhost:5432/test
+    url: jdbc:postgresql://localhost:5432/public
 
 auth:
   secret: socialNet
@@ -23,6 +23,8 @@ socialnet:
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
+  deletePostsInterval: 0 0 1 * * *
+  deleteLikesInterval: 0 0 1 * * *
 
 s3:
   accessKey: YCAJE83YiyNT766OLADHNeObE

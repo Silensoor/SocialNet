@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import socialnet.repository.CaptchaRepository;
+import socialnet.service.PostService;
 
 @Component
 @EnableAsync
@@ -18,4 +19,5 @@ public class RemoveOldCaptchasSchedule {
     public void removeOldCaptchas() {
         captchaRepository.removeOldCaptchas();
     }
+
 }

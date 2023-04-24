@@ -1,6 +1,7 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,10 +26,12 @@ import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.time.LocalDate;
+import java.util.ResourceBundle;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Validated
 public class PersonService {
     private final JwtUtils jwtUtils;
@@ -40,32 +43,41 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final UserDtoMapper userDtoMapper;
 
-    public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
+    private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
-        Person person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword());
+    public Object getLogin(LoginRq loginRq) {
 
-        jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
-        authenticated(loginRq);
-        PersonRs personRs = personMapper.toDTO(person);
-        personRs.setToken(jwt);
-        personRs.setOnline(true);
-        personRs.setIsBlockedByCurrentUser(false);
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-
-        return new CommonRs<>(personRs);
+        Person person;
+        if ((person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
+            jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
+            authenticated(loginRq);
+            PersonRs personRs = personMapper.toDTO(person);
+            changePersonStatus(personRs);
+            return new CommonRs<>(personRs);
+        } else {
+            throw new EmptyEmailException("invalid username or password");
+        }
     }
 
     public CommonRs<PersonRs> getMyProfile(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
         PersonRs personRs = personMapper.toDTO(person);
+        changePersonStatus(personRs);
+        return new CommonRs<>(personRs);
+    }
+
+    private void changePersonStatus(PersonRs personRs) {
         personRs.setToken(jwt);
         personRs.setOnline(true);
         personRs.setIsBlockedByCurrentUser(false);
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setIsBlockedByCurrentUser(false);
+        personRs.setWeather(weatherService.getWeatherByCity(personRs.getCity()));
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-        return new CommonRs<>(personRs);
+        if (personRs.getPhoto() == null) {
+            personRs.setPhoto(textProperties.getString("default.photo"));
+        }
+
     }
 
     public ResponseEntity<?> getUserInfo(String authorization) {
@@ -93,19 +105,15 @@ public class PersonService {
         return ResponseEntity.ok(new CommonRs(personRs));
     }
 
-    public CommonRs<ComplexRs> getLogout(String authorization) {
+    public Object getLogout(String authorization) {
 
-        return new CommonRs<>(setComplexRs());
+        return setCommonRs(setComplexRs());
     }
 
-    public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
+    public Object getUserById(String authorization, Integer id) {
         Person person = findUser(id);
         PersonRs personRs = personMapper.toDTO(person);
-        personRs.setToken(jwt);
-        personRs.setOnline(true);
-        personRs.setIsBlockedByCurrentUser(false);
-        personRs.setWeather(weatherService.getWeatherByCity("Sochi"));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+        changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
 
@@ -139,21 +147,21 @@ public class PersonService {
         return personRepository.getPersonByEmail(email);
     }
 
+    public Long getAuthPersonId() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return personRepository.getPersonIdByEmail(email);
+    }
+
+
     public Person checkLoginAndPassword(String email, String password) {
 
         Person person = personRepository.findByEmail(email);
 
-        if (person == null) {
-
-            throw new EmptyEmailException("Email is not registered");
+        if (person != null && new BCryptPasswordEncoder().matches(password, person.getPassword())) {
+            log.info(person.getFirstName() + " авторизован");
+            return person;
         }
-
-        if (!new BCryptPasswordEncoder().matches(password, person.getPassword())) {
-
-            throw new EmptyEmailException("Incorrect password");
-        }
-
-        return person;
+        return null;
     }
 
     private void authenticated(LoginRq loginRq) {
@@ -164,25 +172,18 @@ public class PersonService {
 
     public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
 
-        if (!jwtUtils.validateJwtToken(authorization)) {//401
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        Person person = personRepository.findByEmail(jwtUtils.getUserEmail(authorization));
 
-        String userName = jwtUtils.getUserEmail(authorization);
-        if (userName.isEmpty()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("EmptyEmailException","Field 'email' is empty"),
-                    HttpStatus.BAD_REQUEST);  //400
-        }
-
-        Person person = personRepository.findByEmail(userName);
         if (person.getIsBlocked()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
         PersonRs personRs = personMapper.toDTO(person);
-
         UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
+
+        userUpdateDto.setPhoto(person.getPhoto());
+        if (userUpdateDto.getPhoto() == null)
+            userUpdateDto.setPhoto(textProperties.getString("default.photo"));
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 

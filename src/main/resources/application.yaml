@@ -1,7 +1,3 @@
 spring:
   profiles:
-    active: mets
-
-auth:
-  logging:
-    yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
+    active: michael

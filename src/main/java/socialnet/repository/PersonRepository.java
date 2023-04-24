@@ -2,7 +2,6 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import lombok.var;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,37 +24,37 @@ public class PersonRepository {
 
     public void save(Person person) {
         jdbcTemplate.update(
-                "INSERT INTO persons " +
-                        "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
-                person.getFirstName(),
-                person.getLastName(),
-                person.getPassword(),
-                person.getRegDate(),
-                person.getIsApproved(),
-                person.getIsBlocked(),
-                person.getIsDeleted()
+            "INSERT INTO persons " +
+            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            person.getEmail(),
+            person.getFirstName(),
+            person.getLastName(),
+            person.getPassword(),
+            person.getRegDate(),
+            person.getIsApproved(),
+            person.getIsBlocked(),
+            person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    personRowMapper,
-                    email
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    public Person findById(Long authorId) {
+    public Person findById(Long personId) {
         try {
             List<Person> personList = jdbcTemplate.query("SELECT * FROM persons WHERE id = ?",
-                    new Object[]{authorId}, new BeanPropertyRowMapper<>(Person.class));
-            if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+                    new Object[]{personId}, new BeanPropertyRowMapper<>(Person.class));
+            if (personList.isEmpty()) throw new PostException("Person с id " + personId + " не существует");
             return personList.get(0);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -69,6 +68,14 @@ public class PersonRepository {
                     new Object[]{limit},
                     personRowMapper
             );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findAll() {
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -156,7 +163,7 @@ public class PersonRepository {
     };
 
     public void setPhoto(String photoHttpLink, Long userId) {
-        int rowCount = jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
+        jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
     }
 
     public Boolean setPassword(Long userId, String password) {
@@ -170,16 +177,20 @@ public class PersonRepository {
     }
 
     public Person getPersonByEmail(String email) {
-        return jdbcTemplate.query("Select * from Persons where email = ?",
-                new BeanPropertyRowMapper<>(Person.class), email).stream().findAny().orElse(null);
+        return jdbcTemplate.queryForObject("SELECT * FROM Persons WHERE email = ?",
+                personRowMapper,
+                email);
+    }
+
+    public Long getPersonIdByEmail(String email) {
+        return jdbcTemplate.queryForObject("Select id from Persons where email = ?",
+                new Object[] {email}, Long.class);
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[] {email});
-        String sql = "Update Persons Set " + sqlParam.get("sql") + " where email = ?";
-        Object[] values = (Object[]) sqlParam.get("values");
-
-        jdbcTemplate.update(sql, values);
+        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[]{email});
+        jdbcTemplate.update("Update Persons Set " + sqlParam.get("sql") + " where email = ?",
+                (Object[]) sqlParam.get("values"));
     }
 
 
@@ -250,5 +261,13 @@ public class PersonRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+    }
+
+    public void updateOnlineStatus(Long personId, String status) {
+        jdbcTemplate.update("UPDATE persons SET online_status = ? WHERE id = ?", status, personId);
+    }
+
+    public void updateLastOnlineTime(Long personId, Timestamp lastOnlineTime) {
+        jdbcTemplate.update("UPDATE persons SET last_online_time = ? WHERE id = ?", lastOnlineTime, personId);
     }
 }

@@ -3,7 +3,6 @@ package socialnet.service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.*;
@@ -16,10 +15,12 @@ import socialnet.model.*;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.PostServiceDetails;
+
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -31,10 +32,8 @@ public class PostService {
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
     private final JwtUtils jwtUtils;
-    private final PostCommentRepository postCommentRepository;
     private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
-    private final TagService tagService;
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -99,7 +98,7 @@ public class PostService {
         List<PostRs> postRsList = new ArrayList<>();
         for (Post post : postList) {
             int postId = post.getId().intValue();
-            Details details = getDetails(post.getAuthorId(), postId, jwtToken);
+            PostServiceDetails details = getDetails(post.getAuthorId(), postId, jwtToken);
             PostRs postRs = postsMapper.toRs(post, details);
             postRsList.add(postRs);
         }
@@ -107,7 +106,7 @@ public class PostService {
         return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
-    Details getDetails(long authorId, int postId, String jwtToken) {
+    PostServiceDetails getDetails(long authorId, int postId, String jwtToken) {
         Person author = getAuthor(authorId);
         List<Like> likes = getLikes(postId).stream().filter(l -> l.getType().equals("Post")).collect(Collectors.toList());
         List<Tag> tags = getTags(postId);
@@ -116,7 +115,7 @@ public class PostService {
         List<Comment> postComments = getPostComments(postId);
         List<CommentRs> comments = getComments(postComments, jwtToken);
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        return new Details(author, likes, tagsStrings, authUser.getId(), comments);
+        return new PostServiceDetails(author, likes, tagsStrings, authUser.getId(), comments);
     }
 
     private List<CommentRs> getComments(List<Comment> postComments, String jwtToken) {
@@ -162,7 +161,7 @@ public class PostService {
         int postId = postRepository.save(post);
         tagRepository.saveAll(postRq.getTags(), postId);
         Person author = personRepository.findById((long) id);
-        Details details = getDetails(author.getId(), postId, jwtToken);
+        PostServiceDetails details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
@@ -170,7 +169,7 @@ public class PostService {
     public CommonRs<PostRs> getPostById(int postId, String jwtToken) {
         Post post = postRepository.findById(postId);
         Person author = getAuthor(post.getAuthorId());
-        Details details = getDetails(author.getId(), postId, jwtToken);
+        PostServiceDetails details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
         postRs.setTags(tagRepository.findByPostId((long) postId).stream().map(Tag::getTag).collect(Collectors.toList()));
         return new CommonRs<>(postRs, System.currentTimeMillis());
@@ -193,6 +192,8 @@ public class PostService {
     }
 
     private List<Comment> getPostComments(int id) {
+        List<Comment> comments = commentRepository.findByPostId((long) id);
+        if (comments == null) return new ArrayList<>();
         return commentRepository.findByPostId((long) id);
     }
 
@@ -205,7 +206,7 @@ public class PostService {
         tagRepository.saveAll(postRq.getTags(), id);
         Post newPost = postRepository.findById(id);
         Person author = getAuthor(newPost.getAuthorId());
-        Details details = getDetails(author.getId(), newPost.getId().intValue(), jwtToken);
+        PostServiceDetails details = getDetails(author.getId(), newPost.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(newPost, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
@@ -216,7 +217,7 @@ public class PostService {
         postFromDB.setTimeDelete(new Timestamp(System.currentTimeMillis()));
         postRepository.markAsDeleteById(id, postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
-        Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
+        PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
@@ -225,19 +226,12 @@ public class PostService {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
         Person author = getAuthor(postFromDB.getAuthorId());
-        Details details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
+        PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = postsMapper.toRs(postFromDB, details);
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
-    private Timestamp parseDate(String str) throws ParseException {
-        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date date = parser.parse(str);
-        return new Timestamp(date.getTime());
-    }
-
-    @Scheduled(cron = "0 0 1 * * *")
-    protected void hardDeletingPosts() {
+    public void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
         postRepository.deleteAll(deletingPosts);
         List<Tag> tags = new ArrayList<>();
@@ -250,13 +244,17 @@ public class PostService {
         likeRepository.deleteAll(likes);
     }
 
-    @Data
-    @AllArgsConstructor
-    public class Details {
-        Person author;
-        List<Like> likes;
-        List<String> tags;
-        Long authUserId;
-        List<CommentRs> comments;
+    public CommonRs<List<PostRs>> getFeedsByAuthorId(Long id, String jwtToken, Integer offset, Integer perPage) {
+        List<Post> postList = postRepository.findPostsByUserId(id);
+        postList.sort(Comparator.comparing(Post::getTime).reversed());
+        List<PostRs> postRsList = new ArrayList<>();
+        for (Post post : postList) {
+            int postId = post.getId().intValue();
+            PostServiceDetails details = getDetails(post.getAuthorId(), postId, jwtToken);
+            PostRs postRs = postsMapper.toRs(post, details);
+            postRsList.add(postRs);
+        }
+        int itemPerPage = offset / perPage;
+        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 }

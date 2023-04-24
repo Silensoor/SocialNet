@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 19
+      author: Michael
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: weather_key
+                  name: id
+                  type: SERIAL
+              - column:
+                  name: gismeteo_id
+                  type: INTEGER
+              - column:
+                  name: temperature
+                  type: DOUBLE PRECISION
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  name: time
+                  type: TIMESTAMP WITHOUT TIME ZONE
+            tableName: weather

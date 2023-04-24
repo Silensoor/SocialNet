@@ -4,15 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.*;
-
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Friendships;
+import socialnet.model.Notification;
 import socialnet.model.Person;
+import socialnet.model.PersonSettings;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
+import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.NotificationPusher;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,8 +26,8 @@ public class FriendsService {
 
     private final JwtUtils jwtUtils;
     private final PersonRepository personRepository;
-
     private final FriendsShipsRepository friendsShipsRepository;
+    private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
@@ -210,7 +213,7 @@ public class FriendsService {
         personList.forEach((friendships) -> {
             flagSrc.set(false);
             flagDst.set(false);
-            friendsId.forEach((aLong) ->{
+            friendsId.forEach((aLong) -> {
                 if (Objects.equals(friendships.getSrcPersonId(), aLong)) {
                     flagSrc.set(true);
                 }
@@ -234,7 +237,7 @@ public class FriendsService {
         return friendsFriendsId;
     }
 
-    public List<Person> addRecommendedFriendsCityAndAll(List<Person> friendFriendsNew, Person personsEmail){
+    public List<Person> addRecommendedFriendsCityAndAll(List<Person> friendFriendsNew, Person personsEmail) {
         final String city = personsEmail.getCity();
         List<Person> personsCity = personRepository.findByCity(city);
         if (personsCity == null) {
@@ -419,6 +422,12 @@ public class FriendsService {
             } else {
                 friendsShipsRepository.updateFriend(Long.valueOf(id), idFriendshipRequest, "REQUEST",
                         idFriendshipRequest);
+            }
+            PersonSettings personSettings = personSettingRepository.getPersonSettings(id.longValue());
+            if (personSettings.getFriendRequest()) {
+                Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
+                        (long) id, personsEmail.getId());
+                NotificationPusher.sendPush(notification, personsEmail.getId());
             }
             return fillingCommonRsComplexRs(id);
         }
