@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.*;
+import socialnet.exception.EntityNotFoundException;
 import socialnet.mapper.PostCommentMapper;
 import socialnet.mapper.PostsMapper;
 import socialnet.mappers.CommentMapper;
@@ -168,6 +169,11 @@ public class PostService {
 
     public CommonRs<PostRs> getPostById(int postId, String jwtToken) {
         Post post = postRepository.findById(postId);
+
+        if (post == null) {
+            throw new EntityNotFoundException("Post with id = " + postId + " not found");
+        }
+
         Person author = getAuthor(post.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = postsMapper.toRs(post, details);
