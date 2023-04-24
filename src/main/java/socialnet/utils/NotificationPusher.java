@@ -1,9 +1,10 @@
-package socialnet.service.notifications;
+package socialnet.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import socialnet.api.response.NotificationRs;
+import socialnet.api.response.NotificationType;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.NotificationMapper;
 import socialnet.mappers.PersonMapper;
@@ -11,6 +12,9 @@ import socialnet.model.Notification;
 import socialnet.model.Person;
 import socialnet.repository.NotificationRepository;
 import socialnet.repository.PersonRepository;
+
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Component
 @Slf4j
@@ -32,15 +36,25 @@ public class NotificationPusher {
     public static void sendPush(Notification notification, Long personId) {
         Long id = repository.saveNotification(notification);
         notification.setId(id);
-        Person personReceiver = personRepository.findById(notification.getPersonId());
+        Person personReceiver = personRepository.findById(personId);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(personReceiver);
         NotificationRs dto = NotificationMapper.INSTANCE.toDTO(notification, personRs);
         try {
-            messagingTemplate.convertAndSend(String.format("/user/%s/queue/notifications", personId),
+            messagingTemplate.convertAndSend(String.format("/user/%s/queue/notifications", notification.getPersonId()),
                     dto);
         } catch (Exception e) {
             log.debug("exception in sending push notification!");
         }
+    }
+    public static Notification getNotification(NotificationType type,Long personId,Long entityId) {
+        Notification notification = new Notification();
+        notification.setSentTime(Timestamp.from(Instant.now()));
+        notification.setNotificationType(type.toString());
+        notification.setContact(personId.toString());
+        notification.setIsRead(false);
+        notification.setPersonId(personId);
+        notification.setEntityId(entityId);
+        return notification;
     }
 
 

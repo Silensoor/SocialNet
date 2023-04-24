@@ -1,4 +1,4 @@
-package socialnet.service.notifications;
+package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,11 @@ import socialnet.model.Person;
 import socialnet.model.PersonSettings;
 import socialnet.repository.NotificationRepository;
 import socialnet.repository.PersonRepository;
+import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -25,6 +27,7 @@ public class NotificationsService {
     private final NotificationRepository notificationRepository;
     private final PersonMapper personMapper;
     private final NotificationMapper notificationMapper;
+    private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<NotificationRs>> putNotifications(Boolean all, Integer notificationId, String token) {
         String email = jwtUtils.getUserEmail(token);
@@ -42,7 +45,7 @@ public class NotificationsService {
                 NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notification, personRs);
                 notificationRsList.add(notificationRs);
             }
-        } else if(notificationId!=null) {
+        } else if (notificationId != null) {
             List<Notification> notificationList = notificationRepository.getNotificationsById(notificationId);
             notificationRepository.updateIsReadById(notificationId);
             PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList);
@@ -55,31 +58,37 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> getAllNotifications(Integer itemPerPage, String token, Integer offset) {
         String email = jwtUtils.getUserEmail(token);
-        Person personList = personRepository.findPersonsEmail(email);
-        if (personList == null) {
+        Person person = personRepository.findPersonsEmail(email);
+        if (person == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personList.getId();
+            Long id = person.getId();
             List<Notification> notifications = notificationRepository.getNotifications(id, itemPerPage, offset);
-            PersonRs personRs = personMapper.toDTO(personList);
-            List<NotificationRs> rsList = new ArrayList<>();
-            for (Notification notification : notifications) {
-                rsList.add(notificationMapper.INSTANCE.toDTO(notification, personRs));
+            if (!notifications.isEmpty()) {
+                PersonRs personRs = personMapper.toDTO(personRepository.findById(notifications.get(0).getEntityId()));
+                List<NotificationRs> rsList = new ArrayList<>();
+                for (Notification notification : notifications) {
+                    rsList.add(notificationMapper.INSTANCE.toDTO(notification, personRs));
+                }
+                return getResponseNotifications(rsList);
+            } else {
+                List<NotificationRs> rsList = new ArrayList<>();
+                return getResponseNotifications(rsList);
             }
-            return getResponseNotifications(rsList);
+
 
         }
     }
 
 
-    public CommonRs<List<PersonSettings>> getNotificationByPerson(String token) {
+    public CommonRs<List<PersonSettingsRs>> getNotificationByPerson(String token) {
         String email = jwtUtils.getUserEmail(token);
         Person personsEmail = personRepository.findPersonsEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             Long id = personsEmail.getId();
-            List<PersonSettings> personSettings = notificationRepository.getPersonSettings(id);
+            PersonSettings personSettings = personSettingRepository.getPersonSettings(id);
             return getResponsePersonSettings(personSettings);
         }
 
@@ -93,7 +102,7 @@ public class NotificationsService {
         } else {
             Long id = personsEmail.getId();
             String typeNotification = getTypeNotification(notificationRq.getNotificationType());
-            notificationRepository.updatePersonSetting(notificationRq.getEnable(), typeNotification, id);
+            personSettingRepository.updatePersonSetting(notificationRq.getEnable(), typeNotification, id);
             return getResponseByPutTypeNotification();
         }
 
@@ -128,8 +137,24 @@ public class NotificationsService {
 
     }
 
-    private CommonRs<List<PersonSettings>> getResponsePersonSettings(List<PersonSettings> personSettings) {
-        CommonRs<List<PersonSettings>> commonRs = new CommonRs<>(personSettings);
+    private CommonRs<List<PersonSettingsRs>> getResponsePersonSettings(PersonSettings personSettings) {
+        PersonSettingsRs personSettingsRs1 = new PersonSettingsRs(personSettings.getCommentCommentNotification(),
+                "COMMENT_COMMENT");
+        PersonSettingsRs personSettingsRs2 = new PersonSettingsRs(personSettings.getFriendBirthdayNotification(),
+                "FRIEND_BIRTHDAY");
+        PersonSettingsRs personSettingsRs3 = new PersonSettingsRs(personSettings.getFriendRequest(),
+                "FRIEND_REQUEST");
+        PersonSettingsRs personSettingsRs4 = new PersonSettingsRs(personSettings.getMessageNotification(),
+                "MESSAGE");
+        PersonSettingsRs personSettingsRs5 = new PersonSettingsRs(personSettings.getPostNotification(),
+                "POST");
+        PersonSettingsRs personSettingsRs6 = new PersonSettingsRs(personSettings.getPostCommentNotification(),
+                "POST_COMMENT");
+        PersonSettingsRs personSettingsRs7 = new PersonSettingsRs(personSettings.getLikeNotification(),
+                "POST_LIKE");
+        List<PersonSettingsRs> personSettingsRs = Arrays.asList(personSettingsRs1, personSettingsRs2, personSettingsRs3,
+                personSettingsRs4, personSettingsRs5, personSettingsRs6, personSettingsRs7);
+        CommonRs<List<PersonSettingsRs>> commonRs = new CommonRs<>(personSettingsRs);
         commonRs.setTotal(500L);
         return commonRs;
     }
