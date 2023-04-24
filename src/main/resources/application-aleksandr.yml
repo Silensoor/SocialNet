@@ -1,0 +1,37 @@
+auth:
+  secret: socialNet
+  timeLive: 999999999
+Server:
+  port: 8086
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    #data: data.sql
+    main:
+      allow-bean-definition-overriding: true
+
+  liquibase:
+    enabled: true
+    #change-log: classpath:db.changelog/db.changelog-master.xml
+#logging:
+# level:
+#    org:
+#      springframework:
+#        web: trace
+#        apache: trace
+
+schedules:
+  deleteOldCaptchasInterval: 0 0 0 * * *
+  deletePostsInterval: 0 0 1 * * *
+  deleteLikesInterval: 0 0 1 * * *
+
+s3:
+  accessKey: YCAJE83YiyNT766OLADHNeObE
+  secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
+  bucket: socnet37
+
+weather:
+  apiKey: 3d29686077f7a60e5b5714b659a688dd
