@@ -70,7 +70,6 @@ public class PostsController {
     }
 
     @GetMapping("/api/v1/post")
-    @ResponseBody
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader String authorization,
             @RequestParam(required = false, defaultValue = "") String author,
