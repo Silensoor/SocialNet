@@ -26,8 +26,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final JwtUtils jwtUtils;
     private final PersonRepository personRepository;
-    private final PersonMapper personMapper;
-    private final CommentMapper commentMapper;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final PersonSettingRepository personSettingRepository;
@@ -128,7 +126,7 @@ public class CommentService {
 
     }
     private CommentServiceDetails getToModelDetails(Person person,Long postId){
-        PersonRs author = personMapper.toDTO(person);
+        PersonRs author = PersonMapper.INSTANCE.toDTO(person);
         return new CommentServiceDetails(author, postId);
     }
 

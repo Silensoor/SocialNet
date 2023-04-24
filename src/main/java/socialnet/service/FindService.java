@@ -26,7 +26,6 @@ public class FindService {
     private final PostRepository postRepository;
     private final PostService postService;
     private final TagService tagService;
-    private final PersonMapper personMapper;
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
                                                   Long dateTo, Integer offset, Integer perPage,
@@ -74,7 +73,7 @@ public class FindService {
                 personList = new ArrayList<>();
             }
             personList.forEach((person) -> {
-                PersonRs personRs = personMapper.toDTO(person);
+                PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
                 personRsList.add(personRs);
             });
         }

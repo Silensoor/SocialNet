@@ -25,8 +25,6 @@ public class NotificationsService {
     private final JwtUtils jwtUtils;
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
-    private final PersonMapper personMapper;
-    private final NotificationMapper notificationMapper;
     private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<NotificationRs>> putNotifications(Boolean all, Integer notificationId, String token) {
@@ -67,10 +65,10 @@ public class NotificationsService {
             Long id = person.getId();
             List<Notification> notifications = notificationRepository.getNotifications(id, itemPerPage, offset);
             if (!notifications.isEmpty()) {
-                PersonRs personRs = personMapper.toDTO(personRepository.findById(notifications.get(0).getEntityId()));
+                PersonRs personRs = PersonMapper.INSTANCE.toDTO(personRepository.findById(notifications.get(0).getEntityId()));
                 List<NotificationRs> rsList = new ArrayList<>();
                 for (Notification notification : notifications) {
-                    NotificationRs notificationRs = notificationMapper.INSTANCE.toDTO(notification);
+                    NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notification);
                     notificationRs.setEntityAuthor(personRs);
                     rsList.add(notificationRs);
                 }
