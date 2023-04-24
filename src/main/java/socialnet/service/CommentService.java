@@ -5,17 +5,15 @@ import org.springframework.stereotype.Service;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.CommonRs;
+import socialnet.api.response.NotificationType;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
-import socialnet.model.Comment;
-import socialnet.model.Like;
-import socialnet.model.Person;
-import socialnet.repository.CommentRepository;
-import socialnet.repository.LikeRepository;
-import socialnet.repository.PersonRepository;
+import socialnet.model.*;
+import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.CommentServiceDetails;
+import socialnet.utils.NotificationPusher;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -31,6 +29,9 @@ public class CommentService {
     private final PersonMapper personMapper;
     private final CommentMapper commentMapper;
     private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
+    private final PersonSettingRepository personSettingRepository;
+
     public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage, String jwtToken) {
         int itemPerPage = offset / perPage;
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
@@ -47,11 +48,36 @@ public class CommentService {
     }
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
-        CommentServiceDetails toModelDetails = getToModelDetails(commentRq, postId, jwtToken);
+        Person person =getPerson(jwtToken);
+        CommentServiceDetails toModelDetails = getToModelDetails(person,postId);
         Comment comment = commentMapper.toModel(commentRq, toModelDetails);
         long commentId = commentRepository.save(comment);
         CommentServiceDetails toDTODetails = getToDTODetails(postId, comment, commentId);
         CommentRs commentRs = commentMapper.toDTO(comment, toDTODetails);
+
+        Post post = postRepository.findById(postId.intValue());
+        PersonSettings personSettingsPostAuthor = personSettingRepository.getPersonSettings(post.getAuthorId());
+        if (commentRq.getParentId() != null) {
+            Comment comment1 = commentRepository.findById(commentRq.getParentId().longValue());
+            PersonSettings personSettingsCommentAuthor = personSettingRepository.getPersonSettings(comment1.getAuthorId());
+            if (personSettingsCommentAuthor.getPostCommentNotification() &&
+                    !person.getId().equals(comment1.getAuthorId())) {
+                Notification notification = NotificationPusher.
+                        getNotification(NotificationType.COMMENT_COMMENT, comment1.getAuthorId(), person.getId());
+                NotificationPusher.sendPush(notification, person.getId());
+            } else if (!person.getId().equals(post.getAuthorId()) && commentRq.getParentId().longValue() !=
+                    (post.getAuthorId()) && personSettingsPostAuthor.getPostCommentNotification()) {
+                Notification notification = NotificationPusher.
+                        getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
+                NotificationPusher.sendPush(notification, person.getId());
+                return new CommonRs<>(commentRs, System.currentTimeMillis());
+            }
+        } else if (personSettingsPostAuthor.getPostCommentNotification() &&
+                !post.getAuthorId().equals(person.getId())) {
+            Notification notification = NotificationPusher.
+                    getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
+            NotificationPusher.sendPush(notification, person.getId());
+        }
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 
@@ -75,14 +101,18 @@ public class CommentService {
         return commentRsList;
     }
 
-    private CommentServiceDetails getToModelDetails(CommentRq commentRq, Long postId, String jwtToken) {
-        Person person = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+    private Person getPerson(String jwtToken) {
+       return personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+
+    }
+    private CommentServiceDetails getToModelDetails(Person person,Long postId){
         PersonRs author = personMapper.toDTO(person);
         return new CommentServiceDetails(author, postId);
     }
 
     public CommonRs<CommentRs> editComment(String jwtToken, Long id, Long commentId, CommentRq commentRq) {
-        CommentServiceDetails toModelDetails = getToModelDetails(commentRq, id, jwtToken);
+        Person person = getPerson(jwtToken);
+        CommentServiceDetails toModelDetails = getToModelDetails(person, id);
         Comment comment = commentMapper.toModel(commentRq, toModelDetails);
         Comment commentFromDB = commentRepository.findById(commentId);
         commentRepository.updateById(comment, commentId);
