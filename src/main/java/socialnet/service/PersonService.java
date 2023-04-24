@@ -1,7 +1,6 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +29,6 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Validated
 public class PersonService {
     private final JwtUtils jwtUtils;
@@ -42,23 +40,20 @@ public class PersonService {
     private final PersonMapper personMapper;
     private final UserDtoMapper userDtoMapper;
 
-    public Object getLogin(LoginRq loginRq) {
+    public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
 
-        Person person;
-        if ((person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
-            jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
-            authenticated(loginRq);
-            PersonRs personRs = personMapper.toDTO(person);
-            personRs.setToken(jwt);
-            personRs.setOnline(true);
-            personRs.setIsBlockedByCurrentUser(false);
-            personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-            personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+        Person person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword());
 
-            return new CommonRs<>(personRs);
-        } else {
-            throw new EmptyEmailException("invalid username or password");
-        }
+        jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
+        authenticated(loginRq);
+        PersonRs personRs = personMapper.toDTO(person);
+        personRs.setToken(jwt);
+        personRs.setOnline(true);
+        personRs.setIsBlockedByCurrentUser(false);
+        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
+        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+
+        return new CommonRs<>(personRs);
     }
 
     public CommonRs<PersonRs> getMyProfile(String authorization) {
@@ -98,12 +93,12 @@ public class PersonService {
         return ResponseEntity.ok(new CommonRs(personRs));
     }
 
-    public Object getLogout(String authorization) {
+    public CommonRs<ComplexRs> getLogout(String authorization) {
 
-        return setCommonRs(setComplexRs());
+        return new CommonRs<>(setComplexRs());
     }
 
-    public Object getUserById(String authorization, Integer id) {
+    public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
         Person person = findUser(id);
         PersonRs personRs = personMapper.toDTO(person);
         personRs.setToken(jwt);
@@ -148,11 +143,17 @@ public class PersonService {
 
         Person person = personRepository.findByEmail(email);
 
-        if (person != null && new BCryptPasswordEncoder().matches(password, person.getPassword())) {
-            log.info(person.getFirstName() + " авторизован");
-            return person;
+        if (person == null) {
+
+            throw new EmptyEmailException("Email is not registered");
         }
-        return null;
+
+        if (!new BCryptPasswordEncoder().matches(password, person.getPassword())) {
+
+            throw new EmptyEmailException("Incorrect password");
+        }
+
+        return person;
     }
 
     private void authenticated(LoginRq loginRq) {
