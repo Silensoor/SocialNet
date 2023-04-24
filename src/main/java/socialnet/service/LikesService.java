@@ -31,14 +31,11 @@ public class LikesService {
     private final JwtUtils jwtUtils;
     private final PostRepository postRepository;
 
-    public CommonRs<LikeRs> getLikes(String jwtToken, Integer itemId, String type) {
-        Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+    public CommonRs<LikeRs> getLikes (String jwtToken, Integer itemId, String type) {
         List<Like> likes = likeRepository.getLikesByEntityId(itemId);
         likes = likes.stream().filter(l -> l.getType().equals(type)).collect(Collectors.toList());
         List<Integer> users = new ArrayList<>();
-        for (Like like : likes) {
-            users.add(like.getPersonId().intValue());
-        }
+        likes.forEach(l -> users.add(l.getPersonId().intValue()));
         return new CommonRs<>(new LikeRs(likes.size(), users), System.currentTimeMillis());
     }
 
@@ -48,13 +45,11 @@ public class LikesService {
         like.setType(likeRq.getType());
         like.setEntityId(likeRq.getItem_id().longValue());
         like.setPersonId(authUser.getId());
-        int likeId = likeRepository.save(like);
+        likeRepository.save(like);
         List<Like> likes = likeRepository.getLikesByEntityId(likeRq.getItem_id());
         likes = likes.stream().filter(l -> l.getType().equals(likeRq.getType())).collect(Collectors.toList());
         List<Integer> users = new ArrayList<>();
-        for (Like l : likes) {
-            users.add(l.getPersonId().intValue());
-        }
+        likes.forEach(l -> users.add(l.getPersonId().intValue()));
 
         Notification notification = getNotification(likeRq, authUser.getId());
         Post post = postRepository.findById(likeRq.getItem_id());
@@ -75,9 +70,7 @@ public class LikesService {
         }
         List<Like> likesAfterDelete = likeRepository.getLikesByEntityId(itemId);
         List<Integer> users = new ArrayList<>();
-        for (Like l : likesAfterDelete) {
-            users.add(l.getPersonId().intValue());
-        }
+        likes.forEach(l -> users.add(l.getPersonId().intValue()));
         return new CommonRs<>(new LikeRs(likesAfterDelete.size(), users), System.currentTimeMillis());
     }
 

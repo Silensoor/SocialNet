@@ -6,6 +6,7 @@ delete from messages;
 delete from dialogs;
 delete from post_comments;
 delete from post2tag;
+delete from post_files;
 delete from posts;
 
 delete from persons;
