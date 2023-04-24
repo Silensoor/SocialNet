@@ -26,7 +26,8 @@ public class UsersController {
     }
 
     @GetMapping("/{id}")
-    public Object Id(@RequestHeader(name = "authorization") String authorization, @PathVariable(name = "id") Integer id) {
+    public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") String authorization,
+                                          @PathVariable(name = "id") Integer id) {
         return personService.getUserById(authorization, id);
     }
 

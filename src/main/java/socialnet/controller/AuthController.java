@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LoginRq;
 import socialnet.api.response.CaptchaRs;
+import socialnet.api.response.CommonRs;
+import socialnet.api.response.ComplexRs;
+import socialnet.api.response.PersonRs;
 import socialnet.service.CaptchaService;
 import socialnet.service.PersonService;
 
@@ -20,12 +23,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Object login(@RequestBody LoginRq loginRq) {
+    public CommonRs<PersonRs> login(@RequestBody LoginRq loginRq) {
         return personService.getLogin(loginRq);
     }
 
     @PostMapping("/logout")
-    public Object logout(@RequestHeader String authorization) {
+    public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization") String authorization) {
         return personService.getLogout(authorization);
     }
 }
