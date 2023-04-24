@@ -42,14 +42,16 @@ public class NotificationsService {
             notificationRepository.updateIsReadAll(personId);
             for (Notification notification : notifications) {
                 PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList);
-                NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notification, personRs);
+                NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notification);
+                notificationRs.setEntityAuthor(personRs);
                 notificationRsList.add(notificationRs);
             }
         } else if (notificationId != null) {
             List<Notification> notificationList = notificationRepository.getNotificationsById(notificationId);
             notificationRepository.updateIsReadById(notificationId);
             PersonRs personRs = PersonMapper.INSTANCE.toDTO(personList);
-            NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notificationList.get(0), personRs);
+            NotificationRs notificationRs = NotificationMapper.INSTANCE.toDTO(notificationList.get(0));
+            notificationRs.setEntityAuthor(personRs);
             notificationRsList.add(notificationRs);
         }
         return getResponseNotifications(notificationRsList);
@@ -68,7 +70,9 @@ public class NotificationsService {
                 PersonRs personRs = personMapper.toDTO(personRepository.findById(notifications.get(0).getEntityId()));
                 List<NotificationRs> rsList = new ArrayList<>();
                 for (Notification notification : notifications) {
-                    rsList.add(notificationMapper.INSTANCE.toDTO(notification, personRs));
+                    NotificationRs notificationRs = notificationMapper.INSTANCE.toDTO(notification);
+                    notificationRs.setEntityAuthor(personRs);
+                    rsList.add(notificationRs);
                 }
                 return getResponseNotifications(rsList);
             } else {

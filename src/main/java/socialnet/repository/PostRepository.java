@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import socialnet.exception.EmptyEmailException;
-import socialnet.exception.PostException;
 import socialnet.model.Post;
-import socialnet.model.Post2Tag;
 import socialnet.service.TagService;
 
 import java.sql.Timestamp;

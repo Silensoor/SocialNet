@@ -5,11 +5,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.PersonRs;
-import socialnet.mappers.CommentMapper;
-import socialnet.model.Comment;
-import socialnet.repository.CommentRepository;
-import socialnet.repository.LikeRepository;
-import socialnet.service.CommentService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

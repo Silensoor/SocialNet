@@ -6,11 +6,9 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.api.response.PostRs;
 import socialnet.exception.EmptyEmailException;
-import socialnet.mapper.PostsMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.model.Post;
-import socialnet.model.Post2Tag;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -29,7 +27,6 @@ public class FindService {
     private final PostService postService;
     private final TagService tagService;
     private final PersonMapper personMapper;
-    private final PostsMapper postsMapper;
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
                                                   Long dateTo, Integer offset, Integer perPage,
@@ -49,7 +46,7 @@ public class FindService {
             postList.forEach(post -> {
                 int postId = post.getId().intValue();
                 PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
-                PostRs postRs = postsMapper.toRs(post, details1);
+                PostRs postRs = PostService.setPostRs(post, details1);
                 postRsList.add(postRs);
             });
             postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
