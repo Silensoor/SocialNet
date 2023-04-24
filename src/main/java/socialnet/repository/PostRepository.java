@@ -51,9 +51,15 @@ public class PostRepository {
     }
 
     public Post findById(int id) {
-        return Optional.ofNullable(jdbcTemplate.queryForObject(
-                "SELECT * FROM posts WHERE id = ?", postRowMapper, id))
-                .orElseThrow(() -> new PostException("Поста с id = " + id + " не существует"));
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM posts WHERE id = ?",
+                postRowMapper,
+                id
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public void updateById(int id, Post post) {
@@ -76,19 +82,6 @@ public class PostRepository {
         return jdbcTemplate.query("Select * from Posts Where id = ?",
                 postRowMapper, id);
     }
-
-    private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
-        Post post = new Post();
-        post.setId(resultSet.getLong("id"));
-        post.setIsBlocked(resultSet.getBoolean("is_blocked"));
-        post.setIsDeleted(resultSet.getBoolean("is_deleted"));
-        post.setPostText(resultSet.getString("post_text"));
-        post.setTime(resultSet.getTimestamp("time"));
-        post.setTimeDelete(resultSet.getTimestamp("time_delete"));
-        post.setTitle(resultSet.getString("title"));
-        post.setAuthorId(resultSet.getLong("author_id"));
-        return post;
-    };
 
     public List<Post> findDeletedPosts() {
         String select = "SELECT * FROM posts WHERE is_deleted = true";
@@ -158,4 +151,17 @@ public class PostRepository {
         Date date = new Date(str);
         return new Timestamp(date.getTime());
     }
+
+    private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
+        Post post = new Post();
+        post.setId(resultSet.getLong("id"));
+        post.setIsBlocked(resultSet.getBoolean("is_blocked"));
+        post.setIsDeleted(resultSet.getBoolean("is_deleted"));
+        post.setPostText(resultSet.getString("post_text"));
+        post.setTime(resultSet.getTimestamp("time"));
+        post.setTimeDelete(resultSet.getTimestamp("time_delete"));
+        post.setTitle(resultSet.getString("title"));
+        post.setAuthorId(resultSet.getLong("author_id"));
+        return post;
+    };
 }
