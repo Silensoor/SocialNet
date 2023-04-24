@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.NotificationRs;
-import socialnet.service.notifications.NotificationsService;
+import socialnet.service.NotificationsService;
 
 import java.util.List;
 

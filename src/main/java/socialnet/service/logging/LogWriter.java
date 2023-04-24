@@ -5,7 +5,10 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -14,32 +17,24 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Component
-public class LogWriter extends TimerTask {
+public class LogWriter {
 
-    private final AuthCloud authCloud = new AuthCloud();
+    @Value("${auth.logging.yandexToken}")
+    private String yandexToken;
+
     private final LogClean cleanLogsInCloud = new LogClean();
 
     @Bean
-    public void writer() throws IOException {
+    @Async
+    @Scheduled(fixedRate = 3_600_000)
+    public void writer() throws IOException, ParseException {
 
-        Integer timeLoadingInCloud = 3_600_000;
-        updateTimer(timeLoadingInCloud);
-    }
-
-    @Override
-    public void run() {
-
-        try {
-            pushLogs(getHref());
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException(e);
-        }
+        cleanLogsInCloud.deleteOldLogs(yandexToken);
+        pushLogs(getHref());
     }
 
     public String getHref() throws IOException {
@@ -48,7 +43,8 @@ public class LogWriter extends TimerTask {
         URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/upload?path=" + path + "&overwrite=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        con.setRequestProperty("Authorization", authCloud.getYandexToken());
+
+        con.setRequestProperty("Authorization", yandexToken);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -66,9 +62,7 @@ public class LogWriter extends TimerTask {
         return href;
     }
 
-    public void pushLogs(String href) throws IOException, ParseException {
-
-        cleanLogsInCloud.deleteOldLogs();
+    public void pushLogs(String href) throws IOException{
 
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 
@@ -78,13 +72,6 @@ public class LogWriter extends TimerTask {
             httpPut.setEntity(new FileEntity(file));
             HttpResponse response = httpclient.execute(httpPut);
         }
-    }
-
-    public void updateTimer(Integer timeLoadingInCloud) {
-
-        Timer time = new Timer();
-        LogWriter writerLogsInCloud = new LogWriter();
-        time.schedule(writerLogsInCloud, 0, timeLoadingInCloud);
     }
 
     public String createLogFile() {

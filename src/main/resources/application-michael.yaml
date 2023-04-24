@@ -14,6 +14,8 @@ spring:
 auth:
   secret: socialNet
   timeLive: 216000000
+  logging:
+    yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
 
 socialnet:
   sheduled:
@@ -21,6 +23,8 @@ socialnet:
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
+  deletePostsInterval: 0 0 1 * * *
+  deleteLikesInterval: 0 0 1 * * *
 
 s3:
   accessKey: YCAJE83YiyNT766OLADHNeObE
