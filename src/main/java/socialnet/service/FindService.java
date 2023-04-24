@@ -14,6 +14,7 @@ import socialnet.model.Post2Tag;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.PostServiceDetails;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,6 +50,27 @@ public class FindService {
                 int postId = post.getId().intValue();
                 PostService.Details details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
                 PostRs postRs = postsMapper.toRs(post, details1);
+            postList = postRepository.findPostStringSql(author, dateFrom, dateTo, text, perPage, offset, tags);
+            if (postList == null) {
+                throw new EmptyEmailException("Field 'author' not found");
+            } else {
+                postTotal = new ArrayList<>(postList);
+            }
+            if (tags != null) {
+                final List<Post> postList1 = comparisonOfSelectionWithTags(postList, tags);
+                if (postList1 != null) {
+                    postTotal = new ArrayList<>(postList1);
+                } else {
+                    postTotal = new ArrayList<>();
+                }
+            }
+        }
+        int count = 0;
+        for (Post post2 : postTotal) {
+            if (count >= offset && count < offset + perPage) {
+                int postId = post2.getId().intValue();
+                PostServiceDetails details1 = postService.getDetails(post2.getAuthorId(), postId, jwtToken);
+                PostRs postRs = postsMapper.toRs(post2, details1);
                 postRsList.add(postRs);
             });
             postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());

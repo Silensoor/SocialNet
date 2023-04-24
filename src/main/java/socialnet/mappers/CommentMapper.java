@@ -7,6 +7,7 @@ import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.model.Comment;
 import socialnet.service.CommentService;
+import socialnet.utils.CommentServiceDetails;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface CommentMapper {
     @Mapping(target = "isDeleted", source = "comment.isDeleted")
     @Mapping(target = "postId", source = "comment.postId")
     @Mapping(target = "time", source = "comment.time")
-    CommentRs toDTO(Comment comment, CommentService.Details details);
+    CommentRs toDTO(Comment comment, CommentServiceDetails details);
 
     CommentRs toDTO(Comment comment);
 
@@ -35,5 +36,5 @@ public interface CommentMapper {
     @Mapping(target = "isDeleted", source = "details.isDeleted")
     @Mapping(target = "isBlocked", source = "details.isBlocked")
     @Mapping(target = "authorId", source = "details.authorId")
-    Comment toModel(CommentRq commentRq, CommentService.Details details);
+    Comment toModel(CommentRq commentRq, CommentServiceDetails details);
 }

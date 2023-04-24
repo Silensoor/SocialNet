@@ -55,8 +55,8 @@ public class WeatherService {
 
         String currentTemp;
         try {
-            currentTemp = Integer.toString(Math.round(main.getFloat("temp") - 273.15F));
-        } catch (Exception e) {
+            currentTemp = Integer.toString(Math.round(Float.parseFloat(main.get("temp").toString()) - 273.15F));
+        } catch (Exception ex) {
             currentTemp = "?";
         }
 
