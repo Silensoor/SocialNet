@@ -15,6 +15,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
+import socialnet.api.request.LoginRq;
+import socialnet.security.jwt.JwtUtils;
+import socialnet.service.PersonService;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -40,8 +43,26 @@ public abstract class AbstractTest {
     @Autowired
     protected MockMvc mockMvc;
 
+    @Autowired
+    protected JwtUtils jwtUtils;
+
+    @Autowired
+    protected PersonService personService;
+
     @BeforeAll
     public static void init() {
         container.start();
+    }
+
+    protected String getToken(String email) {
+        return jwtUtils.generateJwtToken(email);
+    }
+
+    protected void authenticate(String email, String password) {
+        LoginRq loginRq = new LoginRq();
+        loginRq.setEmail(email);
+        loginRq.setPassword(password);
+
+        personService.getLogin(loginRq);
     }
 }
