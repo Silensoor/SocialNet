@@ -26,8 +26,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final JwtUtils jwtUtils;
     private final PersonRepository personRepository;
-    private final PersonMapper personMapper;
-    private final CommentMapper commentMapper;
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
     private final PersonSettingRepository personSettingRepository;
@@ -40,20 +38,30 @@ public class CommentService {
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
-            CommentRs commentRs = commentMapper.toDTO(comment, details);
+            CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
         }
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
         return new CommonRs<>(comments, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
     }
 
+    private CommentRs getCommentRs(Comment comment, CommentServiceDetails details) {
+        CommentRs commentRs = CommentMapper.INSTANCE.toDTO(comment);
+        commentRs.setAuthor(details.getAuthor());
+        commentRs.setLikes(details.getLikes());
+        commentRs.setMyLike(details.getMyLike());
+        commentRs.setSubComments(details.getSubComments());
+
+        return commentRs;
+    }
+
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
         Person person =getPerson(jwtToken);
         CommentServiceDetails toModelDetails = getToModelDetails(person,postId);
-        Comment comment = commentMapper.toModel(commentRq, toModelDetails);
+        Comment comment = getCommentModel(commentRq, toModelDetails);
         long commentId = commentRepository.save(comment);
         CommentServiceDetails toDTODetails = getToDTODetails(postId, comment, commentId);
-        CommentRs commentRs = commentMapper.toDTO(comment, toDTODetails);
+        CommentRs commentRs = getCommentRs(comment, toDTODetails);
 
         Post post = postRepository.findById(postId.intValue());
         PersonSettings personSettingsPostAuthor = personSettingRepository.getPersonSettings(post.getAuthorId());
@@ -81,6 +89,18 @@ public class CommentService {
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 
+    private Comment getCommentModel(CommentRq commentRq, CommentServiceDetails details) {
+        Comment comment = CommentMapper.INSTANCE.toModel(commentRq);
+        comment.setAuthorId(details.getAuthorId());
+        comment.setIsBlocked(details.getIsBlocked());
+        comment.setIsDeleted(details.getIsDeleted());
+        comment.setPostId(details.getPostId());
+        comment.setTime(details.getTime());
+        comment.setId(details.getId());
+
+        return comment;
+    }
+
     public CommentServiceDetails getToDTODetails(Long postId, Comment comment, long commentId) {
         return new CommentServiceDetails(new Timestamp(System.currentTimeMillis()),
                 postId,
@@ -95,7 +115,7 @@ public class CommentService {
         List<Comment> comments = commentRepository.findByPostIdParentId(id);
         List<CommentRs> commentRsList = new ArrayList<>();
         for (Comment comment : comments) {
-            CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));
+            CommentRs commentRs = getCommentRs(comment, getToDTODetails(postId, comment, comment.getId()));
             commentRsList.add(commentRs);
         }
         return commentRsList;
@@ -106,19 +126,19 @@ public class CommentService {
 
     }
     private CommentServiceDetails getToModelDetails(Person person,Long postId){
-        PersonRs author = personMapper.toDTO(person);
+        PersonRs author = PersonMapper.INSTANCE.toDTO(person);
         return new CommentServiceDetails(author, postId);
     }
 
     public CommonRs<CommentRs> editComment(String jwtToken, Long id, Long commentId, CommentRq commentRq) {
         Person person = getPerson(jwtToken);
         CommentServiceDetails toModelDetails = getToModelDetails(person, id);
-        Comment comment = commentMapper.toModel(commentRq, toModelDetails);
+        Comment comment = getCommentModel(commentRq, toModelDetails);
         Comment commentFromDB = commentRepository.findById(commentId);
         commentRepository.updateById(comment, commentId);
         commentFromDB.setCommentText(commentRq.getCommentText());
         CommentServiceDetails toDTODetails = getToDTODetails(id, commentFromDB, commentId);
-        CommentRs commentRs = commentMapper.toDTO(commentFromDB, toDTODetails);
+        CommentRs commentRs = getCommentRs(commentFromDB, toDTODetails);
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 
@@ -126,7 +146,7 @@ public class CommentService {
         Comment commentFromDB = commentRepository.findById(commentId);
         commentFromDB.setIsDeleted(true);
         commentRepository.updateById(commentFromDB, commentId);
-        CommentRs commentRs = commentMapper.toDTO(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
+        CommentRs commentRs = getCommentRs(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
     public void hardDeleteComments() {
@@ -143,7 +163,7 @@ public class CommentService {
         Comment commentFromDB = commentRepository.findById(commentId);
         commentFromDB.setIsDeleted(false);
         commentRepository.updateById(commentFromDB, commentId);
-        CommentRs commentRs = commentMapper.toDTO(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
+        CommentRs commentRs = getCommentRs(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 

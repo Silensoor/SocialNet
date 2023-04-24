@@ -40,8 +40,6 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-    private final PersonMapper personMapper;
-    private final UserDtoMapper userDtoMapper;
 
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
@@ -51,7 +49,7 @@ public class PersonService {
 
             jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
             authenticated(loginRq);
-            PersonRs personRs = personMapper.toDTO(person);
+            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
             changePersonStatus(personRs);
             return new CommonRs<>(personRs);
 
@@ -60,7 +58,7 @@ public class PersonService {
     public CommonRs<PersonRs> getMyProfile(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
-        PersonRs personRs = personMapper.toDTO(person);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
@@ -95,7 +93,7 @@ public class PersonService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
-        PersonRs personRs = personMapper.toDTO(person);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
 
         personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
@@ -110,7 +108,7 @@ public class PersonService {
 
     public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
         Person person = findUser(id);
-        PersonRs personRs = personMapper.toDTO(person);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
@@ -183,8 +181,8 @@ public class PersonService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
-        PersonRs personRs = personMapper.toDTO(person);
-        UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+        UserUpdateDto userUpdateDto = UserDtoMapper.INSTANCE.toDto(userRq);
 
         userUpdateDto.setPhoto(person.getPhoto());
         if (userUpdateDto.getPhoto() == null)

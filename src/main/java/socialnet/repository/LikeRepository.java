@@ -2,13 +2,10 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import socialnet.exception.EmptyEmailException;
-import socialnet.model.Comment;
 import socialnet.model.Like;
 import java.sql.Timestamp;
 import java.util.HashMap;
