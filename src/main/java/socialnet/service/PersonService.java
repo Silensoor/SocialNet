@@ -45,18 +45,16 @@ public class PersonService {
 
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
-    public Object getLogin(LoginRq loginRq) {
+    public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
 
-        Person person;
-        if ((person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
+        Person person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword());
+
             jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
             authenticated(loginRq);
             PersonRs personRs = personMapper.toDTO(person);
             changePersonStatus(personRs);
             return new CommonRs<>(personRs);
-        } else {
-            throw new EmptyEmailException("invalid username or password");
-        }
+
     }
 
     public CommonRs<PersonRs> getMyProfile(String authorization) {
@@ -105,12 +103,12 @@ public class PersonService {
         return ResponseEntity.ok(new CommonRs(personRs));
     }
 
-    public Object getLogout(String authorization) {
+    public CommonRs<ComplexRs> getLogout(String authorization) {
 
         return setCommonRs(setComplexRs());
     }
 
-    public Object getUserById(String authorization, Integer id) {
+    public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
         Person person = findUser(id);
         PersonRs personRs = personMapper.toDTO(person);
         changePersonStatus(personRs);
@@ -153,18 +151,25 @@ public class PersonService {
     }
 
 
+
     public Person checkLoginAndPassword(String email, String password) {
 
         Person person = personRepository.findByEmail(email);
 
-        if (person != null && new BCryptPasswordEncoder().matches(password, person.getPassword())) {
-            log.info(person.getFirstName() + " авторизован");
-            return person;
+        if (person == null) {
+
+            throw new EmptyEmailException("Email is not registered");
         }
-        return null;
+
+        if (!new BCryptPasswordEncoder().matches(password, person.getPassword())) {
+
+            throw new EmptyEmailException("Incorrect password");
+        }
+
+        return person;
     }
 
-    private void authenticated(LoginRq loginRq) {
+        private void authenticated(LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
