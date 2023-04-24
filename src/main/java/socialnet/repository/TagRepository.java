@@ -1,10 +1,12 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import socialnet.exception.EmptyEmailException;
 import socialnet.model.Tag;
 
 import java.util.HashMap;
@@ -18,13 +20,12 @@ public class TagRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Tag> findByPostId(Long postId) {
-
-        return jdbcTemplate.query("SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?", tagRowMapper, postId);
-    }
-
-    public List<Tag> getTagsByPostId(long postId) {
-
-        return jdbcTemplate.queryForList("SELECT * FROM post2tag WHERE post_id = " + postId, Tag.class);
+        String select = "SELECT * FROM tags JOIN post2tag ON tags.id = post2tag.tag_id AND post_id = ?";
+        try {
+            return jdbcTemplate.query(select, tagRowMapper, postId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public long save(Tag tag, long postId) {

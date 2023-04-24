@@ -48,13 +48,21 @@ public class WeatherService {
     private WeatherRs getWeatherRs(JSONObject jsonObject) {
 
         JSONObject weather = (JSONObject) jsonObject.getJSONArray("weather").get(0);
+
         //String cityId = weather.getString("id");
 
         JSONObject main = jsonObject.getJSONObject("main");
 
+        String currentTemp;
+        try {
+            currentTemp = Integer.toString(Math.round(main.getFloat("temp") - 273.15F));
+        } catch (Exception e) {
+            currentTemp = "?";
+        }
+
         return new WeatherRs(jsonObject.getString("name"),
                 weather.getString("description"),
                 LocalDate.now().toString(),
-                Integer.toString(Math.round(main.getFloat("temp") - 273.15F)));
+                currentTemp);
     }
 }

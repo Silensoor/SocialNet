@@ -15,6 +15,7 @@ public abstract class UserDtoMapper {
     @Mappings({
             @Mapping(target = "birthDate", expression = "java(converter.dateToTimeStamp(userRq.getBirthDate()))"),
             @Mapping(target = "photo", source = "photoId")
+            //@Mapping(target = "photo", expression = "java(converter.checkPhotoId(userRq.getPhotoId()))")
     })
     public abstract UserUpdateDto toDto(UserRq userRq);
 }

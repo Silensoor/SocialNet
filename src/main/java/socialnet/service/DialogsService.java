@@ -32,20 +32,23 @@ public class DialogsService {
     public CommonRs<List<DialogRs>> getDialogs(String token) {
         String userEmail = jwtUtils.getUserEmail(token);
         Person person = personRepository.getPersonByEmail(userEmail);
-        List<Dialog> dialogsModelAuthor = dialogsRepository.findByAuthorId(person.getId());
-        List<Dialog> dialogsModelRecipient = dialogsRepository.findByRecipientId(person.getId());
+        List<Dialog> ownDialogs = dialogsRepository.findByAuthorId(person.getId());
+        List<Dialog> companionDialogs = dialogsRepository.findByRecipientId(person.getId());
         List<Dialog> dialogsModelAll = new ArrayList<>();
-        dialogsModelAll.addAll(dialogsModelAuthor);
-        dialogsModelAll.addAll(dialogsModelRecipient);
+        dialogsModelAll.addAll(ownDialogs);
+        dialogsModelAll.addAll(companionDialogs);
         List<DialogRs> dialogList = new ArrayList<>();
         for (Dialog dialog : dialogsModelAll) {
             DialogRs dialogRs = DialogMapper.INSTANCE.toDTO(dialog);
             Message lastMessage = messageRepository.findLastMessageByDialogId(dialog.getId());
+            if (lastMessage == null) {
+                continue;
+            }
             MessageRs messageRs = MessageMapper.INSTANCE.toDTO(lastMessage);
-            dialogRs.setLastMessage(messageRs);
-            dialogRs.setReadStatus(lastMessage.getReadStatus());
             PersonRs recipient = PersonMapper.INSTANCE.toDTO(personRepository.findById(lastMessage.getRecipientId()));
             messageRs.setRecipient(recipient);
+            dialogRs.setLastMessage(messageRs);
+            dialogRs.setReadStatus(lastMessage.getReadStatus());
             dialogRs.setUnreadCount(messageRepository.findCountByDialogIdAndReadStatus(dialog.getId(), MessageReadStatus.UNREAD.name()));
             dialogList.add(dialogRs);
         }

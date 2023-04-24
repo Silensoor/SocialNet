@@ -1,18 +1,21 @@
 package socialnet.service;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.CommentRq;
-import socialnet.api.response.*;
+import socialnet.api.response.CommentRs;
+import socialnet.api.response.CommonRs;
+import socialnet.api.response.PersonRs;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
-import socialnet.model.*;
-import socialnet.repository.*;
+import socialnet.model.Comment;
+import socialnet.model.Like;
+import socialnet.model.Person;
+import socialnet.repository.CommentRepository;
+import socialnet.repository.LikeRepository;
+import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.utils.NotificationPusher;
+import socialnet.utils.CommentServiceDetails;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -32,25 +35,25 @@ public class CommentService {
     private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage, String jwtToken) {
+        int itemPerPage = offset / perPage;
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
+        if (commentList == null) return new CommonRs<>(new ArrayList<>(), itemPerPage, offset, perPage, System.currentTimeMillis(), 0L);
         List<CommentRs> comments = new ArrayList<>();
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
-            Details details = getToDTODetails(postId, comment, comment.getId());
+            CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = commentMapper.toDTO(comment, details);
             comments.add(commentRs);
         }
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        int itemPerPage = offset / perPage;
         return new CommonRs<>(comments, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
     }
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
-        Person person = getPerson(jwtToken);
-        CommentService.Details toModelDetails = getToModelDetails(postId, person);
+        CommentServiceDetails toModelDetails = getToModelDetails(commentRq, postId, jwtToken);
         Comment comment = commentMapper.toModel(commentRq, toModelDetails);
         long commentId = commentRepository.save(comment);
-        CommentService.Details toDTODetails = getToDTODetails(postId, comment, commentId);
+        CommentServiceDetails toDTODetails = getToDTODetails(postId, comment, commentId);
         CommentRs commentRs = commentMapper.toDTO(comment, toDTODetails);
 
         Post post = postRepository.findById(postId.intValue());
@@ -79,27 +82,39 @@ public class CommentService {
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 
-    private Details getToDTODetails(Long postId, Comment comment, long commentId) {
-        return new Details(new Timestamp(System.currentTimeMillis()), postId, comment.getIsBlocked(), comment.getIsDeleted(), commentId, comment.getAuthorId());
+    public CommentServiceDetails getToDTODetails(Long postId, Comment comment, long commentId) {
+        return new CommentServiceDetails(new Timestamp(System.currentTimeMillis()),
+                postId,
+                comment.getIsBlocked(),
+                comment.getIsDeleted(),
+                commentId, comment.getAuthorId(),
+                findSubComments(postId, commentId),
+                likeRepository.getLikesByEntityId(commentId).size());
     }
 
-    private Person getPerson(String jwtToken) {
-        return personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+    private List<CommentRs> findSubComments(Long postId, Long id) {
+        List<Comment> comments = commentRepository.findByPostIdParentId(id);
+        List<CommentRs> commentRsList = new ArrayList<>();
+        for (Comment comment : comments) {
+            CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));
+            commentRsList.add(commentRs);
+        }
+        return commentRsList;
     }
 
-    private Details getToModelDetails(Long postId, Person person) {
+    private CommentServiceDetails getToModelDetails(CommentRq commentRq, Long postId, String jwtToken) {
+        Person person = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
         PersonRs author = personMapper.toDTO(person);
-        return new Details(author, postId);
+        return new CommentServiceDetails(author, postId);
     }
 
     public CommonRs<CommentRs> editComment(String jwtToken, Long id, Long commentId, CommentRq commentRq) {
-        Person person = getPerson(jwtToken);
-        CommentService.Details toModelDetails = getToModelDetails(id, person);
+        CommentServiceDetails toModelDetails = getToModelDetails(commentRq, id, jwtToken);
         Comment comment = commentMapper.toModel(commentRq, toModelDetails);
         Comment commentFromDB = commentRepository.findById(commentId);
         commentRepository.updateById(comment, commentId);
         commentFromDB.setCommentText(commentRq.getCommentText());
-        Details toDTODetails = getToDTODetails(id, commentFromDB, commentId);
+        CommentServiceDetails toDTODetails = getToDTODetails(id, commentFromDB, commentId);
         CommentRs commentRs = commentMapper.toDTO(commentFromDB, toDTODetails);
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
@@ -111,11 +126,9 @@ public class CommentService {
         CommentRs commentRs = commentMapper.toDTO(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
-
-    @Scheduled(cron = "0 0 1 * * *")
     public void hardDeleteComments() {
         List<Comment> deletingComments = commentRepository.findDeletedPosts();
-        commentRepository.deleteAll(deletingComments);
+        deletingComments.forEach(commentRepository::delete);
         List<Like> likes = new ArrayList<>();
         for (Comment deletingComment : deletingComments) {
             likes.addAll(likeRepository.getLikesByEntityId(deletingComment.getId()));
@@ -131,53 +144,53 @@ public class CommentService {
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 
-    @Data
-    @NoArgsConstructor
-    public class Details {
-        List<CommentRs> subComments;
-        Boolean myLike;
-        Integer likes;
-        PersonRs author;
-        Timestamp time;
-        Long postId;
-        Boolean isBlocked;
-        Boolean isDeleted;
-        Long id;
-        Long authorId;
-
-        public Details(Timestamp time, Long postId, Boolean isBlocked, Boolean isDeleted, Long id, Long authorId) {
-            this.time = time;
-            this.postId = postId;
-            this.isBlocked = isBlocked;
-            this.isDeleted = isDeleted;
-            this.id = id;
-            this.authorId = authorId;
-            this.subComments = findSubComments(id);
-            this.likes = likeRepository.getLikesByEntityId(id).size();
-        }
-
-        private List<CommentRs> findSubComments(Long id) {
-            List<Comment> comments = commentRepository.findByPostIdParentId(id);
-            List<CommentRs> commentRsList = new ArrayList<>();
-            for (Comment comment : comments) {
-                CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));
-                commentRsList.add(commentRs);
-            }
-            return commentRsList;
-        }
-
-        public Details(PersonRs author, long postId) {
-            this.subComments = new ArrayList<>();
-            this.myLike = false;
-            this.likes = 0;
-            this.author = author;
-            this.authorId = author.getId();
-            this.myLike = false;
-            this.isBlocked = false;
-            this.isDeleted = false;
-            this.postId = postId;
-            this.time = new Timestamp(System.currentTimeMillis());
-
-        }
-    }
+//    @Data
+//    @NoArgsConstructor
+//    public class Details {
+//        List<CommentRs> subComments;
+//        Boolean myLike;
+//        Integer likes;
+//        PersonRs author;
+//        Timestamp time;
+//        Long postId;
+//        Boolean isBlocked;
+//        Boolean isDeleted;
+//        Long id;
+//        Long authorId;
+//
+//        public Details(Timestamp time, Long postId, Boolean isBlocked, Boolean isDeleted, Long id, Long authorId) {
+//            this.time = time;
+//            this.postId = postId;
+//            this.isBlocked = isBlocked;
+//            this.isDeleted = isDeleted;
+//            this.id = id;
+//            this.authorId = authorId;
+//            this.subComments = findSubComments(id);
+//            this.likes = likeRepository.getLikesByEntityId(id).size();
+//        }
+//
+//        private List<CommentRs> findSubComments(Long id) {
+//            List<Comment> comments = commentRepository.findByPostIdParentId(id);
+//            List<CommentRs> commentRsList = new ArrayList<>();
+//            for (Comment comment : comments) {
+//                CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));
+//                commentRsList.add(commentRs);
+//            }
+//            return commentRsList;
+//        }
+//
+//        public Details(PersonRs author, long postId) {
+//            this.subComments = new ArrayList<>();
+//            this.myLike = false;
+//            this.likes = 0;
+//            this.author = author;
+//            this.authorId = author.getId();
+//            this.myLike = false;
+//            this.isBlocked = false;
+//            this.isDeleted = false;
+//            this.postId = postId;
+//            this.time = new Timestamp(System.currentTimeMillis());
+//
+//        }
+//    }
 }

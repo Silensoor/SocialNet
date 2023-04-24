@@ -8,6 +8,7 @@ import socialnet.model.Like;
 import socialnet.model.Post;
 import socialnet.model.enums.PostType;
 import socialnet.service.PostService;
+import socialnet.utils.PostServiceDetails;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -22,7 +23,7 @@ public abstract class PostsMapper {
     @Mapping(target = "id", source = "post.id")
     @Mapping(target = "isBlocked", source = "post.isBlocked")
     @Mapping(target = "author", source = "details.author")
-    public abstract PostRs toRs(Post post, PostService.Details details);
+    public abstract PostRs toRs(Post post, PostServiceDetails details);
 
     @Mapping(target = "timeDelete", ignore = true)
     @Mapping(target = "time", expression = "java(getTime(publishDate))")
