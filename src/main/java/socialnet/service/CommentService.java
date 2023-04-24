@@ -5,17 +5,15 @@ import org.springframework.stereotype.Service;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.CommonRs;
+import socialnet.api.response.NotificationType;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
-import socialnet.model.Comment;
-import socialnet.model.Like;
-import socialnet.model.Person;
-import socialnet.repository.CommentRepository;
-import socialnet.repository.LikeRepository;
-import socialnet.repository.PersonRepository;
+import socialnet.model.*;
+import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.CommentServiceDetails;
+import socialnet.utils.NotificationPusher;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -50,7 +48,8 @@ public class CommentService {
     }
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
-        CommentServiceDetails toModelDetails = getToModelDetails(commentRq, postId, jwtToken);
+        Person person =getPerson(jwtToken);
+        CommentServiceDetails toModelDetails = getToModelDetails(person,postId);
         Comment comment = commentMapper.toModel(commentRq, toModelDetails);
         long commentId = commentRepository.save(comment);
         CommentServiceDetails toDTODetails = getToDTODetails(postId, comment, commentId);
@@ -102,14 +101,18 @@ public class CommentService {
         return commentRsList;
     }
 
-    private CommentServiceDetails getToModelDetails(CommentRq commentRq, Long postId, String jwtToken) {
-        Person person = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+    private Person getPerson(String jwtToken) {
+       return personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
+
+    }
+    private CommentServiceDetails getToModelDetails(Person person,Long postId){
         PersonRs author = personMapper.toDTO(person);
         return new CommentServiceDetails(author, postId);
     }
 
     public CommonRs<CommentRs> editComment(String jwtToken, Long id, Long commentId, CommentRq commentRq) {
-        CommentServiceDetails toModelDetails = getToModelDetails(commentRq, id, jwtToken);
+        Person person = getPerson(jwtToken);
+        CommentServiceDetails toModelDetails = getToModelDetails(person, id);
         Comment comment = commentMapper.toModel(commentRq, toModelDetails);
         Comment commentFromDB = commentRepository.findById(commentId);
         commentRepository.updateById(comment, commentId);

@@ -46,10 +46,6 @@ public class LikesService {
         List<Integer> users = new ArrayList<>();
         likes.forEach(l -> users.add(l.getPersonId().intValue()));
 
-        Notification notification = getNotification(likeRq, authUser.getId());
-        Post post = postRepository.findById(likeRq.getItem_id());
-        NotificationPusher.sendPush(notification, post.getAuthorId());
-
         for (Like l : likes) {
             users.add(l.getPersonId().intValue());
         }
