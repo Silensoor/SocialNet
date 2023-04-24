@@ -11,6 +11,7 @@ import socialnet.repository.DialogsRepository;
 import socialnet.repository.MessageRepository;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,13 @@ public class MessageService {
 
     public MessageWs processMessage(Long dialogId, MessageWs message) {
         Dialog dialog = dialogsRepository.findByDialogId(dialogId);
-        message.setRecipientId(dialog.getSecondPersonId());
+        long recipientId;
+        if (Objects.equals(message.getAuthorId(), dialog.getFirstPersonId())) {
+            recipientId = dialog.getSecondPersonId();
+        } else {
+            recipientId = dialog.getFirstPersonId();
+        }
+        message.setRecipientId(recipientId);
         Message messageModel = Message.builder()
                 .isDeleted(false)
                 .messageText(message.getMessageText())
