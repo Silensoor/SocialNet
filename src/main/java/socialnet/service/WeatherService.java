@@ -53,7 +53,12 @@ public class WeatherService {
 
         JSONObject main = jsonObject.getJSONObject("main");
 
-        String currentTemp = Integer.toString(Math.round(Float.parseFloat(main.get("temp").toString()) - 273.15F));
+        String currentTemp;
+        try {
+            currentTemp = Integer.toString(Math.round(Float.parseFloat(main.get("temp").toString()) - 273.15F));
+        } catch (Exception ex) {
+            currentTemp = "?";
+        }
 
         return new WeatherRs(jsonObject.getString("name"),
                 weather.getString("description"),
