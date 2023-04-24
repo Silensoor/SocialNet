@@ -2,7 +2,6 @@ package socialnet.utils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.var;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
 import org.springframework.stereotype.Component;

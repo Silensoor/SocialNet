@@ -14,5 +14,10 @@ public interface PersonMapper {
     @Mapping(source = "changePasswordToken", target = "token")
     @Mapping(source = "isDeleted", target = "userDeleted")
     @Mapping(source = "messagePermissions", target = "messagesPermission")
+    @Mapping(expression = "java(isOnline(person.getOnlineStatus()))", target = "online")
     PersonRs toDTO(Person person);
+
+    default boolean isOnline(String status) {
+        return status != null && status.equals("ONLINE");
+    }
 }

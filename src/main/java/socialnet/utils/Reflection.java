@@ -1,8 +1,6 @@
 package socialnet.utils;
 
 
-import lombok.var;
-import org.apache.commons.collections4.map.SingletonMap;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -14,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.Character.isDigit;
-import static java.lang.Character.toLowerCase;
 
 @Component
 public class Reflection {
@@ -73,8 +70,9 @@ public class Reflection {
         String values = "";
 
         for (Field field : object.getClass().getDeclaredFields()) {
+            String fieldName = getSqlName(field.getName());
             if (!field.getName().equalsIgnoreCase(excludeField)) {
-                result = result.concat(delemitter).concat(field.getName());
+                result = result.concat(delemitter).concat(fieldName);
                 values += delemitter.concat(" ?");
                 delemitter = ", ";
             }
