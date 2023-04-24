@@ -6,18 +6,11 @@ import socialnet.api.request.LikeRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
 import socialnet.api.response.NotificationType;
-import socialnet.model.Like;
-import socialnet.model.Notification;
-import socialnet.model.Person;
-import socialnet.model.Post;
-import socialnet.repository.LikeRepository;
-import socialnet.repository.PersonRepository;
-import socialnet.repository.PostRepository;
+import socialnet.model.*;
+import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.service.notifications.NotificationPusher;
+import socialnet.utils.NotificationPusher;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +23,8 @@ public class LikesService {
     private final PersonRepository personRepository;
     private final JwtUtils jwtUtils;
     private final PostRepository postRepository;
+    private final PersonSettingRepository personSettingRepository;
+    private final CommentRepository commentRepository;
 
     public CommonRs<LikeRs> getLikes (String jwtToken, Integer itemId, String type) {
         List<Like> likes = likeRepository.getLikesByEntityId(itemId);
@@ -51,10 +46,26 @@ public class LikesService {
         List<Integer> users = new ArrayList<>();
         likes.forEach(l -> users.add(l.getPersonId().intValue()));
 
-        Notification notification = getNotification(likeRq, authUser.getId());
-        Post post = postRepository.findById(likeRq.getItem_id());
-        NotificationPusher.sendPush(notification, post.getAuthorId());
-
+        for (Like l : likes) {
+            users.add(l.getPersonId().intValue());
+        }
+        if (likeRq.getType().equals("Comment")) {
+            Comment comment = commentRepository.findById(likeRq.getItem_id().longValue());
+            PersonSettings personSettings = personSettingRepository.getPersonSettings(comment.getAuthorId());
+            if (personSettings.getLikeNotification() && !comment.getAuthorId().equals(authUser.getId())) {
+                Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
+                        comment.getAuthorId(), authUser.getId());
+                NotificationPusher.sendPush(notification, authUser.getId());
+            }
+        } else {
+            Post post = postRepository.findById(likeRq.getItem_id());
+            PersonSettings personSettings = personSettingRepository.getPersonSettings(post.getAuthorId());
+            if (personSettings.getLikeNotification() && !post.getAuthorId().equals(authUser.getId())) {
+                Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
+                        post.getAuthorId(), authUser.getId());
+                NotificationPusher.sendPush(notification, authUser.getId());
+            }
+        }
         return new CommonRs<>(new LikeRs(likes.size(), users), System.currentTimeMillis());
     }
 
@@ -72,17 +83,6 @@ public class LikesService {
         List<Integer> users = new ArrayList<>();
         likes.forEach(l -> users.add(l.getPersonId().intValue()));
         return new CommonRs<>(new LikeRs(likesAfterDelete.size(), users), System.currentTimeMillis());
-    }
-
-    private Notification getNotification(LikeRq likeRq, Long personId) {
-        Notification notification = new Notification();
-        notification.setSentTime(Timestamp.from(Instant.now()));
-        notification.setNotificationType(NotificationType.POST_LIKE.toString());
-        notification.setContact(likeRq.getItem_id().toString());
-        notification.setIsRead(false);
-        notification.setPersonId(personId);
-        notification.setEntityId(1L);
-        return notification;
     }
 
 

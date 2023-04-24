@@ -6,10 +6,10 @@ import socialnet.api.request.NotificationRq;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
+import socialnet.api.response.PersonSettingsRs;
 import socialnet.api.response.RegisterRs;
-import socialnet.model.PersonSettings;
 import socialnet.service.AccountService;
-import socialnet.service.notifications.NotificationsService;
+import socialnet.service.NotificationsService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,7 +26,7 @@ public class AccountController {
         return accountService.getRegisterData(regRequest);
     }
     @GetMapping("/notifications")
-    public CommonRs<List<PersonSettings>> notifications(@RequestHeader String authorization){
+    public CommonRs<List<PersonSettingsRs>> notifications(@RequestHeader String authorization){
         return  notificationsService.getNotificationByPerson(authorization);
     }
     @PutMapping("/notifications")
