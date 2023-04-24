@@ -26,7 +26,8 @@ import socialnet.service.PersonService;
 @ContextConfiguration(initializers = AbstractTest.Initializer.class)
 public abstract class AbstractTest {
     @ClassRule
-    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14");
+    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14")
+        .withReuse(true);
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
