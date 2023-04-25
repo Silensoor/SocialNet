@@ -156,8 +156,9 @@ public class PostsControllerTest {
         mockMvc
             .perform(
                 delete("/api/v1/post/1")
-                .contentType("application/json")
-                .accept("application/json")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
             )
             .andExpect(status().isOk())
             .andDo(print());
@@ -170,9 +171,9 @@ public class PostsControllerTest {
         mockMvc
             .perform(
                 put("/api/v1/post/1/recover")
-                .with(authorization())
-                .contentType("application/json")
-                .accept("application/json")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data.id", is(1)))
