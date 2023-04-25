@@ -24,26 +24,26 @@ public class PersonRepository {
 
     public void save(Person person) {
         jdbcTemplate.update(
-            "INSERT INTO persons " +
-            "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            person.getEmail(),
-            person.getFirstName(),
-            person.getLastName(),
-            person.getPassword(),
-            person.getRegDate(),
-            person.getIsApproved(),
-            person.getIsBlocked(),
-            person.getIsDeleted()
+                "INSERT INTO persons " +
+                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                person.getEmail(),
+                person.getFirstName(),
+                person.getLastName(),
+                person.getPassword(),
+                person.getRegDate(),
+                person.getIsApproved(),
+                person.getIsBlocked(),
+                person.getIsDeleted()
         );
     }
 
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
-                personRowMapper,
-                email
+                    "SELECT * FROM persons WHERE email = ?",
+                    personRowMapper,
+                    email
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -184,7 +184,7 @@ public class PersonRepository {
 
     public Long getPersonIdByEmail(String email) {
         return jdbcTemplate.queryForObject("Select id from Persons where email = ?",
-                new Object[] {email}, Long.class);
+                new Object[]{email}, Long.class);
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
@@ -220,7 +220,7 @@ public class PersonRepository {
                                    String first_name, String last_name, Boolean flagQueryAll) {
         StringBuilder str = new StringBuilder();
         String sql;
-        if (flagQueryAll){
+        if (flagQueryAll) {
             str.append("SELECT COUNT(*) FROM persons WHERE is_deleted=false AND ");
         } else {
             str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
@@ -257,7 +257,7 @@ public class PersonRepository {
             final String x1 = author.substring(0, author.indexOf(" ")).toLowerCase();
             final String x = author.substring(author.indexOf(" ") + 1).toLowerCase();
             return jdbcTemplate.queryForObject("SELECT * FROM persons" +
-                            " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
+                                               " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
                     personRowMapper, x1, x);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
