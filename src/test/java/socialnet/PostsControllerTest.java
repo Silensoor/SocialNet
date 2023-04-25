@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
@@ -15,19 +16,20 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import socialnet.controller.PostsController;
+import socialnet.exception.EntityNotFoundException;
 import socialnet.security.jwt.JwtUtils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
@@ -61,6 +63,13 @@ public class PostsControllerTest {
         return jwtUtils.generateJwtToken(email);
     }
 
+    public RequestPostProcessor authorization() {
+        return request -> {
+            request.addHeader("authorization", getToken(TEST_EMAIL));
+            return request;
+        };
+    }
+
     @Test
     @DisplayName("Загрузка контекста")
     @Transactional
@@ -76,8 +85,7 @@ public class PostsControllerTest {
         mockMvc
             .perform(get("/api/v1/post/1"))
             .andDo(print())
-            .andExpect(unauthenticated())
-            .andReturn();
+            .andExpect(unauthenticated());
     }
 
     @Test
@@ -85,11 +93,10 @@ public class PostsControllerTest {
     @Transactional
     public void getPostByExistsId() throws Exception {
         mockMvc
-            .perform(get("/api/v1/post/1").header("authorization", getToken(TEST_EMAIL)))
+            .perform(get("/api/v1/post/1").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andReturn();
+            .andExpect(content().contentType("application/json"));
     }
 
     @Test
@@ -97,9 +104,8 @@ public class PostsControllerTest {
     @Transactional
     public void getPostByNotExistsId() throws Exception {
         /*mockMvc
-            .perform(get("/api/v1/post/0").header("authorization", getToken(TEST_EMAIL)))
+            .perform(get("/api/v1/post/0").with(authorization()))
             .andDo(print())
-            .andExpect(status().isBadRequest())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof EntityNotFoundException))
             .andExpect(result -> assertEquals("Post with id = 0 not found", result.getResolvedException().getMessage()));*/
     }
