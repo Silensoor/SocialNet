@@ -1,5 +1,7 @@
 package socialnet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -7,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import socialnet.api.request.PostRq;
 import socialnet.controller.PostsController;
 import socialnet.exception.EntityNotFoundException;
 import socialnet.schedules.RemoveDeletedPosts;
@@ -33,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -91,24 +93,23 @@ public class PostsControllerTest {
     @DisplayName("Неавторизованный пользователь")
     @Transactional
     public void accessDenied() throws Exception {
-        /*mockMvc
+        mockMvc
             .perform(get("/api/v1/post/1"))
-            .andDo(print())
-            .andExpect(unauthenticated());*/
+            .andExpect(unauthenticated())
+            .andDo(print());
     }
 
     @Test
     @DisplayName("Получение поста по существующему ID")
     @Transactional
     public void getPostByExistsId() throws Exception {
-        /*mockMvc
+        mockMvc
             .perform(get("/api/v1/post/1").with(authorization()))
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.data[0].id", is(1)))
-            .andExpect(jsonPath("$.data[0].title", is("Post title #1")));*/
+            .andExpect(jsonPath("$.data.id", is(1)))
+            .andExpect(jsonPath("$.data.title", is("Post title #1")))
+            .andDo(print());
     }
 
     @Test
@@ -117,8 +118,65 @@ public class PostsControllerTest {
     public void getPostByNotExistsId() throws Exception {
         /*mockMvc
             .perform(get("/api/v1/post/0").with(authorization()))
-            .andDo(print())
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof EntityNotFoundException))
-            .andExpect(result -> assertEquals("Post with id = 0 not found", result.getResolvedException().getMessage()));*/
+            .andExpect(result -> assertEquals("Post with id = 0 not found", result.getResolvedException().getMessage()))
+            .andDo(print());*/
+    }
+
+    @Test
+    @DisplayName("Обновление поста по ID")
+    @Transactional
+    public void updatePostById() throws Exception {
+        String expectedText = "Updated post";
+
+        PostRq postRq = new PostRq();
+        postRq.setTitle("Post title #1");
+        postRq.setPost_text(expectedText);
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(postRq);
+
+        mockMvc
+            .perform(
+                put("/api/v1/post/1")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+                    .content(content)
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.post_text", is(expectedText)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Удаление поста по ID")
+    @Transactional
+    public void deletePostById() throws Exception {
+        mockMvc
+            .perform(
+                delete("/api/v1/post/1")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+            )
+            .andExpect(status().isOk())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Восстановление поста по ID")
+    @Transactional
+    public void recoverPostById() throws Exception {
+        mockMvc
+            .perform(
+                put("/api/v1/post/1/recover")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id", is(1)))
+            .andDo(print());
     }
 }
