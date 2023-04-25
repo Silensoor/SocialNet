@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
-import socialnet.api.request.LoginRq;
 import socialnet.controller.FriendsController;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -38,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = { FriendsTest.Initializer.class })
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class FriendsTest {
     @Autowired
     private FriendsController friendsController;
@@ -72,13 +70,9 @@ public class FriendsTest {
         }
     }
 
-    private String getToken(String email) {
-        return jwtUtils.generateJwtToken(email);
-    }
-
     public RequestPostProcessor authorization() {
         return request -> {
-            request.addHeader("authorization", getToken(TEST_EMAIL));
+            request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
             return request;
         };
     }

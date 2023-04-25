@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -36,6 +37,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = { PostsControllerTest.Initializer.class })
+@Sql(
+    value = { "/sql/clear_all_tables.sql", "/sql/posts_controller_test.sql" },
+    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
 public class PostsControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -59,13 +64,9 @@ public class PostsControllerTest {
         }
     }
 
-    private String getToken(String email) {
-        return jwtUtils.generateJwtToken(email);
-    }
-
     public RequestPostProcessor authorization() {
         return request -> {
-            request.addHeader("authorization", getToken(TEST_EMAIL));
+            request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
             return request;
         };
     }
