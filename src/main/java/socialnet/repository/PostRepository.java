@@ -21,7 +21,11 @@ public class PostRepository {
     private final TagService tagService;
 
     public List<Post> findAll() {
-        return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
+        try {
+            return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public List<Post> findAll(int offset, int perPage) {
@@ -60,18 +64,18 @@ public class PostRepository {
     }
 
     public void updateById(int id, Post post) {
-        String update = "UPDATE posts SET post_text = \'" + post.getPostText() + "\', title =  \'" + post.getTitle() + "\' WHERE id = " + id;
-        jdbcTemplate.update(update);
+        String update = "UPDATE posts SET post_text = ?, title =  ? WHERE id = ?";
+        jdbcTemplate.update(update, post.getPostText(), post.getTitle(), id);
     }
 
     public void markAsDeleteById(int id, Post post) {
-        String update = "UPDATE posts SET is_deleted = " + post.getIsDeleted() + ", time_delete = \'" + post.getTimeDelete() + "\' WHERE id = " + id;
-        jdbcTemplate.update(update);
+        String update = "UPDATE posts SET is_deleted = ?, time_delete = ? WHERE id = ?";
+        jdbcTemplate.update(update, post.getIsDeleted(), post.getTimeDelete(), id);
     }
 
     public boolean deleteById(int id) {
-        String delete = "DELETE FROM posts WHERE id = " + id;
-        jdbcTemplate.execute(delete);
+        String delete = "DELETE FROM posts WHERE id = ?";
+        jdbcTemplate.update(delete, id);
         return true;
     }
 
@@ -82,12 +86,10 @@ public class PostRepository {
 
     public List<Post> findDeletedPosts() {
         String select = "SELECT * FROM posts WHERE is_deleted = true";
-        return jdbcTemplate.queryForList(select, Post.class);
-    }
-
-    public void deleteAll(List<Post> deletingPosts) {
-        for (Post deletingPost : deletingPosts) {
-            deleteById(deletingPost.getId().intValue());
+        try{
+            return jdbcTemplate.query(select, postRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
         }
     }
 

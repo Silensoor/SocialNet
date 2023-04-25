@@ -274,7 +274,7 @@ public class PostService {
 
     public void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
-        postRepository.deleteAll(deletingPosts);
+        deletingPosts.forEach(p -> postRepository.deleteById(p.getId().intValue()));
         List<Tag> tags = new ArrayList<>();
         List<Like> likes = new ArrayList<>();
         for (Post deletingPost : deletingPosts) {
