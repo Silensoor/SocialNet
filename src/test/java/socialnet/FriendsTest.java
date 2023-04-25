@@ -16,9 +16,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
-import socialnet.api.request.LoginRq;
 import socialnet.controller.FriendsController;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -36,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = { FriendsTest.Initializer.class })
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class FriendsTest {
     @Autowired
     private FriendsController friendsController;
@@ -55,7 +55,6 @@ public class FriendsTest {
     private PersonService personService;
 
     private final String TEST_EMAIL = "user1@email.com";
-    private final String TEST_PASSWORD = "12345678";
 
     @ClassRule
     public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14");
@@ -71,16 +70,11 @@ public class FriendsTest {
         }
     }
 
-    private String getToken(String email) {
-        return jwtUtils.generateJwtToken(email);
-    }
-
-    private void authenticate(String email, String password) {
-        LoginRq loginRq = new LoginRq();
-        loginRq.setEmail(email);
-        loginRq.setPassword(password);
-
-        personService.getLogin(loginRq);
+    public RequestPostProcessor authorization() {
+        return request -> {
+            request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
+            return request;
+        };
     }
 
     @Test
@@ -97,11 +91,8 @@ public class FriendsTest {
     @Test
     @Transactional
     public void getFriendsTest() throws Exception{
-        String token = getToken(TEST_EMAIL);
-        authenticate(TEST_EMAIL, TEST_PASSWORD);
-
         this.mockMvc
-            .perform(get("/api/v1/friends").header("authorization", token))
+            .perform(get("/api/v1/friends").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
@@ -114,11 +105,8 @@ public class FriendsTest {
     @Test
     @Transactional
     public void getOutgoingRequests() throws Exception {
-        String token = getToken(TEST_EMAIL);
-        authenticate(TEST_EMAIL, TEST_PASSWORD);
-
         this.mockMvc
-            .perform(get("/api/v1/friends/outgoing_requests").header("authorization", token))
+            .perform(get("/api/v1/friends/outgoing_requests").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
@@ -129,13 +117,10 @@ public class FriendsTest {
     @Test
     @Transactional
     public void blocksUser() throws Exception {
-        String token = getToken(TEST_EMAIL);
-        authenticate(TEST_EMAIL, TEST_PASSWORD);
-
         String startValue = friendsShipsRepository.findFriend(1L, 4L).get(0).getStatusName().toString();
 
         this.mockMvc
-            .perform(post("/api/v1/friends/block_unblock/4").header("authorization", token))
+            .perform(post("/api/v1/friends/block_unblock/4").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();
@@ -145,11 +130,8 @@ public class FriendsTest {
     }
 
     public void getRecommendedFriends() throws Exception {
-        String token = getToken(TEST_EMAIL);
-        authenticate(TEST_EMAIL, TEST_PASSWORD);
-
         this.mockMvc
-            .perform(get("/api/v1/friends/recommendations").header("authorization", token))
+            .perform(get("/api/v1/friends/recommendations").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
