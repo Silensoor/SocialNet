@@ -159,7 +159,8 @@ public class PostsControllerTest {
                 .contentType("application/json")
                 .accept("application/json")
             )
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andDo(print());
     }
 
     @Test
