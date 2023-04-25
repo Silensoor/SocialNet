@@ -38,7 +38,8 @@ public class NotificationPusher {
         notification.setId(id);
         Person personReceiver = personRepository.findById(personId);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(personReceiver);
-        NotificationRs dto = NotificationMapper.INSTANCE.toDTO(notification, personRs);
+        NotificationRs dto = NotificationMapper.INSTANCE.toDTO(notification);
+        dto.setEntityAuthor(personRs);
         try {
             messagingTemplate.convertAndSend(String.format("/user/%s/queue/notifications", notification.getPersonId()),
                     dto);

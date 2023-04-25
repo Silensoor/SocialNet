@@ -40,29 +40,25 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-    private final PersonMapper personMapper;
-    private final UserDtoMapper userDtoMapper;
 
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
-    public Object getLogin(LoginRq loginRq) {
+    public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
 
-        Person person;
-        if ((person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword())) != null) {
+        Person person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword());
+
             jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
             authenticated(loginRq);
-            PersonRs personRs = personMapper.toDTO(person);
+            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
             changePersonStatus(personRs);
             return new CommonRs<>(personRs);
-        } else {
-            throw new EmptyEmailException("invalid username or password");
-        }
+
     }
 
     public CommonRs<PersonRs> getMyProfile(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
-        PersonRs personRs = personMapper.toDTO(person);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
@@ -97,7 +93,7 @@ public class PersonService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
-        PersonRs personRs = personMapper.toDTO(person);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
 
         personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
@@ -105,14 +101,14 @@ public class PersonService {
         return ResponseEntity.ok(new CommonRs(personRs));
     }
 
-    public Object getLogout(String authorization) {
+    public CommonRs<ComplexRs> getLogout(String authorization) {
 
         return setCommonRs(setComplexRs());
     }
 
-    public Object getUserById(String authorization, Integer id) {
+    public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
         Person person = findUser(id);
-        PersonRs personRs = personMapper.toDTO(person);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
@@ -153,18 +149,25 @@ public class PersonService {
     }
 
 
+
     public Person checkLoginAndPassword(String email, String password) {
 
         Person person = personRepository.findByEmail(email);
 
-        if (person != null && new BCryptPasswordEncoder().matches(password, person.getPassword())) {
-            log.info(person.getFirstName() + " авторизован");
-            return person;
+        if (person == null) {
+
+            throw new EmptyEmailException("Email is not registered");
         }
-        return null;
+
+        if (!new BCryptPasswordEncoder().matches(password, person.getPassword())) {
+
+            throw new EmptyEmailException("Incorrect password");
+        }
+
+        return person;
     }
 
-    private void authenticated(LoginRq loginRq) {
+        private void authenticated(LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -178,8 +181,8 @@ public class PersonService {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
-        PersonRs personRs = personMapper.toDTO(person);
-        UserUpdateDto userUpdateDto = userDtoMapper.toDto(userRq);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+        UserUpdateDto userUpdateDto = UserDtoMapper.INSTANCE.toDto(userRq);
 
         userUpdateDto.setPhoto(person.getPhoto());
         if (userUpdateDto.getPhoto() == null)
