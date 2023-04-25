@@ -124,7 +124,7 @@ public class PostsControllerTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Обновление поста по ID")
     @Transactional
     public void updatePostById() throws Exception {
         String expectedText = "Updated post";
@@ -150,7 +150,7 @@ public class PostsControllerTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("Удаление поста по ID")
     @Transactional
     public void deletePostById() throws Exception {
         mockMvc
@@ -160,5 +160,21 @@ public class PostsControllerTest {
                 .accept("application/json")
             )
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Восстановление поста по ID")
+    @Transactional
+    public void recoverPostById() throws Exception {
+        mockMvc
+            .perform(
+                put("/api/v1/post/1/recover")
+                .with(authorization())
+                .contentType("application/json")
+                .accept("application/json")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id", is(1)))
+            .andDo(print());
     }
 }
