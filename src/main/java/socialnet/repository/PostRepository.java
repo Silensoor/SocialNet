@@ -17,7 +17,6 @@ import java.util.*;
 public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final PersonRepository personRepository;
     private final TagService tagService;
 
     public List<Post> findAll() {
