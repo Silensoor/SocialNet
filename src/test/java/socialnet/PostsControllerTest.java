@@ -185,8 +185,8 @@ public class PostsControllerTest {
     @Transactional
     public void createPost() throws Exception {
         PostRq postRq = new PostRq();
-        postRq.setTitle("Post title #2");
-        postRq.setPostText("Some post #2 text");
+        postRq.setTitle("Post title #11");
+        postRq.setPostText("Some post #11 text");
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String content = ow.writeValueAsString(postRq);
@@ -200,10 +200,10 @@ public class PostsControllerTest {
                     .content(content)
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(2)))
+            .andExpect(jsonPath("$.data.id", is(11)))
             .andExpect(jsonPath("$.data.author.id", is(1)))
-            .andExpect(jsonPath("$.data.title", is("Post title #2")))
-            .andExpect(jsonPath("$.data.post_text", is("Some post #2 text")))
+            .andExpect(jsonPath("$.data.title", is("Post title #11")))
+            .andExpect(jsonPath("$.data.post_text", is("Some post #11 text")))
             .andDo(print());;
     }
 
