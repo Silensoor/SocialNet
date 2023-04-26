@@ -9,8 +9,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import socialnet.api.response.WeatherRs;
+import socialnet.repository.CityRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +20,14 @@ public class WeatherService {
     @Value("${weather.apiKey}")
     private String apiKey;
 
+    private final CityRepository cityRepository;
+
 
     public WeatherRs getWeatherByCity(String city) {
 
         if (city == null) return new WeatherRs();
+
+        if (!cityRepository.containsCity(city)) return new WeatherRs();
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https")
@@ -40,9 +46,9 @@ public class WeatherService {
 
         JSONArray list = jsonObject.getJSONArray("list");
 
-        JSONObject s = (JSONObject) list.get(0);
+        if (list.length() == 0) return new WeatherRs();
 
-        return getWeatherRs(s);
+        return getWeatherRs((JSONObject) list.get(0));
     }
 
     private WeatherRs getWeatherRs(JSONObject jsonObject) {
