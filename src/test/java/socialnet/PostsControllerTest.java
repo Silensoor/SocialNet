@@ -23,14 +23,13 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import socialnet.api.request.PostRq;
-import socialnet.controller.PostsController;
-import socialnet.exception.EntityNotFoundException;
 import socialnet.schedules.RemoveDeletedPosts;
 import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -131,7 +130,7 @@ public class PostsControllerTest {
 
         PostRq postRq = new PostRq();
         postRq.setTitle("Post title #1");
-        postRq.setPost_text(expectedText);
+        postRq.setPostText(expectedText);
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String content = ow.writeValueAsString(postRq);
@@ -161,6 +160,7 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.is_deleted", is(true)))
             .andDo(print());
     }
 
@@ -176,7 +176,82 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(1)))
+            .andExpect(jsonPath("$.data.is_deleted", is(false)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Создание поста")
+    @Transactional
+    public void createPost() throws Exception {
+        PostRq postRq = new PostRq();
+        postRq.setTitle("Post title #2");
+        postRq.setPostText("Some post #2 text");
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(postRq);
+
+        mockMvc
+            .perform(
+                post("/api/v1/users/1/wall")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+                    .content(content)
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.id", is(2)))
+            .andExpect(jsonPath("$.data.author.id", is(1)))
+            .andExpect(jsonPath("$.data.title", is("Post title #2")))
+            .andExpect(jsonPath("$.data.post_text", is("Some post #2 text")))
+            .andDo(print());;
+    }
+
+    @Test
+    @DisplayName("Получение всех постов с пагинацией")
+    @Transactional
+    public void getPostsWithPagination() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/users/1/wall")
+                    .with(authorization())
+                    .param("offset", "5")
+                    .param("perPage", "5")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(5)))
+            .andExpect(jsonPath("$.data[0].id", is(6)))
+            .andExpect(jsonPath("$.data[4].id", is(10)))
+            .andExpect(jsonPath("$.data[0].author.id", is(1)))
+            .andExpect(jsonPath("$.data[1].author.id", is(1)))
+            .andExpect(jsonPath("$.data[2].author.id", is(1)))
+            .andExpect(jsonPath("$.data[3].author.id", is(1)))
+            .andExpect(jsonPath("$.data[4].author.id", is(1)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Получение всех постов")
+    @Transactional
+    public void getPosts() throws Exception {
+        mockMvc
+            .perform(get("/api/v1/users/1/wall").with(authorization()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(10)))
+            .andExpect(jsonPath("$.data[0].author.id", is(1)))
+            .andExpect(jsonPath("$.data[1].author.id", is(1)))
+            .andExpect(jsonPath("$.data[2].author.id", is(1)))
+            .andExpect(jsonPath("$.data[3].author.id", is(1)))
+            .andExpect(jsonPath("$.data[4].author.id", is(1)))
+            .andExpect(jsonPath("$.data[5].author.id", is(1)))
+            .andExpect(jsonPath("$.data[6].author.id", is(1)))
+            .andExpect(jsonPath("$.data[7].author.id", is(1)))
+            .andExpect(jsonPath("$.data[8].author.id", is(1)))
+            .andExpect(jsonPath("$.data[9].author.id", is(1)))
             .andDo(print());
     }
 }
