@@ -150,7 +150,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> deleteFriendsRequest(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
-        final Friendships friendships = friendsShipsRepository.findFriend(personsEmail.getId(), Long.valueOf(id));
+        final Friendships friendships = friendsShipsRepository.findRequest(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
             if (friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST)) {
                 friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
