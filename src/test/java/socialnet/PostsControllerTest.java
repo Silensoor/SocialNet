@@ -320,7 +320,7 @@ public class PostsControllerTest {
     @Transactional
     public void getFeeds() throws Exception {
         mockMvc
-            .perform(get("/api/v1/post").with(authorization()))
+            .perform(get("/api/v1/feeds").with(authorization()))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data").isArray())
@@ -334,7 +334,7 @@ public class PostsControllerTest {
     public void getFeedsWithPagination() throws Exception {
         mockMvc
             .perform(
-                get("/api/v1/post")
+                get("/api/v1/feeds")
                     .with(authorization())
                     .param("offset", "0")
                     .param("perPage", "5")
