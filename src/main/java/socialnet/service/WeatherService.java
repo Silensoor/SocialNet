@@ -14,8 +14,13 @@ import socialnet.model.Weather;
 import socialnet.repository.CityRepository;
 import socialnet.repository.WeatherRepository;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static java.time.LocalDateTime.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +39,20 @@ public class WeatherService {
 
         if (!cityRepository.containsCity(city)) return new WeatherRs();
 
-        //Чтение информации о погоде из базы данных
-        var weatherFromDb = weatherRepository.getWeatherByCity(city);
+        var weatherFromDb =weatherRepository.getWeatherByCity(city);
         System.out.println(weatherFromDb);
 
+        //Чтение информации о погоде из базы данных
+        if (weatherFromDb != null) {
+            int compare = now().compareTo(weatherFromDb
+                    .getDate()
+                    .toLocalDateTime()
+                    .plus(1L,ChronoUnit.HOURS));
+
+            if (compare < 0) {
+                return weatherMapper.toResponse(weatherFromDb) ;
+            }
+        }
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https")
@@ -86,7 +101,6 @@ public class WeatherService {
         Weather wModel = weatherMapper.toModel(weatherRs);
         wModel.setOpenWeatherId(openWeatherId);
         weatherRepository.saveWeather(wModel);
-
 
         return weatherRs;
     }

@@ -13,6 +13,9 @@ public interface WeatherMapper {
     @Mapping(expression = "java(currentTime())", target = "date")
     Weather toModel(WeatherRs weatherRs);
 
+    @Mapping(target = "date", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
+    WeatherRs toResponse(Weather weather);
+
     default Timestamp currentTime() {
         return new Timestamp(System.currentTimeMillis());
     }

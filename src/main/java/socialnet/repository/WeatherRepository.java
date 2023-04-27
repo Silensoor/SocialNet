@@ -15,6 +15,8 @@ public class WeatherRepository {
     private final Reflection reflection;
 
     public void saveWeather(Weather weather) {
+        jdbcTemplate.update("Delete from Weather where city = ?", weather.getCity());
+
         var fields = reflection.getFieldNames(weather);
         var values = reflection.getStringValues(weather);
         var updateOnConflict = reflection.getUpdateSql(weather, "openWeatherId");
@@ -25,8 +27,8 @@ public class WeatherRepository {
     }
 
     public Weather getWeatherByCity(String city) {
-        return jdbcTemplate.queryForObject("select open_weather_id, city, clouds, date, temp from weather where city = ?",
+        return jdbcTemplate.query("select open_weather_id, city, clouds, date, temp from weather where city = ?",
                 new Object[] {city},
-                new BeanPropertyRowMapper<>(Weather.class));
+                new BeanPropertyRowMapper<>(Weather.class)).stream().findAny().orElse(null);
     }
 }
