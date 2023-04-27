@@ -153,20 +153,6 @@ public class PostsControllerTest {
     @DisplayName("Удаление поста по ID")
     @Transactional
     public void deletePostById() throws Exception {
-        boolean isError = false;
-        boolean isDeleted = false;
-
-        try {
-            isDeleted = jdbcTemplate.queryForObject(
-                "select is_deleted from posts where id = 1",
-                Boolean.class
-            );
-        } catch (Exception ignored) {
-            isError = true;
-        }
-
-        assertFalse(isError);
-
         mockMvc
             .perform(
                 delete("/api/v1/post/1")
@@ -178,13 +164,6 @@ public class PostsControllerTest {
             .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
 
-        assertTrue(isDeleted);
-    }
-
-    @Test
-    @DisplayName("Восстановление поста по ID")
-    @Transactional
-    public void recoverPostById() throws Exception {
         boolean isError = false;
         boolean isDeleted = false;
 
@@ -198,7 +177,13 @@ public class PostsControllerTest {
         }
 
         assertFalse(isError);
+        assertTrue(isDeleted);
+    }
 
+    @Test
+    @DisplayName("Восстановление поста по ID")
+    @Transactional
+    public void recoverPostById() throws Exception {
         mockMvc
             .perform(
                 put("/api/v1/post/1/recover")
@@ -210,6 +195,19 @@ public class PostsControllerTest {
             .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
 
+        boolean isError = false;
+        boolean isDeleted = false;
+
+        try {
+            isDeleted = jdbcTemplate.queryForObject(
+                "select is_deleted from posts where id = 1",
+                Boolean.class
+            );
+        } catch (Exception ignored) {
+            isError = true;
+        }
+
+        assertFalse(isError);
         assertFalse(isDeleted);
     }
 
