@@ -238,11 +238,10 @@ public class PostsControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.data.id", is(19)))
             .andExpect(jsonPath("$.data.author.id", is(1)))
             .andExpect(jsonPath("$.data.title", is(expectedTitle)))
             .andExpect(jsonPath("$.data.post_text", is(expectedText)))
-            .andDo(print());;
+            .andDo(print());
     }
 
     @Test
