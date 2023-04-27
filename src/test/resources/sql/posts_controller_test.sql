@@ -40,5 +40,5 @@ insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author
 insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,false,'Post text','2022-05-27 03:42:13','2023-02-13 07:13:20','Post title #14',3);
 insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,false,'Post text','2022-05-28 03:42:13','2023-02-13 07:13:20','Post title #15',4);
 insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,false,'Post text','2022-05-28 03:42:13','2023-02-13 07:13:20','Post title #16',4);
-insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,false,'Post text','2022-05-29 03:42:13','2023-02-13 07:13:20','Post title #17',5);
-insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,true,'Post text','2022-05-29 03:42:13','2023-02-13 07:13:20','Post title #18',5);
+insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,false,'Can I search this fucking post by this text?','2022-05-29 03:42:13','2023-02-13 07:13:20','Post title #17',5);
+insert into posts (is_blocked,is_deleted,post_text,time,time_delete,title,author_id) values (false,true,'Can I search this fucking post by this text?','2022-05-29 03:42:13','2023-02-13 07:13:20','Post title #18',5);

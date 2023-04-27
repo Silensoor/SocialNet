@@ -52,10 +52,8 @@ public class PersonRepository {
 
     public Person findById(Long personId) {
         try {
-            Person personList = jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?",
+            return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?",
                     new BeanPropertyRowMapper<>(Person.class), personId);
-            if (personList == null) throw new PostException("Person с id " + personId + " не существует");
-            return personList;
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
