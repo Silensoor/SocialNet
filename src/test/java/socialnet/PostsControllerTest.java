@@ -108,7 +108,7 @@ public class PostsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.id", is(1)))
-            .andExpect(jsonPath("$.data.title", is("Post title #1")))
+            .andExpect(jsonPath("$.data.title", is("Title #1")))
             .andDo(print());
     }
 
@@ -127,10 +127,10 @@ public class PostsControllerTest {
     @DisplayName("Обновление поста по ID")
     @Transactional
     public void updatePostById() throws Exception {
-        String expectedText = "Updated post";
+        String expectedText = "Some text updated";
 
         PostRq postRq = new PostRq();
-        postRq.setTitle("Post title #1");
+        postRq.setTitle("Title #1");
         postRq.setPostText(expectedText);
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -218,8 +218,8 @@ public class PostsControllerTest {
     @DisplayName("Создание поста")
     @Transactional
     public void createPost() throws Exception {
-        String expectedTitle = "Post title #19";
-        String expectedText = "Post text";
+        String expectedTitle = "Title #19";
+        String expectedText = "Some text";
 
         PostRq postRq = new PostRq();
         postRq.setTitle(expectedTitle);
@@ -318,7 +318,7 @@ public class PostsControllerTest {
     @DisplayName("Поиск постов по тексту")
     @Transactional
     public void getPostsByText() throws Exception {
-        /*mockMvc
+        mockMvc
             .perform(
                 get("/api/v1/post")
                     .with(authorization())
@@ -328,11 +328,26 @@ public class PostsControllerTest {
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data").isArray())
             .andExpect(jsonPath("$.data", hasSize(1)))
-            .andDo(print());*/
+            .andDo(print());
     }
 
     @Test
-    @DisplayName("Получение всех новостей")
+    @DisplayName("Проверка поиска на спецсимволы")
+    @Transactional
+    public void getPostsByBadText() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/post")
+                    .with(authorization())
+                    .param("text", "'")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Список новостей не должен содержать удалённые посты")
     @Transactional
     public void getFeeds() throws Exception {
         mockMvc
