@@ -253,13 +253,13 @@ public class PostService {
     }
 
     public CommonRs<PostRs> markAsDelete(int id, String jwtToken) {
+        postRepository.markAsDeleteById(id);
+
         Post postFromDB = postRepository.findById(id);
-        postFromDB.setIsDeleted(true);
-        postFromDB.setTimeDelete(new Timestamp(System.currentTimeMillis()));
-        postRepository.markAsDeleteById(id, postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);
+
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 

@@ -64,8 +64,8 @@ public class PostRepository {
         jdbcTemplate.update(update);
     }
 
-    public void markAsDeleteById(int id, Post post) {
-        String update = "UPDATE posts SET is_deleted = " + post.getIsDeleted() + ", time_delete = \'" + post.getTimeDelete() + "\' WHERE id = " + id;
+    public void markAsDeleteById(int id) {
+        String update = "UPDATE posts SET is_deleted = true, time_delete = now() WHERE id = " + id;
         jdbcTemplate.update(update);
     }
 
