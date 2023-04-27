@@ -1,8 +1,10 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import socialnet.model.Country;
 import socialnet.model.Weather;
 import socialnet.utils.Reflection;
 
@@ -20,5 +22,11 @@ public class WeatherRepository {
                 " on conflict on constraint unique_open_weather_id do update set "  +
                 updateOnConflict;
         jdbcTemplate.update(sql);
+    }
+
+    public Weather getWeatherByCity(String city) {
+        return jdbcTemplate.queryForObject("select open_weather_id, city, clouds, date, temp from weather where city = ?",
+                new Object[] {city},
+                new BeanPropertyRowMapper<>(Weather.class));
     }
 }

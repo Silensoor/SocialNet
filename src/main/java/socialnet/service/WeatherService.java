@@ -35,6 +35,9 @@ public class WeatherService {
         if (!cityRepository.containsCity(city)) return new WeatherRs();
 
         //Чтение информации о погоде из базы данных
+        var weatherFromDb = weatherRepository.getWeatherByCity(city);
+        System.out.println(weatherFromDb);
+
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https")
