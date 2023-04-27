@@ -9,6 +9,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import socialnet.api.response.WeatherRs;
+import socialnet.mappers.WeatherMapper;
+import socialnet.model.Weather;
 import socialnet.repository.CityRepository;
 
 import java.time.LocalDate;
@@ -21,6 +23,7 @@ public class WeatherService {
     private String apiKey;
 
     private final CityRepository cityRepository;
+    private final WeatherMapper weatherMapper;
 
 
     public WeatherRs getWeatherByCity(String city) {
@@ -28,6 +31,8 @@ public class WeatherService {
         if (city == null) return new WeatherRs();
 
         if (!cityRepository.containsCity(city)) return new WeatherRs();
+
+        //Чтение информации о погоде из базы данных
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https")
@@ -55,7 +60,8 @@ public class WeatherService {
 
         JSONObject weather = (JSONObject) jsonObject.getJSONArray("weather").get(0);
 
-        //String cityId = weather.getString("id");
+        String openWeatherId = weather.getString("id");
+        //запись в базу данных информации о погоде в конкретном городе
 
         JSONObject main = jsonObject.getJSONObject("main");
 
@@ -66,9 +72,18 @@ public class WeatherService {
             currentTemp = "?";
         }
 
-        return new WeatherRs(jsonObject.getString("name"),
+        WeatherRs weatherRs = new WeatherRs(
+                jsonObject.getString("name"),
                 weather.getString("description"),
                 LocalDate.now().toString(),
                 currentTemp);
+
+        Weather w = weatherMapper.toModel(weatherRs);
+
+        return weatherRs;
+    }
+
+    private void saveWeather() {
+
     }
 }

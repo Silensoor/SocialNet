@@ -15,15 +15,6 @@ import static java.lang.Character.isDigit;
 
 @Component
 public class Reflection {
-    public Map<String, Object> getFieldsNameAndValue(Object object) {
-        Map<String, Object> result = new HashMap<>();
-        var cls = object.getClass();
-        for (Field field : cls.getDeclaredFields()) {
-            var value = methodInvoke(object, getMethodName("get", field.getName()));
-            result.put(field.getName(), value);
-        }
-        return result;
-    }
 
     public <T> List<String> getAllFields(T cls) {
         var result = new ArrayList<String>();
@@ -110,7 +101,7 @@ public class Reflection {
         return result;
     }
 
-    public Map<String, Object> getSqlWithoutNullable(Object object, Object[] addValues) {
+    public Map<String, Object> getFieldNamesAndValues(Object object, Object[] addValues) {
 
         StringBuilder fieldNames = new StringBuilder();
         Map<String, Object> result = new HashMap<>();
@@ -119,7 +110,8 @@ public class Reflection {
         List<Object> values = new ArrayList<>();
 
         for (Field field : object.getClass().getDeclaredFields()) {
-            Object fieldValue = methodInvoke(object, getMethodName("get", field.getName()));;
+            Object fieldValue = methodInvoke(object, getMethodName("get", field.getName()));
+            ;
 
             if (fieldValue != null) {
                 fieldNames.append(String.format("%s%s%s", delemitter, getSqlName(field.getName()), " = ? "));
@@ -128,9 +120,10 @@ public class Reflection {
             }
         }
 
-        Collections.addAll(values, addValues);
+        if (addValues != null)
+            Collections.addAll(values, addValues);
 
-        result.put("sql", fieldNames.toString());
+        result.put("fieldNames", fieldNames.toString());
         result.put("values", values.toArray());
         return result;
     }
@@ -150,7 +143,7 @@ public class Reflection {
                 i++;
             }
         }
-        return  result;
+        return result;
     }
 
     public Object[] getValues(Object object) {
@@ -178,6 +171,7 @@ public class Reflection {
         }
         return objects;
     }
+
     public Object[] getValuesArray(Object object) {
         var declaredFields = object.getClass().getDeclaredFields();
 
