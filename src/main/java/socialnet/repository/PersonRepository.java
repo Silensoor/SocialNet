@@ -52,22 +52,10 @@ public class PersonRepository {
 
     public Person findById(Long personId) {
         try {
-            List<Person> personList = jdbcTemplate.query("SELECT * FROM persons WHERE id = ?",
-                    new Object[]{personId}, new BeanPropertyRowMapper<>(Person.class));
-            if (personList.isEmpty()) throw new PostException("Person с id " + personId + " не существует");
-            return personList.get(0);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
-    }
-
-    public List<Person> findAll(Long limit) {
-        try {
-            return this.jdbcTemplate.query(
-                    "SELECT * FROM persons LIMIT ?",
-                    new Object[]{limit},
-                    personRowMapper
-            );
+            Person personList = jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?",
+                    new BeanPropertyRowMapper<>(Person.class), personId);
+            if (personList == null) throw new PostException("Person с id " + personId + " не существует");
+            return personList;
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -81,11 +69,62 @@ public class PersonRepository {
         }
     }
 
-    public List<Person> findFriendsAll(List<Long> friendsId) {
-        String sql = "SELECT * FROM persons WHERE";
-        String friendsIdString = friendsIdStringMethod(friendsId, sql);
+    public List<Person> findFriendsAll(Long id, Integer offset, Integer perPage) {
         try {
-            return this.jdbcTemplate.query(friendsIdString, personRowMapper);
+            return this.jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
+                            " p.change_password_token, p.configuration_code, p.deleted_time," +
+                            " p.email, p.first_name, p.is_approved, p.is_blocked, p.is_deleted," +
+                            " p.last_name, p.last_online_time, p.message_permissions," +
+                            " p.notifications_session_id, p.online_status, p.password, p.phone," +
+                            " p.photo, p.reg_date, p.city, p.country, p.telegram_id," +
+                            " p.person_settings_id FROM persons AS p JOIN friendships ON" +
+                            " friendships.dst_person_id=p.id OR friendships.src_person_id=p.id WHERE is_deleted = false" +
+                            " AND (friendships.dst_person_id=? OR friendships.src_person_id=?) AND" +
+                            " friendships.status_name='FRIEND' AND NOT p.id=? ORDER BY p.last_online_time DESC" +
+                            " OFFSET ? LIMIT ?",
+                    personRowMapper, id, id, id, offset, perPage);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findAllOutgoingRequests(Long id, Integer offset, Integer perPage) {
+        try {
+            return this.jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
+                            " p.change_password_token, p.configuration_code, p.deleted_time," +
+                            " p.email, p.first_name, p.is_approved, p.is_blocked," +
+                            " p.is_deleted, p.last_name, p.last_online_time," +
+                            " p.message_permissions, p.notifications_session_id, p.online_status," +
+                            " p.password, p.phone, p.photo, p.reg_date, p.city," +
+                            " p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
+                            " JOIN friendships ON friendships.src_person_id=p.id  OR friendships.dst_person_id=p.id" +
+                            " WHERE is_deleted = false AND friendships.src_person_id=? AND NOT p.id=?" +
+                            " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
+                    personRowMapper, id, id, offset, perPage);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public Integer findAllOutgoingRequestsAll(Long id) {
+        try {
+            return this.jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(p.id) FROM persons AS p JOIN" +
+                            " friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
+                            " WHERE is_deleted = false AND status_name = 'REQUEST' AND src_person_id = ? AND NOT p.id=?",
+                    Integer.class, id, id);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public Integer findFriendsAllCount(Long id) {
+        try {
+            return this.jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(persons.id) FROM persons JOIN" +
+                            " friendships ON friendships.dst_person_id=persons.id" +
+                            " OR friendships.src_person_id=persons.id WHERE is_deleted = false AND" +
+                            " (friendships.dst_person_id=? OR friendships.src_person_id=?)" +
+                            " AND friendships.status_name='FRIEND'  AND NOT persons.id=?",
+                    Integer.class, id, id, id);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -215,21 +254,21 @@ public class PersonRepository {
         }
         val ageFrom = searchDate(age_from);
         val ageTo = searchDate(age_to);
-        str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "");
-        str.append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "");
-        str.append(!city.equals("") ? " city = '" + city + "' AND " : "");
-        str.append(!country.equals("") ? " country = '" + country + "' AND " : "");
-        str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "");
-        str.append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
+        str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
+                .append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "")
+                .append(!city.equals("") ? " city = '" + city + "' AND " : "")
+                .append(!country.equals("") ? " country = '" + country + "' AND " : "")
+                .append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
+                .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);
         } else {
             sql = str.toString();
         }
-        if (flagQueryAll) {
-            return sql;
-        } else {
+        if (!flagQueryAll) {
             return sql + " OFFSET ? LIMIT ?";
+        } else {
+            return sql;
         }
     }
 
@@ -242,11 +281,10 @@ public class PersonRepository {
 
     public Person findPersonsName(String author) {
         try {
-            final String x1 = author.substring(0, author.indexOf(" ")).toLowerCase();
-            final String x = author.substring(author.indexOf(" ") + 1).toLowerCase();
             return jdbcTemplate.queryForObject("SELECT * FROM persons" +
-                                               " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
-                    personRowMapper, x1, x);
+                            " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
+                    personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
+                    author.substring(author.indexOf(" ") + 1).toLowerCase());
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -258,5 +296,83 @@ public class PersonRepository {
 
     public void updateLastOnlineTime(Long personId, Timestamp lastOnlineTime) {
         jdbcTemplate.update("UPDATE persons SET last_online_time = ? WHERE id = ?", lastOnlineTime, personId);
+    }
+
+    public List<Person> findRecommendedFriends(Long id, List<Person> friends, Integer offset, Integer perPage) {
+        StringBuilder sql = new StringBuilder("SELECT DISTINCT p.id, p.about, p.birth_date, p.change_password_token," +
+                " p.configuration_code, p.deleted_time, p.email, p.first_name, p.is_approved," +
+                " p.is_blocked, p.is_deleted, p.last_name, p.last_online_time, p.message_permissions," +
+                " p.notifications_session_id, p.online_status, p.password, p.phone, p.photo," +
+                " p.reg_date, p.city, p.country, p.telegram_id, p.person_settings_id" +
+                " FROM persons AS p JOIN friendships ON friendships.dst_person_id=p.id" +
+                " OR friendships.src_person_id=p.id WHERE is_deleted = false AND ")
+                .append(createSqlWhere(id, friends, offset, perPage));
+        try {
+            return this.jdbcTemplate.query(sql.toString(), personRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public String createSqlWhere(Long id, List<Person> friends, Integer offset, Integer perPage) {
+        StringBuilder strWhere = new StringBuilder();
+        StringBuilder str = new StringBuilder();
+        friends.forEach(friend -> str.append(friend.getId()).append(", "));
+        if (!friends.isEmpty()) {
+            strWhere.append(" (friendships.dst_person_id IN (")
+                    .append(str.substring(0, str.length() - 2))
+                    .append(") OR friendships.src_person_id IN (")
+                    .append(str.substring(0, str.length() - 2))
+                    .append("))")
+                    .append(" AND NOT p.id IN (")
+                    .append(str.substring(0, str.length() - 2))
+                    .append(")")
+                    .append(" AND NOT p.id=")
+                    .append(id);
+        } else {
+            strWhere.append(" NOT p.id=").append(id);
+        }
+        strWhere.append(" OFFSET ").append(offset).append(" LIMIT ").append(perPage);
+        return strWhere.toString();
+    }
+
+    public List<Person> findAllPotentialFriends(Long id, Integer offset, Integer perPage) {
+        try {
+            return this.jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date, p.change_password_token," +
+                            " p.configuration_code, p.deleted_time, p.email, p.first_name, p.is_approved, p.is_blocked," +
+                            " p.is_deleted, p.last_name, p.last_online_time, p.message_permissions," +
+                            " p.notifications_session_id, p.online_status, p.password, p.phone, p.photo, p.reg_date," +
+                            " p.city, p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
+                            " JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
+                            " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=?" +
+                            " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
+                    personRowMapper, id, id, offset, perPage);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
+                                             Integer offset, Integer perPage) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?" +
+                " AND NOT id IN(")
+                .append(friendsRecommended)
+                .append(") AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
+        try {
+            return this.jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND NOT id IN(")
+                .append(friendsRecommended)
+                .append(") AND NOT id=? LIMIT ?");
+        try {
+            return this.jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 }
