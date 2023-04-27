@@ -16,17 +16,6 @@ public class FriendsShipsRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Friendships> findAllFriendships(Long id) {
-        try {
-            return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                            " WHERE status_name = 'FRIEND' AND (dst_person_id = ? OR src_person_id = ?)",
-                    new Object[]{id, id}, friendshipsRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
-
-    }
-
     private final RowMapper<Friendships> friendshipsRowMapper = (resultSet, rowNum) -> {
         Friendships friendships = new Friendships();
         friendships.setId(resultSet.getLong("id"));
@@ -37,72 +26,34 @@ public class FriendsShipsRepository {
         return friendships;
     };
 
-    public List<Friendships> findFriend(Long id, Long idFriend) {
+    public Friendships findFriend(Long id, Long idFriend) {
         try {
-            return this.jdbcTemplate.query("SELECT * FROM friendships" +
+            return jdbcTemplate.queryForObject("SELECT * FROM friendships" +
                             " WHERE status_name = 'FRIEND' AND (dst_person_id = ? AND src_person_id = ?)" +
                             " OR (dst_person_id = ? AND src_person_id = ?)",
-                    new Object[]{id, idFriend, idFriend, id}, friendshipsRowMapper);
+                    friendshipsRowMapper, id, idFriend, idFriend, id);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    public void insertStatusFriend(Long id, String status) {
-        this.jdbcTemplate.update("UPDATE friendships SET status_name = ? WHERE id = ?", status, id);
+    public void insertStatusFriend(Long id, FriendshipStatusTypes status) {
+        jdbcTemplate.update("UPDATE friendships SET status_name = ? WHERE id = ?",
+                status.toString(), id);
     }
 
-    public List<Friendships> findAllOutgoingRequests(Long id) {
-        try {
-            return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                            " WHERE status_name = 'REQUEST' AND src_person_id = ?",
-                    new Object[]{id}, friendshipsRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
+    public void addFriend(Long id, Long idFriend, FriendshipStatusTypes status) {
+        jdbcTemplate.update("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
+                " VALUES (NOW(), ?, ?, ?)", idFriend, id, status.toString());
     }
 
-    public List<Friendships> findAllPotentialFriends(Long id) {
-        try {
-            return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                            " WHERE status_name = 'REQUEST' AND dst_person_id = ?",
-                    new Object[]{id}, friendshipsRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
-    }
-
-    public void addFriend(Long id, Long idFriend, String status) {
-        this.jdbcTemplate.update("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
-                "VALUES (NOW(), ?, ?, ?)", idFriend, id, status);
-    }
-
-    public void updateFriend(Long id, Long idFriend, String status, Long idRequest) {
-        this.jdbcTemplate.update("UPDATE friendships SET sent_time=NOW()," +
-                " dst_person_id=?, src_person_id=?, status_name=? WHERE id=?", idFriend, id, status, idRequest);
-    }
-
-    public void deleteSentFriendshipRequest(String status, Long id) {
-        this.jdbcTemplate.update("UPDATE friendships SET sent_time = NOW()," +
-                " status_name = ? WHERE id = ? ", status, id);
-    }
-
-    public List<Friendships> sendFriendshipRequest(Long id) {
-        try {
-            return this.jdbcTemplate.query("SELECT * FROM friendships" +
-                            " WHERE status_name = 'REQUEST' AND src_person_id = ?",
-                    new Object[]{id}, friendshipsRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
-    }
-
-    public void sendFriendshipRequestUsingPOST(Long idFriend, Long id, String status) {
-        this.jdbcTemplate.update("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name) " +
-                "VALUES (NOW(), ?, ?, ?)", idFriend, id, status);
+    public void updateFriend(Long id, Long idFriend, FriendshipStatusTypes status, Long idRequest) {
+        jdbcTemplate.update("UPDATE friendships SET sent_time=NOW()," +
+                " dst_person_id=?, src_person_id=?, status_name=? WHERE id=?", idFriend, id, status.toString(),
+                idRequest);
     }
 
     public void deleteFriendUsing(Long id) {
-        this.jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
+        jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
     }
 }

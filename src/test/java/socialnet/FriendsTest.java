@@ -92,14 +92,14 @@ public class FriendsTest {
     @Transactional
     public void getFriendsTest() throws Exception{
         this.mockMvc
-            .perform(get("/api/v1/friends").with(authorization()))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.data[0].email", is("user2@email.com")))
-            .andExpect(jsonPath("$.data[1].email", is("kutting1@eventbrite.com")))
-            .andReturn();
+                .perform(get("/api/v1/friends").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data[0].email", is("kutting1@eventbrite.com")))
+                .andExpect(jsonPath("$.data[1].email", is("user2@email.com")))
+                .andReturn();
     }
 
     @Test
@@ -117,7 +117,9 @@ public class FriendsTest {
     @Test
     @Transactional
     public void blocksUser() throws Exception {
-        String startValue = friendsShipsRepository.findFriend(1L, 4L).get(0).getStatusName().toString();
+
+        String startValue = friendsShipsRepository.findFriend(1L, 4L).getStatusName().toString();
+
 
         this.mockMvc
             .perform(post("/api/v1/friends/block_unblock/4").with(authorization()))
@@ -125,7 +127,7 @@ public class FriendsTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        String newValue = friendsShipsRepository.findFriend(1L, 4L).get(0).getStatusName().toString();
+        String newValue = friendsShipsRepository.findFriend(1L, 4L).getStatusName().toString();
         assertThat(!startValue.equals(newValue)).isTrue();
     }
 

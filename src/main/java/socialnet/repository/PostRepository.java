@@ -63,13 +63,13 @@ public class PostRepository {
     }
 
     public void updateById(int id, Post post) {
-        String update = "UPDATE posts SET post_text = ?, title =  ? WHERE id = ?";
+        String update = "UPDATE posts SET post_text = ?, title = ? WHERE id = ?";
         jdbcTemplate.update(update, post.getPostText(), post.getTitle(), id);
     }
 
-    public void markAsDeleteById(int id, Post post) {
-        String update = "UPDATE posts SET is_deleted = ?, time_delete = ? WHERE id = ?";
-        jdbcTemplate.update(update, post.getIsDeleted(), post.getTimeDelete(), id);
+    public void markAsDeleteById(int id) {
+        String update = "UPDATE posts SET is_deleted = true, time_delete = now() WHERE id = ?";
+        jdbcTemplate.update(update, id);
     }
 
     public boolean deleteById(int id) {
@@ -78,9 +78,18 @@ public class PostRepository {
         return true;
     }
 
-    public List<Post> findPostsByUserId(Long id) {
-        return jdbcTemplate.query("Select * from Posts Where id = ?",
-                postRowMapper, id);
+    public List<Post> findPostsByUserId(Long userId, Integer offset, Integer perPage) {
+        try {
+            return jdbcTemplate.query(
+                "select * from posts where author_id = ? order by time desc offset ? rows limit ?",
+                postRowMapper,
+                userId,
+                offset,
+                perPage
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Post> findDeletedPosts() {
