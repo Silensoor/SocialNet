@@ -43,10 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = { PostsControllerTest.Initializer.class })
-@Sql(
-    value = { "/sql/posts_controller_test.sql" },
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)
+@Sql({ "/sql/posts_controller_test.sql" })
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
@@ -156,10 +153,19 @@ public class PostsControllerTest {
     @DisplayName("Удаление поста по ID")
     @Transactional
     public void deletePostById() throws Exception {
-        boolean isDeleted = Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-            "select is_deleted from posts where id = 1",
-            Boolean.class
-        ));
+        boolean isError = false;
+        boolean isDeleted = false;
+
+        try {
+            isDeleted = jdbcTemplate.queryForObject(
+                "select is_deleted from posts where id = 1",
+                Boolean.class
+            );
+        } catch (Exception ignored) {
+            isError = true;
+        }
+
+        assertFalse(isError);
 
         mockMvc
             .perform(
@@ -179,10 +185,19 @@ public class PostsControllerTest {
     @DisplayName("Восстановление поста по ID")
     @Transactional
     public void recoverPostById() throws Exception {
-        boolean isDeleted = Boolean.TRUE.equals(jdbcTemplate.queryForObject(
-            "select is_deleted from posts where id = 1",
-            Boolean.class
-        ));
+        boolean isError = false;
+        boolean isDeleted = false;
+
+        try {
+            isDeleted = jdbcTemplate.queryForObject(
+                "select is_deleted from posts where id = 1",
+                Boolean.class
+            );
+        } catch (Exception ignored) {
+            isError = true;
+        }
+
+        assertFalse(isError);
 
         mockMvc
             .perform(
