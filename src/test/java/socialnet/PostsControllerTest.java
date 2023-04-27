@@ -245,6 +245,35 @@ public class PostsControllerTest {
     }
 
     @Test
+    @DisplayName("Создание поста со спецсимволами")
+    @Transactional
+    public void createPostWithBadContent() throws Exception {
+        String expectedTitle = "Title #19";
+        String expectedText = "'";
+
+        PostRq postRq = new PostRq();
+        postRq.setTitle(expectedTitle);
+        postRq.setPostText(expectedText);
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(postRq);
+
+        mockMvc
+            .perform(
+                post("/api/v1/users/1/wall")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+                    .content(content)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data.author.id", is(1)))
+            .andExpect(jsonPath("$.data.title", is(expectedTitle)))
+            .andDo(print());
+    }
+
+    @Test
     @DisplayName("Получение всех постов с пагинацией")
     @Transactional
     public void getPostsWithPagination() throws Exception {
