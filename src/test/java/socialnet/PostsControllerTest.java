@@ -145,6 +145,7 @@ public class PostsControllerTest {
                     .content(content)
             )
             .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.post_text", is(expectedText)))
             .andDo(print());
     }
@@ -161,6 +162,7 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
 
@@ -192,6 +194,7 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
 
@@ -215,9 +218,12 @@ public class PostsControllerTest {
     @DisplayName("Создание поста")
     @Transactional
     public void createPost() throws Exception {
+        String expectedTitle = "Post title #19";
+        String expectedText = "Post text";
+
         PostRq postRq = new PostRq();
-        postRq.setTitle("Post title #11");
-        postRq.setPostText("Some post #11 text");
+        postRq.setTitle(expectedTitle);
+        postRq.setPostText(expectedText);
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String content = ow.writeValueAsString(postRq);
@@ -231,10 +237,11 @@ public class PostsControllerTest {
                     .content(content)
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.id", is(11)))
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data.id", is(19)))
             .andExpect(jsonPath("$.data.author.id", is(1)))
-            .andExpect(jsonPath("$.data.title", is("Post title #11")))
-            .andExpect(jsonPath("$.data.post_text", is("Some post #11 text")))
+            .andExpect(jsonPath("$.data.title", is(expectedTitle)))
+            .andExpect(jsonPath("$.data.post_text", is(expectedText)))
             .andDo(print());;
     }
 
@@ -303,20 +310,39 @@ public class PostsControllerTest {
                     .param("tags", "")
                     .param("text", "")
             )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
             .andDo(print());
     }
 
     @Test
-    @DisplayName("Получение новостей")
+    @DisplayName("Получение всех новостей")
     @Transactional
     public void getFeeds() throws Exception {
+        mockMvc
+            .perform(get("/api/v1/post").with(authorization()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(10)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Получение всех новостей с пагинацией")
+    @Transactional
+    public void getFeedsWithPagination() throws Exception {
         mockMvc
             .perform(
                 get("/api/v1/post")
                     .with(authorization())
-                    .param("offset", "")
-                    .param("perPage", "")
+                    .param("offset", "0")
+                    .param("perPage", "5")
             )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(5)))
             .andDo(print());
     }
 }
