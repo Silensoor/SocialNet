@@ -287,4 +287,38 @@ public class PostsControllerTest {
             .andExpect(jsonPath("$.data[9].author.id", is(1)))
             .andDo(print());
     }
+
+    @Test
+    @DisplayName("Поиск постов")
+    @Transactional
+    public void getPostsByQuery() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/post")
+                    .with(authorization())
+                    .param("author", "")
+                    .param("date_from", "")
+                    .param("date_to", "")
+                    .param("perPage", "")
+                    .param("offset", "")
+                    .param("perPage", "")
+                    .param("tags", "")
+                    .param("text", "")
+            )
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Получение новостей")
+    @Transactional
+    public void getFeeds() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/post")
+                    .with(authorization())
+                    .param("offset", "")
+                    .param("perPage", "")
+            )
+            .andDo(print());
+    }
 }

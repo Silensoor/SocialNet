@@ -252,12 +252,12 @@ public class PostService {
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
-    public CommonRs<PostRs> markAsDelete(int id, String jwtToken) {
-        postRepository.markAsDeleteById(id);
+    public CommonRs<PostRs> markAsDelete(int postId, String jwtToken) {
+        postRepository.markAsDeleteById(postId);
 
-        Post postFromDB = postRepository.findById(id);
+        Post postFromDB = postRepository.findById(postId);
         Person author = getAuthor(postFromDB.getAuthorId());
-        PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
+        PostServiceDetails details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);
 
         return new CommonRs<>(postRs, System.currentTimeMillis());
