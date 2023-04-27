@@ -75,9 +75,18 @@ public class PostRepository {
         return true;
     }
 
-    public List<Post> findPostsByUserId(Long id) {
-        return jdbcTemplate.query("Select * from Posts Where id = ?",
-                postRowMapper, id);
+    public List<Post> findPostsByUserId(Long userId, Integer offset, Integer perPage) {
+        try {
+            return jdbcTemplate.query(
+                "select * from posts where author_id = ? order by time desc offset ? rows limit ?",
+                postRowMapper,
+                userId,
+                offset,
+                perPage
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Post> findDeletedPosts() {

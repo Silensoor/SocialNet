@@ -285,17 +285,22 @@ public class PostService {
         likeRepository.deleteAll(likes);
     }
 
-    public CommonRs<List<PostRs>> getFeedsByAuthorId(Long id, String jwtToken, Integer offset, Integer perPage) {
-        List<Post> postList = postRepository.findPostsByUserId(id);
-        postList.sort(Comparator.comparing(Post::getTime).reversed());
+    public CommonRs<List<PostRs>> getFeedsByAuthorId(Long authorId, String jwtToken, Integer offset, Integer perPage) {
         List<PostRs> postRsList = new ArrayList<>();
+        int itemPerPage = offset / perPage;
+        List<Post> postList = postRepository.findPostsByUserId(authorId, offset, perPage);
+
+        if (postList == null) {
+            return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), 0L);
+        }
+
         for (Post post : postList) {
             int postId = post.getId().intValue();
-            PostServiceDetails details = getDetails(post.getAuthorId(), postId, jwtToken);
+            PostServiceDetails details = getDetails(authorId, postId, jwtToken);
             PostRs postRs = setPostRs(post, details);
             postRsList.add(postRs);
         }
-        int itemPerPage = offset / perPage;
+
         return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 }

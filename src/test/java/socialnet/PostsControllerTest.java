@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -31,8 +32,7 @@ import socialnet.security.jwt.JwtUtils;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -56,6 +56,9 @@ public class PostsControllerTest {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private final String TEST_EMAIL = "user1@email.com";
 
@@ -86,6 +89,7 @@ public class PostsControllerTest {
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
         assertThat(jwtUtils).isNotNull();
+        assertThat(jdbcTemplate).isNotNull();
     }
 
     @Test
@@ -152,6 +156,11 @@ public class PostsControllerTest {
     @DisplayName("Удаление поста по ID")
     @Transactional
     public void deletePostById() throws Exception {
+        boolean isDeleted = Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+            "select is_deleted from posts where id = 1",
+            Boolean.class
+        ));
+
         mockMvc
             .perform(
                 delete("/api/v1/post/1")
@@ -160,14 +169,21 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.is_deleted", is(true)))
+            .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
+
+        assertTrue(isDeleted);
     }
 
     @Test
     @DisplayName("Восстановление поста по ID")
     @Transactional
     public void recoverPostById() throws Exception {
+        boolean isDeleted = Boolean.TRUE.equals(jdbcTemplate.queryForObject(
+            "select is_deleted from posts where id = 1",
+            Boolean.class
+        ));
+
         mockMvc
             .perform(
                 put("/api/v1/post/1/recover")
@@ -176,8 +192,10 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.is_deleted", is(false)))
+            .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
+
+        assertFalse(isDeleted);
     }
 
     @Test
