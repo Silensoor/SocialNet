@@ -29,36 +29,40 @@ public class FindService {
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
                                                   Long dateTo, Integer offset, Integer perPage,
-                                                  String[] tags, String text) {
+                                                  String[] tags, String text)
+    {
         String email = jwtUtils.getUserEmail(jwtToken);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person person = personRepository.findByEmail(email);
+
+        if (person == null) {
+            throw new EmptyEmailException("Field 'email' is empty");
+        }
+
         List<PostRs> postRsList = new ArrayList<>();
         long postListAll;
-        List<Post> postList;
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            postList = postRepository.findPostStringSql(findAuthor(author), dateFrom, dateTo, text,
+        List<Post> postList = postRepository.findPostStringSql(findAuthor(author), dateFrom, dateTo, text,
                     perPage, offset, tags, false);
-            postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthor(author), dateFrom,
+        postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthor(author), dateFrom,
                     dateTo, text, tags, true));
-            postList.forEach(post -> {
-                int postId = post.getId().intValue();
-                PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
-                PostRs postRs = PostService.setPostRs(post, details1);
-                postRsList.add(postRs);
-            });
-            postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
-            return new CommonRs<>(postRsList, postRsList.size(), offset, perPage, System.currentTimeMillis(),
+
+        postList.forEach(post -> {
+            int postId = post.getId().intValue();
+            PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
+            PostRs postRs = PostService.setPostRs(post, details1);
+            postRsList.add(postRs);
+        });
+
+        postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
+
+        return new CommonRs<>(postRsList, postRsList.size(), offset, perPage, System.currentTimeMillis(),
                     postListAll);
-        }
     }
 
     public CommonRs<List<PersonRs>> findPersons(String authorization, Integer age_from, Integer age_to, String city,
                                                 String country, String first_name, String last_name,
                                                 Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         long findPersonQueryAll = 0L;
         List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();

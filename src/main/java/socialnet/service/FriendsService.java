@@ -45,7 +45,7 @@ public class FriendsService {
 
     public Person tokenToMail(String jwtToken) {
         String email = jwtUtils.getUserEmail(jwtToken);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {

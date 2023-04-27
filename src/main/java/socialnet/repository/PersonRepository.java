@@ -41,9 +41,9 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    personRowMapper,
-                    email
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -52,10 +52,8 @@ public class PersonRepository {
 
     public Person findById(Long personId) {
         try {
-            Person personList = jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?",
+            return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?",
                     new BeanPropertyRowMapper<>(Person.class), personId);
-            if (personList == null) throw new PostException("Person с id " + personId + " не существует");
-            return personList;
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -130,13 +128,16 @@ public class PersonRepository {
         }
     }
 
-    public Person findPersonsEmail(String email) {
-        try {
-            return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?", personRowMapper, email);
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
+    private String friendsIdStringMethod(List<Long> friendsId, String sql) {
+        StringBuilder friendsIdString = new StringBuilder(sql);
+        for (int i = 0; i < friendsId.size(); i++) {
+            if (i < friendsId.size() - 1) {
+                friendsIdString.append(" id =").append(friendsId.get(i)).append(" OR");
+            } else {
+                friendsIdString.append(" id =").append(friendsId.get(i));
+            }
         }
+        return friendsIdString.toString();
     }
 
     public List<Person> findByCity(String city) {

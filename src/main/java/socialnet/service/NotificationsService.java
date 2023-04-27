@@ -29,7 +29,7 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> putNotifications(Boolean all, Integer notificationId, String token) {
         String email = jwtUtils.getUserEmail(token);
-        Person personList = personRepository.findPersonsEmail(email);
+        Person personList = personRepository.findByEmail(email);
         if (personList == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         }
@@ -58,7 +58,7 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> getAllNotifications(Integer itemPerPage, String token, Integer offset) {
         String email = jwtUtils.getUserEmail(token);
-        Person person = personRepository.findPersonsEmail(email);
+        Person person = personRepository.findByEmail(email);
         if (person == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -85,7 +85,7 @@ public class NotificationsService {
 
     public CommonRs<List<PersonSettingsRs>> getNotificationByPerson(String token) {
         String email = jwtUtils.getUserEmail(token);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -98,7 +98,7 @@ public class NotificationsService {
 
     public CommonRs<ComplexRs> putNotificationByPerson(String token, NotificationRq notificationRq) {
         String email = jwtUtils.getUserEmail(token);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {

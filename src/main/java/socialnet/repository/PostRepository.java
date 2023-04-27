@@ -60,24 +60,33 @@ public class PostRepository {
     }
 
     public void updateById(int id, Post post) {
-        String update = "UPDATE posts SET post_text = \'" + post.getPostText() + "\', title =  \'" + post.getTitle() + "\' WHERE id = " + id;
-        jdbcTemplate.update(update);
+        String update = "UPDATE posts SET post_text = ?, title = ? WHERE id = ?";
+        jdbcTemplate.update(update, post.getPostText(), post.getTitle(), id);
     }
 
-    public void markAsDeleteById(int id, Post post) {
-        String update = "UPDATE posts SET is_deleted = " + post.getIsDeleted() + ", time_delete = \'" + post.getTimeDelete() + "\' WHERE id = " + id;
-        jdbcTemplate.update(update);
+    public void markAsDeleteById(int id) {
+        String update = "UPDATE posts SET is_deleted = true, time_delete = now() WHERE id = ?";
+        jdbcTemplate.update(update, id);
     }
 
     public boolean deleteById(int id) {
-        String delete = "DELETE FROM posts WHERE id = " + id;
-        jdbcTemplate.execute(delete);
+        String delete = "DELETE FROM posts WHERE id = ?";
+        jdbcTemplate.update(delete, id);
         return true;
     }
 
-    public List<Post> findPostsByUserId(Long id) {
-        return jdbcTemplate.query("Select * from Posts Where id = ?",
-                postRowMapper, id);
+    public List<Post> findPostsByUserId(Long userId, Integer offset, Integer perPage) {
+        try {
+            return jdbcTemplate.query(
+                "select * from posts where author_id = ? order by time desc offset ? rows limit ?",
+                postRowMapper,
+                userId,
+                offset,
+                perPage
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Post> findDeletedPosts() {
