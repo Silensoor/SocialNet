@@ -41,9 +41,9 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    personRowMapper,
-                    email
+                "SELECT * FROM persons WHERE email = ?",
+                personRowMapper,
+                email
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -101,18 +101,6 @@ public class PersonRepository {
             }
         }
         return friendsIdString.toString();
-    }
-
-    public Person findPersonsEmail(String email) {
-        try {
-            return this.jdbcTemplate.queryForObject(
-                    "SELECT * FROM persons WHERE email = ?",
-                    new Object[]{email},
-                    personRowMapper
-            );
-        } catch (EmptyResultDataAccessException ignored) {
-            return null;
-        }
     }
 
     public List<Person> findByCity(String city) {

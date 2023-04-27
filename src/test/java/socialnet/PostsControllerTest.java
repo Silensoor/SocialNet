@@ -315,6 +315,24 @@ public class PostsControllerTest {
     }
 
     @Test
+    @DisplayName("Поиск постов по автору")
+    @Transactional
+    public void getPostsByAuthor() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/post")
+                    .with(authorization())
+                    .param("author", "FirstName LastName")
+                    .param("text", "text")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(1)))
+            .andDo(print());
+    }
+
+    @Test
     @DisplayName("Получение всех новостей")
     @Transactional
     public void getFeeds() throws Exception {

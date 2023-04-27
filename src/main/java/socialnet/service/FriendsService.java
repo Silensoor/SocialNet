@@ -31,7 +31,7 @@ public class FriendsService {
 
     public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -98,7 +98,7 @@ public class FriendsService {
 
     public HttpStatus userBlocks(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -122,7 +122,7 @@ public class FriendsService {
 
     public CommonRs<List<PersonRs>> getOutgoingRequests(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -148,7 +148,7 @@ public class FriendsService {
 
     public CommonRs<List<PersonRs>> getRecommendedFriends(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -262,7 +262,7 @@ public class FriendsService {
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -290,7 +290,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> addFriend(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -371,7 +371,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> deleteFriendsRequest(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -396,7 +396,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> sendFriendsRequest(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -436,7 +436,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> deleteFriend(String authorization, Integer id) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
