@@ -18,4 +18,5 @@ public class RemoveOldCaptchasSchedule {
     public void removeOldCaptchas() {
         captchaRepository.removeOldCaptchas();
     }
+
 }

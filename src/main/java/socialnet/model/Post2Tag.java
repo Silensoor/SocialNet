@@ -1,6 +1,5 @@
 package socialnet.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

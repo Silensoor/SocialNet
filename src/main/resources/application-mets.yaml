@@ -26,6 +26,8 @@ spring:
 auth:
   secret: socialNet
   timeLive: 216000
+  logging:
+    yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
 s3:
   accessKey: YCAJE83YiyNT766OLADHNeObE
   secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
@@ -35,3 +37,5 @@ weather:
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
+  deletePostsInterval: 0 0 1 * * *
+  deleteLikesInterval: 0 0 1 * * *

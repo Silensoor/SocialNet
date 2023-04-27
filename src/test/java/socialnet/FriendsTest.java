@@ -1,16 +1,24 @@
 package socialnet;
 
+import org.jetbrains.annotations.NotNull;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import socialnet.api.request.LoginRq;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
 import socialnet.controller.FriendsController;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -24,48 +32,81 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@TestPropertySource("/application-test.properties")
-@Sql(value = {"/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@ContextConfiguration(initializers = { FriendsTest.Initializer.class })
+@Sql(value = {"/sql/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/sql/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class FriendsTest {
-    private final String TEST_EMAIL = "user1@email.com";
-    @Autowired
-    private MockMvc mockMvc;
     @Autowired
     private FriendsController friendsController;
-    @Autowired
-    private PersonService personService;
-    @Autowired
-    private JwtUtils jwtUtils;
+
     @Autowired
     private FriendsShipsRepository friendsShipsRepository;
-    private String getToken(String email) {
-        return jwtUtils.generateJwtToken(email);
-    }
-    @Test
-    public void getFriendsTest() throws Exception{
-        String token = getToken(TEST_EMAIL);
-        getAuthenticated();
 
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private PersonService personService;
+
+    private final String TEST_EMAIL = "user1@email.com";
+
+    @ClassRule
+    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                "spring.datasource.url=" + container.getJdbcUrl(),
+                "spring.datasource.username=" + container.getUsername(),
+                "spring.datasource.password=" + container.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
+    }
+
+    public RequestPostProcessor authorization() {
+        return request -> {
+            request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
+            return request;
+        };
+    }
+
+    @Test
+    @DisplayName("Загрузка контекста")
+    @Transactional
+    public void contextLoads() {
+        assertThat(friendsController).isNotNull();
+        assertThat(jwtUtils).isNotNull();
+        assertThat(personService).isNotNull();
+        assertThat(mockMvc).isNotNull();
+        assertThat(friendsShipsRepository).isNotNull();
+    }
+
+    @Test
+    @Transactional
+    public void getFriendsTest() throws Exception{
         this.mockMvc
-                .perform(get("/api/v1/friends").header("authorization", token))
+                .perform(get("/api/v1/friends").with(authorization()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].email", is("user2@email.com")))
-                .andExpect(jsonPath("$.data[1].email", is("kutting1@eventbrite.com")))
+                .andExpect(jsonPath("$.data[0].email", is("kutting1@eventbrite.com")))
+                .andExpect(jsonPath("$.data[1].email", is("user2@email.com")))
                 .andReturn();
     }
-    @Test
-    public void getOutgoingRequests() throws Exception {
-        String token = getToken(TEST_EMAIL);
-        getAuthenticated();
 
+    @Test
+    @Transactional
+    public void getOutgoingRequests() throws Exception {
         this.mockMvc
-            .perform(get("/api/v1/friends/outgoing_requests").header("authorization", token))
+            .perform(get("/api/v1/friends/outgoing_requests").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
@@ -74,48 +115,29 @@ public class FriendsTest {
             .andReturn();
     }
     @Test
+    @Transactional
     public void blocksUser() throws Exception {
-        String token = getToken(TEST_EMAIL);
-        getAuthenticated();
 
-        String startValue = friendsShipsRepository.findFriend(1L, 4L).get(0).getStatusName().toString();
+        String startValue = friendsShipsRepository.findFriend(1L, 4L).getStatusName().toString();
+
 
         this.mockMvc
-                .perform(post("/api/v1/friends/block_unblock/4").header("authorization", token))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
+            .perform(post("/api/v1/friends/block_unblock/4").with(authorization()))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andReturn();
 
-        String newValue = friendsShipsRepository.findFriend(1L, 4L).get(0).getStatusName().toString();
+        String newValue = friendsShipsRepository.findFriend(1L, 4L).getStatusName().toString();
         assertThat(!startValue.equals(newValue)).isTrue();
     }
 
-
     public void getRecommendedFriends() throws Exception {
-        String token = getToken(TEST_EMAIL);
-        getAuthenticated();
-
         this.mockMvc
-                .perform(get("/api/v1/friends/recommendations").header("authorization", token))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
-                .andExpect(jsonPath("$.data[1].email", is("jjewell5@ebay.com")))
-                .andReturn();
-    }
-
-
-    private void getAuthenticated() {
-        LoginRq loginRq = new LoginRq();
-        loginRq.setEmail(TEST_EMAIL);
-        loginRq.setPassword("12345678");
-        personService.getLogin(loginRq);
-    }
-
-    @Test
-    @DisplayName("Загрузка контекста")
-    public void contextLoads() {
-        assertThat(friendsController).isNotNull();
-        assertThat(jwtUtils).isNotNull();
+            .perform(get("/api/v1/friends/recommendations").with(authorization()))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
+            .andExpect(jsonPath("$.data[1].email", is("jjewell5@ebay.com")))
+            .andReturn();
     }
 }

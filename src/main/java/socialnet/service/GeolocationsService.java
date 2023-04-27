@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService {
+public class GeolocationsService {
     private final CountryRepository countryRepository;
 
     public List<GeolocationRs> findAllCountry() {
@@ -27,7 +27,7 @@ public class CountryService {
     @RequestMapping("/api/v1/geolocations")
     @RequiredArgsConstructor
     public static class GeolocationsController {
-        private final CountryService countryService;
+        private final GeolocationsService geolocationsService;
         private final CityService cityService;
 
         @GetMapping("cities/api")
@@ -49,7 +49,7 @@ public class CountryService {
 
         @GetMapping("countries")
         public ResponseEntity<?> getCountries() {
-            return ResponseEntity.ok(new CommonRs(countryService.findAllCountry()));
+            return ResponseEntity.ok(new CommonRs(geolocationsService.findAllCountry()));
         }
     }
 }

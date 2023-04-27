@@ -12,6 +12,7 @@ build:
     - socialnet_runner
   script:
     - echo "Compiling..."
+    - mvn clean
     - mvn compile -Dmaven.repo.local=./.m2/repository
   cache:
     paths:
