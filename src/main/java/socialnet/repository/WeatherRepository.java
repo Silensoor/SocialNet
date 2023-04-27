@@ -13,8 +13,12 @@ public class WeatherRepository {
     private final Reflection reflection;
 
     public void saveWeather(Weather weather) {
-        var sqlParam = reflection.getFieldNamesAndValues(weather, null);
-        jdbcTemplate.update("Update or Insert into Wheather (" + sqlParam.get("fieldNames") + ")" +
-                " values (" + sqlParam.get("values") + ")");
+        var fields = reflection.getFieldNames(weather);
+        var values = reflection.getStringValues(weather);
+        var updateOnConflict = reflection.getUpdateSql(weather, "openWeatherId");
+        var sql = "Insert into Weather (" + fields + ") values (" + values + ") " +
+                " on conflict on constraint unique_open_weather_id do update set "  +
+                updateOnConflict;
+        jdbcTemplate.update(sql);
     }
 }

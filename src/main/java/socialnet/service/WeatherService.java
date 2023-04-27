@@ -12,6 +12,7 @@ import socialnet.api.response.WeatherRs;
 import socialnet.mappers.WeatherMapper;
 import socialnet.model.Weather;
 import socialnet.repository.CityRepository;
+import socialnet.repository.WeatherRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +25,7 @@ public class WeatherService {
 
     private final CityRepository cityRepository;
     private final WeatherMapper weatherMapper;
+    private final WeatherRepository weatherRepository;
 
 
     public WeatherRs getWeatherByCity(String city) {
@@ -60,7 +62,7 @@ public class WeatherService {
 
         JSONObject weather = (JSONObject) jsonObject.getJSONArray("weather").get(0);
 
-        String openWeatherId = weather.getString("id");
+        var openWeatherId = weather.getBigInteger("id");
         //запись в базу данных информации о погоде в конкретном городе
 
         JSONObject main = jsonObject.getJSONObject("main");
@@ -78,12 +80,13 @@ public class WeatherService {
                 LocalDate.now().toString(),
                 currentTemp);
 
-        Weather w = weatherMapper.toModel(weatherRs);
+        Weather wModel = weatherMapper.toModel(weatherRs);
+        wModel.setOpenWeatherId(openWeatherId);
+        weatherRepository.saveWeather(wModel);
+
 
         return weatherRs;
     }
 
-    private void saveWeather() {
 
-    }
 }

@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS Weather
     clouds character varying(150),
     date timestamp without time zone,
     temp real,
-    CONSTRAINT weather_key PRIMARY KEY (id)
+    CONSTRAINT weather_key PRIMARY KEY (id),
+    CONSTRAINT unique_open_weather_id UNIQUE (open_weather_id)
 );
