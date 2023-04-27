@@ -213,11 +213,10 @@ public class PersonRepository {
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[]{email});
-        jdbcTemplate.update("Update Persons Set " + sqlParam.get("sql") + " where email = ?",
+        var sqlParam = reflection.getFieldNamesAndValues(userData, new Object[]{email});
+        jdbcTemplate.update("Update Persons Set " + sqlParam.get("fieldNames") + " where email = ?",
                 (Object[]) sqlParam.get("values"));
     }
-
 
     public List<Person> findPersonsQuery(Integer age_from,
                                          Integer age_to, String city, String country,
