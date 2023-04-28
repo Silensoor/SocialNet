@@ -57,6 +57,17 @@ public class FriendsShipsRepository {
         jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
     }
 
+    public Friendships findRequest(Long id, Long idFriend) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM friendships" +
+                            " WHERE status_name = 'REQUEST' AND (dst_person_id = ? AND src_person_id = ?)" +
+                            " OR (dst_person_id = ? AND src_person_id = ?)",
+                    friendshipsRowMapper, id, idFriend, idFriend, id);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
 
     public Friendships getFriendStatus(Long id, Long idFriend) {
         try {

@@ -139,8 +139,11 @@ public class PostRepository {
         }
         sql.append(dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
         sql.append(dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
-        sql.append(!text.equals("") ? " lower (post_text) LIKE '%" + text.toLowerCase() + "%' AND " : "");
-        sql.append(post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")" : "");
+        sql.append(post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "");
+        if (text.equals("'")){
+            text = "\"";
+        }
+        sql.append(!text.equals("") ? " lower (post_text) LIKE '%" + text.toLowerCase() + "%'" : "");
         String str = sql.substring(sql.length() - 5);
         String sql1;
         if (str.equals(" AND ")) {
