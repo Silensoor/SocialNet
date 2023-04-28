@@ -56,4 +56,20 @@ public class FriendsShipsRepository {
     public void deleteFriendUsing(Long id) {
         jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
     }
+
+
+    public String getFriendStatus(Long id, Long idFriend) {
+        try {
+            final Friendships friendships = jdbcTemplate.queryForObject("SELECT * FROM friendships" +
+                            " WHERE (dst_person_id = ? AND src_person_id = ?)" +
+                            " OR (dst_person_id = ? AND src_person_id = ?)",
+                    friendshipsRowMapper, id, idFriend, idFriend, id);
+            if (friendships != null){
+                return friendships.getStatusName().toString();
+            }
+            return null;
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
 }
