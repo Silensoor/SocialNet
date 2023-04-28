@@ -58,14 +58,14 @@ public class FriendsShipsRepository {
     }
 
 
-    public String getFriendStatus(Long id, Long idFriend) {
+    public Friendships getFriendStatus(Long id, Long idFriend) {
         try {
             final Friendships friendships = jdbcTemplate.queryForObject("SELECT * FROM friendships" +
                             " WHERE (dst_person_id = ? AND src_person_id = ?)" +
                             " OR (dst_person_id = ? AND src_person_id = ?)",
                     friendshipsRowMapper, id, idFriend, idFriend, id);
             if (friendships != null){
-                return friendships.getStatusName().toString();
+                return friendships;
             }
             return null;
         } catch (EmptyResultDataAccessException ignored) {

@@ -65,7 +65,8 @@ public class FriendsService {
             friendRs.setWeather(weatherService.getWeatherByCity(friendRs.getCity()));
             friendRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
             if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()) != null) {
-                friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId()));
+                friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId())
+                        .getStatusName().toString());
                 if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).equals("BLOCKED")) {
                     friendRs.setIsBlockedByCurrentUser(true);
                 }
@@ -167,7 +168,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> deleteFriendsRequest(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
-        final Friendships friendships = friendsShipsRepository.findFriend(personsEmail.getId(), Long.valueOf(id));
+        final Friendships friendships = friendsShipsRepository.getFriendStatus(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
             if (friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST)) {
                 friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
