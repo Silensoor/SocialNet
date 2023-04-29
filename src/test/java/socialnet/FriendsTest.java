@@ -16,18 +16,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import socialnet.controller.FriendsController;
+import socialnet.model.Friendships;
+import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.service.PersonService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -110,34 +112,106 @@ public class FriendsTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.data[0].email", is("nwickey2@ibm.com")))
-            .andExpect(jsonPath("$.data[1].email", is("dsuermeiers3@gmpg.org")))
+            .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
+            .andExpect(jsonPath("$.data[1].email", is("jjewell5@ebay.com")))
             .andReturn();
     }
     @Test
     @Transactional
     public void blocksUser() throws Exception {
 
-        String startValue = friendsShipsRepository.findFriend(1L, 4L).getStatusName().toString();
+        String startValue = friendsShipsRepository.findFriend(1L, 3L).getStatusName().toString();
 
 
         this.mockMvc
-            .perform(post("/api/v1/friends/block_unblock/4").with(authorization()))
+            .perform(post("/api/v1/friends/block_unblock/3").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();
 
-        String newValue = friendsShipsRepository.findFriend(1L, 4L).getStatusName().toString();
+        String newValue = friendsShipsRepository.findFriend(1L, 3L).getStatusName().toString();
         assertThat(!startValue.equals(newValue)).isTrue();
     }
-
-    public void getRecommendedFriends() throws Exception {
-        this.mockMvc
+    @Test
+    public void getRecommendedFriendsTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
             .perform(get("/api/v1/friends/recommendations").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
-            .andExpect(jsonPath("$.data[1].email", is("jjewell5@ebay.com")))
+            .andExpect(jsonPath("$.data.size()", is(10)))
             .andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        boolean firstCondition = response.contains("fbrisset4@zimbio.com");
+        boolean secondCondition = response.contains("jjewell5@ebay.com");
+        boolean thirdCondition = !response.contains(TEST_EMAIL);
+
+        assertThat(firstCondition && secondCondition && thirdCondition).isTrue();
+    }
+    @Test
+    public void getPotentialFriendsTest() throws Exception {
+        MvcResult mvcResult = this.mockMvc
+                .perform(get("/api/v1/friends/request").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        boolean firstCondition = response.contains("nwickey2@ibm.com");
+        boolean secondCondition = response.contains("dsuermeiers3@gmpg.org");
+        boolean thirdCondition = !response.contains(TEST_EMAIL);
+
+        assertThat(firstCondition && secondCondition && thirdCondition).isTrue();
+    }
+    @Test
+    public void addFriendTest() throws Exception {
+        FriendshipStatusTypes startStatus = friendsShipsRepository.findFriend(1L, 6L).getStatusName();
+
+        this.mockMvc
+                .perform(post("/api/v1/friends/request/6").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        FriendshipStatusTypes endStatus = friendsShipsRepository.findFriend(1L, 6L).getStatusName();
+
+        assertThat(startStatus.equals(endStatus)).isFalse();
+    }
+    @Test
+    public void deleteFriendsRequestTest() throws Exception {
+        FriendshipStatusTypes startStatus = friendsShipsRepository.findRequest(1L, 5L).getStatusName();
+
+        this.mockMvc
+                .perform(delete("/api/v1/friends/request/5").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        FriendshipStatusTypes endStatus = friendsShipsRepository.findRequest(1L, 5L).getStatusName();
+        assertThat(!startStatus.equals(FriendshipStatusTypes.DECLINED)
+                &&
+                endStatus.equals(FriendshipStatusTypes.DECLINED))
+                .isTrue();
+    }
+    @Test
+    public void sendFriendsRequestTest() throws Exception {
+        this.mockMvc
+                .perform(post("/api/v1/friends/10").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        FriendshipStatusTypes endStatus = friendsShipsRepository.findRequest(1L, 10L).getStatusName();
+        assertThat(endStatus.equals(FriendshipStatusTypes.REQUEST)).isTrue();
+    }
+    @Test
+    public void deleteFriendTest() throws Exception {
+        FriendshipStatusTypes startStatus = friendsShipsRepository.findFriend(1L, 2L).getStatusName();
+        this.mockMvc
+                .perform(delete("/api/v1/friends/2").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        Friendships endFriendship = friendsShipsRepository.findFriend(1L, 2L);
+        boolean firstCondition = startStatus.equals(FriendshipStatusTypes.FRIEND);
+        boolean secondCondition = endFriendship == null;
+        assertThat(firstCondition && secondCondition).isTrue();
     }
 }
