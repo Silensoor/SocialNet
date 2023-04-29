@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import socialnet.api.response.CommonRs;
 import socialnet.dto.geolocation.GeolocationRs;
+import socialnet.model.Country;
 import socialnet.repository.CountryRepository;
 
 import java.util.List;
@@ -31,9 +32,9 @@ public class GeolocationsService {
         private final CityService cityService;
 
         @GetMapping("cities/api")
-        public ResponseEntity<?> getCitiesFromApiStartsWith(@RequestParam("country") String country,
+        public CommonRs getCitiesFromApiStartsWith(@RequestParam("country") String country,
                                                             @RequestParam("starts") String starts) {
-            return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts)));
+            return new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts));
         }
 
         @GetMapping("cities/db")

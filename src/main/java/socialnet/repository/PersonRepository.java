@@ -213,11 +213,10 @@ public class PersonRepository {
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[]{email});
-        jdbcTemplate.update("Update Persons Set " + sqlParam.get("sql") + " where email = ?",
+        var sqlParam = reflection.getFieldNamesAndValues(userData, new Object[]{email});
+        jdbcTemplate.update("Update Persons Set " + sqlParam.get("fieldNames") + " where email = ?",
                 (Object[]) sqlParam.get("values"));
     }
-
 
     public List<Person> findPersonsQuery(Integer age_from,
                                          Integer age_to, String city, String country,
@@ -255,8 +254,11 @@ public class PersonRepository {
         str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
                 .append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "")
                 .append(!city.equals("") ? " city = '" + city + "' AND " : "")
-                .append(!country.equals("") ? " country = '" + country + "' AND " : "")
-                .append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
+                .append(!country.equals("") ? " country = '" + country + "' AND " : "");
+        if (first_name.equals("'")){
+            first_name = "\"";
+        }
+        str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
                 .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);

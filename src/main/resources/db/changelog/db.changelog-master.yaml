@@ -67,5 +67,7 @@ databaseChangeLog:
       file: db/changelog/changelogset/m-countries-table-modify.sql
   - include:
       file: db/changelog/changelogset/m-ru-cities-adding.sql
+  - include:
+      file: db/changelog/changelogset/m-weather-table-create.sql
 
 
