@@ -308,7 +308,8 @@ public class PersonRepository {
                 " OR friendships.src_person_id=p.id WHERE is_deleted = false AND ")
                 .append(createSqlWhere(id, friends, offset, perPage));
         try {
-            return this.jdbcTemplate.query(sql.toString(), personRowMapper);
+            List<Person> personList = this.jdbcTemplate.query(sql.toString(), personRowMapper);
+            return personList;
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
