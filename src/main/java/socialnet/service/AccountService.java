@@ -30,7 +30,7 @@ public class AccountService {
         ComplexRs complexRs = ComplexRs.builder().message("OK").build();
         registerRs.setData(complexRs);
         registerRs.setEmail(regRequest.getEmail());
-        registerRs.setTimestamp((int) System.currentTimeMillis());
+        registerRs.setTimestamp(System.currentTimeMillis());
 
         return registerRs;
     }

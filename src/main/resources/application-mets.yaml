@@ -23,6 +23,17 @@ spring:
     user:
       name: admin
       password: admin
+  mail:
+    host: smtp.yandex.com
+    port: 465
+    username: java.development.2023@yandex.com
+    password: dqvntfzxvzftlljm
+#    password:  2023javsa
+    protocol: smtps
+
+mail:
+  debug: true
+
 auth:
   secret: socialNet
   timeLive: 216000
