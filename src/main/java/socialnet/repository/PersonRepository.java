@@ -354,10 +354,9 @@ public class PersonRepository {
 
     public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
                                              Integer offset, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?" +
-                " AND NOT id IN(")
-                .append(friendsRecommended)
-                .append(") AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
+        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?")
+                .append(friendsRecommended != "" ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(" AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
         try {
             return this.jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
@@ -368,7 +367,7 @@ public class PersonRepository {
     public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
         StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND NOT id IN(")
                 .append(friendsRecommended)
-                .append(") AND NOT id=? LIMIT ?");
+                .append(") AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
             return this.jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
         } catch (EmptyResultDataAccessException ignored) {
