@@ -67,7 +67,20 @@ public class FriendsService {
             if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()) != null) {
                 friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId())
                         .getStatusName().toString());
-                if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).equals("BLOCKED")) {
+                if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).toString().equals("BLOCKED")) {
+                    friendRs.setIsBlockedByCurrentUser(true);
+                }
+            } else {
+                friendRs.setFriendStatus("UNKNOWN");
+                friendRs.setIsBlockedByCurrentUser(null);
+            }
+
+            friendRs.setWeather(weatherService.getWeatherByCity(friendRs.getCity()));
+            friendRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+            if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()) != null) {
+                friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId())
+                        .getStatusName().toString());
+                if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).toString().equals("BLOCKED")) {
                     friendRs.setIsBlockedByCurrentUser(true);
                 }
             } else {
@@ -109,31 +122,48 @@ public class FriendsService {
                     friends, 0, 20);
         }
         if (recommendationFriends.size() < 10) {
-            StringBuilder str1 = new StringBuilder();
-            recommendationFriends.forEach(friend -> str1.append(friend.getId()).append(", "));
-            List<Person> cityFriends = personRepository.findByCityForFriends(personsEmail.getId(),
-                    personsEmail.getCity(), str1.substring(0, str1.length() - 2), 0, 20);
-            if (cityFriends != null) {
-                if (!cityFriends.isEmpty()) {
-                    int i = 0;
-                    while (i < 10 - recommendationFriends.size()) {
-                        recommendationFriends.add(cityFriends.get(i));
-                        i++;
-                    }
-                }
-            }
+            recommendationFriends.addAll(getRecommendedFriendsCity(personsEmail, recommendationFriends));
         }
         if (recommendationFriends.size() < 10) {
-            StringBuilder str2 = new StringBuilder();
-            recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
             assert friends != null;
-            friends.forEach(friend -> str2.append(friend.getId()).append(", "));
-            recommendationFriends.addAll(personRepository.
-                    findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
-                            10 - recommendationFriends.size()));
+            recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends));
         }
         return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(),
                 personsEmail.getId());
+    }
+
+    public List<Person> getRecommendedFriendsCity(Person personsEmail, List<Person> recommendationFriends){
+        List<Person> recommendationFriendsCity = new ArrayList<>();
+        StringBuilder str1 = new StringBuilder();
+        recommendationFriends.forEach(friend -> str1.append(friend.getId()).append(", "));
+        List<Person> cityFriends;
+        if (!str1.toString().equals("")) {
+            cityFriends = personRepository.findByCityForFriends(personsEmail.getId(),
+                    personsEmail.getCity(), str1.substring(0, str1.length() - 2), 0, 20);
+        } else {
+            cityFriends = personRepository.findByCityForFriends(personsEmail.getId(),
+                    personsEmail.getCity(), "", 0, 20);
+        }
+        if (cityFriends != null && !cityFriends.isEmpty()) {
+                int i = 0;
+                while (i < 10 - recommendationFriends.size()) {
+                    recommendationFriendsCity.add(cityFriends.get(i));
+                    i++;
+                }
+        }
+        return recommendationFriendsCity;
+    }
+
+    public List<Person> getRecommendedFriendsAll(Person personsEmail, List<Person> recommendationFriends,
+                                                 List<Person> friends){
+        StringBuilder str2 = new StringBuilder();
+        recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
+        assert friends != null;
+        friends.forEach(friend -> str2.append(friend.getId()).append(", "));
+        List<Person> recommendationFriendsAll = new ArrayList<>(personRepository.
+                findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
+                        10 - recommendationFriends.size()));
+        return recommendationFriendsAll;
     }
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
@@ -180,7 +210,7 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> sendFriendsRequest(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
-        final Friendships friendships = friendsShipsRepository.findFriend(personsEmail.getId(), Long.valueOf(id));
+        final Friendships friendships = friendsShipsRepository.findRequest(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
             if (!friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST)) {
                 friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
