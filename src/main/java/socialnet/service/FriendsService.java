@@ -67,6 +67,19 @@ public class FriendsService {
             if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()) != null) {
                 friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId())
                         .getStatusName().toString());
+                if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).equals("BLOCKED")) {
+                    friendRs.setIsBlockedByCurrentUser(true);
+                }
+            } else {
+                friendRs.setFriendStatus("UNKNOWN");
+                friendRs.setIsBlockedByCurrentUser(null);
+            }
+
+            friendRs.setWeather(weatherService.getWeatherByCity(friendRs.getCity()));
+            friendRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
+            if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()) != null) {
+                friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId())
+                        .getStatusName().toString());
                 if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).toString().equals("BLOCKED")) {
                     friendRs.setIsBlockedByCurrentUser(true);
                 }
@@ -136,6 +149,19 @@ public class FriendsService {
                     recommendationFriendsCity.add(cityFriends.get(i));
                     i++;
                 }
+            }
+        }
+        if (recommendationFriends.size() < 10) {
+            StringBuilder str2 = new StringBuilder();
+            recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
+            assert friends != null;
+            friends.forEach(friend -> str2.append(friend.getId()).append(", "));
+            recommendationFriends.addAll(personRepository.
+                    findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
+                            10 - recommendationFriends.size()));
+        }
+        return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(),
+                personsEmail.getId());
         }
         return recommendationFriendsCity;
     }
