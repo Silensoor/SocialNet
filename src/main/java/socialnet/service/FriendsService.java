@@ -67,7 +67,7 @@ public class FriendsService {
             if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()) != null) {
                 friendRs.setFriendStatus(friendsShipsRepository.getFriendStatus(id, friendRs.getId())
                         .getStatusName().toString());
-                if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).equals("BLOCKED")) {
+                if (friendsShipsRepository.getFriendStatus(id, friendRs.getId()).toString().equals("BLOCKED")) {
                     friendRs.setIsBlockedByCurrentUser(true);
                 }
             } else {
@@ -125,6 +125,7 @@ public class FriendsService {
             recommendationFriends.addAll(getRecommendedFriendsCity(personsEmail, recommendationFriends));
         }
         if (recommendationFriends.size() < 10) {
+            assert friends != null;
             recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends));
         }
         return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(),
@@ -149,31 +150,17 @@ public class FriendsService {
                     recommendationFriendsCity.add(cityFriends.get(i));
                     i++;
                 }
-            }
-        }
-        if (recommendationFriends.size() < 10) {
-            StringBuilder str2 = new StringBuilder();
-            recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
-            assert friends != null;
-            friends.forEach(friend -> str2.append(friend.getId()).append(", "));
-            recommendationFriends.addAll(personRepository.
-                    findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
-                            10 - recommendationFriends.size()));
-        }
-        return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(),
-                personsEmail.getId());
         }
         return recommendationFriendsCity;
     }
 
     public List<Person> getRecommendedFriendsAll(Person personsEmail, List<Person> recommendationFriends,
                                                  List<Person> friends){
-        List<Person> recommendationFriendsAll = new ArrayList<>();
         StringBuilder str2 = new StringBuilder();
         recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
         assert friends != null;
         friends.forEach(friend -> str2.append(friend.getId()).append(", "));
-        recommendationFriendsAll.addAll(personRepository.
+        List<Person> recommendationFriendsAll = new ArrayList<>(personRepository.
                 findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
                         10 - recommendationFriends.size()));
         return recommendationFriendsAll;
