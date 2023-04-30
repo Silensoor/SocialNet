@@ -67,6 +67,7 @@ public class LikeRepository {
 
     private final RowMapper<Like> likeRowMapper = (rs, rowNum) -> {
         Like like = new Like();
+        like.setId(rs.getLong("id"));
         like.setType(rs.getString("type"));
         like.setEntityId(rs.getLong("entity_id"));
         like.setTime(rs.getTimestamp("time"));
