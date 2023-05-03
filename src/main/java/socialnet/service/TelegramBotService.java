@@ -17,48 +17,57 @@ public class TelegramBotService {
     public TgApiRs register(long telegramId, String email, String cmd) {
         boolean isRegister = telegramBotRepository.register(telegramId, email, cmd);
 
-        TgApiRs response = new TgApiRs();
-
         if (!isRegister) {
-            response.setStatus("fail");
-            response.setError("Данный email уже зарегистрирован");
-
-            return response;
+            return makeResponse("fail", "Вы уже зарегистрированы", null);
         }
 
-        response.setStatus("ok");
-        response.setData("Письмо с подтверждением регистрации выслано на почту. " +
-                "Перейдите по ссылке");
-
-        return response;
+        return makeResponse("ok", null, "Регистрация прошла успешно");
     }
 
     public TgApiRs execCommand(TgApiRequest request) {
         String command = request.getCommand();
 
+        if (command.equals("/register")) {
+            return handleRegisterCommand(request);
+        }
+
         if (command.equals("/login")) {
             return handleLoginCommand(request);
         }
 
+        return makeResponse("fail", "Неизвестная команда", null);
+    }
+
+    private TgApiRs handleRegisterCommand(TgApiRequest request) {
+        try {
+            mailSender.send(
+                "jonnysereb@gmail.com",
+                "Подтверждение регистрации",
+                "http://localhost:8086/api/v1/tg?id=" + request.getId()
+                    + "&email=" + request.getData()
+                    + "&cmd=" + request.getCommand()
+            );
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return makeResponse("ok", null, "Письмо выслано на указанную почту. Подтвердите регистрацию и можно входить.");
+    }
+
+    private TgApiRs handleLoginCommand(TgApiRequest request) {
         TgApiRs response = new TgApiRs();
-        response.setStatus("fail");
+        response.setStatus("ok");
         response.setError(null);
         response.setData(null);
 
         return response;
     }
 
-    private TgApiRs handleLoginCommand(TgApiRequest request) {
-        try {
-            mailSender.send("jonnysereb@gmail.com", "Subject", "http://localhost:8086/api/v1/tg?id=" + request.getId() + "&cmd=register");
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-
+    private TgApiRs makeResponse(String status, String error, String data) {
         TgApiRs response = new TgApiRs();
-        response.setStatus("ok");
-        response.setError(null);
-        response.setData(null);
+        response.setStatus(status);
+        response.setError(error);
+        response.setData(data);
 
         return response;
     }
