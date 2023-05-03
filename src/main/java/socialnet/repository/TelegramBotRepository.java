@@ -11,7 +11,7 @@ public class TelegramBotRepository {
 
     public boolean register(long telegramId, String email, String cmd) {
         int cnt = jdbcTemplate.queryForObject(
-            "select count(1) from persons where lower(email) = ? and telegram_id not null",
+            "select count(1) from persons where lower(email) = ? and telegram_id is not null",
             Integer.class,
             email.toLowerCase()
         );

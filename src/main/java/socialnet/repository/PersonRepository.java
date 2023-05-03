@@ -25,8 +25,8 @@ public class PersonRepository {
     public void save(Person person) {
         jdbcTemplate.update(
                 "INSERT INTO persons " +
-                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted, telegram_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 person.getEmail(),
                 person.getFirstName(),
                 person.getLastName(),
@@ -34,7 +34,8 @@ public class PersonRepository {
                 person.getRegDate(),
                 person.getIsApproved(),
                 person.getIsBlocked(),
-                person.getIsDeleted()
+                person.getIsDeleted(),
+                person.getTelegramId()
         );
     }
     public List<Person> findPersonsByBirthDate(){
@@ -49,6 +50,18 @@ public class PersonRepository {
                 "SELECT * FROM persons WHERE email = ?",
                 personRowMapper,
                 email
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public Person findByTelegramId(long telegramId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE telegram_id = ?",
+                personRowMapper,
+                telegramId
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;

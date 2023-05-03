@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.TgApiRs;
+import socialnet.model.Person;
+import socialnet.repository.PersonRepository;
 import socialnet.repository.TelegramBotRepository;
 import socialnet.utils.MailSender;
 
@@ -11,6 +13,7 @@ import socialnet.utils.MailSender;
 @RequiredArgsConstructor
 public class TelegramBotService {
     private final TelegramBotRepository telegramBotRepository;
+    private final PersonRepository personRepository;
     private final MailSender mailSender;
 
     public TgApiRs register(long telegramId, String email, String cmd) {
@@ -44,20 +47,23 @@ public class TelegramBotService {
                 "Подтверждение регистрации",
                 "http://localhost:8086/api/v1/tg?id=" + request.getId()
                     + "&email=" + request.getData()
-                    + "&cmd=" + request.getCommand()
+                    + "&cmd=" + request.getCommand().substring(1)
             );
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
-        return makeResponse("ok", null, "Письмо выслано на указанную почту. Подтвердите регистрацию и можно входить.");
+        return makeResponse("ok", null, "Письмо с подтверждением выслано на указанную почту.");
     }
 
     private TgApiRs handleLoginCommand(TgApiRequest request) {
-        return TgApiRs.builder()
-            .status("ok")
-            .error(null)
-            .data(null).build();
+        Person person = personRepository.findByTelegramId(request.getId());
+
+        if (person == null) {
+            return TgApiRs.builder().status("fail").error(null).data(null).build();
+        }
+
+        return TgApiRs.builder().status("ok").error(null).data(null).build();
     }
 
     private TgApiRs makeResponse(String status, String error, String data) {
