@@ -89,7 +89,7 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.data.last_name", is("Redfield")))
                 .andExpect(jsonPath("$.data.last_online_time", startsWith(LocalDate.now().toString())))
                 .andExpect(jsonPath("$.data.messages_permission", is("adipiscing")))
-                .andExpect(jsonPath("$.data.reg_date", is("2000-07-26T12:21:43.000+00:00")))
+                .andExpect(jsonPath("$.data.reg_date", is("2000-07-26T16:21:43.000+00:00")))
                 .andExpect(jsonPath("$.data.user_deleted", is(false)))
                 .andExpect(jsonPath("$.itemPerPage", is(20)))
                 .andExpect(jsonPath("$.offset", is(0)))
