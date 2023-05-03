@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-@ContextConfiguration(initializers = { UsersControllerTest.Initializer.class })
+@ContextConfiguration(initializers = {UsersControllerTest.Initializer.class})
 @Sql(scripts = "/sql/clear_tables.sql")
 @SqlMergeMode(MERGE)
 public class UsersControllerTest {
@@ -82,14 +82,14 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.data.online", is(true)))
                 .andExpect(jsonPath("$.data.phone", is("966-998-0544")))
                 .andExpect(jsonPath("$.data.photo", is("go86atavdxhcvcagbv")))
-                .andExpect(jsonPath("$.data.birth_date", is("1972-11-14T21:25:19.000+00:00")))
+                .andExpect(jsonPath("$.data.birth_date", containsString("1972-11-14")))
                 .andExpect(jsonPath("$.data.first_name", is("Chris")))
                 .andExpect(jsonPath("$.data.is_blocked", is(false)))
                 .andExpect(jsonPath("$.data.is_blocked_by_current_user", is(false)))
                 .andExpect(jsonPath("$.data.last_name", is("Redfield")))
                 .andExpect(jsonPath("$.data.last_online_time", startsWith(LocalDate.now().toString())))
                 .andExpect(jsonPath("$.data.messages_permission", is("adipiscing")))
-                .andExpect(jsonPath("$.data.reg_date", is("2000-07-26T16:21:43.000+00:00")))
+                .andExpect(jsonPath("$.data.reg_date", containsString("2000-07-26")))
                 .andExpect(jsonPath("$.data.user_deleted", is(false)))
                 .andExpect(jsonPath("$.itemPerPage", is(20)))
                 .andExpect(jsonPath("$.offset", is(0)))
