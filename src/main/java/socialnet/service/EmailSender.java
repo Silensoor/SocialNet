@@ -15,8 +15,6 @@ import java.util.ResourceBundle;
 public class EmailSender {
     private final JavaMailSender javaMailSender;
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
-    @Value("${spring.mail.username}")
-    private String userName;
 
     public void send(String emailTo, String subject, String message) {
         MimeMessage htmlMessage = javaMailSender.createMimeMessage();

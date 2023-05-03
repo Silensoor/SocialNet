@@ -12,6 +12,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/test
     logging:
       yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
+  mail:
+    host: smtp.mail.ru
+    port: 2525
+    username: java.development@mail.ru
+    password: eDhZJ9bk8t0hx2WNDAev
+    protocol: smtp
+
 auth:
   secret: socialNet
   timeLive: 216000
@@ -27,3 +34,13 @@ schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
   deletePostsInterval: 0 0 1 * * *
   deleteLikesInterval: 0 0 1 * * *
+
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true

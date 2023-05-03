@@ -15,9 +15,6 @@ public class EmailService {
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
     private final JwtUtils jwtUtils;
 
-    @Value("${mail.mode}")
-    private String mode;
-
     public void passwordChangeConfirm(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         String token = jwtUtils.generateJwtToken(email);

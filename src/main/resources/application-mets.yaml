@@ -30,19 +30,7 @@ spring:
     password: eDhZJ9bk8t0hx2WNDAev
     protocol: smtp
 
-#mail:
-#  mode: Virtual
-#  debug: true
-#  smtp:
-#    auth: true
-#    starttls: true
-#    quitwait: false
-#    ssl:
-#      enable: true
-#    socketFactory:
-#      class:  javax.net.ssl.SSLSocketFactory
 mail:
-  mode: Virtual
   transport:
     protocol: smtp
   debug: true
