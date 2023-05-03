@@ -17,11 +17,14 @@ import java.util.*;
 public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final PersonRepository personRepository;
     private final TagService tagService;
 
     public List<Post> findAll() {
-        return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
+        try {
+            return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public List<Post> findAll(int offset, int perPage) {
@@ -50,9 +53,9 @@ public class PostRepository {
     public Post findById(int id) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM posts WHERE id = ?",
-                postRowMapper,
-                id
+                    "SELECT * FROM posts WHERE id = ?",
+                    postRowMapper,
+                    id
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -78,11 +81,11 @@ public class PostRepository {
     public List<Post> findPostsByUserId(Long userId, Integer offset, Integer perPage) {
         try {
             return jdbcTemplate.query(
-                "select * from posts where author_id = ? order by time desc offset ? rows limit ?",
-                postRowMapper,
-                userId,
-                offset,
-                perPage
+                    "select * from posts where author_id = ? order by time desc offset ? rows limit ?",
+                    postRowMapper,
+                    userId,
+                    offset,
+                    perPage
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -91,12 +94,10 @@ public class PostRepository {
 
     public List<Post> findDeletedPosts() {
         String select = "SELECT * FROM posts WHERE is_deleted = true";
-        return jdbcTemplate.queryForList(select, Post.class);
-    }
-
-    public void deleteAll(List<Post> deletingPosts) {
-        for (Post deletingPost : deletingPosts) {
-            deleteById(deletingPost.getId().intValue());
+        try{
+            return jdbcTemplate.query(select, postRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
         }
     }
 
@@ -123,33 +124,39 @@ public class PostRepository {
     private String createSqlPost(Integer authorId, Long dateFrom, Long dateTo,
                                  String text, String[] tags, Boolean flagQueryAll) {
         String post2TagList = "";
-        String sql = "";
+        StringBuilder sql = new StringBuilder();
+        if (flagQueryAll) {
+            sql.append("SELECT DISTINCT COUNT(posts.id) FROM posts");
+        } else {
+            sql.append("SELECT DISTINCT posts.id, posts.is_blocked, posts.is_deleted, posts.post_text," +
+                    " posts.time, posts.time_delete, posts.title, posts.author_id FROM posts");
+        }
         if (tags != null) {
             post2TagList = tagService.getPostByQueryTags(tags);
+            sql.append("JOIN post2tag ON posts.id=post2tag.post_id");
         }
-        if (flagQueryAll) {
-            sql = "SELECT DISTINCT COUNT(posts.id) FROM posts" +
-                    " JOIN post2tag ON posts.id=post2tag.post_id WHERE is_deleted = false AND ";
-        } else {
-            sql = "SELECT DISTINCT posts.id, posts.is_blocked, posts.is_deleted, posts.post_text," +
-                    " posts.time, posts.time_delete, posts.title, posts.author_id FROM posts" +
-                    " JOIN post2tag ON posts.id=post2tag.post_id WHERE is_deleted = false AND ";
-        }
+        sql.append(" WHERE is_deleted = false AND ");
         if (authorId != null) {
-            sql = sql + " author_id = " + authorId + " AND ";
+            sql.append(" author_id = ").append(authorId).append(" AND ");
         }
-        sql = sql + (dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
-        sql = sql + (dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
-        sql = sql + (!text.equals("") ? " lower (post_text) LIKE '%" + text.toLowerCase() + "%' AND " : "");
-        sql = sql + (post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")" : "");
+        sql.append(dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
+        sql.append(dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
+        sql.append(post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "");
+        if (text.equals("'")){
+            text = "\"";
+        }
+        sql.append(!text.equals("") ? " lower (post_text) LIKE '%" + text.toLowerCase() + "%'" : "");
         String str = sql.substring(sql.length() - 5);
+        String sql1;
         if (str.equals(" AND ")) {
-            sql = sql.substring(0, sql.length() - 5);
+            sql1 = sql.substring(0, sql.length() - 5);
+        } else {
+            sql1 = sql.toString();
         }
         if (flagQueryAll) {
-            return sql;
+            return sql1;
         } else {
-            return sql + " ORDER BY posts.time DESC OFFSET ? LIMIT ?";
+            return sql1 + " ORDER BY posts.time DESC OFFSET ? LIMIT ?";
         }
     }
 

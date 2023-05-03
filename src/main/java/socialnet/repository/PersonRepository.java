@@ -213,11 +213,10 @@ public class PersonRepository {
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getSqlWithoutNullable(userData, new Object[]{email});
-        jdbcTemplate.update("Update Persons Set " + sqlParam.get("sql") + " where email = ?",
+        var sqlParam = reflection.getFieldNamesAndValues(userData, new Object[]{email});
+        jdbcTemplate.update("Update Persons Set " + sqlParam.get("fieldNames") + " where email = ?",
                 (Object[]) sqlParam.get("values"));
     }
-
 
     public List<Person> findPersonsQuery(Integer age_from,
                                          Integer age_to, String city, String country,
@@ -255,8 +254,11 @@ public class PersonRepository {
         str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
                 .append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "")
                 .append(!city.equals("") ? " city = '" + city + "' AND " : "")
-                .append(!country.equals("") ? " country = '" + country + "' AND " : "")
-                .append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
+                .append(!country.equals("") ? " country = '" + country + "' AND " : "");
+        if (first_name.equals("'")){
+            first_name = "\"";
+        }
+        str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
                 .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);
@@ -306,7 +308,8 @@ public class PersonRepository {
                 " OR friendships.src_person_id=p.id WHERE is_deleted = false AND ")
                 .append(createSqlWhere(id, friends, offset, perPage));
         try {
-            return this.jdbcTemplate.query(sql.toString(), personRowMapper);
+            List<Person> personList = this.jdbcTemplate.query(sql.toString(), personRowMapper);
+            return personList;
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -352,10 +355,9 @@ public class PersonRepository {
 
     public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
                                              Integer offset, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?" +
-                " AND NOT id IN(")
-                .append(friendsRecommended)
-                .append(") AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
+        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?")
+                .append(friendsRecommended != "" ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(" AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
         try {
             return this.jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
@@ -366,7 +368,7 @@ public class PersonRepository {
     public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
         StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND NOT id IN(")
                 .append(friendsRecommended)
-                .append(") AND NOT id=? LIMIT ?");
+                .append(") AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
             return this.jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
         } catch (EmptyResultDataAccessException ignored) {

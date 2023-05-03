@@ -29,4 +29,10 @@ public class CityRepository {
                         "Order by Name",
                 new BeanPropertyRowMapper<>(City.class), country);
     }
+
+    public Boolean containsCity(String city) {
+        var rowCount =  jdbcTemplate.query("Select Lower(name) from cities where (Lower(name) = Lower(?)) and Code2 = 'RU'",
+                new BeanPropertyRowMapper<>(City.class), city);
+        return rowCount.size() > 0;
+    }
 }
