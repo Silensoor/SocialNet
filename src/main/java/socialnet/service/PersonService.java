@@ -145,7 +145,6 @@ public class PersonService {
     }
 
     public RegisterRs setNewEmail(EmailRq emailRq) {
-        //String token = emailRq.getSecret();
         personRepository.setEmail(jwtUtils.getUserEmail(emailRq.getSecret()), emailRq.getEmail());
         return new RegisterRs();
     }
@@ -154,7 +153,6 @@ public class PersonService {
         personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
         return new PasswordSetRq();
     }
-
 
     public Person checkLoginAndPassword(String email, String password) {
 

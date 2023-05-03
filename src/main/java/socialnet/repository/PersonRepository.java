@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
 import socialnet.model.Person;
+import socialnet.model.PersonSettings;
 import socialnet.utils.Reflection;
 
 import java.sql.Timestamp;

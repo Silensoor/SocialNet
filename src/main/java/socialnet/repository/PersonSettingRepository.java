@@ -1,10 +1,13 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.model.PersonSettings;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,6 +18,12 @@ public class PersonSettingRepository {
         return jdbcTemplate.query("select * from person_settings where id =?", personSettingRowMapper, id).
                 stream().findAny().orElse(null);
     }
+
+    public List<PersonSettings> getSettings(Long personId) {
+        return jdbcTemplate.query("Select * from Person_Settings Where Id = ?",
+                new BeanPropertyRowMapper<>(PersonSettings.class), personId);
+    }
+
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {
         jdbcTemplate.update("update person_settings set " + typeNotification + " =? where id =?", enable, id);
     }

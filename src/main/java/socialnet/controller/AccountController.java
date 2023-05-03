@@ -57,7 +57,8 @@ public class AccountController {
     }
     @GetMapping("/notifications")
     public CommonRs<List<PersonSettingsRs>> notifications(@RequestHeader String authorization){
-        return  notificationsService.getNotificationByPerson(authorization);
+        //return  notificationsService.getNotificationByPerson(authorization);
+        return  notificationsService.getPersonSettings(authorization);
     }
     @PutMapping("/notifications")
     public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
