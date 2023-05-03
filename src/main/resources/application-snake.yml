@@ -32,7 +32,7 @@ weather:
   apiKey: 3d29686077f7a60e5b5714b659a688dd
 
 mail:
-  smtpHost: smtp.yandex.ru
-  smtpPort: 587
-  authUser: zeronesocialnet@yandex.ru
-  authPass: dg435kbnbsdJbbd8
+  smtpHost: smtp.mail.ru
+  smtpPort: 2525
+  authUser: java.development@mail.ru
+  authPass: eDhZJ9bk8t0hx2WNDAev

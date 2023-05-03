@@ -1,7 +1,6 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.TgApiRs;
@@ -41,7 +40,7 @@ public class TelegramBotService {
     private TgApiRs handleRegisterCommand(TgApiRequest request) {
         try {
             mailSender.send(
-                "jonnysereb@gmail.com",
+                request.getData(),
                 "Подтверждение регистрации",
                 "http://localhost:8086/api/v1/tg?id=" + request.getId()
                     + "&email=" + request.getData()
@@ -55,20 +54,13 @@ public class TelegramBotService {
     }
 
     private TgApiRs handleLoginCommand(TgApiRequest request) {
-        TgApiRs response = new TgApiRs();
-        response.setStatus("ok");
-        response.setError(null);
-        response.setData(null);
-
-        return response;
+        return TgApiRs.builder()
+            .status("ok")
+            .error(null)
+            .data(null).build();
     }
 
     private TgApiRs makeResponse(String status, String error, String data) {
-        TgApiRs response = new TgApiRs();
-        response.setStatus(status);
-        response.setError(error);
-        response.setData(data);
-
-        return response;
+        return TgApiRs.builder().status(status).error(error).data(data).build();
     }
 }
