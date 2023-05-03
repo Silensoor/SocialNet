@@ -83,4 +83,9 @@ public class FriendsShipsRepository {
             return null;
         }
     }
+
+    public List<Friendships> findAllFriendships(Long id) {
+        return jdbcTemplate.query("select * from friendships as f where f.status_name = 'FRIEND' "+
+                "and (f.dst_person_id =? OR f.src_person_id =?)",friendshipsRowMapper ,id,id);
+    }
 }

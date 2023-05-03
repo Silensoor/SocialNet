@@ -37,6 +37,11 @@ public class PersonRepository {
                 person.getIsDeleted()
         );
     }
+    public List<Person> findPersonsByBirthDate(){
+        return jdbcTemplate.query("select * from persons as p  " +
+                "where extract(month from timestamp 'now()')=extract(month from p.birth_date) " +
+                "and extract(day from timestamp 'now()')=extract(day from p.birth_date)",personRowMapper);
+    }
 
     public Person findByEmail(String email) {
         try {
