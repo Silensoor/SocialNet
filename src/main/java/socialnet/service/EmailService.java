@@ -3,9 +3,6 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import socialnet.api.request.EmailRq;
-import socialnet.api.response.RegisterRs;
-import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.ResourceBundle;
@@ -14,13 +11,12 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class EmailService {
     private final EmailSender emailSender;
-    private final PersonRepository personRepository;
+
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
     private final JwtUtils jwtUtils;
 
     @Value("${mail.mode}")
     private String mode;
-
 
     public void passwordChangeConfirm(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
@@ -54,11 +50,4 @@ public class EmailService {
                 "Подтверждение изменения email.",
                 message);
     }
-
-    public RegisterRs setNewEmail(EmailRq emailRq) {
-        String token = emailRq.getSecret();
-        personRepository.setEmail(jwtUtils.getUserEmail(token), emailRq.getEmail());
-        return new RegisterRs();
-    }
-
 }

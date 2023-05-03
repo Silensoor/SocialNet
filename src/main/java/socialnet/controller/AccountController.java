@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.EmailRq;
 import socialnet.api.request.NotificationRq;
+import socialnet.api.request.PasswordSetRq;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
@@ -12,6 +13,7 @@ import socialnet.api.response.RegisterRs;
 import socialnet.service.AccountService;
 import socialnet.service.EmailService;
 import socialnet.service.NotificationsService;
+import socialnet.service.PersonService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -23,6 +25,7 @@ public class AccountController {
     private final AccountService accountService;
     private final NotificationsService notificationsService;
     private final EmailService emailService;
+    private final PersonService personService;
 
     @PutMapping("/email/recovery")
     public void emailSet(@RequestHeader String authorization) {
@@ -30,13 +33,23 @@ public class AccountController {
     }
 
     @PutMapping("/email")
-    public RegisterRs setNewEmail(@RequestBody EmailRq emailRq) {return emailService.setNewEmail(emailRq);}
+    public RegisterRs setNewEmail(@RequestBody EmailRq emailRq) {return personService.setNewEmail(emailRq);}
 
     @PutMapping("/password/recovery")
     public void passwordChangeConfirm(@RequestHeader String authorization) {
         emailService.passwordChangeConfirm(authorization);
     }
+    @PutMapping("/password/reset")
+    public PasswordSetRq resetPassword(@RequestHeader String authorization,
+                                       @RequestBody PasswordSetRq passwordSetRq) {
+        return personService.resetPassword(authorization, passwordSetRq);
+    }
 
+    @PutMapping("/password/set")
+    public PasswordSetRq setNewPassword(@RequestHeader String authorization,
+                                        @RequestBody PasswordSetRq passwordSetRq) {
+        return personService.resetPassword(authorization, passwordSetRq);
+    }
 
     @PostMapping("/register")
     public RegisterRs register(@Valid @RequestBody RegisterRq regRequest) {

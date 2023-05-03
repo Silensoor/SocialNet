@@ -190,15 +190,13 @@ public class PersonRepository {
         jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
     }
 
-    public Boolean setPassword(Long userId, String password) {
-        int rowCount = jdbcTemplate.update("Update Persons Set password = ? Where id = ?", password, userId);
-        return rowCount == 1;
-    }
-
     public void setEmail(String oldEmail, String newEmail) {
         jdbcTemplate.update("Update Persons Set email = ? Where email = ?", newEmail, oldEmail);
     }
 
+    public void setPassword(String newPassword, String email) {
+        jdbcTemplate.update("Update Persons Set password = ? Where email = ?", newPassword, email);
+    }
 
     public Person getPersonByEmail(String email) {
         return jdbcTemplate.queryForObject("SELECT * FROM Persons WHERE email = ?",

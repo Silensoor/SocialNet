@@ -19,17 +19,6 @@ public class EmailSender {
     private String userName;
 
     public void send(String emailTo, String subject, String message) {
-/*
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-
-        simpleMailMessage.setFrom(userName);
-        simpleMailMessage.setTo(emailTo);
-        simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(message);
-
-        javaMailSender.send(simpleMailMessage);
-*/
-
         MimeMessage htmlMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(htmlMessage);
         try {

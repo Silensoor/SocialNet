@@ -9,15 +9,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import socialnet.api.request.LoginRq;
-import socialnet.api.request.UserRq;
-import socialnet.api.request.UserUpdateDto;
-import socialnet.api.response.CommonRs;
-import socialnet.api.response.ComplexRs;
-import socialnet.api.response.ErrorRs;
-import socialnet.api.response.PersonRs;
+import socialnet.api.request.*;
+import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
@@ -40,7 +36,7 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-
+    private final PasswordEncoder passwordEncoder;
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
     public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
@@ -148,6 +144,16 @@ public class PersonService {
         return personRepository.getPersonIdByEmail(email);
     }
 
+    public RegisterRs setNewEmail(EmailRq emailRq) {
+        //String token = emailRq.getSecret();
+        personRepository.setEmail(jwtUtils.getUserEmail(emailRq.getSecret()), emailRq.getEmail());
+        return new RegisterRs();
+    }
+
+    public PasswordSetRq resetPassword(String authorization, PasswordSetRq passwordSetRq) {
+        personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
+        return new PasswordSetRq();
+    }
 
 
     public Person checkLoginAndPassword(String email, String password) {
