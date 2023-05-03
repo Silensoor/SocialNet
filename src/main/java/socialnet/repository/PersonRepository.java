@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
-import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
@@ -196,10 +195,10 @@ public class PersonRepository {
         return rowCount == 1;
     }
 
-    public Boolean setEmail(Long userId, String email) {
-        int rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", email, userId);
-        return rowCount == 1;
+    public void setEmail(String oldEmail, String newEmail) {
+        jdbcTemplate.update("Update Persons Set email = ? Where email = ?", newEmail, oldEmail);
     }
+
 
     public Person getPersonByEmail(String email) {
         return jdbcTemplate.queryForObject("SELECT * FROM Persons WHERE email = ?",

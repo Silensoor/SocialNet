@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
@@ -24,7 +25,8 @@ public class MailConfig {
     private String debug;
 
     @Bean
-    public JavaMailSender getMailSender() {
+    public JavaMailSender getMailSender() throws IOException {
+
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
         javaMailSender.setHost(host);
@@ -35,14 +37,11 @@ public class MailConfig {
         Properties properties = javaMailSender.getJavaMailProperties();
 
         properties.put("mail.transport.protocol", protocol);
-        properties.put("mail.debug", debug);
-
-        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.host", "smtp.mail.ru");
         properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.quitwait", "false");
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
+        properties.put("mail.debug", "true");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.port", 2525);
 
         return javaMailSender;
     }

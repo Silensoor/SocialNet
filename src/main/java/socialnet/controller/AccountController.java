@@ -1,8 +1,8 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import socialnet.api.request.EmailRq;
 import socialnet.api.request.NotificationRq;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
@@ -12,7 +12,6 @@ import socialnet.api.response.RegisterRs;
 import socialnet.service.AccountService;
 import socialnet.service.EmailService;
 import socialnet.service.NotificationsService;
-import socialnet.service.PersonService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,15 +26,17 @@ public class AccountController {
 
     @PutMapping("/email/recovery")
     public void emailSet(@RequestHeader String authorization) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        emailService.send(email,"Request Confirm", "Confirm");
+        emailService.shiftEmailConfirm(authorization);
     }
 
-    @GetMapping("/email/confirm/{code}")
-    public RegisterRs confirmSetEmail(@PathVariable String code) {
-        //todo
-        return new RegisterRs();
+    @PutMapping("/email")
+    public RegisterRs setNewEmail(@RequestBody EmailRq emailRq) {return emailService.setNewEmail(emailRq);}
+
+    @PutMapping("/password/recovery")
+    public void passwordChangeConfirm(@RequestHeader String authorization) {
+        emailService.passwordChangeConfirm(authorization);
     }
+
 
     @PostMapping("/register")
     public RegisterRs register(@Valid @RequestBody RegisterRq regRequest) {

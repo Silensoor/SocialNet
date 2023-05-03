@@ -24,15 +24,34 @@ spring:
       name: admin
       password: admin
   mail:
-    host: smtp.yandex.com
-    port: 465
-    username: java.development.2023@yandex.com
-    password: dqvntfzxvzftlljm
-#    password:  2023javsa
-    protocol: smtps
+    host: smtp.mail.ru
+    port: 2525
+    username: java.development@mail.ru
+    password: eDhZJ9bk8t0hx2WNDAev
+    protocol: smtp
 
+#mail:
+#  mode: Virtual
+#  debug: true
+#  smtp:
+#    auth: true
+#    starttls: true
+#    quitwait: false
+#    ssl:
+#      enable: true
+#    socketFactory:
+#      class:  javax.net.ssl.SSLSocketFactory
 mail:
+  mode: Virtual
+  transport:
+    protocol: smtp
   debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
+
 
 auth:
   secret: socialNet
