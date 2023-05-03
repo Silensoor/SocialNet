@@ -82,7 +82,7 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.data.online", is(true)))
                 .andExpect(jsonPath("$.data.phone", is("966-998-0544")))
                 .andExpect(jsonPath("$.data.photo", is("go86atavdxhcvcagbv")))
-                .andExpect(jsonPath("$.data.birth_date", is("1972-11-14T17:25:19.000+00:00")))
+                .andExpect(jsonPath("$.data.birth_date", is("1972-11-14T21:25:19.000+00:00")))
                 .andExpect(jsonPath("$.data.first_name", is("Chris")))
                 .andExpect(jsonPath("$.data.is_blocked", is(false)))
                 .andExpect(jsonPath("$.data.is_blocked_by_current_user", is(false)))
