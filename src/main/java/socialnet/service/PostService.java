@@ -12,6 +12,7 @@ import socialnet.model.*;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.NotificationPusher;
 import socialnet.utils.PostServiceDetails;
 
 import java.sql.Timestamp;
@@ -29,6 +30,7 @@ public class PostService {
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
     private final JwtUtils jwtUtils;
+    private final FriendsShipsRepository friendsShipsRepository;
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -186,6 +188,8 @@ public class PostService {
         Person author = personRepository.findById((long) id);
         PostServiceDetails details = getDetails(author.getId(), postId, jwtToken);
         PostRs postRs = setPostRs(post, details);
+        List<Friendships> allFriendships = friendsShipsRepository.findAllFriendships(author.getId());
+        sendAllFriendShips(allFriendships, author.getId());
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
@@ -303,4 +307,16 @@ public class PostService {
 
         return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
+    private void sendAllFriendShips(List<Friendships> list,Long id) {
+        for (Friendships friendships : list) {
+            Notification notification;
+            if (!id.equals(friendships.getDstPersonId())) {
+                notification = NotificationPusher.getNotification(NotificationType.POST, friendships.getDstPersonId(), id);
+            } else {
+                notification = NotificationPusher.getNotification(NotificationType.POST, friendships.getSrcPersonId(), id);
+            }
+            NotificationPusher.sendPush(notification, id);
+        }
+    }
+
 }

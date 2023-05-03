@@ -34,7 +34,7 @@ public class NotificationsService {
             throw new EmptyEmailException("Field 'email' is empty");
         }
         List<NotificationRs> notificationRsList = new ArrayList<>();
-        if (all) {
+        if (all!=null&&all) {
             Long personId = personList.getId();
             List<Notification> notifications = notificationRepository.getNotificationsByPersonId(personId);
             notificationRepository.updateIsReadAll(personId);
@@ -77,8 +77,6 @@ public class NotificationsService {
                 List<NotificationRs> rsList = new ArrayList<>();
                 return getResponseNotifications(rsList);
             }
-
-
         }
     }
 

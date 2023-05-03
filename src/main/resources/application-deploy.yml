@@ -20,6 +20,7 @@ schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
   deletePostsInterval: 0 0 1 * * *
   deleteLikesInterval: 0 0 1 * * *
+  birthDatePush: 0 1 8 * * *
 
 s3:
   accessKey: YCAJE83YiyNT766OLADHNeObE

@@ -35,8 +35,8 @@ public class NotificationRepository {
 
     public List<Notification> getNotifications(Long id, Integer itemPerPage, Integer offset) {
         return jdbcTemplate.query("select * from notifications where person_id = ? " +
-                        "and is_read = false order by sent_time",
-                notificationRowMapper, id).stream().skip(offset).limit(itemPerPage).collect(Collectors.toList());
+                        "and is_read = false order by sent_time DESC  ",
+                notificationRowMapper, id);
     }
 
     private final RowMapper<Notification> notificationRowMapper = (rs, rowNum) -> {
