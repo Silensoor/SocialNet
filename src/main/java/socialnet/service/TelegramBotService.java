@@ -75,7 +75,7 @@ public class TelegramBotService {
         Person person = personRepository.findByTelegramId(request.getId());
 
         if (person == null) {
-            return makeResponse("fail", null, null);
+            return makeResponse("fail", "Укажите свою почту:", null);
         }
 
         return makeResponse("ok", null, "[" + person.getFirstName() + " " + person.getLastName() + "]");
