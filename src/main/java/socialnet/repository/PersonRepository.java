@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
 import socialnet.model.Person;
-import socialnet.model.PersonSettings;
 import socialnet.utils.Reflection;
 
 import java.sql.Timestamp;
@@ -211,7 +210,7 @@ public class PersonRepository {
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getFieldNamesAndValues(userData, new Object[]{email});
+        var sqlParam = reflection.getFieldsAndValuesQuery(userData, new Object[]{email});
         jdbcTemplate.update("Update Persons Set " + sqlParam.get("fieldNames") + " where email = ?",
                 (Object[]) sqlParam.get("values"));
     }

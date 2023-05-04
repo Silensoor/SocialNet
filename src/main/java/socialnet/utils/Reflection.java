@@ -15,7 +15,6 @@ import static java.lang.Character.isDigit;
 
 @Component
 public class Reflection {
-
     public <T> List<String> getAllFields(T cls) {
         var result = new ArrayList<String>();
         for (Field field : cls.getClass().getDeclaredFields()) {
@@ -102,7 +101,20 @@ public class Reflection {
         return result;
     }
 
-    public Map<String, Object> getFieldNamesAndValues(Object object, Object[] addValues) {
+
+
+    public Map<String, Object> getFieldsAndValues(Object object) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        for (Field field : object.getClass().getDeclaredFields())
+            result.put(getSqlName(field.getName()), methodInvoke(object, getMethodName("get", field.getName())));
+
+        return result;
+    }
+
+
+    public Map<String, Object> getFieldsAndValuesQuery(Object object, Object[] addValues) {
 
         StringBuilder fieldNames = new StringBuilder();
         Map<String, Object> result = new HashMap<>();

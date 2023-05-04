@@ -2,7 +2,10 @@ package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import socialnet.api.request.*;
+import socialnet.api.request.EmailRq;
+import socialnet.api.request.NotificationRq;
+import socialnet.api.request.PasswordSetRq;
+import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.RegisterRs;
@@ -52,8 +55,7 @@ public class AccountController {
     }
     @GetMapping("/notifications")
     public CommonRs notifications(@RequestHeader String authorization){
-        var list = notificationsService.getPersonSettings(authorization);
-        return  list;
+        return notificationsService.getPersonSettings(authorization);
     }
     @PutMapping("/notifications")
     public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
