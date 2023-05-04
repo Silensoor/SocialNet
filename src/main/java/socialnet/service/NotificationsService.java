@@ -82,8 +82,6 @@ public class NotificationsService {
                 List<NotificationRs> rsList = new ArrayList<>();
                 return getResponseNotifications(rsList);
             }
-
-
         }
     }
 

@@ -42,13 +42,11 @@ public class AccountController {
                                        @RequestBody PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
-
     @PutMapping("/password/set")
     public PasswordSetRq setNewPassword(@RequestHeader String authorization,
                                         @RequestBody PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
-
     @PostMapping("/register")
     public RegisterRs register(@Valid @RequestBody RegisterRq regRequest) {
         return accountService.getRegisterData(regRequest);
@@ -61,10 +59,4 @@ public class AccountController {
     public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
         return notificationsService.putNotificationByPerson(authorization,notificationRq);
     }
-
-//    @PutMapping("/notifications")
-//    public CommonRs notifications(@RequestHeader String authorization,
-//                                  @RequestBody PersonSettingsRq personSettingsRq) {
-//        return notificationsService.setPersonSettings(authorization, personSettingsRq);
-//    }
 }

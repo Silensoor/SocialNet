@@ -72,33 +72,17 @@ public class PersonService {
 
     }
 
-    public ResponseEntity<?> getUserInfo(String authorization) {
+    public CommonRs deleteUser(String authorization) {
+        personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
+        return new CommonRs<>(new ComplexRs());
+    }
 
-        if (!jwtUtils.validateJwtToken(authorization)) {//401
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        String userName = jwtUtils.getUserEmail(authorization);
-        if (userName.isEmpty()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
-        }
-
-        Person person = personRepository.findByEmail(userName);
-        if (person.getIsDeleted()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
-        }
-
-        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-
-        return ResponseEntity.ok(new CommonRs(personRs));
+    public CommonRs recoverUser(String authorization) {
+        personRepository.recover(jwtUtils.getUserEmail(authorization));
+        return new CommonRs<>(new ComplexRs());
     }
 
     public CommonRs<ComplexRs> getLogout(String authorization) {
-
         return setCommonRs(setComplexRs());
     }
 

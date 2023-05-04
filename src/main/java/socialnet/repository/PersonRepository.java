@@ -151,10 +151,13 @@ public class PersonRepository {
         }
     }
 
-    public void deleteUser(String email) {
-        jdbcTemplate.update("Delete from Persons Where email = ?", email);
+    public void markUserDelete(String email) {
+        jdbcTemplate.update("Update Persons Set is_deleted = true Where email = ?", email);
     }
 
+    public void recover(String email) {
+        jdbcTemplate.update("Update Persons Set is_deleted = false Where email = ?", email);
+    }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {
         Person person = new Person();

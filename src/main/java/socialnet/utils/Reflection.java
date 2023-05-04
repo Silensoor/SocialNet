@@ -101,8 +101,6 @@ public class Reflection {
         return result;
     }
 
-
-
     public Map<String, Object> getFieldsAndValues(Object object) {
 
         Map<String, Object> result = new HashMap<>();
@@ -112,8 +110,6 @@ public class Reflection {
 
         return result;
     }
-
-
     public Map<String, Object> getFieldsAndValuesQuery(Object object, Object[] addValues) {
 
         StringBuilder fieldNames = new StringBuilder();
@@ -124,7 +120,6 @@ public class Reflection {
 
         for (Field field : object.getClass().getDeclaredFields()) {
             Object fieldValue = methodInvoke(object, getMethodName("get", field.getName()));
-            ;
 
             if (fieldValue != null) {
                 fieldNames.append(String.format("%s%s%s", delemitter, getSqlName(field.getName()), " = ? "));
