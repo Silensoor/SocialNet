@@ -36,4 +36,17 @@ public class TelegramBotRepository {
             telegramId
         );
     }
+
+    public boolean unregister(long telegramId) {
+        try {
+            jdbcTemplate.update(
+                "UPDATE persons SET telegram_id = null WHERE telegram_id = ?",
+                telegramId
+            );
+        } catch (Exception ignored) {
+            return false;
+        }
+
+        return true;
+    }
 }

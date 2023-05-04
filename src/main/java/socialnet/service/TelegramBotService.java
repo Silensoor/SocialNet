@@ -37,7 +37,21 @@ public class TelegramBotService {
             return handleLoginCommand(request);
         }
 
+        if (command.equals("/killyourself")) {
+            return handleKillyourselfCommand(request);
+        }
+
         return makeResponse("fail", "Неизвестная команда", null);
+    }
+
+    private TgApiRs handleKillyourselfCommand(TgApiRequest request) {
+        boolean isUnregistered = telegramBotRepository.unregister(request.getId());
+
+        if (isUnregistered) {
+            return makeResponse("ok", null, "Бывай!");
+        }
+
+        return makeResponse("fail", "Какая-то фигня, так что сиди пока и не рыпайся.", null);
     }
 
     private TgApiRs handleRegisterCommand(TgApiRequest request) {
