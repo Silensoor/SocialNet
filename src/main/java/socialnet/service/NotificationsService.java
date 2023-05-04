@@ -87,7 +87,7 @@ public class NotificationsService {
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personsEmail.getId();
+            Long id = personsEmail.getPersonSettingsId();
             PersonSettings personSettings = personSettingRepository.getPersonSettings(id);
             return getResponsePersonSettings(personSettings);
         }
@@ -100,7 +100,7 @@ public class NotificationsService {
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            Long id = personsEmail.getId();
+            Long id = personsEmail.getPersonSettingsId();
             String typeNotification = getTypeNotification(notificationRq.getNotificationType());
             personSettingRepository.updatePersonSetting(notificationRq.getEnable(), typeNotification, id);
             return getResponseByPutTypeNotification();
