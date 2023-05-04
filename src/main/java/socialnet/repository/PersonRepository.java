@@ -21,6 +21,17 @@ public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
 
+
+    public Long insert(Person person) {
+        String sql = "Insert into Persons " + reflection.getFieldNames(person, new String[] {"id"}) +
+                " values " + reflection.getStringValues(person, "id") + ") " +
+                 " returning Id";
+        Object[] values = reflection.getValues(person, "id");
+        jdbcTemplate.update(sql, values);
+
+
+        return null;
+    }
     public void save(Person person) {
         jdbcTemplate.update(
                 "INSERT INTO persons " +

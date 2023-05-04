@@ -3,6 +3,7 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.RegisterRs;
@@ -26,7 +27,9 @@ public class AccountService {
     public RegisterRs getRegisterData(RegisterRq regRequest) {
         validateFields(regRequest);
 
+
         personRepository.save(getPerson(regRequest));
+        //personRepository.insert(getPerson(regRequest));
         personSettingRepository.insert(regRequest.getEmail());
 
         RegisterRs registerRs = new RegisterRs();

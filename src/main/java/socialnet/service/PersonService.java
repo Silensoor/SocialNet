@@ -37,8 +37,18 @@ public class PersonService {
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
     private final PasswordEncoder passwordEncoder;
-
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
+
+    public CommonRs delete(String authorization) {
+        personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
+        return new CommonRs<>(new ComplexRs());
+    }
+
+    public CommonRs recover(String authorization) {
+        personRepository.recover(jwtUtils.getUserEmail(authorization));
+        return new CommonRs<>(new ComplexRs());
+    }
+
 
     public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
 
@@ -81,31 +91,6 @@ public class PersonService {
     public PasswordSetRq resetPassword(String authorization, PasswordSetRq passwordSetRq) {
         personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
         return new PasswordSetRq();
-    }
-
-    public ResponseEntity<?> getUserInfo(String authorization) {
-
-        if (!jwtUtils.validateJwtToken(authorization)) {//401
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        String userName = jwtUtils.getUserEmail(authorization);
-        if (userName.isEmpty()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
-        }
-
-        Person person = personRepository.findByEmail(userName);
-        if (person.getIsDeleted()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
-        }
-
-        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-
-        return ResponseEntity.ok(new CommonRs(personRs));
     }
 
     public CommonRs<ComplexRs> getLogout(String authorization) {

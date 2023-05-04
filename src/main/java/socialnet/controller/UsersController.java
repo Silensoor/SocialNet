@@ -62,12 +62,12 @@ public class UsersController {
 
     @DeleteMapping("/me")
     public CommonRs deleteUser(@RequestHeader("authorization") String authorization) {
-        return personService.deleteUser(authorization);
+        return personService.delete(authorization);
     }
 
-    @PostMapping("/recover")
+    @PostMapping("/me/recover")
     public CommonRs recoverUser(@RequestHeader("authorization") String authorization) {
-        return personService.recoverUser(authorization);
+        return personService.recover(authorization);
     }
 
 
