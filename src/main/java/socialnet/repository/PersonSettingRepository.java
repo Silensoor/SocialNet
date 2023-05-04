@@ -15,6 +15,15 @@ import java.util.List;
 public class PersonSettingRepository {
     private final JdbcTemplate jdbcTemplate;
 
+    public void insert(String email) {
+        jdbcTemplate.update("DO\n" +
+                "$$DECLARE new_id bigint;\n" +
+                "BEGIN\n" +
+                "\tselect id from persons where email = ? into new_id;\n" +
+                "\tinsert into person_settings (id) values (new_id);\n" +
+                "END$$;\n", email);
+    }
+
     public PersonSettings getPersonSettings(Long id) {
         return jdbcTemplate.query("select * from person_settings where id =?", personSettingRowMapper, id).
                 stream().findAny().orElse(null);
