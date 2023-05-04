@@ -82,24 +82,11 @@ public class NotificationsService {
         }
     }
 
-    public CommonRs<List<PersonSettingsRs>> getNotificationByPerson(String token) {
-        String email = jwtUtils.getUserEmail(token);
-        Person personsEmail = personRepository.findByEmail(email);
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            Long id = personsEmail.getId();
-            PersonSettings personSettings = personSettingRepository.getPersonSettings(id);
-            return getResponsePersonSettings(personSettings);
-        }
-    }
-
     public CommonRs getPersonSettings(String authorization) {
         return new CommonRs<>(personSettingRepository
                 .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization))));
     }
-
-
+    
     public CommonRs<ComplexRs> putNotificationByPerson(String token, NotificationRq notificationRq) {
         String email = jwtUtils.getUserEmail(token);
         Person personsEmail = personRepository.findByEmail(email);

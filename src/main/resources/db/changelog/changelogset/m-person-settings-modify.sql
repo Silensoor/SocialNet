@@ -15,20 +15,20 @@ CREATE TABLE person_settings
         REFERENCES public.persons (id) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
-)
+);
 
---CREATE FUNCTION new_person_function()
---    RETURNS trigger
---    LANGUAGE 'plpgsql'
---as $function$
---begin
---	insert into person_settings (id) values (new.id);
---	return new;
---end;
---$function$;
---
---CREATE TRIGGER new_person_trigger
---    BEFORE INSERT
---    ON public.persons
---    FOR EACH ROW
---    EXECUTE FUNCTION new_person_function();
+CREATE FUNCTION new_person_function()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+as $function$
+begin
+	insert into person_settings (id) values (new.id);
+	return new;
+end;
+$function$;
+
+CREATE TRIGGER new_person_trigger
+    AFTER INSERT
+    ON public.persons
+    FOR EACH ROW
+    EXECUTE FUNCTION new_person_function();

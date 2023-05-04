@@ -2,13 +2,9 @@ package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import socialnet.api.request.EmailRq;
-import socialnet.api.request.NotificationRq;
-import socialnet.api.request.PasswordSetRq;
-import socialnet.api.request.RegisterRq;
+import socialnet.api.request.*;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
-import socialnet.api.response.PersonSettingsRs;
 import socialnet.api.response.RegisterRs;
 import socialnet.service.AccountService;
 import socialnet.service.EmailService;
@@ -16,7 +12,6 @@ import socialnet.service.NotificationsService;
 import socialnet.service.PersonService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -56,12 +51,18 @@ public class AccountController {
         return accountService.getRegisterData(regRequest);
     }
     @GetMapping("/notifications")
-    public CommonRs<List<PersonSettingsRs>> notifications(@RequestHeader String authorization){
-        //return  notificationsService.getNotificationByPerson(authorization);
-        return  notificationsService.getPersonSettings(authorization);
+    public CommonRs notifications(@RequestHeader String authorization){
+        var list = notificationsService.getPersonSettings(authorization);
+        return  list;
     }
     @PutMapping("/notifications")
     public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
         return notificationsService.putNotificationByPerson(authorization,notificationRq);
     }
+
+//    @PutMapping("/notifications")
+//    public CommonRs notifications(@RequestHeader String authorization,
+//                                  @RequestBody PersonSettingsRq personSettingsRq) {
+//        return notificationsService.setPersonSettings(authorization, personSettingsRq);
+//    }
 }
