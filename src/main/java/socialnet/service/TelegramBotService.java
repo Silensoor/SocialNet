@@ -60,10 +60,10 @@ public class TelegramBotService {
         Person person = personRepository.findByTelegramId(request.getId());
 
         if (person == null) {
-            return TgApiRs.builder().status("fail").error(null).data(null).build();
+            return makeResponse("fail", null, null);
         }
 
-        return TgApiRs.builder().status("ok").error(null).data(null).build();
+        return makeResponse("ok", null, "[" + person.getFirstName() + " " + person.getLastName() + "]");
     }
 
     private TgApiRs makeResponse(String status, String error, String data) {

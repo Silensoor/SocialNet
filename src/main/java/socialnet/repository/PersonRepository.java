@@ -27,7 +27,7 @@ public class PersonRepository {
                 "INSERT INTO persons " +
                 "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted, telegram_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
+                person.getEmail().toLowerCase(),
                 person.getFirstName(),
                 person.getLastName(),
                 person.getPassword(),
@@ -38,6 +38,7 @@ public class PersonRepository {
                 person.getTelegramId()
         );
     }
+
     public List<Person> findPersonsByBirthDate(){
         return jdbcTemplate.query("select * from persons as p  " +
                 "where extract(month from timestamp 'now()')=extract(month from p.birth_date) " +
@@ -47,9 +48,9 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
+                "SELECT * FROM persons WHERE lower(email) = ?",
                 personRowMapper,
-                email
+                email.toLowerCase()
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
