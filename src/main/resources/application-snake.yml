@@ -8,6 +8,22 @@ spring:
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
+  mail:
+    host: smtp.mail.ru
+    port: 2525
+    username: java.development@mail.ru
+    password: eDhZJ9bk8t0hx2WNDAev
+    protocol: smtp
+
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
 
 server:
   port: 8086

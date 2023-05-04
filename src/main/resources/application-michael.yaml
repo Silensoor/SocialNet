@@ -10,6 +10,22 @@ spring:
     username: postgres
     password: testtest55
     url: jdbc:postgresql://localhost:5432/public
+  mail:
+    host: smtp.mail.ru
+    port: 2525
+    username: java.development@mail.ru
+    password: eDhZJ9bk8t0hx2WNDAev
+    protocol: smtp
+
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
 
 auth:
   secret: socialNet

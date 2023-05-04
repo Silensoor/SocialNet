@@ -22,7 +22,6 @@ import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
-import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
@@ -41,8 +40,6 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-
-    private final FriendsShipsRepository friendsShipsRepository;
 
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
@@ -112,17 +109,6 @@ public class PersonService {
     public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
         Person person = findUser(id);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-        final Person person1 = tokenToMail(authorization);
-        if (friendsShipsRepository.getFriendStatus(Long.valueOf(id), person1.getId()) != null) {
-            personRs.setFriendStatus(friendsShipsRepository.getFriendStatus(Long.valueOf(id), person1.getId())
-                    .getStatusName().toString());
-            if (friendsShipsRepository.getFriendStatus(Long.valueOf(id), person1.getId()).equals("BLOCKED")) {
-                personRs.setIsBlockedByCurrentUser(true);
-            }
-        } else {
-            personRs.setFriendStatus("UNKNOWN");
-            personRs.setIsBlockedByCurrentUser(null);
-        }
         changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
@@ -205,16 +191,6 @@ public class PersonService {
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
         return ResponseEntity.ok(new CommonRs(personRs));
-    }
-
-    public Person tokenToMail(String jwtToken) {
-        String email = jwtUtils.getUserEmail(jwtToken);
-        Person personsEmail = personRepository.findByEmail(email);
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            return personsEmail;
-        }
     }
 
 }
