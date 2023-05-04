@@ -53,7 +53,8 @@ public class TelegramBotService {
             System.err.println(e.getMessage());
         }
 
-        return makeResponse("ok", null, "Письмо с подтверждением выслано на указанную почту.");
+        return makeResponse("ok", null, "Письмо с подтверждением выслано на указанную почту. " +
+            "Войдите в почту и перейдите по ссылке, затем нажмите 'Подтвердить регистрацию'");
     }
 
     private TgApiRs handleLoginCommand(TgApiRequest request) {
