@@ -25,10 +25,12 @@ public class PersonSettingRepository {
                 "$$" +
                 "declare new_id bigint;\n" +
                 "begin\n" +
-                "  select id from persons where email = :email into new_id;\n" +
+                "  select id from persons where email = '%s' into new_id;\n" +
                 "  insert into person_settings (id) values (new_id);\n" +
                 "end$$;\n";
-        jdbcTemplate.update(sql.replace(":email", "'".concat(email).concat("'")));
+        //jdbcTemplate.update(sql.replace(":email", "'".concat(email).concat("'")));
+        sql = String.format(sql, email);
+        jdbcTemplate.update(sql);
     }
 
     public PersonSettings getSettings(Long personId) {
@@ -60,21 +62,6 @@ public class PersonSettingRepository {
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {
         jdbcTemplate.update("update person_settings set " + typeNotification + " =? where id =?", enable, id);
     }
-
-/*
-    private final RowMapper<PersonSettingsRq> personSettingRqRowMapper = (rs, rowNum) -> {
-        PersonSettingsRq personSettingsRq = new PersonSettingsRq();
-        personSettingsRq.setId(rs.getLong("id"));
-        personSettingsRq.setMessage(rs.getBoolean("message_notification"));
-        personSettingsRq.setPostLike(rs.getBoolean("like_notification"));
-        personSettingsRq.setPost(rs.getBoolean("post_notification"));
-        personSettingsRq.setFriendBirthday(rs.getBoolean("friend_birthday_notification"));
-        personSettingsRq.setCommentComment(rs.getBoolean("comment_comment_notification"));
-        personSettingsRq.setFriendRequest(rs.getBoolean("friend_request"));
-        personSettingsRq.setPostComment(rs.getBoolean("post_comment_notification"));
-        return personSettingsRq;
-    };
-*/
 
  /*   private final RowMapper<PersonSettings> personSettingRowMapper = (rs, rowNum) -> {
         PersonSettings personSettings = new PersonSettings();
