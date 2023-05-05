@@ -1,13 +1,18 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.TgApiRs;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.TelegramBotRepository;
+import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.MailSender;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +20,7 @@ public class TelegramBotService {
     private final TelegramBotRepository telegramBotRepository;
     private final PersonRepository personRepository;
     private final MailSender mailSender;
+    private final JwtUtils jwtUtils;
 
     public TgApiRs register(long telegramId, String email, String cmd) {
         boolean isRegister = telegramBotRepository.register(telegramId, email, cmd);
@@ -78,7 +84,15 @@ public class TelegramBotService {
             return makeResponse("fail", "Укажите свою почту:", null);
         }
 
-        return makeResponse("ok", null, "[" + person.getFirstName() + " " + person.getLastName() + "]");
+        String token = jwtUtils.generateJwtToken(person.getEmail());
+        String fullName = "[" + person.getFirstName() + " " + person.getLastName() + "]";
+
+        Map<String, String> map = new HashMap<>();
+        map.put("name", fullName);
+        map.put("token", token);
+        JSONObject jo = new JSONObject(map);
+
+        return makeResponse("ok", null, jo.toString());
     }
 
     private TgApiRs makeResponse(String status, String error, String data) {
