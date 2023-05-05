@@ -28,7 +28,6 @@ public class PersonSettingRepository {
                 "  select id from persons where email = '%s' into new_id;\n" +
                 "  insert into person_settings (id) values (new_id);\n" +
                 "end$$;\n";
-        //jdbcTemplate.update(sql.replace(":email", "'".concat(email).concat("'")));
         sql = String.format(sql, email);
         jdbcTemplate.update(sql);
     }
