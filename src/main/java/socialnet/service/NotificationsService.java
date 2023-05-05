@@ -3,7 +3,6 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.NotificationRq;
-import socialnet.api.request.PersonSettingsRq;
 import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.NotificationMapper;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +84,7 @@ public class NotificationsService {
     }
 
     public CommonRs getPersonSettings(String authorization) {
-        PersonSettingsRq personSettings = personSettingRepository
+        PersonSettings personSettings = personSettingRepository
                 .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
 
         List<PersonSettingsRs> list = new ArrayList<>();
@@ -138,6 +136,7 @@ public class NotificationsService {
 
     }
 
+/*
     private CommonRs<List<PersonSettingsRs>> getResponsePersonSettings(PersonSettings personSettings) {
         PersonSettingsRs personSettingsRs1 = new PersonSettingsRs(personSettings.getCommentCommentNotification(),
                 "COMMENT_COMMENT");
@@ -159,6 +158,7 @@ public class NotificationsService {
         commonRs.setTotal(500L);
         return commonRs;
     }
+*/
 
     private CommonRs<List<NotificationRs>> getResponseNotifications(List<NotificationRs> notificationRs) {
         CommonRs<List<NotificationRs>> commonRs = new CommonRs<>(notificationRs);

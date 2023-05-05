@@ -5,10 +5,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import socialnet.api.request.PersonSettingsRq;
 import socialnet.model.PersonSettings;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,20 +21,21 @@ public class PersonSettingRepository {
                 "END$$;\n", email);
     }
 
-    public PersonSettings getPersonSettings(Long id) {
+ /*   public PersonSettings getPersonSettings(Long id) {
         return jdbcTemplate.query("select * from person_settings where id =?", personSettingRowMapper, id).
                 stream().findAny().orElse(null);
     }
-
-    public PersonSettingsRq getSettings(Long personId) {
+*/
+    public PersonSettings getSettings(Long personId) {
         return jdbcTemplate.query("Select * from Person_Settings Where Id = ?",
-                personSettingRqRowMapper, personId).stream().findAny().orElse(null);
+                new BeanPropertyRowMapper<>(PersonSettings.class), personId).stream().findAny().orElse(null);
     }
 
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {
         jdbcTemplate.update("update person_settings set " + typeNotification + " =? where id =?", enable, id);
     }
 
+/*
     private final RowMapper<PersonSettingsRq> personSettingRqRowMapper = (rs, rowNum) -> {
         PersonSettingsRq personSettingsRq = new PersonSettingsRq();
         personSettingsRq.setId(rs.getLong("id"));
@@ -50,8 +48,9 @@ public class PersonSettingRepository {
         personSettingsRq.setPostComment(rs.getBoolean("post_comment_notification"));
         return personSettingsRq;
     };
+*/
 
-    private final RowMapper<PersonSettings> personSettingRowMapper = (rs, rowNum) -> {
+ /*   private final RowMapper<PersonSettings> personSettingRowMapper = (rs, rowNum) -> {
         PersonSettings personSettings = new PersonSettings();
         personSettings.setId(rs.getLong("id"));
         personSettings.setMessageNotification(rs.getBoolean("message_notification"));
@@ -62,5 +61,5 @@ public class PersonSettingRepository {
         personSettings.setFriendRequest(rs.getBoolean("friend_request"));
         personSettings.setPostCommentNotification(rs.getBoolean("post_comment_notification"));
         return personSettings;
-    };
+    };*/
 }
