@@ -27,9 +27,7 @@ public class AccountService {
     public RegisterRs getRegisterData(RegisterRq regRequest) {
         validateFields(regRequest);
 
-
         personRepository.save(getPerson(regRequest));
-        //personRepository.insert(getPerson(regRequest));
         personSettingRepository.insert(regRequest.getEmail());
 
         RegisterRs registerRs = new RegisterRs();

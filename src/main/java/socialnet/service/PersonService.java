@@ -18,10 +18,16 @@ import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
+import socialnet.model.PersonSettings;
 import socialnet.repository.PersonRepository;
+import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.Reflection;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 
@@ -37,6 +43,8 @@ public class PersonService {
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
     private final PasswordEncoder passwordEncoder;
+    private final PersonSettingRepository personSettingRepository;
+    private final Reflection reflection;
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
 
     public CommonRs delete(String authorization) {
@@ -183,6 +191,27 @@ public class PersonService {
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
         return ResponseEntity.ok(new CommonRs(personRs));
+    }
+
+
+    public CommonRs getPersonSettings(String authorization) {
+        PersonSettings personSettings = personSettingRepository
+                .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
+
+        List<PersonSettingsRs> list = new ArrayList<>();
+        var map = reflection.getFieldsAndValues(personSettings).entrySet();
+        for (Map.Entry<String, Object> entry : map) {
+            if (!entry.getKey().equalsIgnoreCase("id"))
+                list.add(new PersonSettingsRs((boolean) entry.getValue(), entry.getKey().toUpperCase()));
+        }
+        return new CommonRs<>(list);
+    }
+
+    public CommonRs setSetting(String authorization, PersonSettingsRq personSettingsRq) {
+        personSettingRepository.setSetting(
+                personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)),
+                personSettingsRq);
+        return new CommonRs<>(new ComplexRs());
     }
 
 }

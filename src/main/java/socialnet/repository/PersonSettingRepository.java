@@ -5,30 +5,56 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import socialnet.api.request.PersonSettingsRq;
+import socialnet.api.response.PersonSettingsRs;
 import socialnet.model.PersonSettings;
+import socialnet.utils.Reflection;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
 public class PersonSettingRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final Reflection reflection;
 
     public void insert(String email) {
-        jdbcTemplate.update("DO\n" +
-                "$$DECLARE new_id bigint;\n" +
-                "BEGIN\n" +
-                "\tselect id from persons where email = ? into new_id;\n" +
-                "\tinsert into person_settings (id) values (new_id);\n" +
-                "END$$;\n", email);
+        String sql = "DO\n" +
+                "$$" +
+                "declare new_id bigint;\n" +
+                "begin\n" +
+                "  select id from persons where email = :email into new_id;\n" +
+                "  insert into person_settings (id) values (new_id);\n" +
+                "end$$;\n";
+        jdbcTemplate.update(sql.replace(":email", "'".concat(email).concat("'")));
     }
 
- /*   public PersonSettings getPersonSettings(Long id) {
-        return jdbcTemplate.query("select * from person_settings where id =?", personSettingRowMapper, id).
-                stream().findAny().orElse(null);
-    }
-*/
     public PersonSettings getSettings(Long personId) {
         return jdbcTemplate.query("Select * from Person_Settings Where Id = ?",
+                new BeanPropertyRowMapper<>(PersonSettings.class), personId).stream()
+                .findAny().orElse(null);
+    }
+
+    public List<PersonSettings> getListSettings(Long personId) {
+        PersonSettings personSettings = jdbcTemplate.query("Select * from Person_Settings Where Id = ?",
                 new BeanPropertyRowMapper<>(PersonSettings.class), personId).stream().findAny().orElse(null);
+
+        if (personSettings == null) return null;
+
+        List<PersonSettings> result = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : reflection.getFieldsAndValues(personSettings).entrySet()) {
+            if (!entry.getKey().equalsIgnoreCase("id"))
+                result.add((PersonSettings) entry.getValue());
+        }
+        return result;
+    }
+    public void setSetting(Long personId, PersonSettingsRq personSettingsRq) {
+        String sql = String.format("Update Person_Settings Set %s = %s where id = ?",
+                personSettingsRq.getNotification_type(),
+                personSettingsRq.getEnable().toString());
+        jdbcTemplate.update(sql, personId);
     }
 
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {

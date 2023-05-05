@@ -2,13 +2,12 @@ package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import socialnet.api.request.EmailRq;
-import socialnet.api.request.NotificationRq;
-import socialnet.api.request.PasswordSetRq;
-import socialnet.api.request.RegisterRq;
+import socialnet.api.request.*;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
+import socialnet.api.response.PersonSettingsRs;
 import socialnet.api.response.RegisterRs;
+import socialnet.repository.PersonSettingRepository;
 import socialnet.service.AccountService;
 import socialnet.service.EmailService;
 import socialnet.service.NotificationsService;
@@ -21,6 +20,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+    private final PersonSettingRepository personSettingRepository;
     private final NotificationsService notificationsService;
     private final EmailService emailService;
     private final PersonService personService;
@@ -53,10 +53,17 @@ public class AccountController {
     }
     @GetMapping("/notifications")
     public CommonRs notifications(@RequestHeader String authorization){
-        return notificationsService.getPersonSettings(authorization);
+        return personService.getPersonSettings(authorization);
     }
+
     @PutMapping("/notifications")
-    public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
-        return notificationsService.putNotificationByPerson(authorization,notificationRq);
+    public CommonRs saveSettings(@RequestHeader String authorization,
+                                 @RequestBody PersonSettingsRq personSettingsRq) {
+        return personService.setSetting(authorization, personSettingsRq);
     }
+
+//    @PutMapping("/notifications")
+//    public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
+//        return notificationsService.putNotificationByPerson(authorization,notificationRq);
+//    }
 }

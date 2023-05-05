@@ -83,17 +83,6 @@ public class NotificationsService {
         }
     }
 
-    public CommonRs getPersonSettings(String authorization) {
-        PersonSettings personSettings = personSettingRepository
-                .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
-
-        List<PersonSettingsRs> list = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : reflection.getFieldsAndValues(personSettings).entrySet()) {
-            if (!entry.getKey().equalsIgnoreCase("id"))
-                list.add(new PersonSettingsRs((boolean) entry.getValue(), entry.getKey().toUpperCase()));
-        }
-        return new CommonRs<>(list);
-    }
 
     public CommonRs<ComplexRs> putNotificationByPerson(String token, NotificationRq notificationRq) {
         String email = jwtUtils.getUserEmail(token);
