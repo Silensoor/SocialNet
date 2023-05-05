@@ -47,7 +47,21 @@ public class TelegramBotService {
             return handleKillyourselfCommand(request);
         }
 
+        if (command.equals("/token")) {
+            return handleTokenCommand(request);
+        }
+
         return makeResponse("fail", "Неизвестная команда", null);
+    }
+
+    private TgApiRs handleTokenCommand(TgApiRequest request) {
+        Person person = personRepository.findByTelegramId(request.getId());
+
+        if (person == null) {
+            return makeResponse("fail", "Error", null);
+        }
+
+        return makeResponse("ok", null, jwtUtils.generateJwtToken(person.getEmail()));
     }
 
     private TgApiRs handleKillyourselfCommand(TgApiRequest request) {
@@ -90,6 +104,7 @@ public class TelegramBotService {
         Map<String, String> map = new HashMap<>();
         map.put("name", fullName);
         map.put("token", token);
+        map.put("id", String.valueOf(request.getId()));
         JSONObject jo = new JSONObject(map);
 
         return makeResponse("ok", null, jo.toString());
