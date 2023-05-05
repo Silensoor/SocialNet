@@ -60,4 +60,15 @@ public class UsersController {
         return personService.updateUserInfo(authorization, userData);
     }
 
+    @DeleteMapping("/me")
+    public CommonRs deleteUser(@RequestHeader("authorization") String authorization) {
+        return personService.delete(authorization);
+    }
+
+    @PostMapping("/me/recover")
+    public CommonRs recoverUser(@RequestHeader("authorization") String authorization) {
+        return personService.recover(authorization);
+    }
+
+
 }

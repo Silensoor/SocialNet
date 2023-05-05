@@ -32,28 +32,35 @@ public class WeatherService {
     private final WeatherMapper weatherMapper;
     private final WeatherRepository weatherRepository;
 
-
     public WeatherRs getWeatherByCity(String city) {
 
         if (city == null) return new WeatherRs();
 
         if (!cityRepository.containsCity(city)) return new WeatherRs();
 
-        var weatherFromDb =weatherRepository.getWeatherByCity(city);
-        System.out.println(weatherFromDb);
+        var weatherFromDb = weatherRepository.getWeatherByCity(city);
 
         //Чтение информации о погоде из базы данных
         if (weatherFromDb != null) {
             int compare = now().compareTo(weatherFromDb
                     .getDate()
                     .toLocalDateTime()
-                    .plus(1L,ChronoUnit.HOURS));
-
-            if (compare < 0) {
-                return weatherMapper.toResponse(weatherFromDb) ;
-            }
+                    .plus(1L, ChronoUnit.HOURS));
+            if (compare < 0)
+                return weatherMapper.toResponse(weatherFromDb);
         }
 
+        try {
+            return loadWeather(city);
+        } catch (Exception e) {
+            if (weatherFromDb != null)
+                return weatherMapper.toResponse(weatherFromDb);
+            else
+                return new WeatherRs();
+        }
+    }
+
+    private WeatherRs loadWeather(String city) {
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .scheme("https")
                 .host("api.openweathermap.org/data/2.5/find")

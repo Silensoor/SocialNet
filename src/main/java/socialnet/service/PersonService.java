@@ -9,24 +9,25 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import socialnet.api.request.LoginRq;
-import socialnet.api.request.UserRq;
-import socialnet.api.request.UserUpdateDto;
-import socialnet.api.response.CommonRs;
-import socialnet.api.response.ComplexRs;
-import socialnet.api.response.ErrorRs;
-import socialnet.api.response.PersonRs;
+import socialnet.api.request.*;
+import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
-import socialnet.repository.FriendsShipsRepository;
+import socialnet.model.PersonSettings;
 import socialnet.repository.PersonRepository;
+import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.utils.Reflection;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 
@@ -41,10 +42,21 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-
-    private final FriendsShipsRepository friendsShipsRepository;
-
+    private final PasswordEncoder passwordEncoder;
+    private final PersonSettingRepository personSettingRepository;
+    private final Reflection reflection;
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
+
+    public CommonRs delete(String authorization) {
+        personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
+        return new CommonRs<>(new ComplexRs());
+    }
+
+    public CommonRs recover(String authorization) {
+        personRepository.recover(jwtUtils.getUserEmail(authorization));
+        return new CommonRs<>(new ComplexRs());
+    }
+
 
     public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
 
@@ -79,29 +91,14 @@ public class PersonService {
 
     }
 
-    public ResponseEntity<?> getUserInfo(String authorization) {
+    public RegisterRs setNewEmail(EmailRq emailRq) {
+        personRepository.setEmail(jwtUtils.getUserEmail(emailRq.getSecret()), emailRq.getEmail());
+        return new RegisterRs();
+    }
 
-        if (!jwtUtils.validateJwtToken(authorization)) {//401
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        String userName = jwtUtils.getUserEmail(authorization);
-        if (userName.isEmpty()) {
-            return new ResponseEntity<>(
-                    new ErrorRs("EmptyEmailException","Field 'email' is empty"), HttpStatus.BAD_REQUEST);  //400
-        }
-
-        Person person = personRepository.findByEmail(userName);
-        if (person.getIsDeleted()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
-        }
-
-        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-
-        personRs.setWeather(weatherService.getWeatherByCity(person.getCity()));
-        personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-
-        return ResponseEntity.ok(new CommonRs(personRs));
+    public PasswordSetRq resetPassword(String authorization, PasswordSetRq passwordSetRq) {
+        personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
+        return new PasswordSetRq();
     }
 
     public CommonRs<ComplexRs> getLogout(String authorization) {
@@ -112,17 +109,6 @@ public class PersonService {
     public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
         Person person = findUser(id);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-        final Person person1 = tokenToMail(authorization);
-        if (friendsShipsRepository.getFriendStatus(Long.valueOf(id), person1.getId()) != null) {
-            personRs.setFriendStatus(friendsShipsRepository.getFriendStatus(Long.valueOf(id), person1.getId())
-                    .getStatusName().toString());
-            if (friendsShipsRepository.getFriendStatus(Long.valueOf(id), person1.getId()).equals("BLOCKED")) {
-                personRs.setIsBlockedByCurrentUser(true);
-            }
-        } else {
-            personRs.setFriendStatus("UNKNOWN");
-            personRs.setIsBlockedByCurrentUser(null);
-        }
         changePersonStatus(personRs);
         return new CommonRs<>(personRs);
     }
@@ -207,14 +193,25 @@ public class PersonService {
         return ResponseEntity.ok(new CommonRs(personRs));
     }
 
-    public Person tokenToMail(String jwtToken) {
-        String email = jwtUtils.getUserEmail(jwtToken);
-        Person personsEmail = personRepository.findByEmail(email);
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            return personsEmail;
+
+    public CommonRs getPersonSettings(String authorization) {
+        PersonSettings personSettings = personSettingRepository
+                .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
+
+        List<PersonSettingsRs> list = new ArrayList<>();
+        var map = reflection.getFieldsAndValues(personSettings).entrySet();
+        for (Map.Entry<String, Object> entry : map) {
+            if (!entry.getKey().equalsIgnoreCase("id"))
+                list.add(new PersonSettingsRs((boolean) entry.getValue(), entry.getKey().toUpperCase()));
         }
+        return new CommonRs<>(list);
+    }
+
+    public CommonRs setSetting(String authorization, PersonSettingsRq personSettingsRq) {
+        personSettingRepository.setSetting(
+                personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)),
+                personSettingsRq);
+        return new CommonRs<>(new ComplexRs());
     }
 
 }

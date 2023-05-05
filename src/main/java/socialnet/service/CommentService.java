@@ -54,6 +54,7 @@ public class CommentService {
 
         return commentRs;
     }
+/*
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
         Person person =getPerson(jwtToken);
@@ -88,6 +89,7 @@ public class CommentService {
         }
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
+*/
 
     private Comment getCommentModel(CommentRq commentRq, CommentServiceDetails details) {
         Comment comment = CommentMapper.INSTANCE.toModel(commentRq);
