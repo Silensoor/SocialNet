@@ -1109,8 +1109,8 @@ insert into currencies (name, price, update_time) values ('Yuan Renminbi', 625, 
 insert into currencies (name, price, update_time) values ('Peso', 910, '2022-08-17 06:46:45');
 insert into currencies (name, price, update_time) values ('Naira', 336, '2022-10-11 14:00:18');
 
-insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2023-01-14 19:02:46', 71, 50, 'vulputate');
-insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-06-14 14:44:32', 87, 49, 'urna');
+insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2023-01-14 19:02:46', 2, 1, 'FRIEND');
+insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2023-01-14 19:02:46', 1, 2, 'FRIEND');
 insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-10-31 22:28:06', 21, 42, 'cubilia');
 insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2023-03-14 05:32:23', 99, 15, 'gravida');
 insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-08-20 10:46:31', 7, 61, 'ultrices');
