@@ -1,10 +1,14 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import socialnet.api.response.RegionStatisticsRs;
 import socialnet.model.City;
+import socialnet.model.Post;
 
 import java.util.List;
 
@@ -34,5 +38,38 @@ public class CityRepository {
         var rowCount =  jdbcTemplate.query("Select Lower(name) from cities where (Lower(name) = Lower(?)) and Code2 = 'RU'",
                 new BeanPropertyRowMapper<>(City.class), city);
         return rowCount.size() > 0;
+    }
+
+    public Integer getAllCity() {
+        try {
+            return jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(cities.id) FROM cities", Integer.class);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public List<RegionStatisticsRs> getCitiesUsers() {
+        try {
+            return jdbcTemplate.query("SELECT DISTINCT cities.id, cities.name, (SELECT COUNT(*) FROM persons" +
+                " WHERE cities.name=persons.city) FROM cities", regionStatisticsRsRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    private final RowMapper<RegionStatisticsRs> regionStatisticsRsRowMapper = (resultSet, rowNum) -> {
+        RegionStatisticsRs rs = new RegionStatisticsRs();
+        rs.setRegion(resultSet.getString(2));
+        rs.setCountUsers(resultSet.getInt(3));
+        return rs;
+    };
+
+    public City getCity(String city) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM cities WHERE cities.name=?",
+                    new BeanPropertyRowMapper<>(City.class), city);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 }

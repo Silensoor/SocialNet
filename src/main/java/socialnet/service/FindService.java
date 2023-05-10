@@ -25,7 +25,6 @@ public class FindService {
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final PostService postService;
-    private final TagService tagService;
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
                                                   Long dateTo, Integer offset, Integer perPage,

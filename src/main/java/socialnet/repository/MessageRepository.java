@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Message;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -89,5 +90,29 @@ public class MessageRepository {
 
     public Integer updateTextById(String text, Long messageId) {
         return jdbcTemplate.update("UPDATE messages SET message_text = ? WHERE id = ?", text, messageId);
+    }
+
+    public Integer getAllMessage() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM messages", Integer.class);
+    }
+
+    public List<Message> getMessage(Integer firstUserId, Integer secondUserId) {
+        try {
+            return jdbcTemplate.query("SELECT * FROM messages WHERE (author_id = ? AND recipient_id = ?)" +
+                            " OR (recipient_id = ? AND author_id = ?)",
+                    messageRowMapper,
+                    firstUserId, secondUserId, firstUserId, secondUserId);
+        } catch (EmptyResultDataAccessException ignored){
+            return null;
+        }
+    }
+
+    public Integer getMessageByDialog(Integer dialogId) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM messages WHERE dialog_id = ?",
+                    Integer.class, dialogId);
+        } catch (EmptyResultDataAccessException ignored){
+            return null;
+        }
     }
 }

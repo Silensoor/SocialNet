@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -37,8 +38,30 @@ public class DialogsRepository {
     }
 
     public Dialog findByDialogId(Long dialogId) {
-        return jdbcTemplate.queryForObject("SELECT * FROM dialogs WHERE id = ?",
-                dialogRowMapper,
-                dialogId);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM dialogs WHERE id = ?",
+                    dialogRowMapper,
+                    dialogId);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public Integer findDialogCount() {
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM dialogs", Integer.class);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+
+    public Integer findDialogsUserCount(Integer userId) throws EmptyResultDataAccessException {
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM dialogs WHERE first_person_id = ?" +
+                    " OR second_person_id = ?", Integer.class, userId, userId);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 }
