@@ -61,7 +61,12 @@ public class TelegramBotService {
             return makeResponse("fail", "Error", null);
         }
 
-        return makeResponse("ok", null, jwtUtils.generateJwtToken(person.getEmail()));
+        Map<String, String> map = new HashMap<>();
+        map.put("token", jwtUtils.generateJwtToken(person.getEmail()));
+        map.put("id", String.valueOf(request.getId()));
+        JSONObject jo = new JSONObject(map);
+
+        return makeResponse("ok", null, jo.toString());
     }
 
     private TgApiRs handleKillyourselfCommand(TgApiRequest request) {
