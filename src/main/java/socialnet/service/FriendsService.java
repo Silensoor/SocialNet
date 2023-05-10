@@ -219,7 +219,7 @@ public class FriendsService {
         } else {
             friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.REQUEST);
         }
-        PersonSettings personSettings = personSettingRepository.getPersonSettings(id.longValue());
+        PersonSettings personSettings = personSettingRepository.getSettings(id.longValue());
         if (personSettings.getFriendRequest()) {
             Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
                     (long) id, personsEmail.getId());

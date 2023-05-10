@@ -23,6 +23,24 @@ spring:
     user:
       name: admin
       password: admin
+  mail:
+    host: smtp.mail.ru
+    port: 2525
+    username: java.development@mail.ru
+    password: eDhZJ9bk8t0hx2WNDAev
+    protocol: smtp
+
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
+
+
 auth:
   secret: socialNet
   timeLive: 216000

@@ -3,6 +3,7 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.RegisterRs;
@@ -11,6 +12,7 @@ import socialnet.model.Captcha;
 import socialnet.model.Person;
 import socialnet.repository.CaptchaRepository;
 import socialnet.repository.PersonRepository;
+import socialnet.repository.PersonSettingRepository;
 
 import java.sql.Timestamp;
 
@@ -18,6 +20,7 @@ import java.sql.Timestamp;
 @RequiredArgsConstructor
 public class AccountService {
     private final PersonRepository personRepository;
+    private final PersonSettingRepository personSettingRepository;
     private final CaptchaRepository captchaRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -25,12 +28,13 @@ public class AccountService {
         validateFields(regRequest);
 
         personRepository.save(getPerson(regRequest));
+        personSettingRepository.insert(regRequest.getEmail());
 
         RegisterRs registerRs = new RegisterRs();
         ComplexRs complexRs = ComplexRs.builder().message("OK").build();
         registerRs.setData(complexRs);
         registerRs.setEmail(regRequest.getEmail());
-        registerRs.setTimestamp((int) System.currentTimeMillis());
+        registerRs.setTimestamp(System.currentTimeMillis());
 
         return registerRs;
     }

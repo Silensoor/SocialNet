@@ -15,7 +15,6 @@ import static java.lang.Character.isDigit;
 
 @Component
 public class Reflection {
-
     public <T> List<String> getAllFields(T cls) {
         var result = new ArrayList<String>();
         for (Field field : cls.getClass().getDeclaredFields()) {
@@ -55,7 +54,24 @@ public class Reflection {
         return result;
     }
 
-    public String getFieldNames(Object object, String excludeField) {
+    public String getFieldNames(Object object, String[] excludeFields) {
+        String result = "";
+        String delemitter = "";
+
+        List<String> exludeList = Arrays.asList(excludeFields);
+        exludeList = exludeList.stream().map(String::toLowerCase).collect(Collectors.toList());
+
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (!exludeList.contains(field.getName().toLowerCase())) {
+                result = result.concat(delemitter)
+                        .concat(getSqlName(field.getName()));
+                delemitter = ", ";
+            }
+        }
+        return result;
+    }
+
+    public String getInsertStatement(Object object, String excludeField) {
         String result = "(";
         String delemitter = "";
         String values = "";
@@ -84,25 +100,17 @@ public class Reflection {
         return result;
     }
 
-    public String getFieldNamesWithQuestionMark(Object object, String[] excludeFields) {
-        String result = "";
-        String delemitter = "";
 
-        List<String> exludeList = Arrays.asList(excludeFields);
-        exludeList = exludeList.stream().map(String::toLowerCase).collect(Collectors.toList());
+    public Map<String, Object> getFieldsAndValues(Object object) {
 
-        for (Field field : object.getClass().getDeclaredFields()) {
-            if (!exludeList.contains(field.getName().toLowerCase())) {
-                result = result.concat(delemitter)
-                        .concat(getSqlName(field.getName()))
-                        .concat(" = ? ");
-                delemitter = ", ";
-            }
-        }
+        Map<String, Object> result = new HashMap<>();
+
+        for (Field field : object.getClass().getDeclaredFields())
+            result.put(getSqlName(field.getName()), methodInvoke(object, getMethodName("get", field.getName())));
+
         return result;
     }
-
-    public Map<String, Object> getFieldNamesAndValues(Object object, Object[] addValues) {
+    public Map<String, Object> getFieldsAndValuesQuery(Object object, Object[] addValues) {
 
         StringBuilder fieldNames = new StringBuilder();
         Map<String, Object> result = new HashMap<>();
@@ -112,7 +120,6 @@ public class Reflection {
 
         for (Field field : object.getClass().getDeclaredFields()) {
             Object fieldValue = methodInvoke(object, getMethodName("get", field.getName()));
-            ;
 
             if (fieldValue != null) {
                 fieldNames.append(String.format("%s%s%s", delemitter, getSqlName(field.getName()), " = ? "));
@@ -183,7 +190,7 @@ public class Reflection {
             if (!excludeField.equalsIgnoreCase(field.getName())) {
                 var fieldName = getSqlName(field.getName());
                 var value = methodInvoke(object, getMethodName("get", field.getName()));
-                stringBuilder.append(delimiter + fieldName + " = " + getSqlValue(value));
+                stringBuilder.append(delimiter + fieldName + " = " + getSqlValues(value));
                 i++;
                 delimiter = ", ";
             }
@@ -191,7 +198,7 @@ public class Reflection {
         return stringBuilder.toString();
     }
 
-    public String getSqlValue(Object value) {
+    public String getSqlValues(Object value) {
         if ((value.getClass().equals(String.class)) || (value.getClass().equals(Timestamp.class))) {
             return "'".concat(value.toString().replace("'", "`")).concat("'");
         } else {
@@ -250,6 +257,22 @@ public class Reflection {
         return stringBuilder.toString();
     }
 
+    public String getStringValues(Object object, String excludeField) {
+
+        String delemiter = "";
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Object value : getValues(object, excludeField)) {
+            if ((value.getClass().equals(String.class)) || (value.getClass().equals(Timestamp.class))) {
+                stringBuilder.append(delemiter.concat("'").concat(value.toString().replace("'", "`")).concat("'"));
+            } else {
+                stringBuilder.append(delemiter.concat(value.toString()));
+            }
+
+            delemiter = ", ";
+        }
+        return stringBuilder.toString();
+    }
 
     public int[] getTypesArray(Object object) {
         var declaredFields = object.getClass().getDeclaredFields();

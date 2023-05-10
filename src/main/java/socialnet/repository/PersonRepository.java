@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
-import socialnet.exception.PostException;
 import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
@@ -22,6 +21,17 @@ public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
 
+
+    public Long insert(Person person) {
+        String sql = "Insert into Persons " + reflection.getFieldNames(person, new String[] {"id"}) +
+                " values " + reflection.getStringValues(person, "id") + ") " +
+                 " returning Id";
+        Object[] values = reflection.getValues(person, "id");
+        jdbcTemplate.update(sql, values);
+
+
+        return null;
+    }
     public void save(Person person) {
         jdbcTemplate.update(
                 "INSERT INTO persons " +
@@ -171,10 +181,13 @@ public class PersonRepository {
         }
     }
 
-    public void deleteUser(String email) {
-        jdbcTemplate.update("Delete from Persons Where email = ?", email);
+    public void markUserDelete(String email) {
+        jdbcTemplate.update("Update Persons Set is_deleted = true Where email = ?", email);
     }
 
+    public void recover(String email) {
+        jdbcTemplate.update("Update Persons Set is_deleted = false Where email = ?", email);
+    }
 
     private final RowMapper<Person> personRowMapper = (resultSet, rowNum) -> {
         Person person = new Person();
@@ -210,14 +223,12 @@ public class PersonRepository {
         jdbcTemplate.update("Update Persons Set photo = ? Where id = ?", photoHttpLink, userId);
     }
 
-    public Boolean setPassword(Long userId, String password) {
-        int rowCount = jdbcTemplate.update("Update Persons Set password = ? Where id = ?", password, userId);
-        return rowCount == 1;
+    public void setEmail(String oldEmail, String newEmail) {
+        jdbcTemplate.update("Update Persons Set email = ? Where email = ?", newEmail, oldEmail);
     }
 
-    public Boolean setEmail(Long userId, String email) {
-        int rowCount = jdbcTemplate.update("Update Persons Set email = ? Where id = ?", email, userId);
-        return rowCount == 1;
+    public void setPassword(String newPassword, String email) {
+        jdbcTemplate.update("Update Persons Set password = ? Where email = ?", newPassword, email);
     }
 
     public Person getPersonByEmail(String email) {
@@ -232,7 +243,7 @@ public class PersonRepository {
     }
 
     public void updatePersonInfo(UserUpdateDto userData, String email) {
-        var sqlParam = reflection.getFieldNamesAndValues(userData, new Object[]{email});
+        var sqlParam = reflection.getFieldsAndValuesQuery(userData, new Object[]{email});
         jdbcTemplate.update("Update Persons Set " + sqlParam.get("fieldNames") + " where email = ?",
                 (Object[]) sqlParam.get("values"));
     }

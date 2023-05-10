@@ -30,8 +30,9 @@ public class CommentsController {
     public ResponseEntity<CommonRs<CommentRs>> createComment(@RequestHeader String authorization,
                                                              @PathVariable Long postId,
                                                              @RequestBody CommentRq commentRq) {
-        CommonRs<CommentRs> commonRs = commentService.createComment(commentRq, postId, authorization);
-        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+//        CommonRs<CommentRs> commonRs = commentService.createComment(commentRq, postId, authorization);
+//        return new ResponseEntity<>(commonRs, HttpStatus.OK);
+        return null;
     }
     @PutMapping("/api/v1/post/{id}/comments/{comment_id}")
     public ResponseEntity<CommonRs<CommentRs>> editComment(@RequestHeader String authorization,
