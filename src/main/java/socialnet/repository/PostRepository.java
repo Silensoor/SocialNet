@@ -177,4 +177,10 @@ public class PostRepository {
         post.setAuthorId(resultSet.getLong("author_id"));
         return post;
     };
+
+
+    public Integer getAllPostByUser(Integer userId) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM posts WHERE author_id = ?",
+                Integer.class, userId);
+    }
 }
