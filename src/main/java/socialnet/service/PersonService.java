@@ -96,9 +96,9 @@ public class PersonService {
         return new RegisterRs();
     }
 
-    public PasswordSetRq resetPassword(String authorization, PasswordSetRq passwordSetRq) {
+    public RegisterRs resetPassword(String authorization, PasswordSetRq passwordSetRq) {
         personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
-        return new PasswordSetRq();
+        return new RegisterRs(jwtUtils.getUserEmail(authorization), System.currentTimeMillis());
     }
 
     public CommonRs<ComplexRs> getLogout(String authorization) {
