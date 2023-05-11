@@ -104,4 +104,13 @@ public class CommentRepository {
         comment.setPostId(rs.getLong("post_id"));
         return comment;
     };
+
+    public Integer findByPostIdCount(Long postId) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post_comments WHERE post_id = ?",
+                    Integer.class, postId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
 }

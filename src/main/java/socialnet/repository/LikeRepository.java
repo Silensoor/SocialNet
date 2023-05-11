@@ -74,4 +74,12 @@ public class LikeRepository {
         like.setPersonId(rs.getLong("person_id"));
         return like;
     };
+
+    public Integer findAllLike(){
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM likes", Integer.class);
+        } catch (EmptyResultDataAccessException ignored){
+            return null;
+        }
+    }
 }

@@ -38,12 +38,12 @@ public class AccountController {
         emailService.passwordChangeConfirm(authorization);
     }
     @PutMapping("/password/reset")
-    public PasswordSetRq resetPassword(@RequestHeader String authorization,
+    public RegisterRs resetPassword(@RequestHeader String authorization,
                                        @RequestBody PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
     @PutMapping("/password/set")
-    public PasswordSetRq setNewPassword(@RequestHeader String authorization,
+    public RegisterRs setNewPassword(@RequestHeader String authorization,
                                         @RequestBody PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
