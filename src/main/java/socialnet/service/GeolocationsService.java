@@ -15,7 +15,7 @@ import socialnet.repository.CountryRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@RestController
 @RequiredArgsConstructor
 public class GeolocationsService {
     private final CountryRepository countryRepository;
@@ -24,33 +24,4 @@ public class GeolocationsService {
         return countryRepository.findAll().stream().map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
     }
 
-    @RestController
-    @RequestMapping("/api/v1/geolocations")
-    @RequiredArgsConstructor
-    public static class GeolocationsController {
-        private final GeolocationsService geolocationsService;
-        private final CityService cityService;
-
-        @GetMapping("cities/api")
-        public CommonRs getCitiesFromApiStartsWith(@RequestParam("country") String country,
-                                                            @RequestParam("starts") String starts) {
-            return new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts));
-        }
-
-        @GetMapping("cities/db")
-        public ResponseEntity<?> getCitiesByStarts(@RequestParam("country") String country,
-                                                   @RequestParam("starts") String starts) {
-            return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts)));
-        }
-
-        @GetMapping("cities/uses")
-        public ResponseEntity<?> getCitiesByCountry(@RequestParam("country") String country) {
-            return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountry(country)));
-        }
-
-        @GetMapping("countries")
-        public ResponseEntity<?> getCountries() {
-            return ResponseEntity.ok(new CommonRs(geolocationsService.findAllCountry()));
-        }
-    }
 }
