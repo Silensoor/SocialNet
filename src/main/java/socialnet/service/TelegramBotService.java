@@ -84,7 +84,7 @@ public class TelegramBotService {
             mailSender.send(
                 request.getData(),
                 "Подтверждение регистрации",
-                "http://localhost:8086/api/v1/tg?id=" + request.getId()
+                "http://81.177.6.228:8086/api/v1/tg?id=" + request.getId()
                     + "&email=" + request.getData()
                     + "&cmd=" + request.getCommand().substring(1)
             );
