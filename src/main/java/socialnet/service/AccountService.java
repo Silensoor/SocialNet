@@ -49,6 +49,7 @@ public class AccountService {
         person.setIsApproved(true);
         person.setIsBlocked(false);
         person.setIsDeleted(false);
+        person.setTelegramId(null);
 
         return person;
     }
