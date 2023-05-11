@@ -13,6 +13,7 @@ public class RegisterRs {
     private Long timestamp;
 
     public RegisterRs(String email, Long timestamp) {
+        this.data = new ComplexRs();
         this.email = email;
         this.timestamp = timestamp;
     }

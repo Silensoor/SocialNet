@@ -17,8 +17,10 @@ import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
+import socialnet.model.Friendships;
 import socialnet.model.Person;
 import socialnet.model.PersonSettings;
+import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -46,6 +48,8 @@ public class PersonService {
     private final PersonSettingRepository personSettingRepository;
     private final Reflection reflection;
     private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
+
+    private final FriendsShipsRepository friendsShipsRepository;
 
     public CommonRs delete(String authorization) {
         personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
@@ -96,9 +100,9 @@ public class PersonService {
         return new RegisterRs();
     }
 
-    public PasswordSetRq resetPassword(String authorization, PasswordSetRq passwordSetRq) {
+    public RegisterRs resetPassword(String authorization, PasswordSetRq passwordSetRq) {
         personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
-        return new PasswordSetRq();
+        return new RegisterRs(jwtUtils.getUserEmail(authorization), System.currentTimeMillis());
     }
 
     public CommonRs<ComplexRs> getLogout(String authorization) {
@@ -110,7 +114,23 @@ public class PersonService {
         Person person = findUser(id);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
+        changeFriendStatus(authorization, id, personRs);
         return new CommonRs<>(personRs);
+    }
+
+    private void changeFriendStatus(String authorization, Integer id, PersonRs personRs) {
+        String email = jwtUtils.getUserEmail(authorization);
+        Person person = personRepository.findByEmail(email);
+        final Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
+        if (friendStatus != null){
+            personRs.setFriendStatus(friendStatus.getStatusName().toString());
+            if (friendStatus.equals("BLOCKED")){
+                personRs.setIsBlockedByCurrentUser(true);
+            }
+        } else {
+            personRs.setFriendStatus("UNKNOWN");
+            personRs.setIsBlockedByCurrentUser(null);
+        }
     }
 
     private Person findUser(Integer id) {

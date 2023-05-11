@@ -14,6 +14,7 @@ import socialnet.utils.Reflection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,18 +36,20 @@ public class PersonRepository {
     public void save(Person person) {
         jdbcTemplate.update(
                 "INSERT INTO persons " +
-                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
+                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted, telegram_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                person.getEmail().toLowerCase(),
                 person.getFirstName(),
                 person.getLastName(),
                 person.getPassword(),
                 person.getRegDate(),
                 person.getIsApproved(),
                 person.getIsBlocked(),
-                person.getIsDeleted()
+                person.getIsDeleted(),
+                person.getTelegramId()
         );
     }
+
     public List<Person> findPersonsByBirthDate(){
         return jdbcTemplate.query("select * from persons as p  " +
                 "where extract(month from timestamp 'now()')=extract(month from p.birth_date) " +
@@ -56,9 +59,21 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
+                "SELECT * FROM persons WHERE lower(email) = ?",
                 personRowMapper,
-                email
+                email.toLowerCase()
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public Person findByTelegramId(long telegramId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE telegram_id = ?",
+                personRowMapper,
+                telegramId
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -76,7 +91,7 @@ public class PersonRepository {
 
     public List<Person> findAll() {
         try {
-            return this.jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
+            return jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -84,7 +99,7 @@ public class PersonRepository {
 
     public List<Person> findFriendsAll(Long id, Integer offset, Integer perPage) {
         try {
-            return this.jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
+            return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
                             " p.change_password_token, p.configuration_code, p.deleted_time," +
                             " p.email, p.first_name, p.is_approved, p.is_blocked, p.is_deleted," +
                             " p.last_name, p.last_online_time, p.message_permissions," +
@@ -103,7 +118,7 @@ public class PersonRepository {
 
     public List<Person> findAllOutgoingRequests(Long id, Integer offset, Integer perPage) {
         try {
-            return this.jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
+            return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
                             " p.change_password_token, p.configuration_code, p.deleted_time," +
                             " p.email, p.first_name, p.is_approved, p.is_blocked," +
                             " p.is_deleted, p.last_name, p.last_online_time," +
@@ -121,7 +136,7 @@ public class PersonRepository {
 
     public Integer findAllOutgoingRequestsAll(Long id) {
         try {
-            return this.jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(p.id) FROM persons AS p JOIN" +
+            return jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(p.id) FROM persons AS p JOIN" +
                             " friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
                             " WHERE is_deleted = false AND status_name = 'REQUEST' AND src_person_id = ? AND NOT p.id=?",
                     Integer.class, id, id);
@@ -132,7 +147,7 @@ public class PersonRepository {
 
     public Integer findFriendsAllCount(Long id) {
         try {
-            return this.jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(persons.id) FROM persons JOIN" +
+            return jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(persons.id) FROM persons JOIN" +
                             " friendships ON friendships.dst_person_id=persons.id" +
                             " OR friendships.src_person_id=persons.id WHERE is_deleted = false AND" +
                             " (friendships.dst_person_id=? OR friendships.src_person_id=?)" +
@@ -141,18 +156,6 @@ public class PersonRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
-    }
-
-    private String friendsIdStringMethod(List<Long> friendsId, String sql) {
-        StringBuilder friendsIdString = new StringBuilder(sql);
-        for (int i = 0; i < friendsId.size(); i++) {
-            if (i < friendsId.size() - 1) {
-                friendsIdString.append(" id =").append(friendsId.get(i)).append(" OR");
-            } else {
-                friendsIdString.append(" id =").append(friendsId.get(i));
-            }
-        }
-        return friendsIdString.toString();
     }
 
     public List<Person> findByCity(String city) {
@@ -324,8 +327,7 @@ public class PersonRepository {
                 " OR friendships.src_person_id=p.id WHERE is_deleted = false AND ")
                 .append(createSqlWhere(id, friends, offset, perPage));
         try {
-            List<Person> personList = this.jdbcTemplate.query(sql.toString(), personRowMapper);
-            return personList;
+            return jdbcTemplate.query(sql.toString(), personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -355,7 +357,7 @@ public class PersonRepository {
 
     public List<Person> findAllPotentialFriends(Long id, Integer offset, Integer perPage) {
         try {
-            return this.jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date, p.change_password_token," +
+            return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date, p.change_password_token," +
                             " p.configuration_code, p.deleted_time, p.email, p.first_name, p.is_approved, p.is_blocked," +
                             " p.is_deleted, p.last_name, p.last_online_time, p.message_permissions," +
                             " p.notifications_session_id, p.online_status, p.password, p.phone, p.photo, p.reg_date," +
@@ -372,10 +374,10 @@ public class PersonRepository {
     public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
                                              Integer offset, Integer perPage) {
         StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?")
-                .append(friendsRecommended != "" ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
                 .append(" AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
         try {
-            return this.jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
+            return jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -386,9 +388,13 @@ public class PersonRepository {
                 .append(friendsRecommended)
                 .append(") AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
-            return this.jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
+            return jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+    }
+
+    public Integer getAllUsersByCountry(String country) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM persons WHERE country=?", Integer.class, country);
     }
 }

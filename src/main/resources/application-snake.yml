@@ -33,6 +33,11 @@ auth:
   timeLive: 216000000
   logging:
     yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
+  mail:
+    smtpHost: smtp.mail.ru
+    smtpPort: 2525
+    authUser: java.development@mail.ru
+    authPass: eDhZJ9bk8t0hx2WNDAev
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
