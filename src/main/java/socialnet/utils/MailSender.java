@@ -14,16 +14,16 @@ import java.util.Properties;
 @Component
 @RequiredArgsConstructor
 public class MailSender {
-    @Value("${auth.mail.smtpHost}")
+    @Value("${spring.mail.host}")
     private String mailSmtpHost;
 
-    @Value("${auth.mail.smtpPort}")
+    @Value("${spring.mail.port}")
     private String mailSmtpPort;
 
-    @Value("${auth.mail.authUser}")
+    @Value("${spring.mail.username}")
     private String mailAuthUser;
 
-    @Value("${auth.mail.authPass}")
+    @Value("${spring.mail.password}")
     private String mailAuthPass;
 
     public void send(String to, String subject, String text) throws Exception {
