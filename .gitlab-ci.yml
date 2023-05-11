@@ -82,5 +82,4 @@ sonarqube-check:
     - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgLOXzpN_7au7cG1vV6 -Dsonar.projectName='JavaproTeams37Backend '
   allow_failure: true
   rules:
-    - if: $CI_COMMIT_BRANCH == 'SonarCube'
-#    - if: $CI_COMMIT_BRANCH == 'dev'
+    - if: $CI_COMMIT_BRANCH == 'dev'
