@@ -52,6 +52,7 @@ mail:
     ssl:
       enable: true
 
+mailFrom: java.development@mail.ru
 defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
 baseUrl:  http://localhost:8080/
 #--------------------------------------------------------

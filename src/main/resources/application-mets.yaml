@@ -31,7 +31,6 @@ spring:
     protocol: smtp
 
 mail:
-  from: java.development@mail.ru
   transport:
     protocol: smtp
   debug: true
@@ -53,6 +52,7 @@ s3:
 weather:
   apiKey: 3d29686077f7a60e5b5714b659a688dd
 
+mailFrom: java.development@mail.ru
 defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
 baseUrl:  http://localhost:8080/
 

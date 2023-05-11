@@ -38,16 +38,17 @@ schedules:
     bucket: socnet37
   weather:
     apiKey: 3d29686077f7a60e5b5714b659a688dd
-  mail:
-    transport:
-      protocol: smtp
-    debug: true
-    smtp:
-      auth: true
-      starttls: true
-      ssl:
-        enable: true
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
 
-  defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
-  baseUrl: http://localhost:8080/
+mailFrom: java.development@mail.ru
+defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
+baseUrl: http://localhost:8080/
   #--------------------------------------------------------

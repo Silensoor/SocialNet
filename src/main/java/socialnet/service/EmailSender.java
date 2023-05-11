@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class EmailSender {
     private final JavaMailSender javaMailSender;
-    @Value("${mail.from}")
+    @Value("${mailFrom}")
     private String mailFrom;
 
     public void send(String emailTo, String subject, String message) {
