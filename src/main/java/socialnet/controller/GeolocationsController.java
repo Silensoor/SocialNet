@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import socialnet.api.response.CommonRs;
-import socialnet.service.CityService;
 import socialnet.service.GeolocationsService;
 
 @RestController
@@ -15,22 +14,21 @@ import socialnet.service.GeolocationsService;
 @RequiredArgsConstructor
 public class GeolocationsController {
     private final GeolocationsService geolocationsService;
-    private final CityService cityService;
     @GetMapping("cities/api")
     public CommonRs getCitiesFromApiStartsWith(@RequestParam("country") String country,
                                                @RequestParam("starts") String starts) {
-        return new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts));
+        return new CommonRs(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
 
     @GetMapping("cities/db")
     public ResponseEntity<?> getCitiesByStarts(@RequestParam("country") String country,
                                                @RequestParam("starts") String starts) {
-        return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts)));
+        return ResponseEntity.ok(new CommonRs(geolocationsService.getCitiesByCountryAndStarts(country, starts)));
     }
 
     @GetMapping("cities/uses")
     public ResponseEntity<?> getCitiesByCountry(@RequestParam("country") String country) {
-        return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountry(country)));
+        return ResponseEntity.ok(new CommonRs(geolocationsService.getCitiesByCountry(country)));
     }
 
     @GetMapping("countries")

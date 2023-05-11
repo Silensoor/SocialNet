@@ -18,12 +18,12 @@ public class CityRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<City> getCitiesByStarts(String country, String starts) {
-        return jdbcTemplate.query("Select C1.* from Cities C1\n" +
-                        "join Countries C2 on C1.country_id = C2.id\n" +
-                        "Where C2.name = ?\n" +
-                        "  and C1.name like ?\n" +
-                        "Order by Name",
-                new BeanPropertyRowMapper<>(City.class),country, starts);
+        String sql = String.format("Select C1.* from Cities C1\n" +
+                "join Countries C2 on C1.country_id = C2.id\n" +
+                "Where C2.name = '%s'\n" +
+                "  and Lower(C1.name) like Lower('%s')\n" +
+                "Order by Name", country, starts + "%");
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(City.class));
     }
 
     public List<City> getCitiesByCountry(String country) {
@@ -35,7 +35,7 @@ public class CityRepository {
     }
 
     public Boolean containsCity(String city) {
-        var rowCount =  jdbcTemplate.query("Select Lower(name) from cities where (Lower(name) = Lower(?)) and Code2 = 'RU'",
+        var rowCount = jdbcTemplate.query("Select Lower(name) from cities where (Lower(name) = Lower(?)) and Code2 = 'RU'",
                 new BeanPropertyRowMapper<>(City.class), city);
         return rowCount.size() > 0;
     }
@@ -51,7 +51,7 @@ public class CityRepository {
     public List<RegionStatisticsRs> getCitiesUsers() {
         try {
             return jdbcTemplate.query("SELECT DISTINCT cities.id, cities.name, (SELECT COUNT(*) FROM persons" +
-                " WHERE cities.name=persons.city) FROM cities", regionStatisticsRsRowMapper);
+                    " WHERE cities.name=persons.city) FROM cities", regionStatisticsRsRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
