@@ -10,7 +10,12 @@ import socialnet.api.response.ErrorRs;
 public class ExceptionHandlerAdvice {
     @ExceptionHandler(RegisterException.class)
     public ResponseEntity<ErrorRs> handleRegisterException(RegisterException e) {
-        return new ResponseEntity<>(makeErrorRs("RegisterException", e), HttpStatus.BAD_REQUEST);
+        ErrorRs errorRs = new ErrorRs();
+        errorRs.setError("RegisterException");
+        errorRs.setErrorDescription(e.getMessage());
+        errorRs.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorRs, HttpStatus.BAD_REQUEST);
         //return ResponseEntity.badRequest().body(makeErrorRs("RegisterException", e));
     }
 
