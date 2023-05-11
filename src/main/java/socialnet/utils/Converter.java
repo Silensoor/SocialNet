@@ -1,6 +1,7 @@
 package socialnet.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import socialnet.repository.PersonRepository;
 
@@ -13,8 +14,11 @@ import java.util.ResourceBundle;
 @Component
 @RequiredArgsConstructor
 public class Converter {
-    private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
+
     private final PersonRepository personRepository;
+    @Value("${defaultPhoto}")
+    private String defaultPhoto;
+
 
     public Long dateToMillisec(String dateStr
     ) throws ParseException {
@@ -30,7 +34,7 @@ public class Converter {
 
     public String checkPhotoId(String photoId) {
         if (photoId == null)
-            return textProperties.getString("default.photo");
+            return defaultPhoto;
         else
             return photoId;
 

@@ -12,18 +12,43 @@ spring:
     url: jdbc:postgresql://localhost:5432/test
     logging:
       yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
+#--------------------------------------------------------
+  mail:
+    host: smtp.mail.ru
+    port: 2525
+    username: java.development@mail.ru
+    password: eDhZJ9bk8t0hx2WNDAev
+    protocol: smtp
+#--------------------------------------------------------
+
 auth:
   secret: socialNet
   timeLive: 216000
   logging:
     yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
-s3:
-  accessKey: YCAJE83YiyNT766OLADHNeObE
-  secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
-  bucket: socnet37
-weather:
-  apiKey: 3d29686077f7a60e5b5714b659a688dd
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
   deletePostsInterval: 0 0 1 * * *
   deleteLikesInterval: 0 0 1 * * *
+
+  #--------------------------------------------------------
+  s3:
+    accessKey: YCAJE83YiyNT766OLADHNeObE
+    secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
+    bucket: socnet37
+  weather:
+    apiKey: 3d29686077f7a60e5b5714b659a688dd
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
+
+mailFrom: java.development@mail.ru
+defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
+baseUrl: http://localhost:8080/
+  #--------------------------------------------------------
