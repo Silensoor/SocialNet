@@ -2,6 +2,7 @@ package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,7 +48,8 @@ public class PersonService {
     private final PasswordEncoder passwordEncoder;
     private final PersonSettingRepository personSettingRepository;
     private final Reflection reflection;
-    private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
+    @Value("${defaultPhoto}")
+    private String defaultPhoto;
 
     private final FriendsShipsRepository friendsShipsRepository;
 
@@ -90,7 +92,7 @@ public class PersonService {
         personRs.setWeather(weatherService.getWeatherByCity(personRs.getCity()));
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
         if (personRs.getPhoto() == null) {
-            personRs.setPhoto(textProperties.getString("default.photo"));
+            personRs.setPhoto(defaultPhoto);
         }
 
     }
@@ -206,7 +208,7 @@ public class PersonService {
 
         userUpdateDto.setPhoto(person.getPhoto());
         if (userUpdateDto.getPhoto() == null)
-            userUpdateDto.setPhoto(textProperties.getString("default.photo"));
+            userUpdateDto.setPhoto(defaultPhoto);
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 

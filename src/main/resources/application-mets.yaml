@@ -31,6 +31,7 @@ spring:
     protocol: smtp
 
 mail:
+  from: java.development@mail.ru
   transport:
     protocol: smtp
   debug: true
@@ -39,7 +40,6 @@ mail:
     starttls: true
     ssl:
       enable: true
-
 
 auth:
   secret: socialNet
@@ -52,6 +52,9 @@ s3:
   bucket: socnet37
 weather:
   apiKey: 3d29686077f7a60e5b5714b659a688dd
+
+defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
+baseUrl:  http://localhost:8080/
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *

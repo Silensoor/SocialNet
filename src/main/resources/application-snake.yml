@@ -15,16 +15,6 @@ spring:
     password: eDhZJ9bk8t0hx2WNDAev
     protocol: smtp
 
-mail:
-  transport:
-    protocol: smtp
-  debug: true
-  smtp:
-    auth: true
-    starttls: true
-    ssl:
-      enable: true
-
 server:
   port: 8086
 
@@ -45,10 +35,23 @@ schedules:
   deleteLikesInterval: 0 0 1 * * *
   birthDatePush: 0 1 8 * * *
 
+#--------------------------------------------------------
 s3:
   accessKey: YCAJE83YiyNT766OLADHNeObE
   secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
   bucket: socnet37
-
 weather:
   apiKey: 3d29686077f7a60e5b5714b659a688dd
+mail:
+  transport:
+    protocol: smtp
+  debug: true
+  smtp:
+    auth: true
+    starttls: true
+    ssl:
+      enable: true
+
+defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
+baseUrl:  http://localhost:8080/
+#--------------------------------------------------------
