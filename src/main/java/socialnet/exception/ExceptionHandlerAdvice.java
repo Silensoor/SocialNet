@@ -1,15 +1,20 @@
 package socialnet.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import socialnet.api.response.ErrorRs;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RegisterException.class)
-    public ResponseEntity<ErrorRs> handleRegisterException(RegisterException e) {
-        return ResponseEntity.badRequest().body(makeErrorRs("RegisterException", e));
+    //public ResponseEntity<ErrorRs> handleRegisterException(RegisterException e) {
+    public ErrorRs handleRegisterException(RegisterException e) {
+        return makeErrorRs("RegisterException", e);
+        //return ResponseEntity.badRequest().body(makeErrorRs("RegisterException", e));
     }
 
     @ExceptionHandler(PostException.class)
