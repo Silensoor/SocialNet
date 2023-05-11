@@ -175,12 +175,12 @@ public class FriendsService {
 
     public CommonRs<ComplexRs> addFriend(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
-        final Friendships friendships = friendsShipsRepository.findFriend(personsEmail.getId(), Long.valueOf(id));
+        final Friendships friendships = friendsShipsRepository.getFriendStatus(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
-            if (!friendships.getStatusName().equals(FriendshipStatusTypes.FRIEND)) {
+//            if (!friendships.getStatusName().equals(FriendshipStatusTypes.RECEIVED_REQUEST)) {
                 friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
                         FriendshipStatusTypes.FRIEND, friendships.getId());
-            }
+//            }
         } else {
             friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.FRIEND);
         }
