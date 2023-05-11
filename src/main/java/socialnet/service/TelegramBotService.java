@@ -110,6 +110,7 @@ public class TelegramBotService {
         map.put("name", fullName);
         map.put("token", token);
         map.put("id", String.valueOf(request.getId()));
+        map.put("userId", person.getId().toString());
         JSONObject jo = new JSONObject(map);
 
         return makeResponse("ok", null, jo.toString());
