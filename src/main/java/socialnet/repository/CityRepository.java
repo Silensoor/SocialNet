@@ -18,6 +18,8 @@ public class CityRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<City> getCitiesByStarts(String country, String starts) {
+        if (starts.isEmpty())
+            starts = "-";
         String sql = String.format("Select C1.* from Cities C1\n" +
                 "join Countries C2 on C1.country_id = C2.id\n" +
                 "Where C2.name = '%s'\n" +

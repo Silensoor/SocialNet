@@ -23,7 +23,8 @@ public class GeolocationsService {
     private final CityRepository cityRepository;
 
     public List<GeolocationRs> findAllCountry() {
-        return countryRepository.findAll().stream().map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+        return countryRepository.findAll().stream()
+                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
     }
 
     public List<GeolocationRs> getCitiesByCountryAndStarts(String country, String starts) {
