@@ -240,27 +240,27 @@ public class PersonRepository {
     public List<Person> findPersonsQuery(Integer age_from,
                                          Integer age_to, String city, String country,
                                          String first_name, String last_name,
-                                         Integer offset, Integer perPage, Boolean flagQueryAll) {
+                                         Integer offset, Integer perPage, Boolean flagQueryAll, Integer id) {
         try {
             return jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
-                    flagQueryAll), personRowMapper, offset, perPage);
+                    flagQueryAll, id), personRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
     public Integer findPersonsQueryAll(Integer age_from, Integer age_to, String city, String country,
-                                       String first_name, String last_name, Boolean flagQueryAll) {
+                                       String first_name, String last_name, Boolean flagQueryAll, Integer id) {
         try {
             return jdbcTemplate.queryForObject(createSqlPerson(age_from, age_to, city,
-                    country, first_name, last_name, flagQueryAll), Integer.class);
+                    country, first_name, last_name, flagQueryAll, id), Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return 0;
         }
     }
 
     private String createSqlPerson(Integer age_from, Integer age_to, String city, String country,
-                                   String first_name, String last_name, Boolean flagQueryAll) {
+                                   String first_name, String last_name, Boolean flagQueryAll, Integer id) {
         StringBuilder str = new StringBuilder();
         String sql;
         if (flagQueryAll) {
@@ -279,6 +279,7 @@ public class PersonRepository {
         }
         str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
                 .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
+        str.append(" NOT id = " + id + " ");
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);
         } else {
