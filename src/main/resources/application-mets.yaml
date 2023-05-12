@@ -40,7 +40,6 @@ mail:
     ssl:
       enable: true
 
-
 auth:
   secret: socialNet
   timeLive: 216000
@@ -52,6 +51,10 @@ s3:
   bucket: socnet37
 weather:
   apiKey: 3d29686077f7a60e5b5714b659a688dd
+
+mailFrom: java.development@mail.ru
+defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
+baseUrl:  http://localhost:8080/
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *

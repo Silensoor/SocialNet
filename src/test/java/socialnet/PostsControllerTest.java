@@ -113,17 +113,6 @@ public class PostsControllerTest {
     }
 
     @Test
-    @DisplayName("Получение поста по несуществующему ID")
-    @Transactional
-    public void getPostByNotExistsId() throws Exception {
-        /*mockMvc
-            .perform(get("/api/v1/post/0").with(authorization()))
-            .andExpect(result -> assertTrue(result.getResolvedException() instanceof EntityNotFoundException))
-            .andExpect(result -> assertEquals("Post with id = 0 not found", result.getResolvedException().getMessage()))
-            .andDo(print());*/
-    }
-
-    @Test
     @DisplayName("Обновление поста по ID")
     @Transactional
     public void updatePostById() throws Exception {
@@ -322,28 +311,6 @@ public class PostsControllerTest {
     }
 
     @Test
-    @DisplayName("Поиск постов")
-    @Transactional
-    public void getPostsByQuery() throws Exception {
-        /*mockMvc
-            .perform(
-                get("/api/v1/post")
-                    .with(authorization())
-                    .param("author", "")
-                    .param("date_from", "")
-                    .param("date_to", "")
-                    .param("perPage", "")
-                    .param("offset", "")
-                    .param("perPage", "")
-                    .param("tags", "")
-                    .param("text", "")
-            )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andDo(print());*/
-    }
-
-    @Test
     @DisplayName("Поиск постов по тексту")
     @Transactional
     public void getPostsByText() throws Exception {
@@ -403,6 +370,7 @@ public class PostsControllerTest {
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data").isArray())
             .andExpect(jsonPath("$.data", hasSize(5)))
+            .andExpect(jsonPath("$.total", is(17)))
             .andDo(print());
     }
 }

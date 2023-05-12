@@ -36,18 +36,20 @@ public class PersonRepository {
     public void save(Person person) {
         jdbcTemplate.update(
                 "INSERT INTO persons " +
-                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                person.getEmail(),
+                "(email, first_name, last_name, password, reg_date, is_approved, is_blocked, is_deleted, telegram_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                person.getEmail().toLowerCase(),
                 person.getFirstName(),
                 person.getLastName(),
                 person.getPassword(),
                 person.getRegDate(),
                 person.getIsApproved(),
                 person.getIsBlocked(),
-                person.getIsDeleted()
+                person.getIsDeleted(),
+                person.getTelegramId()
         );
     }
+
     public List<Person> findPersonsByBirthDate(){
         return jdbcTemplate.query("select * from persons as p  " +
                 "where extract(month from timestamp 'now()')=extract(month from p.birth_date) " +
@@ -57,9 +59,21 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE email = ?",
+                "SELECT * FROM persons WHERE lower(email) = ?",
                 personRowMapper,
-                email
+                email.toLowerCase()
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+    public Person findByTelegramId(long telegramId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons WHERE telegram_id = ?",
+                personRowMapper,
+                telegramId
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;

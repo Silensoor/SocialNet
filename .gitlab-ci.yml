@@ -3,6 +3,7 @@ stages:
   - test
   - package
   - deploy
+  - sonarqube-check
 
 build:
   stage: build
@@ -64,3 +65,21 @@ deploy:
     - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
+
+sonarqube-check:
+  stage: sonarqube-check
+  tags:
+    - socialnet_runner
+  image: maven:3.6.3-jdk-11
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgLOXzpN_7au7cG1vV6 -Dsonar.projectName='JavaproTeams37Backend '
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
