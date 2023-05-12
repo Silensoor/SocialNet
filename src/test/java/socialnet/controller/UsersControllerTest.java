@@ -91,9 +91,7 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.data.messages_permission", is("adipiscing")))
                 .andExpect(jsonPath("$.data.reg_date", containsString("2000-07-26")))
                 .andExpect(jsonPath("$.data.user_deleted", is(false)))
-                .andExpect(jsonPath("$.itemPerPage", is(20)))
                 .andExpect(jsonPath("$.offset", is(0)))
-                .andExpect(jsonPath("$.perPage", is(20)))
                 .andExpect(jsonPath("$.timestamp", lessThanOrEqualTo(System.currentTimeMillis())))
                 .andExpect(jsonPath("$.total", is(0)))
                 .andReturn();

@@ -35,6 +35,14 @@ public class PostRepository {
         }
     }
 
+    public long getAllCount() {
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM posts WHERE is_deleted = false", Long.class);
+        } catch (EmptyResultDataAccessException ignored) {
+            return 0L;
+        }
+    }
+
     public int save(Post post) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert.withTableName("posts").usingGeneratedKeyColumns("id");

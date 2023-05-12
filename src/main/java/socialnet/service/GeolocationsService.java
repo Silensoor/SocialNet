@@ -10,47 +10,31 @@ import org.springframework.web.bind.annotation.RestController;
 import socialnet.api.response.CommonRs;
 import socialnet.dto.geolocation.GeolocationRs;
 import socialnet.model.Country;
+import socialnet.repository.CityRepository;
 import socialnet.repository.CountryRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@RestController
 @RequiredArgsConstructor
 public class GeolocationsService {
     private final CountryRepository countryRepository;
+    private final CityRepository cityRepository;
 
     public List<GeolocationRs> findAllCountry() {
-        return countryRepository.findAll().stream().map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+        return countryRepository.findAll().stream()
+                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
     }
 
-    @RestController
-    @RequestMapping("/api/v1/geolocations")
-    @RequiredArgsConstructor
-    public static class GeolocationsController {
-        private final GeolocationsService geolocationsService;
-        private final CityService cityService;
-
-        @GetMapping("cities/api")
-        public CommonRs getCitiesFromApiStartsWith(@RequestParam("country") String country,
-                                                            @RequestParam("starts") String starts) {
-            return new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts));
-        }
-
-        @GetMapping("cities/db")
-        public ResponseEntity<?> getCitiesByStarts(@RequestParam("country") String country,
-                                                   @RequestParam("starts") String starts) {
-            return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountryAndStarts(country, starts)));
-        }
-
-        @GetMapping("cities/uses")
-        public ResponseEntity<?> getCitiesByCountry(@RequestParam("country") String country) {
-            return ResponseEntity.ok(new CommonRs(cityService.getCitiesByCountry(country)));
-        }
-
-        @GetMapping("countries")
-        public ResponseEntity<?> getCountries() {
-            return ResponseEntity.ok(new CommonRs(geolocationsService.findAllCountry()));
-        }
+    public List<GeolocationRs> getCitiesByCountryAndStarts(String country, String starts) {
+        var cities = cityRepository.getCitiesByStarts(country, starts).stream()
+                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+        return cities;
     }
+    public List<GeolocationRs> getCitiesByCountry(String country) {
+        return cityRepository.getCitiesByCountry(country).stream()
+                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+    }
+
 }
