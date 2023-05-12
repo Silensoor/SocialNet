@@ -69,9 +69,9 @@ public class FindService {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             personList = personRepository.findPersonsQuery(age_from, age_to, city, country,
-                    first_name, last_name, offset, perPage, false);
+                    first_name, last_name, offset, perPage, false, personsEmail);
             findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(age_from,
-                    age_to, city, country, first_name, last_name, true));
+                    age_to, city, country, first_name, last_name, true, personsEmail));
             if (personList == null) {
                 personList = new ArrayList<>();
             }

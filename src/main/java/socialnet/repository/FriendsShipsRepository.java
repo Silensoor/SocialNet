@@ -73,7 +73,7 @@ public class FriendsShipsRepository {
         try {
             final Friendships friendships = jdbcTemplate.queryForObject("SELECT * FROM friendships" +
                             " WHERE (dst_person_id = ? AND src_person_id = ?)" +
-                            " OR (dst_person_id = ? AND src_person_id = ?)",
+                            " OR (dst_person_id = ? AND src_person_id = ?) LIMIT 1",
                     friendshipsRowMapper, id, idFriend, idFriend, id);
             if (friendships != null){
                 return friendships;

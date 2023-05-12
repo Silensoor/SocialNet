@@ -226,27 +226,27 @@ public class PersonRepository {
     public List<Person> findPersonsQuery(Integer age_from,
                                          Integer age_to, String city, String country,
                                          String first_name, String last_name,
-                                         Integer offset, Integer perPage, Boolean flagQueryAll) {
+                                         Integer offset, Integer perPage, Boolean flagQueryAll, Person personEmail) {
         try {
             return jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
-                    flagQueryAll), personRowMapper, offset, perPage);
+                    flagQueryAll, personEmail), personRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
     public Integer findPersonsQueryAll(Integer age_from, Integer age_to, String city, String country,
-                                       String first_name, String last_name, Boolean flagQueryAll) {
+                                       String first_name, String last_name, Boolean flagQueryAll, Person personEmail) {
         try {
             return jdbcTemplate.queryForObject(createSqlPerson(age_from, age_to, city,
-                    country, first_name, last_name, flagQueryAll), Integer.class);
+                    country, first_name, last_name, flagQueryAll, personEmail), Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return 0;
         }
     }
 
     private String createSqlPerson(Integer age_from, Integer age_to, String city, String country,
-                                   String first_name, String last_name, Boolean flagQueryAll) {
+                                   String first_name, String last_name, Boolean flagQueryAll, Person personEmail) {
         StringBuilder str = new StringBuilder();
         String sql;
         if (flagQueryAll) {
@@ -265,6 +265,7 @@ public class PersonRepository {
         }
         str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
                 .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
+        str.append(" NOT id = " + personEmail.getId().intValue() + " ");
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);
         } else {
@@ -350,7 +351,7 @@ public class PersonRepository {
                             " p.city, p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
                             " JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
                             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=?" +
-                            " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
+                            " AND friendships.status_name = 'RECEIVED_REQUEST' OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
