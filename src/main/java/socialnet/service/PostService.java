@@ -93,14 +93,18 @@ public class PostService {
         List<Post> postList = postRepository.findAll(offset, perPage);
         postList.sort(Comparator.comparing(Post::getTime).reversed());
         List<PostRs> postRsList = new ArrayList<>();
+        long total = postRepository.getAllCount();
+
         for (Post post : postList) {
             int postId = post.getId().intValue();
             PostServiceDetails details = getDetails(post.getAuthorId(), postId, jwtToken);
             PostRs postRs = setPostRs(post, details);
             postRsList.add(postRs);
         }
+
         int itemPerPage = offset / perPage;
-        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
+
+        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), total);
     }
 
     PostServiceDetails getDetails(long authorId, int postId, String jwtToken) {
