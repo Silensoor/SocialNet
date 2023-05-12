@@ -370,6 +370,7 @@ public class PostsControllerTest {
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data").isArray())
             .andExpect(jsonPath("$.data", hasSize(5)))
+            .andExpect(jsonPath("$.total", is(17)))
             .andDo(print());
     }
 }
