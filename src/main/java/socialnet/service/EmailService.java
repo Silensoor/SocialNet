@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import socialnet.security.jwt.JwtUtils;
 
-import java.util.ResourceBundle;
-
 @Service
 @RequiredArgsConstructor
 public class EmailService {

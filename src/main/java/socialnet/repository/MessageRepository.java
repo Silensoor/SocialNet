@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Message;
 
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,12 +28,12 @@ public class MessageRepository {
             .recipientId(rs.getLong("recipient_id"))
             .build();
 
-    public Message findLastMessageByDialogId(Long dialogId) {
+    public Message findById(Long messageId) {
         try {
             return jdbcTemplate.queryForObject(
-                    "SELECT * FROM messages WHERE dialog_id = ? ORDER BY time DESC LIMIT 1",
+                    "SELECT * FROM messages WHERE id = ?",
                     messageRowMapper,
-                    dialogId);
+                    messageId);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -56,32 +58,42 @@ public class MessageRepository {
                 authorId);
     }
 
-    public Long findCountByAuthorIdAndReadStatus(Long authorId, String readStatus) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM messages WHERE author_id = ? AND read_status = ?",
+    public Long findCountByPersonIdAndReadStatus(Long personId, String readStatus) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM messages WHERE (author_id = ? OR recipient_id = ?) AND read_status = ?",
                 Long.class,
-                authorId, readStatus);
+                personId, personId, readStatus);
     }
 
-    public Integer updateReadStatusByDialogId(Long dialogId, String readStatus) {
-        return jdbcTemplate.update("UPDATE messages SET read_status = ? WHERE dialog_id = ?", readStatus, dialogId);
+    public Integer updateReadStatusByDialogId(Long dialogId, String readStatus, String queryStatus) {
+        return jdbcTemplate.update("UPDATE messages SET read_status = ? WHERE dialog_id = ? AND read_status = ?",
+                readStatus, dialogId, queryStatus);
     }
 
-    public int save(Message message) {
-        return jdbcTemplate.update("INSERT INTO messages (is_deleted, " +
-                                   "message_text, " +
-                                   "read_status, " +
-                                   "time, " +
-                                   "dialog_id, " +
-                                   "author_id, " +
-                                   "recipient_id) " +
-                                   "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                message.getIsDeleted(),
-                message.getMessageText(),
-                message.getReadStatus(),
-                message.getTime(),
-                message.getDialogId(),
-                message.getAuthorId(),
-                message.getRecipientId());
+    public long save(Message message) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement prepStatement = connection.prepareStatement(
+                    "INSERT INTO messages (is_deleted, " +
+                    "message_text, " +
+                    "read_status, " +
+                    "time, " +
+                    "dialog_id, " +
+                    "author_id, " +
+                    "recipient_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)", new String[]{"id"});
+            prepStatement.setBoolean(1, message.getIsDeleted());
+            prepStatement.setString(2, message.getMessageText());
+            prepStatement.setString(3, message.getReadStatus());
+            prepStatement.setTimestamp(4, message.getTime());
+            prepStatement.setLong(5, message.getDialogId());
+            prepStatement.setLong(6, message.getAuthorId());
+            prepStatement.setLong(7, message.getRecipientId());
+            return prepStatement;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+
     }
 
     public void markDeleted(Long messageId, Boolean isDeletedState) {
@@ -99,10 +111,10 @@ public class MessageRepository {
     public List<Message> getMessage(Integer firstUserId, Integer secondUserId) {
         try {
             return jdbcTemplate.query("SELECT * FROM messages WHERE (author_id = ? AND recipient_id = ?)" +
-                            " OR (recipient_id = ? AND author_id = ?)",
+                                      " OR (recipient_id = ? AND author_id = ?)",
                     messageRowMapper,
                     firstUserId, secondUserId, firstUserId, secondUserId);
-        } catch (EmptyResultDataAccessException ignored){
+        } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
@@ -111,7 +123,7 @@ public class MessageRepository {
         try {
             return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM messages WHERE dialog_id = ?",
                     Integer.class, dialogId);
-        } catch (EmptyResultDataAccessException ignored){
+        } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }

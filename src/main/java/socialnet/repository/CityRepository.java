@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.model.City;
-import socialnet.model.Post;
 
 import java.util.List;
 
