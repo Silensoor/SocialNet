@@ -185,10 +185,10 @@ public class FriendsTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        FriendshipStatusTypes endStatus = friendsShipsRepository.findRequest(1L, 5L).getStatusName();
+        Friendships endFriendship = friendsShipsRepository.findRequest(1L, 5L);
         assertThat(!startStatus.equals(FriendshipStatusTypes.DECLINED)
                 &&
-                endStatus.equals(FriendshipStatusTypes.DECLINED))
+                endFriendship == null)
                 .isTrue();
     }
     @Test
