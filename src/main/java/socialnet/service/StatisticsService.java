@@ -1,12 +1,10 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import socialnet.api.response.ErrorRs;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.exception.EmptyEmailException;
+import socialnet.exception.EntityNotFoundException;
 import socialnet.model.*;
 import socialnet.repository.*;
 
@@ -49,13 +47,12 @@ public class StatisticsService {
         return null;
     }
 
-    public ResponseEntity<?> getCommentsByPost(Integer postId) {
+    public Integer getCommentsByPost(Integer postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'postId' " + postId + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'postId' " + postId + " is empty");
         }
-        return new ResponseEntity<>(commentRepository.findByPostIdCount(Long.valueOf(postId)), HttpStatus.OK);
+        return commentRepository.findByPostIdCount(Long.valueOf(postId));
     }
 
     public Integer getCountry() {
@@ -70,13 +67,12 @@ public class StatisticsService {
         return dialogsRepository.findDialogCount();
     }
 
-    public ResponseEntity<?> getDialogsUser(Integer userId) {
+    public Integer getDialogsUser(Integer userId) {
         Person person = personRepository.findById(Long.valueOf(userId));
         if (person == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'userId' " + userId + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'userId' " + userId + " is empty");
         }
-        return new ResponseEntity<>(dialogsRepository.findDialogsUserCount(userId), HttpStatus.OK);
+        return dialogsRepository.findDialogsUserCount(userId);
     }
 
     public Integer getAllLike() {
@@ -96,12 +92,11 @@ public class StatisticsService {
         return messageRepository.getAllMessage();
     }
 
-    public ResponseEntity<?> getMessage(Integer firstUserId, Integer secondUserId) {
+    public TreeMap<String, Integer> getMessage(Integer firstUserId, Integer secondUserId) {
         final List<Message> messageList = messageRepository.getMessage(firstUserId, secondUserId);
         if (messageList == null || messageList.isEmpty()) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'firstUserId' " + firstUserId
-                            + " or 'secondUserId' " + secondUserId + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'firstUserId' " + firstUserId
+                            + " or 'secondUserId' " + secondUserId + " is empty");
         } else {
             Map<String, Integer> messages = new HashMap<>();
             Person firstUser = personRepository.findById(Long.valueOf(firstUserId));
@@ -120,17 +115,16 @@ public class StatisticsService {
                 }
                 counter += 1;
             }
-            return new ResponseEntity<>(new TreeMap<>(messages), HttpStatus.OK);
+            return new TreeMap<>(messages);
         }
     }
 
-    public ResponseEntity<?> getMessageByDialog(Integer dialogId) {
+    public Integer getMessageByDialog(Integer dialogId) {
         Dialog dialog = dialogsRepository.findByDialogId(Long.valueOf(dialogId));
         if (dialog == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'dialogId' " + dialogId + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'dialogId' " + dialogId + " is empty");
         } else {
-            return new ResponseEntity<>(messageRepository.getMessageByDialog(dialogId), HttpStatus.OK);
+            return messageRepository.getMessageByDialog(dialogId);
         }
     }
 
@@ -138,13 +132,12 @@ public class StatisticsService {
         return postRepository.findAll().size();
     }
 
-    public ResponseEntity<?> getAllPostByUser(Integer userId) {
+    public Integer getAllPostByUser(Integer userId) {
         Person person = personRepository.findById(Long.valueOf(userId));
         if (person == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'userId' " + userId + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'userId' " + userId + " is empty");
         } else {
-            return new ResponseEntity<>(postRepository.getAllPostByUser(userId), HttpStatus.OK);
+            return postRepository.getAllPostByUser(userId);
         }
     }
 
@@ -152,13 +145,12 @@ public class StatisticsService {
         return tagRepository.getAllTags();
     }
 
-    public ResponseEntity<?> getTagsByPost(Integer postId) {
+    public Integer getTagsByPost(Integer postId) {
         Post post = postRepository.findById(postId);
         if (post == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'postId' " + postId + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'postId' " + postId + " is empty");
         } else {
-            return new ResponseEntity<>(tagRepository.findByPostId(postId.longValue()).size(), HttpStatus.OK);
+            return tagRepository.findByPostId(postId.longValue()).size();
         }
     }
 
@@ -166,23 +158,21 @@ public class StatisticsService {
         return personRepository.findAll().size();
     }
 
-    public ResponseEntity<?> getAllUsersByCity(String city) {
+    public Integer getAllUsersByCity(String city) {
         City city1 = cityRepository.getCity(city);
         if (city1 == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'city' " + city + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'city' " + city + " is empty");
         } else {
-            return new ResponseEntity<>(personRepository.findByCity(city).size(), HttpStatus.OK);
+            return personRepository.findByCity(city).size();
         }
     }
 
-    public ResponseEntity<?> getAllUsersByCountry(String country) {
+    public Integer getAllUsersByCountry(String country) {
         Country country1 = countryRepository.getCountry(country);
         if (country1 == null) {
-            return new ResponseEntity<>(new ErrorRs("EntityNotFoundException",
-                    "Field 'country' " + country + " is empty"), HttpStatus.BAD_REQUEST);
+            throw new EntityNotFoundException("Field 'country' " + country + " is empty");
         } else {
-            return new ResponseEntity<>(personRepository.getAllUsersByCountry(country), HttpStatus.OK);
+            return personRepository.getAllUsersByCountry(country);
         }
     }
 }
