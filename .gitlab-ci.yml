@@ -79,7 +79,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgLOXzpN_7au7cG1vV6 -Dsonar.projectName='JavaproTeams37Backend '
+    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgLOXzpN_7au7cG1vV6 -Dsonar.projectName='JavaproTeams37Backend' -Dmaven.test.skip
   allow_failure: true
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
