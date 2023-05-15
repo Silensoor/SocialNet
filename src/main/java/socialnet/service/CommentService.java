@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.CommonRs;
-import socialnet.api.response.NotificationType;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
@@ -13,7 +12,6 @@ import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.CommentServiceDetails;
-import socialnet.utils.NotificationPusher;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

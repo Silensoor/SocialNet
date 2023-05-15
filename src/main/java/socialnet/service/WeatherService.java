@@ -14,11 +14,8 @@ import socialnet.model.Weather;
 import socialnet.repository.CityRepository;
 import socialnet.repository.WeatherRepository;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static java.time.LocalDateTime.*;
 

@@ -59,9 +59,16 @@ public class DialogsRepository {
     public Integer findDialogsUserCount(Integer userId) throws EmptyResultDataAccessException {
         try {
             return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM dialogs WHERE first_person_id = ?" +
-                    " OR second_person_id = ?", Integer.class, userId, userId);
+                                               " OR second_person_id = ?", Integer.class, userId, userId);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+    }
+
+    public int save(Dialog dialog) {
+        return jdbcTemplate.update("UPDATE dialogs SET last_active_time = ?, last_message_id = ? WHERE id = ?",
+                dialog.getLastActiveTime(),
+                dialog.getLastMessageId(),
+                dialog.getId());
     }
 }
