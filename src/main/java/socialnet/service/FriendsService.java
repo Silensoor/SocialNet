@@ -204,8 +204,7 @@ public class FriendsService {
         final Friendships friendships = friendsShipsRepository.getFriendStatus(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
             if (friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST)) {
-                friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
-                        FriendshipStatusTypes.DECLINED, friendships.getId());
+                friendsShipsRepository.deleteFriendUsing(friendships.getId());
             }
         }
         return fillingCommonRsComplexRs(id);
@@ -223,10 +222,12 @@ public class FriendsService {
             friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.REQUEST);
         }
         PersonSettings personSettings = personSettingRepository.getSettings(id.longValue());
-        if (personSettings.getFriendRequest()) {
-            Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
-                    (long) id, personsEmail.getId());
-            NotificationPusher.sendPush(notification, personsEmail.getId());
+        if (personSettings != null) {
+            if (personSettings.getFriendRequest()) {
+                Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
+                        (long) id, personsEmail.getId());
+                NotificationPusher.sendPush(notification, personsEmail.getId());
+            }
         }
         return fillingCommonRsComplexRs(id);
     }
