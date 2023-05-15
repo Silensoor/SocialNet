@@ -146,8 +146,11 @@ public class FriendsService {
         }
         if (cityFriends != null && !cityFriends.isEmpty()) {
                 int i = 0;
-                while (i < 10 - recommendationFriends.size()) {
+                while (i < cityFriends.size()) {
                     recommendationFriendsCity.add(cityFriends.get(i));
+                    if (i >= 10 - recommendationFriends.size()){
+                        return recommendationFriendsCity;
+                    }
                     i++;
                 }
         }
