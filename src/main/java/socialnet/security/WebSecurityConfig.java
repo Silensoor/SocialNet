@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.applyPermitDefaultValues();
         List<String> allowedOrigins = new ArrayList<>();
+        allowedOrigins.add("http://localhost:8085");
         allowedOrigins.add("http://81.177.6.228:8085");
         allowedOrigins.add("http://localhost:8080");
         allowedOrigins.add("http://81.177.6.228:8080");

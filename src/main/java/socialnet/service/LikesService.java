@@ -51,9 +51,8 @@ public class LikesService {
         }
         if (likeRq.getType().equals("Comment")) {
             Comment comment = commentRepository.findById(likeRq.getItem_id().longValue());
-            //PersonSettings personSettings = personSettingRepository.getPersonSettings(comment.getAuthorId());
             PersonSettings personSettings = personSettingRepository.getSettings(comment.getAuthorId());
-            //if (personSettings.getLikeNotification() && !comment.getAuthorId().equals(authUser.getId())) {
+
             if (personSettings.getPostLike() && !comment.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
                         comment.getAuthorId(), authUser.getId());
@@ -62,7 +61,6 @@ public class LikesService {
         } else {
             Post post = postRepository.findById(likeRq.getItem_id());
             PersonSettings personSettings = personSettingRepository.getSettings(post.getAuthorId());
-            //if (personSettings.getLikeNotification() && !post.getAuthorId().equals(authUser.getId())) {
             if (personSettings.getPostLike() && !post.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
                         post.getAuthorId(), authUser.getId());
