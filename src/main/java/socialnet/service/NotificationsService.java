@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationsService {
     private final JwtUtils jwtUtils;
-    private final Reflection reflection;
+
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
     private final PersonSettingRepository personSettingRepository;
