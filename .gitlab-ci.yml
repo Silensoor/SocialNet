@@ -70,6 +70,8 @@ sonarqube-check:
   stage: sonarqube-check
   tags:
     - socialnet_runner
+  only:
+    - dev
   image: maven:3.6.3-jdk-11
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
@@ -81,5 +83,3 @@ sonarqube-check:
   script:
     - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
   allow_failure: true
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'dev'
