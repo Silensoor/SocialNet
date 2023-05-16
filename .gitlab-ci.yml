@@ -83,3 +83,4 @@ sonarqube-check:
   script:
     - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
   allow_failure: true
+
