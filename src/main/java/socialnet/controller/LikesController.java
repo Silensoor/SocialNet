@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LikeRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.LikesService;
 
 @RestController
@@ -13,6 +14,7 @@ public class LikesController {
 
     private final LikesService likesService;
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/likes")
     public CommonRs<LikeRs> getLikes(
             @RequestHeader String authorization,
@@ -22,6 +24,7 @@ public class LikesController {
         return likesService.getLikes(authorization, itemId, type);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/likes")
     public CommonRs<LikeRs> putLike(
             @RequestHeader String authorization,
@@ -30,6 +33,7 @@ public class LikesController {
         return likesService.putLike(authorization, likeRq);
     }
 
+    @OnlineStatusUpdatable
     @DeleteMapping("/api/v1/likes")
     public CommonRs<LikeRs> deleteLike(
             @RequestHeader String authorization,
