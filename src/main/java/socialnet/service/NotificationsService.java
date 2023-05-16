@@ -9,7 +9,6 @@ import socialnet.mappers.NotificationMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Notification;
 import socialnet.model.Person;
-import socialnet.model.PersonSettings;
 import socialnet.repository.NotificationRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
@@ -17,9 +16,7 @@ import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.Reflection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

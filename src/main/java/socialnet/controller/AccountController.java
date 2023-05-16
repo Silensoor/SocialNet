@@ -2,10 +2,11 @@ package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import socialnet.api.request.*;
+import socialnet.api.request.EmailRq;
+import socialnet.api.request.PasswordSetRq;
+import socialnet.api.request.PersonSettingsRq;
+import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
-import socialnet.api.response.ComplexRs;
-import socialnet.api.response.PersonSettingsRs;
 import socialnet.api.response.RegisterRs;
 import socialnet.repository.PersonSettingRepository;
 import socialnet.service.AccountService;

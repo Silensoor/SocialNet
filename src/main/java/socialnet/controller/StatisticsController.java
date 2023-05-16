@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.service.StatisticsService;
 
+import java.util.TreeMap;
+
 @RestController
 @RequestMapping("/api/v1/statistics")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/comment/post")
-    public ResponseEntity<?> getCommentsByPost(@RequestParam(required = false, defaultValue = "0") Integer postId)
+    public Integer getCommentsByPost(@RequestParam(required = false, defaultValue = "0") Integer postId)
     {
        return statisticsService.getCommentsByPost(postId);
     }
@@ -53,7 +55,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/dialog/user")
-    public ResponseEntity<?> getDialogsUser(@RequestParam(required = false, defaultValue = "0") Integer userId)
+    public Integer getDialogsUser(@RequestParam(required = false, defaultValue = "0") Integer userId)
     {
         return statisticsService.getDialogsUser(userId);
     }
@@ -77,14 +79,14 @@ public class StatisticsController {
     }
 
     @GetMapping("/message/all")
-    public ResponseEntity<?> getMessage(@RequestParam(required = false, defaultValue = "0") Integer firstUserId,
-                          @RequestParam(required = false, defaultValue = "0") Integer secondUserId)
+    public TreeMap<String, Integer> getMessage(@RequestParam(required = false, defaultValue = "0") Integer firstUserId,
+                                               @RequestParam(required = false, defaultValue = "0") Integer secondUserId)
     {
         return statisticsService.getMessage(firstUserId, secondUserId);
     }
 
     @GetMapping("/message/dialog")
-    public ResponseEntity<?> getMessageByDialog(@RequestParam(required = false, defaultValue = "0") Integer dialogId)
+    public Integer getMessageByDialog(@RequestParam(required = false, defaultValue = "0") Integer dialogId)
     {
         return statisticsService.getMessageByDialog(dialogId);
     }
@@ -96,7 +98,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/post/user")
-    public ResponseEntity<?> getAllPostByUser(@RequestParam(required = false, defaultValue = "0") Integer userId)
+    public Integer getAllPostByUser(@RequestParam(required = false, defaultValue = "0") Integer userId)
     {
         return statisticsService.getAllPostByUser(userId);
     }
@@ -108,7 +110,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/tag/post")
-    public ResponseEntity<?> getTagsByPost(@RequestParam(required = false, defaultValue = "0") Integer postId)
+    public Integer getTagsByPost(@RequestParam(required = false, defaultValue = "0") Integer postId)
     {
         return statisticsService.getTagsByPost(postId);
     }
@@ -120,13 +122,13 @@ public class StatisticsController {
     }
 
     @GetMapping("/user/city")
-    public ResponseEntity<?> getAllUsersByCity(@RequestParam(required = false, defaultValue = "") String city)
+    public Integer getAllUsersByCity(@RequestParam(required = false, defaultValue = "") String city)
     {
         return statisticsService.getAllUsersByCity(city);
     }
 
     @GetMapping("/user/country")
-    public ResponseEntity<?> getAllUsersByCountry(@RequestParam(required = false, defaultValue = "") String country)
+    public Integer getAllUsersByCountry(@RequestParam(required = false, defaultValue = "") String country)
     {
         return statisticsService.getAllUsersByCountry(country);
     }
