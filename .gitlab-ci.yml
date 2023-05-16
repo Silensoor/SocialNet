@@ -68,8 +68,6 @@ deploy:
 
 sonarqube-check:
   stage: sonarqube-check
-  only:
-    - dev
   tags:
     - socialnet_runner
   image: maven:3.6.3-jdk-11
