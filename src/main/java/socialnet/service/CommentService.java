@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.CommonRs;
+import socialnet.api.response.NotificationType;
 import socialnet.api.response.PersonRs;
 import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
@@ -12,6 +13,7 @@ import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.CommentServiceDetails;
+import socialnet.utils.NotificationPusher;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class CommentService {
 
         return commentRs;
     }
-/*
+
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
         Person person =getPerson(jwtToken);
@@ -63,23 +65,23 @@ public class CommentService {
         CommentRs commentRs = getCommentRs(comment, toDTODetails);
 
         Post post = postRepository.findById(postId.intValue());
-        PersonSettings personSettingsPostAuthor = personSettingRepository.getPersonSettings(post.getAuthorId());
+        PersonSettings personSettingsPostAuthor = personSettingRepository.getSettings(post.getAuthorId());
         if (commentRq.getParentId() != null) {
             Comment comment1 = commentRepository.findById(commentRq.getParentId().longValue());
-            PersonSettings personSettingsCommentAuthor = personSettingRepository.getPersonSettings(comment1.getAuthorId());
-            if (personSettingsCommentAuthor.getPostCommentNotification() &&
+            PersonSettings personSettingsCommentAuthor = personSettingRepository.getSettings(comment1.getAuthorId());
+            if (personSettingsCommentAuthor.getPostComment() &&
                     !person.getId().equals(comment1.getAuthorId())) {
                 Notification notification = NotificationPusher.
                         getNotification(NotificationType.COMMENT_COMMENT, comment1.getAuthorId(), person.getId());
                 NotificationPusher.sendPush(notification, person.getId());
             } else if (!person.getId().equals(post.getAuthorId()) && commentRq.getParentId().longValue() !=
-                    (post.getAuthorId()) && personSettingsPostAuthor.getPostCommentNotification()) {
+                    (post.getAuthorId()) && personSettingsPostAuthor.getPostComment()) {
                 Notification notification = NotificationPusher.
                         getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
                 NotificationPusher.sendPush(notification, person.getId());
                 return new CommonRs<>(commentRs, System.currentTimeMillis());
             }
-        } else if (personSettingsPostAuthor.getPostCommentNotification() &&
+        } else if (personSettingsPostAuthor.getPostComment() &&
                 !post.getAuthorId().equals(person.getId())) {
             Notification notification = NotificationPusher.
                     getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
@@ -87,7 +89,7 @@ public class CommentService {
         }
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
-*/
+
 
     private Comment getCommentModel(CommentRq commentRq, CommentServiceDetails details) {
         Comment comment = CommentMapper.INSTANCE.toModel(commentRq);
