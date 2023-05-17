@@ -31,6 +31,7 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final JwtUtils jwtUtils;
     private final FriendsShipsRepository friendsShipsRepository;
+    private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -313,13 +314,18 @@ public class PostService {
     }
     private void sendAllFriendShips(List<Friendships> list,Long id) {
         for (Friendships friendships : list) {
-            Notification notification;
-            if (!id.equals(friendships.getDstPersonId())) {
+            Notification notification= null;
+            PersonSettings settingsSrc = personSettingRepository.getSettings(friendships.getSrcPersonId());
+            PersonSettings settingsDst = personSettingRepository.getSettings(friendships.getDstPersonId());
+            if (!id.equals(friendships.getDstPersonId())&&settingsDst.getPost()) {
                 notification = NotificationPusher.getNotification(NotificationType.POST, friendships.getDstPersonId(), id);
-            } else {
+            } else if(settingsSrc.getPost()){
                 notification = NotificationPusher.getNotification(NotificationType.POST, friendships.getSrcPersonId(), id);
             }
-            NotificationPusher.sendPush(notification, id);
+            if (notification!=null){
+                NotificationPusher.sendPush(notification, id);
+            }
+
         }
     }
 
