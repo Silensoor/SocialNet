@@ -59,7 +59,7 @@ public class TelegramBotService {
     }
 
     private TgApiRs handleNotificateCommand(TgApiRequest request) {
-        return makeResponse("fail", "Not implemented", null);
+        return makeResponse("fail", "Not implemented yet", null);
     }
 
     private TgApiRs handleTokenCommand(TgApiRequest request) {
