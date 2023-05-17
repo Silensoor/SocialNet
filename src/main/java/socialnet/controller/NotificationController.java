@@ -15,16 +15,20 @@ public class NotificationController {
 
     private final NotificationsService notificationsService;
     @GetMapping("/notifications")
-    public CommonRs<List<NotificationRs>> notifications(@RequestHeader String authorization,
-                                                        @RequestParam(required = false, defaultValue = "10")Integer itemPerPage,
-                                                        @RequestParam(required = false, defaultValue = "0") Integer offset){
-        return notificationsService.getAllNotifications(itemPerPage,authorization,offset);
+    public CommonRs<List<NotificationRs>> notifications(
+        @RequestHeader String authorization,
+        @RequestParam(required = false, defaultValue = "10") Integer itemPerPage,
+        @RequestParam(required = false, defaultValue = "0") Integer offset)
+    {
+        return notificationsService.getAllNotifications(itemPerPage, authorization, offset);
     }
 
     @PutMapping("/notifications")
-    public CommonRs<List<NotificationRs>> notifications(@RequestHeader String authorization,
-                                                        @RequestParam(required = false)Integer id,
-                                                        @RequestParam(required = false)Boolean all){
-        return notificationsService.putNotifications(all,id,authorization);
+    public CommonRs<List<NotificationRs>> notifications(
+        @RequestHeader String authorization,
+        @RequestParam(required = false) Integer id,
+        @RequestParam(required = false) Boolean all)
+    {
+        return notificationsService.putNotifications(all, id, authorization);
     }
 }

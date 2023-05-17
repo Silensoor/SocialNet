@@ -39,11 +39,14 @@ public class DialogsController {
     }
 
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonRs<List<MessageRs>> getMessagesFromDialog(@RequestHeader String authorization,
-                                                           @PathVariable("dialogId") Long dialogId,
-                                                           @RequestParam(defaultValue = "20") Integer itemPerPage) {
+    public CommonRs<List<MessageRs>> getMessagesFromDialog(
+        @RequestHeader String authorization,
+        @PathVariable("dialogId") Long dialogId,
+        @RequestParam(defaultValue = "0") Integer offset,
+        @RequestParam(defaultValue = "20") Integer perPage)
+    {
         log.debug("token = {}", authorization);
-        return dialogsService.getMessagesFromDialog(authorization, dialogId, itemPerPage);
+        return dialogsService.getMessagesFromDialog(authorization, dialogId, offset, perPage);
     }
 
     @PutMapping(value = "/dialogs/{dialogId}/read", produces = MediaType.APPLICATION_JSON_VALUE)

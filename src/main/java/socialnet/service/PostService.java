@@ -102,9 +102,7 @@ public class PostService {
             postRsList.add(postRs);
         }
 
-        int itemPerPage = offset / perPage;
-
-        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), total);
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), total);
     }
 
     PostServiceDetails getDetails(long authorId, int postId, String jwtToken) {
@@ -295,12 +293,13 @@ public class PostService {
 
     public CommonRs<List<PostRs>> getFeedsByAuthorId(Long authorId, String jwtToken, Integer offset, Integer perPage) {
         List<PostRs> postRsList = new ArrayList<>();
-        int itemPerPage = offset / perPage;
         List<Post> postList = postRepository.findPostsByUserId(authorId, offset, perPage);
 
         if (postList == null) {
-            return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), 0L);
+            return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), 0L);
         }
+
+        long total = postRepository.countPostsByUserId(authorId);
 
         for (Post post : postList) {
             int postId = post.getId().intValue();
@@ -309,8 +308,9 @@ public class PostService {
             postRsList.add(postRs);
         }
 
-        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
+        return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), total);
     }
+
     private void sendAllFriendShips(List<Friendships> list,Long id) {
         for (Friendships friendships : list) {
             Notification notification;
