@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.UserRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.FindService;
 import socialnet.service.PersonService;
 
@@ -20,17 +21,20 @@ public class UsersController {
     private final PersonService personService;
     private final FindService findService;
 
+    @OnlineStatusUpdatable
     @GetMapping("/me")
     public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
         return personService.getMyProfile(authorization);
     }
 
+    @OnlineStatusUpdatable
     @GetMapping("/{id}")
     public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") String authorization,
                                           @PathVariable(name = "id") Integer id) {
         return personService.getUserById(authorization, id);
     }
 
+    @OnlineStatusUpdatable
     @GetMapping("/search")
     public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
                                                 @RequestParam(required = false, defaultValue = "0")
@@ -54,17 +58,20 @@ public class UsersController {
                 last_name, offset, perPage);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/me")
     public ResponseEntity<?> updateUserInfo(@RequestHeader("authorization") String authorization,
                                             @RequestBody UserRq userData) {
         return personService.updateUserInfo(authorization, userData);
     }
 
+    @OnlineStatusUpdatable
     @DeleteMapping("/me")
     public CommonRs deleteUser(@RequestHeader("authorization") String authorization) {
         return personService.delete(authorization);
     }
 
+    @OnlineStatusUpdatable
     @PostMapping("/me/recover")
     public CommonRs recoverUser(@RequestHeader("authorization") String authorization) {
         return personService.recover(authorization);

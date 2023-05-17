@@ -8,6 +8,7 @@ import socialnet.api.request.PersonSettingsRq;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.RegisterRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.repository.PersonSettingRepository;
 import socialnet.service.AccountService;
 import socialnet.service.EmailService;
@@ -26,6 +27,7 @@ public class AccountController {
     private final EmailService emailService;
     private final PersonService personService;
 
+    @OnlineStatusUpdatable
     @PutMapping("/email/recovery")
     public void emailSet(@RequestHeader String authorization) {
         emailService.shiftEmailConfirm(authorization);
@@ -34,29 +36,38 @@ public class AccountController {
     @PutMapping("/email")
     public RegisterRs setNewEmail(@RequestBody EmailRq emailRq) {return personService.setNewEmail(emailRq);}
 
+    @OnlineStatusUpdatable
     @PutMapping("/password/recovery")
     public void passwordChangeConfirm(@RequestHeader String authorization) {
         emailService.passwordChangeConfirm(authorization);
     }
+
+    @OnlineStatusUpdatable
     @PutMapping("/password/reset")
     public RegisterRs resetPassword(@RequestHeader String authorization,
                                        @RequestBody PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
+
+    @OnlineStatusUpdatable
     @PutMapping("/password/set")
     public RegisterRs setNewPassword(@RequestHeader String authorization,
                                         @RequestBody PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
+
     @PostMapping("/register")
     public RegisterRs register(@Valid @RequestBody RegisterRq regRequest) {
         return accountService.getRegisterData(regRequest);
     }
+
+    @OnlineStatusUpdatable
     @GetMapping("/notifications")
     public CommonRs notifications(@RequestHeader String authorization){
         return personService.getPersonSettings(authorization);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/notifications")
     public CommonRs saveSettings(@RequestHeader String authorization,
                                  @RequestBody PersonSettingsRq personSettingsRq) {

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.NotificationRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.NotificationsService;
 
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationsService notificationsService;
+
+    @OnlineStatusUpdatable
     @GetMapping("/notifications")
     public CommonRs<List<NotificationRs>> notifications(
         @RequestHeader String authorization,
@@ -23,6 +26,7 @@ public class NotificationController {
         return notificationsService.getAllNotifications(itemPerPage, authorization, offset);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/notifications")
     public CommonRs<List<NotificationRs>> notifications(
         @RequestHeader String authorization,

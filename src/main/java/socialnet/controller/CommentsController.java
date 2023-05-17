@@ -1,11 +1,13 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.CommonRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.CommentService;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class CommentsController {
 
     private final CommentService commentService;
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/post/{postId}/comments")
     public ResponseEntity<CommonRs<List<CommentRs>>> getComments(
         @RequestHeader String authorization,
@@ -27,6 +30,8 @@ public class CommentsController {
         return ResponseEntity.ok(commonRs);
     }
 
+
+    @OnlineStatusUpdatable
     @PostMapping("/api/v1/post/{postId}/comments")
     public ResponseEntity<CommonRs<CommentRs>> createComment(
         @RequestHeader String authorization,
@@ -37,6 +42,8 @@ public class CommentsController {
         return ResponseEntity.ok(commonRs);
     }
 
+
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/comments/{comment_id}")
     public ResponseEntity<CommonRs<CommentRs>> editComment(
         @RequestHeader String authorization,
@@ -48,6 +55,8 @@ public class CommentsController {
         return ResponseEntity.ok(commonRs);
     }
 
+
+    @OnlineStatusUpdatable
     @DeleteMapping("/api/v1/post/{id}/comments/{comment_id}")
     public ResponseEntity<CommonRs<CommentRs>> deleteComment(
         @RequestHeader String authorization,
@@ -58,6 +67,7 @@ public class CommentsController {
         return ResponseEntity.ok(commonRs);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/comments/{comment_id}/recover")
     public ResponseEntity<CommonRs<CommentRs>> recoverComment(
         @RequestHeader String authorization,

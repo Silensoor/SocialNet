@@ -8,6 +8,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.DialogRs;
 import socialnet.api.response.MessageRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.exception.DialogsException;
 import socialnet.service.DialogsService;
 
@@ -21,6 +22,7 @@ public class DialogsController {
 
     private final DialogsService dialogsService;
 
+    @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<List<DialogRs>> getDialogs(@RequestHeader String authorization) {
         CommonRs<List<DialogRs>> dialogs;
@@ -33,11 +35,13 @@ public class DialogsController {
         return dialogs;
     }
 
+    @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
         return dialogsService.getUnreadedMessages(authorization);
     }
 
+    @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<List<MessageRs>> getMessagesFromDialog(
         @RequestHeader String authorization,
@@ -49,6 +53,7 @@ public class DialogsController {
         return dialogsService.getMessagesFromDialog(authorization, dialogId, offset, perPage);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping(value = "/dialogs/{dialogId}/read", produces = MediaType.APPLICATION_JSON_VALUE)
     public CommonRs<ComplexRs> readMessagesInDialog(@RequestHeader String authorization,
                                                     @PathVariable("dialogId") Long dialogId) {

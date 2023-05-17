@@ -7,6 +7,7 @@ import socialnet.api.response.CaptchaRs;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.PersonRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.CaptchaService;
 import socialnet.service.PersonService;
 
@@ -27,6 +28,7 @@ public class AuthController {
         return personService.getLogin(loginRq);
     }
 
+    @OnlineStatusUpdatable
     @PostMapping("/logout")
     public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization") String authorization) {
         return personService.getLogout(authorization);
