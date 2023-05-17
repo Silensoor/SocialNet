@@ -51,7 +51,15 @@ public class TelegramBotService {
             return handleTokenCommand(request);
         }
 
+        if (command.equals("/notificate")) {
+            return handleNotificateCommand(request);
+        }
+
         return makeResponse("fail", "Неизвестная команда", null);
+    }
+
+    private TgApiRs handleNotificateCommand(TgApiRequest request) {
+        return makeResponse("fail", "Not implemented", null);
     }
 
     private TgApiRs handleTokenCommand(TgApiRequest request) {
