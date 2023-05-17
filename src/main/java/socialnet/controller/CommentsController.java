@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.CommentRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.CommonRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.CommentService;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class CommentsController {
 
     private final CommentService commentService;
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/post/{postId}/comments")
     public ResponseEntity<CommonRs<List<CommentRs>>> getComments(@RequestHeader String authorization,
                                                                  @PathVariable Long postId,
@@ -26,6 +28,8 @@ public class CommentsController {
         CommonRs<List<CommentRs>> commonRs = commentService.getComments(postId, offset, perPage, authorization);
         return new ResponseEntity<>(commonRs, HttpStatus.OK);
     }
+
+    @OnlineStatusUpdatable
     @PostMapping("/api/v1/post/{postId}/comments")
     public ResponseEntity<CommonRs<CommentRs>> createComment(@RequestHeader String authorization,
                                                              @PathVariable Long postId,
@@ -33,6 +37,8 @@ public class CommentsController {
         CommonRs<CommentRs> commonRs = commentService.createComment(commentRq, postId, authorization);
         return new ResponseEntity<>(commonRs, HttpStatus.OK);
     }
+
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/comments/{comment_id}")
     public ResponseEntity<CommonRs<CommentRs>> editComment(@RequestHeader String authorization,
                                                            @PathVariable Long id,
@@ -41,6 +47,8 @@ public class CommentsController {
         CommonRs<CommentRs> commonRs = commentService.editComment(authorization, id, commentId, commentRq);
         return new ResponseEntity<>(commonRs, HttpStatus.OK);
     }
+
+    @OnlineStatusUpdatable
     @DeleteMapping("/api/v1/post/{id}/comments/{comment_id}")
     public ResponseEntity<CommonRs<CommentRs>> deleteComment(@RequestHeader String authorization,
                                                              @PathVariable Long id,
@@ -49,6 +57,8 @@ public class CommentsController {
         CommonRs<CommentRs> commonRs = commentService.deleteComment(authorization, id, commentId);
         return new ResponseEntity<>(commonRs, HttpStatus.OK);
     }
+
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/comments/{comment_id}/recover")
     public ResponseEntity<CommonRs<CommentRs>> recoverComment(@RequestHeader String authorization,
                                                               @PathVariable Long id,

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PostRs;
+import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.service.FindService;
 import socialnet.service.PostService;
 
@@ -18,6 +19,7 @@ public class PostsController {
     private final PostService postsService;
     private final FindService findService;
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/feeds")
     public CommonRs<List<PostRs>> getFeeds(
             @RequestHeader String authorization,
@@ -26,6 +28,7 @@ public class PostsController {
         return postsService.getFeeds(authorization, offset, perPage);
     }
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/users/{id}/wall")
     public CommonRs<List<PostRs>> getWall(
             @RequestHeader String authorization,
@@ -35,6 +38,7 @@ public class PostsController {
         return postsService.getFeedsByAuthorId(id, authorization, offset, perPage);
     }
 
+    @OnlineStatusUpdatable
     @PostMapping("/api/v1/users/{id}/wall")
     public CommonRs<PostRs> createPost(
             @RequestHeader String authorization,
@@ -44,11 +48,13 @@ public class PostsController {
         return postsService.createPost(postRq, id, publishDate, authorization);
     }
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/post/{id}")
     public CommonRs<PostRs> getPostById(@RequestHeader String authorization, @PathVariable int id) {
         return postsService.getPostById(id, authorization);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}")
     public CommonRs<PostRs> updateById(
             @RequestHeader String authorization,
@@ -58,17 +64,20 @@ public class PostsController {
         return postsService.updatePost(id, postRq, authorization);
     }
 
+    @OnlineStatusUpdatable
     @DeleteMapping("/api/v1/post/{id}")
     public CommonRs<PostRs> deleteById(@RequestHeader String authorization, @PathVariable int id) {
         return postsService.markAsDelete(id, authorization);
     }
 
+    @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/recover")
     public CommonRs<PostRs> recoverPostById(@RequestHeader String authorization,
                                             @PathVariable int id) {
         return postsService.recoverPost(id, authorization);
     }
 
+    @OnlineStatusUpdatable
     @GetMapping("/api/v1/post")
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader String authorization,
