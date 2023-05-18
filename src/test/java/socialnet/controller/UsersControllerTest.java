@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -18,14 +19,21 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import socialnet.api.request.UserRq;
 import socialnet.security.jwt.JwtUtils;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,6 +59,7 @@ public class UsersControllerTest {
     private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:12.14");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
         @Override
         public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues.of(
@@ -62,13 +71,15 @@ public class UsersControllerTest {
     }
 
     @Test
-    @DisplayName("Postgres container is running")
-    void test() {
+    @DisplayName("Поднятие контекста.")
+    public void contextLoads() {
         assertThat(POSTGRES_CONTAINER.isRunning()).isTrue();
+        assertThat(mockMvc).isNotNull();
+        assertThat(jwtUtils).isNotNull();
     }
 
     @Test
-    @DisplayName("API /api/v1/users/me работает нормально.")
+    @DisplayName("API GET /api/v1/users/me работает нормально.")
     @Sql(statements = "INSERT INTO persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) VALUES ('S.T.A.R.S agent.', '1972-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Chris', true, false, false, 'Redfield', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'OFFLINE', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Racoon', 'USA', 93, 633)")
     void getMyProfileOnSuccessTest() throws Exception {
 
@@ -96,6 +107,32 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.timestamp", lessThanOrEqualTo(System.currentTimeMillis())))
                 .andExpect(jsonPath("$.total", is(0)))
                 .andReturn();
+    }
+
+    @Test
+    @DisplayName("API PUT /api/v1/users/me работает нормально.")
+    @Sql(statements = "INSERT INTO persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) VALUES ('S.T.A.R.S agent.', '1972-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Chris', true, false, false, 'Redfield', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'OFFLINE', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Racoon', 'USA', 93, 633)")
+    void updateUserInfo() throws Exception {
+        UserRq userRq = new UserRq();
+        userRq.setFirstName("first_name");
+        userRq.setLastName("last_name");
+        userRq.setCity("city");
+        String body = new ObjectMapper().writeValueAsString(userRq);
+
+        mockMvc.perform(put("/api/v1/users/me").with(authorization())
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+        Connection connection = POSTGRES_CONTAINER.createConnection("");
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons WHERE email = '" + TEST_EMAIL + "'");
+        resultSet.next();
+        assertEquals("first_name", resultSet.getString("first_name"));
+        assertEquals("last_name", resultSet.getString("last_name"));
+        assertEquals("city", resultSet.getString("city"));
     }
 
     @Test
