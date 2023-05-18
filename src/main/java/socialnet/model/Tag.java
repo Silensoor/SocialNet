@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Tag {
     private Long id;
-
     private String tag;
 
     public Tag(String tag) {
-        this.tag = tag;
+        this.tag = tag.replaceAll("#", "");
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag.replaceAll("#", "");
     }
 }
