@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @ContextConfiguration(initializers = {UsersControllerTest.Initializer.class})
 @Sql(scripts = "/sql/clear_tables.sql")
+@Sql(scripts = "/sql/find-service-test.sql")
 @SqlMergeMode(MERGE)
 public class UsersControllerTest {
 
