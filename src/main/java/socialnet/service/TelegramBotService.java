@@ -64,7 +64,7 @@ public class TelegramBotService {
         Map<String, List<TgNotificationFromRs>> notifications = telegramBotRepository.getNotifications(request.getData());
 
         if (notifications.isEmpty()) {
-            return makeResponse("fail", "Not implemented yet", null);
+            return makeResponse("fail", "No data", null);
         }
 
         return makeResponse("ok", null, new JSONObject(notifications).toString());
