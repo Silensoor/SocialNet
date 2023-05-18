@@ -62,6 +62,7 @@ public class UsersControllerTest {
     }
 
     @Test
+    @DisplayName("Postgres container is running")
     void test() {
         assertThat(POSTGRES_CONTAINER.isRunning()).isTrue();
     }
@@ -79,7 +80,7 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.data.city", is("Racoon")))
                 .andExpect(jsonPath("$.data.country", is("USA")))
                 .andExpect(jsonPath("$.data.email", is(TEST_EMAIL)))
-                .andExpect(jsonPath("$.data.id", is(101)))
+                .andExpect(jsonPath("$.data.id", is(104)))
                 .andExpect(jsonPath("$.data.online", is(true)))
                 .andExpect(jsonPath("$.data.phone", is("966-998-0544")))
                 .andExpect(jsonPath("$.data.photo", is("go86atavdxhcvcagbv")))
@@ -98,10 +99,32 @@ public class UsersControllerTest {
                 .andReturn();
     }
 
+    @Test
+    @DisplayName("Find by City")
+    @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
+    public void findByCity() throws Exception{
+        mockMvc.perform(get("/api/v1/users/search")
+                        .with(getToken("mets@inbox.ru")).param("city", "Moscow-test"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.data[0].city", is("Moscow-test")));
+    }
+
+
+
     public RequestPostProcessor authorization() {
         return request -> {
             request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
             return request;
         };
     }
+
+    public RequestPostProcessor getToken(String email) {
+        return request -> {
+            request.addHeader("authorization", jwtUtils.generateJwtToken(email));
+            return request;
+        };
+    }
+
 }
