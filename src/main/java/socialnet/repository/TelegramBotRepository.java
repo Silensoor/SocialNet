@@ -75,7 +75,7 @@ public class TelegramBotRepository {
             " ORDER BY n.person_id",
             (rs, rowNum) -> {
                 TgNotificationFromRs n = TgNotificationFromRs.builder()
-                    .from(String.valueOf(rs.getLong(3)))
+                    .from(rs.getString(3))
                     .type(rs.getString(2))
                     .build();
 
