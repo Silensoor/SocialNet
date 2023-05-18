@@ -39,10 +39,17 @@ public class MessageRepository {
         }
     }
 
-    public List<Message> findByDialogId(Long dialogId, Integer itemPerPage) {
-        return jdbcTemplate.query("SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false LIMIT ?",
-                messageRowMapper,
-                dialogId, itemPerPage);
+    public List<Message> findByDialogId(Long dialogId, Integer offset, Integer perPage) {
+        return jdbcTemplate.query(
+            "SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false OFFSET ? LIMIT ?",
+            messageRowMapper,
+            dialogId, offset, perPage);
+    }
+
+    public Long countByDialogId(Long dialogId) {
+        return jdbcTemplate.queryForObject(
+            "SELECT COUNT(1) FROM messages WHERE dialog_id = ? AND is_deleted = false",
+            Long.class, dialogId);
     }
 
     public Long findCountByDialogIdAndReadStatus(Long dialogId, String readStatus) {

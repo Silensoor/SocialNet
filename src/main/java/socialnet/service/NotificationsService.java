@@ -71,7 +71,11 @@ public class NotificationsService {
                     notificationRs.setEntityAuthor(personRs);
                     rsList.add(notificationRs);
                 }
-                return getResponseNotifications(rsList);
+
+                CommonRs<List<NotificationRs>> result = getResponseNotifications(rsList);
+                result.setTotal(notificationRepository.countNotifications(id));
+
+                return result;
             } else {
                 List<NotificationRs> rsList = new ArrayList<>();
                 return getResponseNotifications(rsList);
@@ -114,11 +118,7 @@ public class NotificationsService {
     }
 
     private CommonRs<ComplexRs> getResponseByPutTypeNotification() {
-        ComplexRs complexRs = new ComplexRs("string");
-        CommonRs<ComplexRs> commonRs = new CommonRs<>(complexRs);
-        commonRs.setTotal(500L);
-        return commonRs;
-
+        return new CommonRs<>(new ComplexRs("string"));
     }
 
 /*
@@ -146,9 +146,6 @@ public class NotificationsService {
 */
 
     private CommonRs<List<NotificationRs>> getResponseNotifications(List<NotificationRs> notificationRs) {
-        CommonRs<List<NotificationRs>> commonRs = new CommonRs<>(notificationRs);
-        commonRs.setTotal(500L);
-        return commonRs;
+        return new CommonRs<>(notificationRs);
     }
-
 }

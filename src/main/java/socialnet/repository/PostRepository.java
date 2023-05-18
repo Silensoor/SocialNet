@@ -100,6 +100,18 @@ public class PostRepository {
         }
     }
 
+    public Long countPostsByUserId(Long userId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "select count(1) from posts where author_id = ?",
+                Long.class,
+                userId
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
     public List<Post> findDeletedPosts() {
         String select = "SELECT * FROM posts WHERE is_deleted = true";
         try{

@@ -1,8 +1,15 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import socialnet.api.response.TgNotificationFromRs;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -48,5 +55,42 @@ public class TelegramBotRepository {
         }
 
         return true;
+    }
+
+    public Map<String, List<TgNotificationFromRs>> getNotifications(String userId) {
+        Map<String, List<TgNotificationFromRs>> result = new HashMap<>();
+
+        jdbcTemplate.query(
+            "SELECT n.person_id, " +
+            "       n.notification_type, " +
+            "       n.entity_id " +
+            "  FROM notifications n " +
+            " WHERE n.is_read = false " +
+            "   AND n.person_id IN (" + userId + ") " +
+            " GROUP BY n.person_id, " +
+            "          n.notification_type, " +
+            "          n.entity_id " +
+            " ORDER BY n.person_id",
+            (rs, rowNum) -> {
+                TgNotificationFromRs n = TgNotificationFromRs.builder()
+                    .from(String.valueOf(rs.getLong(3)))
+                    .type(rs.getString(2))
+                    .build();
+
+                String to = String.valueOf(rs.getLong(1));
+
+                if (result.get(to) == null) {
+                    List<TgNotificationFromRs> notifications = new ArrayList<>();
+                    notifications.add(n);
+                    result.put(to, notifications);
+                } else {
+                    result.get(to).add(n);
+                }
+
+                return n;
+            }
+        );
+
+        return result;
     }
 }

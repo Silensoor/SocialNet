@@ -372,6 +372,16 @@ public class PersonRepository {
         }
     }
 
+    public Long countAllPotentialFriends(Long id) {
+        return jdbcTemplate.queryForObject(
+            "SELECT DISTINCT COUNT(p.*) " +
+            "  FROM persons AS p " +
+            "  JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id " +
+            " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=? " +
+            "   AND friendships.status_name = 'REQUEST' ",
+            Long.class, id, id);
+    }
+
     public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
                                              Integer offset, Integer perPage) {
         StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?")

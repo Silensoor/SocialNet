@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.TgApiRs;
+import socialnet.api.response.TgNotificationFromRs;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.TelegramBotRepository;
@@ -12,6 +13,7 @@ import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.MailSender;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -51,7 +53,21 @@ public class TelegramBotService {
             return handleTokenCommand(request);
         }
 
+        if (command.equals("/notificate")) {
+            return handleNotificateCommand(request);
+        }
+
         return makeResponse("fail", "Неизвестная команда", null);
+    }
+
+    private TgApiRs handleNotificateCommand(TgApiRequest request) {
+        Map<String, List<TgNotificationFromRs>> notifications = telegramBotRepository.getNotifications(request.getData());
+
+        if (notifications.isEmpty()) {
+            return makeResponse("fail", "No data", null);
+        }
+
+        return makeResponse("ok", null, new JSONObject(notifications).toString());
     }
 
     private TgApiRs handleTokenCommand(TgApiRequest request) {

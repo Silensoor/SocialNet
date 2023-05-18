@@ -15,16 +15,14 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class FriendsController {
-
     private final FriendsService friendsService;
 
     @OnlineStatusUpdatable
     @GetMapping("/friends")
-    public CommonRs<List<PersonRs>> getFriends(@RequestHeader String authorization,
-                                               @RequestParam(required = false, defaultValue = "0")
-                                               Integer offset,
-                                               @RequestParam(required = false, defaultValue = "20")
-                                               Integer perPage)
+    public CommonRs<List<PersonRs>> getFriends(
+        @RequestHeader String authorization,
+        @RequestParam(required = false, defaultValue = "0") Integer offset,
+        @RequestParam(required = false, defaultValue = "20") Integer perPage)
     {
         return friendsService.getFriends(authorization, offset, perPage);
     }
@@ -39,13 +37,11 @@ public class FriendsController {
 
     @OnlineStatusUpdatable
     @GetMapping("/friends/outgoing_requests")
-    public CommonRs<List<PersonRs>> getOutgoingRequests(@RequestHeader String authorization,
-                                                        @RequestParam(required = false, defaultValue = "0")
-                                                        Integer offset,
-                                                        @RequestParam(required = false, defaultValue = "20")
-                                                        Integer perPage)
+    public CommonRs<List<PersonRs>> getOutgoingRequests(
+        @RequestHeader String authorization,
+        @RequestParam(required = false, defaultValue = "0") Integer offset,
+        @RequestParam(required = false, defaultValue = "20") Integer perPage)
     {
-
         return friendsService.getOutgoingRequests(authorization, offset, perPage);
     }
 
@@ -58,11 +54,10 @@ public class FriendsController {
 
     @OnlineStatusUpdatable
     @GetMapping("/friends/request")
-    public CommonRs<List<PersonRs>> getPotentialFriends(@RequestHeader String authorization,
-                                                        @RequestParam(required = false, defaultValue = "0")
-                                                        Integer offset,
-                                                        @RequestParam(required = false, defaultValue = "20")
-                                                        Integer perPage)
+    public CommonRs<List<PersonRs>> getPotentialFriends(
+        @RequestHeader String authorization,
+        @RequestParam(required = false, defaultValue = "0") Integer offset,
+        @RequestParam(required = false, defaultValue = "20") Integer perPage)
     {
         return friendsService.getPotentialFriends(authorization, offset, perPage);
     }
