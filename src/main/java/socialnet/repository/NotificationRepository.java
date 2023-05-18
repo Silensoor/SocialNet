@@ -34,8 +34,8 @@ public class NotificationRepository {
 
     public List<Notification> getNotifications(Long id, Integer itemPerPage, Integer offset) {
         return jdbcTemplate.query("select * from notifications where person_id = ? " +
-                        "and is_read = false offset ? limit ? order by sent_time DESC  ",
-                notificationRowMapper, id, offset, itemPerPage);
+            "and is_read = false order by sent_time DESC offset ? limit ?",
+            notificationRowMapper, id, offset, itemPerPage);
     }
 
     public Long countNotifications(Long id) {
