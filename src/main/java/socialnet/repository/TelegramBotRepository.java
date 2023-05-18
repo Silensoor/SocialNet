@@ -57,19 +57,21 @@ public class TelegramBotRepository {
         return true;
     }
 
-    public Map<String, List<TgNotificationFromRs>> getNotifications(String userId) {
+    public Map<String, List<TgNotificationFromRs>> getNotifications(String listUserId) {
         Map<String, List<TgNotificationFromRs>> result = new HashMap<>();
 
         jdbcTemplate.query(
             "SELECT n.person_id, " +
             "       n.notification_type, " +
-            "       n.entity_id " +
-            "  FROM notifications n " +
-            " WHERE n.is_read = false " +
-            "   AND n.person_id IN (" + userId + ") " +
+            "       p.first_name || ' ' || p.last_name as name " +
+            "  FROM notifications n, " +
+            "       persons p " +
+            " WHERE p.id = n.entity_id " +
+            "   AND n.is_read = false " +
+            "   AND n.person_id IN (" + listUserId + ") " +
             " GROUP BY n.person_id, " +
             "          n.notification_type, " +
-            "          n.entity_id " +
+            "          name " +
             " ORDER BY n.person_id",
             (rs, rowNum) -> {
                 TgNotificationFromRs n = TgNotificationFromRs.builder()
