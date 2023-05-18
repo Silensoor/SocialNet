@@ -150,6 +150,33 @@ public class UsersControllerTest {
                 .andExpect(jsonPath("$.data[0].country", is("Russia-test")));
     }
 
+    @Test
+    @DisplayName("Find by Age Between")
+    @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
+    public void findByAgeFromTo() throws Exception{
+        mockMvc.perform(get("/api/v1/users/search")
+                        .with(getToken("mets@inbox.ru"))
+                        .param("age_from", "1")
+                        .param("age_to", "4"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.data.length()", is(3)));
+    }
+
+    @Test
+    @DisplayName("Find by Age To")
+    @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
+    public void findByAgeTo() throws Exception{
+        mockMvc.perform(get("/api/v1/users/search")
+                        .with(getToken("mets@inbox.ru"))
+                        .param("age_to", "3"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.data.length()", is(2)));
+    }
+
     public RequestPostProcessor authorization() {
         return request -> {
             request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
