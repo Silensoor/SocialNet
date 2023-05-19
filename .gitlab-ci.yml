@@ -74,8 +74,7 @@ check-liquibase-errors:
   tags:
     - socialnet_runner
   script:
-    - docker logs backend | grep -q 'liquibase.exception.ValidationFailedException' && export LIQERR=1 || export LIQERR=0
-    - if [ $LIQERR == 1 ]; then exit 1; fi
+    - docker logs backend | grep -q 'liquibase.exception.ValidationFailedException' && exit 1
 
 sonarqube-check:
   stage: sonarqube-check
