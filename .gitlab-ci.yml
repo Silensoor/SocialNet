@@ -4,7 +4,6 @@ stages:
   - sonarqube-check
   - package
   - deploy
-  - check-start-errors
 
 build:
   stage: build
@@ -84,12 +83,4 @@ deploy:
     - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
-
-check-start-errors:
-  stage: check-start-errors
-  only:
-    - dev
-  tags:
-    - socialnet_runner
-  script:
     - docker inspect --format '{{json .State.Running}}' backend | grep -q 'false' && exit 1
