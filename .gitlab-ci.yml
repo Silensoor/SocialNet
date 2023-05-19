@@ -1,7 +1,7 @@
 stages:
   - build
-  - sonarqube-check
   - test
+  - sonarqube-check
   - package
   - deploy
   - check-liquibase-errors
@@ -16,6 +16,20 @@ build:
     - echo "Compiling..."
     - mvn clean
     - mvn compile -Dmaven.repo.local=./.m2/repository
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - echo "Testing..."
+    - mvn test -Dmaven.repo.local=./.m2/repository
   cache:
     paths:
       - ./target
@@ -38,20 +52,6 @@ sonarqube-check:
   script:
     - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
   allow_failure: true
-
-test:
-  stage: test
-  only:
-    - dev
-  tags:
-    - socialnet_runner
-  script:
-    - echo "Testing..."
-    - mvn test -Dmaven.repo.local=./.m2/repository
-  cache:
-    paths:
-      - ./target
-      - ./.m2
 
 package:
   stage: package
