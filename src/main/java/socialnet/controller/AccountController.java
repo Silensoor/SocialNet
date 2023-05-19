@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.EmailRq;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/account")
 @RequiredArgsConstructor
+@Tag(name = "account-controller", description = "Working with password, email and registration")
 public class AccountController {
     private final AccountService accountService;
     private final PersonSettingRepository personSettingRepository;

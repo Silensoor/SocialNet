@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/geolocations")
 @RequiredArgsConstructor
+@Tag(name = "geolocations-controller", description = "Create or get records about cities and countries")
 public class GeolocationsController {
     private final GeolocationsService geolocationsService;
 

@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/storage")
 @RequiredArgsConstructor
+@Tag(name = "storage-controller", description = "Work with account image file")
 public class StorageController {
 
     private final StorageService storageService;
