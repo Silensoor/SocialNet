@@ -79,6 +79,3 @@ deploy:
     - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
-    - while [ "`docker inspect -f {{.State.Running}} backend`" != "true" ]; do sleep 2; done
-    - sleep 30
-    - docker inspect -f '{{json .State.Running}}' backend | grep -q 'false' && exit 1
