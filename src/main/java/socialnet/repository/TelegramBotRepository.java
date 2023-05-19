@@ -1,7 +1,6 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.api.response.TgNotificationFromRs;

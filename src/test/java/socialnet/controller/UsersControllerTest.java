@@ -30,10 +30,9 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -81,9 +80,9 @@ public class UsersControllerTest {
     @Test
     @DisplayName("API GET /api/v1/users/me работает нормально.")
     @Sql(statements = "INSERT INTO persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) VALUES ('S.T.A.R.S agent.', '1972-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Chris', true, false, false, 'Redfield', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'OFFLINE', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Racoon', 'USA', 93, 633)")
-    void getMyProfileOnSuccessTest() throws Exception {
+    void getMyProfileTest() throws Exception {
 
-        mockMvc.perform(get("/api/v1/users/me").with(authorization()))
+        mockMvc.perform(get("/api/v1/users/me").with(getToken(TEST_EMAIL)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
@@ -112,14 +111,14 @@ public class UsersControllerTest {
     @Test
     @DisplayName("API PUT /api/v1/users/me работает нормально.")
     @Sql(statements = "INSERT INTO persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) VALUES ('S.T.A.R.S agent.', '1972-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Chris', true, false, false, 'Redfield', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'OFFLINE', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Racoon', 'USA', 93, 633)")
-    void updateUserInfo() throws Exception {
+    void updateUserInfoTest() throws Exception {
         UserRq userRq = new UserRq();
         userRq.setFirstName("first_name");
         userRq.setLastName("last_name");
         userRq.setCity("city");
         String body = new ObjectMapper().writeValueAsString(userRq);
 
-        mockMvc.perform(put("/api/v1/users/me").with(authorization())
+        mockMvc.perform(put("/api/v1/users/me").with(getToken(TEST_EMAIL))
                         .content(body)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -133,6 +132,34 @@ public class UsersControllerTest {
         assertEquals("first_name", resultSet.getString("first_name"));
         assertEquals("last_name", resultSet.getString("last_name"));
         assertEquals("city", resultSet.getString("city"));
+    }
+
+    @Test
+    @DisplayName("Удаление пользователя.")
+    @Sql(statements = "INSERT INTO persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) VALUES ('S.T.A.R.S agent.', '1972-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Chris', true, false, false, 'Redfield', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'OFFLINE', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Racoon', 'USA', 93, 633)")
+    void deleteUserTest() throws Exception {
+        mockMvc.perform(delete("/api/v1/users/me").with(getToken(TEST_EMAIL)))
+                .andExpect(status().isOk())
+                .andReturn();
+        Connection connection = POSTGRES_CONTAINER.createConnection("");
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons WHERE email = '" + TEST_EMAIL + "'");
+        resultSet.next();
+        assertTrue(resultSet.getBoolean("is_deleted"));
+    }
+
+    @Test
+    @DisplayName("Восстановление пользователя.")
+    @Sql(statements = "INSERT INTO persons (about, birth_date, change_password_token, configuration_code, deleted_time, email, first_name, is_approved, is_blocked, is_deleted, last_name, last_online_time, message_permissions, notifications_session_id, online_status, password, phone, photo, reg_date, city, country, telegram_id, person_settings_id) VALUES ('S.T.A.R.S agent.', '1972-11-14 21:25:19', 'xfolip091', '1', '2022-04-15 00:43:45', 'user@email.com', 'Chris', true, false, true, 'Redfield', '2022-07-21 14:45:29', 'adipiscing', 'ipsum', 'OFFLINE', '$2a$10$DKfACXByOkjee4VELDw7R.BeslHcGeeLbCK2N8gV3.BaYjSClnObG', '966-998-0544', 'go86atavdxhcvcagbv', '2000-07-26 16:21:43', 'Racoon', 'USA', 93, 633)")
+    void recoverUser() throws Exception {
+        mockMvc.perform(post("/api/v1/users/me/recover").with(getToken(TEST_EMAIL)))
+                .andExpect(status().isOk())
+                .andReturn();
+        Connection connection = POSTGRES_CONTAINER.createConnection("");
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons WHERE email = '" + TEST_EMAIL + "'");
+        resultSet.next();
+        assertFalse(resultSet.getBoolean("is_deleted"));
     }
 
     @Test
@@ -212,13 +239,6 @@ public class UsersControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.data.length()", is(2)));
-    }
-
-    public RequestPostProcessor authorization() {
-        return request -> {
-            request.addHeader("authorization", jwtUtils.generateJwtToken(TEST_EMAIL));
-            return request;
-        };
     }
 
     public RequestPostProcessor getToken(String email) {
