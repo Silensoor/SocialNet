@@ -56,6 +56,14 @@ public class TelegramBotRepository {
         return true;
     }
 
+    public Long getTelegramIdByPersonId(long personId) {
+        return jdbcTemplate.queryForObject(
+            "select telegram_id from persons where id = ?",
+            Long.class,
+            personId
+        );
+    }
+
     public Map<String, List<TgNotificationFromRs>> getNotifications(String listUserId) {
         Map<String, List<TgNotificationFromRs>> result = new HashMap<>();
 

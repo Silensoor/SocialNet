@@ -1,17 +1,25 @@
 package socialnet.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.TgApiRs;
 import socialnet.api.response.TgNotificationFromRs;
+import socialnet.model.Notification;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.TelegramBotRepository;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.MailSender;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +31,9 @@ public class TelegramBotService {
     private final PersonRepository personRepository;
     private final MailSender mailSender;
     private final JwtUtils jwtUtils;
+
+    @Value("${tgApi}")
+    String tgApi;
 
     public TgApiRs register(long telegramId, String email, String cmd) {
         boolean isRegister = telegramBotRepository.register(telegramId, email, cmd);
@@ -58,6 +69,43 @@ public class TelegramBotService {
         }
 
         return makeResponse("fail", "Неизвестная команда", null);
+    }
+
+    public TgApiRs notificate(Notification notification) {
+        try {
+            Person from = personRepository.findById(notification.getEntityId());
+            Long tgId = telegramBotRepository.getTelegramIdByPersonId(notification.getPersonId());
+
+            if (tgId == null) {
+                return makeResponse("ok", null, "");
+            }
+
+            HttpClient httpClient = HttpClient.newHttpClient();
+
+            Map<String, String> map = new HashMap<>();
+            map.put("from", from.getFirstName() + " " + from.getLastName());
+            map.put("type", notification.getNotificationType());
+
+            TgApiRequest request = TgApiRequest.builder()
+                .id(tgId)
+                .command("/notificate")
+                .data(new JSONObject(map).toString())
+                .build();
+
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String content = ow.writeValueAsString(request);
+
+            HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(tgApi))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(content))
+                .build();
+
+            httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return makeResponse("ok", null, "");
     }
 
     private TgApiRs handleNotificateCommand(TgApiRequest request) {

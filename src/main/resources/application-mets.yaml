@@ -55,6 +55,7 @@ weather:
 mailFrom: java.development@mail.ru
 defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
 baseUrl:  http://localhost:8080/
+tgApi: http://81.177.6.228:8079/api
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
