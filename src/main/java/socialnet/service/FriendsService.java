@@ -171,9 +171,10 @@ public class FriendsService {
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
         Person personsEmail = tokenToMail(authorization);
-        List<Person> potentialFriends = personRepository
-                .findAllPotentialFriends(personsEmail.getId(), offset, perPage);
-        return personToPersonRs(potentialFriends, offset, perPage, potentialFriends.size(), personsEmail.getId());
+        List<Person> potentialFriends = personRepository.findAllPotentialFriends(personsEmail.getId(), offset, perPage);
+        Long total = personRepository.countAllPotentialFriends(personsEmail.getId());
+
+        return personToPersonRs(potentialFriends, offset, perPage, total, personsEmail.getId());
     }
 
     public CommonRs<ComplexRs> addFriend(String authorization, Integer id) {

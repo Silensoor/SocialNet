@@ -30,19 +30,26 @@ public class CommentService {
     private final PostRepository postRepository;
     private final PersonSettingRepository personSettingRepository;
 
-    public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage, String jwtToken) {
-        int itemPerPage = offset / perPage;
+    public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage) {
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
-        if (commentList == null) return new CommonRs<>(new ArrayList<>(), itemPerPage, offset, perPage, System.currentTimeMillis(), 0L);
+
+        if (commentList == null) {
+            return new CommonRs<>(new ArrayList<>(), perPage, offset, perPage, System.currentTimeMillis(), 0L);
+        }
+
         List<CommentRs> comments = new ArrayList<>();
+
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
         }
+
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        return new CommonRs<>(comments, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
+        Long total = commentRepository.countByPostId(postId);
+
+        return new CommonRs<>(comments, perPage, offset, perPage, System.currentTimeMillis(), total);
     }
 
     private CommentRs getCommentRs(Comment comment, CommentServiceDetails details) {

@@ -122,7 +122,6 @@ public class FriendsTest {
 
         String startValue = friendsShipsRepository.findFriend(1L, 3L).getStatusName().toString();
 
-
         this.mockMvc
             .perform(post("/api/v1/friends/block_unblock/3").with(authorization()))
             .andDo(print())
