@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.response.CommonRs;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@Tag(name = "notification-controller", description = "Get, read notifications")
 public class NotificationController {
 
     private final NotificationsService notificationsService;

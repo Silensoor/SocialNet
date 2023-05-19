@@ -163,10 +163,9 @@ public class FriendsService {
         recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
         assert friends != null;
         friends.forEach(friend -> str2.append(friend.getId()).append(", "));
-        List<Person> recommendationFriendsAll = new ArrayList<>(personRepository.
+        return new ArrayList<>(personRepository.
                 findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
                         10 - recommendationFriends.size()));
-        return recommendationFriendsAll;
     }
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
@@ -181,10 +180,8 @@ public class FriendsService {
         Person personsEmail = tokenToMail(authorization);
         final Friendships friendships = friendsShipsRepository.getFriendStatus(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
-//            if (!friendships.getStatusName().equals(FriendshipStatusTypes.RECEIVED_REQUEST)) {
                 friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
                         FriendshipStatusTypes.FRIEND, friendships.getId());
-//            }
         } else {
             friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.FRIEND);
         }
@@ -203,10 +200,9 @@ public class FriendsService {
     public CommonRs<ComplexRs> deleteFriendsRequest(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
         final Friendships friendships = friendsShipsRepository.getFriendStatus(personsEmail.getId(), Long.valueOf(id));
-        if (friendships != null) {
-            if (friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST)) {
+        if (friendships != null && (friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST))) {
                 friendsShipsRepository.deleteFriendUsing(friendships.getId());
-            }
+
         }
         return fillingCommonRsComplexRs(id);
     }
@@ -223,12 +219,11 @@ public class FriendsService {
             friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.REQUEST);
         }
         PersonSettings personSettings = personSettingRepository.getSettings(id.longValue());
-        if (personSettings != null) {
-            if (personSettings.getFriendRequest()) {
+        if (personSettings != null && (Boolean.TRUE.equals(personSettings.getFriendRequest()))) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
                         (long) id, personsEmail.getId());
                 NotificationPusher.sendPush(notification, personsEmail.getId());
-            }
+
         }
         return fillingCommonRsComplexRs(id);
     }

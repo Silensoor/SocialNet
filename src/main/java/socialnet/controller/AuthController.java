@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LoginRq;
@@ -14,6 +15,7 @@ import socialnet.service.PersonService;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "auth-controller", description = "Working with captcha, login and logout")
 public class AuthController {
     private final CaptchaService captchaService;
     private final PersonService personService;
