@@ -71,6 +71,6 @@ databaseChangeLog:
       file: db/changelog/changelogset/add-constraints.yaml
 #  - include:
 #      file: db/changelog/changelogset/populate-databaseFriendsCountryCity.yaml
-  - include:
-      file: db/changelog/changelogset/populate-database.yaml
+#  - include:
+#      file: db/changelog/changelogset/populate-database.yaml
 
