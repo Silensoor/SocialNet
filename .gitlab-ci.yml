@@ -3,6 +3,7 @@ stages:
   - test
   - package
   - deploy
+  - check-liquibase-errors
   - sonarqube-check
 
 build:
@@ -66,6 +67,16 @@ deploy:
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
 
+check-liquibase-errors:
+  stage: check-liquibase-errors
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - docker logs backend | grep -q 'liquibase.exception.ValidationFailedException' && export LIQERR=1 || export LIQERR=0
+    - if [ $LIQERR == 1 ]; then exit 1; fi
+
 sonarqube-check:
   stage: sonarqube-check
   tags:
@@ -83,4 +94,3 @@ sonarqube-check:
   script:
     - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
   allow_failure: true
-
