@@ -22,8 +22,7 @@
         <java.version>11</java.version>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.basedir}/report-aggregate/target/site/
-            jacoco/jacoco.xml
+            target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
