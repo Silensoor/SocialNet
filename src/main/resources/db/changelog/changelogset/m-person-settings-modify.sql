@@ -1,5 +1,3 @@
-drop table person_settings;
-
 CREATE TABLE person_settings
 (
     id bigint NOT NULL,

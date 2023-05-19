@@ -1,18 +1,18 @@
-databaseChangeLog:
-  - changeSet:
-      author: Michael
-      id: 13_31
-      changes:
-        - dropForeignKeyConstraint:
-            baseTableName: dialogs
-            constraintName: fk_dialogs-message
-  - changeSet:
-      author: Michael
-      id: 13_32
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: last_message_id
-            baseTableName: dialogs
-            constraintName: fk_dialogs-message
-            referencedColumnNames: id
-            referencedTableName: messages
+#databaseChangeLog:
+#  - changeSet:
+#      author: Michael
+#      id: 13_31
+#      changes:
+#        - dropForeignKeyConstraint:
+#            baseTableName: dialogs
+#            constraintName: fk_dialogs-message
+#  - changeSet:
+#      author: Michael
+#      id: 13_32
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseColumnNames: last_message_id
+#            baseTableName: dialogs
+#            constraintName: fk_dialogs-message
+#            referencedColumnNames: id
+#            referencedTableName: messages
