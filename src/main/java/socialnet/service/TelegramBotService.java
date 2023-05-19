@@ -3,6 +3,7 @@ package socialnet.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TelegramBotService {
     private final TelegramBotRepository telegramBotRepository;
     private final PersonRepository personRepository;
@@ -102,7 +104,7 @@ public class TelegramBotService {
 
             httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            log.error(e.getMessage());
         }
 
         return makeResponse("ok", null, "");
@@ -148,12 +150,13 @@ public class TelegramBotService {
             mailSender.send(
                 request.getData(),
                 "Подтверждение регистрации",
-                "http://81.177.6.228:8086/api/v1/tg?id=" + request.getId()
+                "Для подтверждения регистрации перейдите по ссылке: <a href='http://81.177.6.228:8086/api/v1/tg?id=" + request.getId()
                     + "&email=" + request.getData()
                     + "&cmd=" + request.getCommand().substring(1)
+                    + "'>подтвердить регистрацию</a>"
             );
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            log.error(e.getMessage());
         }
 
         return makeResponse("ok", null, "Письмо с подтверждением выслано на указанную почту. " +

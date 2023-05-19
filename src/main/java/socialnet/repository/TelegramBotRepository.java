@@ -35,14 +35,6 @@ public class TelegramBotRepository {
         return true;
     }
 
-    public String getFullName(long telegramId) {
-        return jdbcTemplate.queryForObject(
-            "select first_name || ' ' || last_name from persons where telegram_id = ?",
-            String.class,
-            telegramId
-        );
-    }
-
     public boolean unregister(long telegramId) {
         try {
             jdbcTemplate.update(
