@@ -12,6 +12,7 @@ import socialnet.model.Notification;
 import socialnet.model.Person;
 import socialnet.repository.NotificationRepository;
 import socialnet.repository.PersonRepository;
+import socialnet.service.TelegramBotService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -25,15 +26,23 @@ public class NotificationPusher {
     private static PersonRepository personRepository;
 
     private static NotificationRepository repository;
+    private static TelegramBotService telegramBotService;
 
 
-    public NotificationPusher(SimpMessagingTemplate simpMessagingTemplate, PersonRepository personRepository, NotificationRepository notificationRepository) {
+    public NotificationPusher(
+        SimpMessagingTemplate simpMessagingTemplate,
+        PersonRepository personRepository,
+        NotificationRepository notificationRepository,
+        TelegramBotService telegramBotService)
+    {
         NotificationPusher.repository = notificationRepository;
         NotificationPusher.personRepository = personRepository;
         NotificationPusher.messagingTemplate = simpMessagingTemplate;
+        NotificationPusher.telegramBotService = telegramBotService;
     }
 
     public static void sendPush(Notification notification, Long personId) {
+        telegramBotService.notificate(notification);
         Long id = repository.saveNotification(notification);
         notification.setId(id);
         Person personReceiver = personRepository.findById(personId);
