@@ -12,7 +12,6 @@ build:
   tags:
     - socialnet_runner
   script:
-    - echo "Compiling..."
     - mvn clean
     - mvn compile -Dmaven.repo.local=./.m2/repository
   cache:
@@ -27,7 +26,6 @@ test:
   tags:
     - socialnet_runner
   script:
-    - echo "Testing..."
     - mvn test -Dmaven.repo.local=./.m2/repository
   cache:
     paths:
@@ -59,7 +57,6 @@ package:
   tags:
     - socialnet_runner
   script:
-    - echo "Packging..."
     - mvn package -am -Dmaven.test.skip -T 1C -Dmaven.repo.local=./.m2/repository
   artifacts:
     paths:
@@ -77,10 +74,11 @@ deploy:
   tags:
     - socialnet_runner
   script:
-    - echo "Deploying..."
     - docker-compose down
     - (docker ps -a -q --filter="name=backend" | xargs docker stop | xargs docker rm) || echo "No containers to remove"
     - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
-    - docker inspect --format '{{json .State.Running}}' backend | grep -q 'false' && exit 1
+    - while [ "`docker inspect -f {{.State.Running}} backend`" != "true" ]; do sleep 2; done
+    - sleep 30
+    - docker inspect -f '{{json .State.Running}}' backend | grep -q 'false' && exit 1
