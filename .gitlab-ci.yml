@@ -4,7 +4,7 @@ stages:
   - sonarqube-check
   - package
   - deploy
-  - check-liquibase-errors
+  - check-start-errors
 
 build:
   stage: build
@@ -85,11 +85,11 @@ deploy:
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
 
-check-liquibase-errors:
-  stage: check-liquibase-errors
+check-start-errors:
+  stage: check-start-errors
   only:
     - dev
   tags:
     - socialnet_runner
   script:
-    - docker logs backend | grep -q 'liquibase.exception.ValidationFailedException' && exit 1
+    - docker inspect --format '{{json .State.Running}}' backend | grep -q 'false' && exit 1
