@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LikeRq;
@@ -10,6 +11,7 @@ import socialnet.service.LikesService;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "likes-controller", description = "Get likes, delete and put like")
 public class LikesController {
 
     private final LikesService likesService;

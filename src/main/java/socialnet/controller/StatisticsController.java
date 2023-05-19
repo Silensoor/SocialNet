@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import java.util.TreeMap;
 @RestController
 @RequestMapping("/api/v1/statistics")
 @RequiredArgsConstructor
+@Tag(name = "statistics-controller", description = "Get statistics by social network")
 public class StatisticsController {
 
     private final StatisticsService statisticsService;

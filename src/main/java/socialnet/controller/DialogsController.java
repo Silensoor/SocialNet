@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "dialogs-controller", description = "Get dialogs, start dialog, get read and unread messages")
 public class DialogsController {
 
     private final DialogsService dialogsService;
