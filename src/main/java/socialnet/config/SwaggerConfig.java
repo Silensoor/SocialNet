@@ -5,20 +5,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.Server;
-import springfox.documentation.service.ServerVariable;
-import springfox.documentation.service.Tag;
-import springfox.documentation.service.VendorExtension;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.amazonaws.services.elasticbeanstalk.model.ConfigurationOptionValueType.List;
-
 @Configuration
 public class SwaggerConfig {
+    private final Collection<ServerVariable> variables = new ArrayList<>();
+    private final ArrayList<VendorExtension> extensions = new ArrayList<>();
+    private final Server server1 = new Server("server1", "http://81.177.6.228:8086",
+            "server1", variables, extensions);
+    private final Server server2 = new Server("server2", "http://localhost:8086", "server2", variables, extensions);
 
     @Bean
     public Docket docket() {
@@ -27,8 +28,12 @@ public class SwaggerConfig {
                         .title("Zerone API")
                         .description("API for social network")
                         .version("1.0")
+                        .contact(new Contact("JAVA Pro 37 Group",
+                                "http://81.177.6.228:8086",
+                                "aaa@aaaa.aa"))
                         .build())
                 .tags(new Tag("message-controller", "Endpoints for CRUD operations on messages WebSocket"))
+                .servers(server1, server2)
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .build();
