@@ -42,7 +42,7 @@ public class MessageService {
                 .build();
         long savedMessageId = messageRepository.save(message);
         dialog.setLastMessageId(savedMessageId);
-        dialogsRepository.save(dialog);
+        dialogsRepository.update(dialog);
 
         return messageWebSocket;
     }

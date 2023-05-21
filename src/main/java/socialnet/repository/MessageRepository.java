@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Message;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 @Repository
@@ -41,15 +43,15 @@ public class MessageRepository {
 
     public List<Message> findByDialogId(Long dialogId, Integer offset, Integer perPage) {
         return jdbcTemplate.query(
-            "SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false OFFSET ? LIMIT ?",
-            messageRowMapper,
-            dialogId, offset, perPage);
+                "SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false OFFSET ? LIMIT ?",
+                messageRowMapper,
+                dialogId, offset, perPage);
     }
 
     public Long countByDialogId(Long dialogId) {
         return jdbcTemplate.queryForObject(
-            "SELECT COUNT(1) FROM messages WHERE dialog_id = ? AND is_deleted = false",
-            Long.class, dialogId);
+                "SELECT COUNT(1) FROM messages WHERE dialog_id = ? AND is_deleted = false",
+                Long.class, dialogId);
     }
 
     public Long findCountByDialogIdAndReadStatus(Long dialogId, String readStatus) {
@@ -89,18 +91,26 @@ public class MessageRepository {
                     "author_id, " +
                     "recipient_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)", new String[]{"id"});
-            prepStatement.setBoolean(1, message.getIsDeleted());
-            prepStatement.setString(2, message.getMessageText());
-            prepStatement.setString(3, message.getReadStatus());
-            prepStatement.setTimestamp(4, message.getTime());
-            prepStatement.setLong(5, message.getDialogId());
-            prepStatement.setLong(6, message.getAuthorId());
-            prepStatement.setLong(7, message.getRecipientId());
+            setValue(message.getIsDeleted(), prepStatement, 1);
+            setValue(message.getMessageText(), prepStatement, 2);
+            setValue(message.getReadStatus(), prepStatement, 3);
+            setValue(message.getTime(), prepStatement, 4);
+            setValue(message.getDialogId(), prepStatement, 5);
+            setValue(message.getAuthorId(), prepStatement, 6);
+            setValue(message.getRecipientId(), prepStatement, 7);
+
             return prepStatement;
         }, keyHolder);
 
         return keyHolder.getKey().longValue();
+    }
 
+    private <T> void setValue(T arg, PreparedStatement preparedStatement, int parameterIndex) throws SQLException {
+        if (arg == null) {
+            preparedStatement.setNull(parameterIndex, Types.NULL);
+        } else {
+            preparedStatement.setObject(parameterIndex, arg);
+        }
     }
 
     public void markDeleted(Long messageId, Boolean isDeletedState) {
