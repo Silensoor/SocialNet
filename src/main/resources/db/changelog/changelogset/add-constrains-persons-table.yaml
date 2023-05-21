@@ -1,12 +1,5 @@
 #databaseChangeLog:
-#- changeSet:
-#    id:  addUniqueConstraint-person_email
-#    author:  Michael
-#    changes:
-#    -  addUniqueConstraint:
-#         columnNames:  email
-#         constraintName:  person_email
-#         tableName:  persons
+
 #- changeSet:
 #    id:  addNotNullConstraint-person-isBlocked
 #    author:  Michael

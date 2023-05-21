@@ -29,16 +29,16 @@ databaseChangeLog:
             constraintName: fk_block-hisory-posts
             referencedColumnNames: id
             referencedTableName: posts
-  - changeSet:
-      id: 16_1
-      author: Michael
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: country_id
-            baseTableName: cities
-            constraintName: fk_cities-countries
-            referencedColumnNames: id
-            referencedTableName: countries
+#  - changeSet:
+#      id: 16_1
+#      author: Michael
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseColumnNames: country_id
+#            baseTableName: cities
+#            constraintName: fk_cities-countries
+#            referencedColumnNames: id
+#            referencedTableName: countries
   - changeSet:
       id: 13_1
       author: Michael
@@ -59,26 +59,26 @@ databaseChangeLog:
             constraintName: fk_dialogs-person2
             referencedColumnNames: id
             referencedTableName: persons
-  - changeSet:
-      id: 14_1
-      author: Michael
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: dst_person_id
-            baseTableName: friendships
-            constraintName: fk_friendships-person1
-            referencedColumnNames: id
-            referencedTableName: persons
-  - changeSet:
-      id: 14_2
-      author: Michael
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: src_person_id
-            baseTableName: friendships
-            constraintName: fk_friendships-person2
-            referencedColumnNames: id
-            referencedTableName: persons
+#  - changeSet:
+#      id: 14_1
+#      author: Michael
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseColumnNames: dst_person_id
+#            baseTableName: friendships
+#            constraintName: fk_friendships-person1
+#            referencedColumnNames: id
+#            referencedTableName: persons
+#  - changeSet:
+#      id: 14_2
+#      author: Michael
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseColumnNames: src_person_id
+#            baseTableName: friendships
+#            constraintName: fk_friendships-person2
+#            referencedColumnNames: id
+#            referencedTableName: persons
   - changeSet:
       id: 9_1
       author: Michael
@@ -218,14 +218,14 @@ databaseChangeLog:
             referencedColumnNames: id
             referencedTableName: tags
 
-#  - changeSet:
-#      id: addUniqueConstraint-person_email
-#      author: Michael
-#      changes:
-#       - addUniqueConstraint:
-#           columnNames: email
-#           constraintName: person_email
-#           tableName: persons
+  - changeSet:
+      id: addUniqueConstraint-person_email
+      author: Michael
+      changes:
+       - addUniqueConstraint:
+           columnNames: email
+           constraintName: person_email
+           tableName: persons
   - changeSet:
      id: addNotNullConstraint-person-isBlocked
      author: Michael
@@ -252,3 +252,11 @@ databaseChangeLog:
            constraintName: is_deleted_constraint
            defaultNullValue: false
            tableName: persons
+  - changeSet:
+      id: addUniqueConstraint-person_email
+      author: Michael
+      changes:
+        - addUniqueConstraint:
+            columnNames: email
+            constraintName: person_email
+            tableName: persons
