@@ -29,16 +29,6 @@ databaseChangeLog:
             constraintName: fk_block-hisory-posts
             referencedColumnNames: id
             referencedTableName: posts
-#  - changeSet:
-#      id: 16_1
-#      author: Michael
-#      changes:
-#        - addForeignKeyConstraint:
-#            baseColumnNames: country_id
-#            baseTableName: cities
-#            constraintName: fk_cities-countries
-#            referencedColumnNames: id
-#            referencedTableName: countries
   - changeSet:
       id: 13_1
       author: Michael
@@ -59,26 +49,6 @@ databaseChangeLog:
             constraintName: fk_dialogs-person2
             referencedColumnNames: id
             referencedTableName: persons
-#  - changeSet:
-#      id: 14_1
-#      author: Michael
-#      changes:
-#        - addForeignKeyConstraint:
-#            baseColumnNames: dst_person_id
-#            baseTableName: friendships
-#            constraintName: fk_friendships-person1
-#            referencedColumnNames: id
-#            referencedTableName: persons
-#  - changeSet:
-#      id: 14_2
-#      author: Michael
-#      changes:
-#        - addForeignKeyConstraint:
-#            baseColumnNames: src_person_id
-#            baseTableName: friendships
-#            constraintName: fk_friendships-person2
-#            referencedColumnNames: id
-#            referencedTableName: persons
   - changeSet:
       id: 9_1
       author: Michael

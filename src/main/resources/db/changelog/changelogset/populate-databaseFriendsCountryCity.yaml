@@ -1,8 +1,0 @@
-databaseChangeLog:
-#  - changeSet:
-#      id: populate-databaseFriendsCountryCity
-#      author: isakov
-#      changes:
-#        - sqlFile:
-#            dbms: postgresql
-#            path: dataCountryAndCity.sql
