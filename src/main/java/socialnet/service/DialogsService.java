@@ -3,6 +3,7 @@ package socialnet.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import socialnet.api.request.DialogUserShortListDto;
 import socialnet.api.response.*;
 import socialnet.mappers.DialogMapper;
 import socialnet.mappers.MessageMapper;
@@ -16,6 +17,7 @@ import socialnet.repository.MessageRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.security.jwt.JwtUtils;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -112,5 +114,36 @@ public class DialogsService {
         result.setTimestamp(System.currentTimeMillis());
 
         return result;
+    }
+
+    public CommonRs<ComplexRs> registerDialog(String token, DialogUserShortListDto dialogUserShortListDto) {
+        ComplexRs complexRs = new ComplexRs();
+        String userEmail = jwtUtils.getUserEmail(token);
+        Person person = personRepository.getPersonByEmail(userEmail);
+        Dialog dialog = dialogsRepository.findByAuthorAndRecipient(person.getId(), dialogUserShortListDto.getUserIds().get(0));
+        long savedDialogId;
+        if (dialog == null) {
+            dialog = Dialog.builder()
+                    .firstPersonId(person.getId())
+                    .secondPersonId(dialogUserShortListDto.getUserIds().get(0))
+                    .lastActiveTime(new Timestamp(System.currentTimeMillis()))
+                    .build();
+            savedDialogId = dialogsRepository.save(dialog);
+            Message message = Message.builder()
+                    .isDeleted(true)
+                    .dialogId(savedDialogId)
+                    .authorId(dialog.getFirstPersonId())
+                    .recipientId(dialog.getSecondPersonId())
+                    .build();
+            long savedMessageId = messageRepository.save(message);
+            dialogsRepository.updateField(savedDialogId, "last_message_id", savedMessageId);
+        } else {
+            savedDialogId = dialog.getId();
+        }
+        complexRs.setId((int) savedDialogId);
+        CommonRs<ComplexRs> commonRs = new CommonRs<>();
+        commonRs.setData(complexRs);
+
+        return commonRs;
     }
 }
