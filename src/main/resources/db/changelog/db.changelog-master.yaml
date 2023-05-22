@@ -35,6 +35,8 @@ databaseChangeLog:
       file: db/changelog/changelogset/insert-into-countries-data.sql
   - include:
       file: db/changelog/changelogset/insert-into-cities-data.sql
+#  - include:
+#      file: db/changelog/changelogset/insert-into-cities-russian_cities.sql
   - include:
       file: db/changelog/changelogset/create-weather-table.yaml
   - include:
