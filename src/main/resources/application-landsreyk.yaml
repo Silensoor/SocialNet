@@ -1,45 +1,11 @@
-server:
-  port: 8086
-
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/test
     username: landsreyk
     password: landsreyk
-  liquibase:
-    enabled: true
 
 logging:
   level:
     socialnet:
       controller:
         NewsController: debug
-
-schedules:
-  deleteOldCaptchasInterval: 0 0 0 * * *
-  deletePostsInterval: 0 0 1 * * *
-  deleteLikesInterval: 0 0 1 * * *
-  birthDatePush: 0 1 8 * * *
-
-#--------------------------------------------------------
-s3:
-  accessKey: YCAJE83YiyNT766OLADHNeObE
-  secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
-  bucket: socnet37
-weather:
-  apiKey: 3d29686077f7a60e5b5714b659a688dd
-mail:
-  transport:
-    protocol: smtp
-  debug: true
-  smtp:
-    auth: true
-    starttls: true
-    ssl:
-      enable: true
-
-mailFrom: java.development@mail.ru
-defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
-baseUrl:  http://localhost:8080/
-tgApi: http://81.177.6.228:8079/api
-#--------------------------------------------------------
