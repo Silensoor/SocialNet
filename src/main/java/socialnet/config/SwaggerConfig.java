@@ -15,6 +15,15 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
+    private final Collection<ServerVariable> variables = new ArrayList<>();
+    private final ArrayList<VendorExtension> extensions = new ArrayList<>();
+    private final Server server1 = new Server("server1", "http://81.177.6.228:8086",
+            "server1", variables, extensions);
+    private final Server server2 = new Server("server2", "http://localhost:8086", "server2", variables, extensions);
+
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.OAS_30)
 
 
     @Bean

@@ -4,6 +4,7 @@ stages:
   - sonarqube-check
   - package
   - deploy
+  - check-exceptions
 
 build:
   stage: build
@@ -47,7 +48,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
+    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend' -Dmaven.test.skip
   allow_failure: true
 
 package:
@@ -79,3 +80,12 @@ deploy:
     - (docker images -a -q --filter="dangling=true" | xargs docker rmi) || echo "No images to remove"
     - (docker images -a -q --filter="reference=backend" | xargs docker rmi) || echo "No images to remove"
     - docker-compose up --build -d
+
+check-exceptions:
+  stage: check-exceptions
+  only:
+    - dev
+  tags:
+    - socialnet_runner
+  script:
+    - docker logs backend | grep -q 'Exception' && exit 1

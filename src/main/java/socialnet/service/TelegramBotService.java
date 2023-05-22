@@ -8,7 +8,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.TgApiRequest;
+import socialnet.api.response.CommonRs;
 import socialnet.api.response.TgApiRs;
+import socialnet.api.response.TgMessagesRs;
 import socialnet.api.response.TgNotificationFromRs;
 import socialnet.model.Notification;
 import socialnet.model.Person;
@@ -66,8 +68,8 @@ public class TelegramBotService {
             return handleTokenCommand(request);
         }
 
-        if (command.equals("/notificate")) {
-            return handleNotificateCommand(request);
+        if (command.equals("/messages")) {
+            return handleMessagesCommand(request);
         }
 
         return makeResponse("fail", "Неизвестная команда", null);
@@ -110,14 +112,19 @@ public class TelegramBotService {
         return makeResponse("ok", null, "");
     }
 
-    private TgApiRs handleNotificateCommand(TgApiRequest request) {
-        Map<String, List<TgNotificationFromRs>> notifications = telegramBotRepository.getNotifications(request.getData());
+    private TgApiRs handleMessagesCommand(TgApiRequest request) {
+        List<TgMessagesRs> messages = telegramBotRepository.getMessages(request.getId(), request.getData());
 
-        if (notifications.isEmpty()) {
-            return makeResponse("fail", "No data", null);
-        }
+        String[] opp = request.getData().split(";");
+        int offset = Integer.parseInt(opp[0]);
+        int perPage = Integer.parseInt(opp[1]);
 
-        return makeResponse("ok", null, new JSONObject(notifications).toString());
+        CommonRs<?> rs = new CommonRs<>(messages);
+        rs.setOffset(offset);
+        rs.setPerPage(perPage);
+        rs.setTotal(telegramBotRepository.getCountMessages(request.getId()));
+
+        return makeResponse("ok", null, new JSONObject(rs).toString());
     }
 
     private TgApiRs handleTokenCommand(TgApiRequest request) {
