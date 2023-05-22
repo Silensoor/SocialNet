@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ public class StorageController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @ApiOperation(value = "storage")
     public ResponseEntity<?> addFile(@RequestParam String type,
                                      @RequestBody MultipartFile file)
             throws InterruptedException, IOException {
