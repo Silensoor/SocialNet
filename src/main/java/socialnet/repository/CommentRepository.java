@@ -37,6 +37,16 @@ public class CommentRepository {
         }
     }
 
+    public Long countByPostId(Long postId) {
+        String select = "SELECT COUNT(1) FROM post_comments WHERE is_deleted = false AND post_id = ?";
+
+        try {
+            return jdbcTemplate.queryForObject(select, Long.class, postId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
     public List<Comment> findByPostIdParentId(Long parentId) {
         String select = "SELECT * FROM post_comments WHERE parent_id = ?";
         try {
@@ -104,4 +114,13 @@ public class CommentRepository {
         comment.setPostId(rs.getLong("post_id"));
         return comment;
     };
+
+    public Integer findByPostIdCount(Long postId) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM post_comments WHERE post_id = ?",
+                    Integer.class, postId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
 }

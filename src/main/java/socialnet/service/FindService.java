@@ -25,40 +25,43 @@ public class FindService {
     private final PersonRepository personRepository;
     private final PostRepository postRepository;
     private final PostService postService;
-    private final TagService tagService;
 
     public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
                                                   Long dateTo, Integer offset, Integer perPage,
-                                                  String[] tags, String text) {
+                                                  String[] tags, String text)
+    {
         String email = jwtUtils.getUserEmail(jwtToken);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person person = personRepository.findByEmail(email);
+
+        if (person == null) {
+            throw new EmptyEmailException("Field 'email' is empty");
+        }
+
         List<PostRs> postRsList = new ArrayList<>();
         long postListAll;
-        List<Post> postList;
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            postList = postRepository.findPostStringSql(findAuthor(author), dateFrom, dateTo, text,
+        List<Post> postList = postRepository.findPostStringSql(findAuthor(author), dateFrom, dateTo, text,
                     perPage, offset, tags, false);
-            postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthor(author), dateFrom,
+        postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthor(author), dateFrom,
                     dateTo, text, tags, true));
-            postList.forEach(post -> {
-                int postId = post.getId().intValue();
-                PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
-                PostRs postRs = PostService.setPostRs(post, details1);
-                postRsList.add(postRs);
-            });
-            postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
-            return new CommonRs<>(postRsList, postRsList.size(), offset, perPage, System.currentTimeMillis(),
+
+        postList.forEach(post -> {
+            int postId = post.getId().intValue();
+            PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
+            PostRs postRs = PostService.setPostRs(post, details1);
+            postRsList.add(postRs);
+        });
+
+        postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
+
+        return new CommonRs<>(postRsList, postRsList.size(), offset, perPage, System.currentTimeMillis(),
                     postListAll);
-        }
     }
 
     public CommonRs<List<PersonRs>> findPersons(String authorization, Integer age_from, Integer age_to, String city,
                                                 String country, String first_name, String last_name,
                                                 Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         long findPersonQueryAll = 0L;
         List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();
@@ -66,9 +69,9 @@ public class FindService {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             personList = personRepository.findPersonsQuery(age_from, age_to, city, country,
-                    first_name, last_name, offset, perPage, false);
+                    first_name, last_name, offset, perPage, false, Math.toIntExact(personsEmail.getId()));
             findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(age_from,
-                    age_to, city, country, first_name, last_name, true));
+                    age_to, city, country, first_name, last_name, true, Math.toIntExact(personsEmail.getId())));
             if (personList == null) {
                 personList = new ArrayList<>();
             }

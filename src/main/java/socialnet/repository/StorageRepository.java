@@ -16,7 +16,7 @@ public class StorageRepository {
     private final Reflection reflection;
 
     public void insertStorage(Storage storage) {
-        String sql = "Insert into Storage " + reflection.getFieldNames(storage, "id");
+        String sql = "Insert into Storage " + reflection.getInsertStatement(storage, "id");
         Object[] values = reflection.getValues(storage, "id");
         jdbcTemplate.update(sql, values);
     }

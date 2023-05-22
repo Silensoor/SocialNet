@@ -18,6 +18,7 @@ public interface UserDtoMapper {
     UserUpdateDto toDto(UserRq userRq);
 
     default Timestamp dateToTimeStamp(String dateStr) {
+        if (dateStr == null) return null;
         dateStr = dateStr.substring(0,19).replace("T"," ");
         return Timestamp.valueOf(dateStr);
     }

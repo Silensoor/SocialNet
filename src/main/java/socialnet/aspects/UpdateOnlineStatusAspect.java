@@ -40,7 +40,7 @@ public class UpdateOnlineStatusAspect {
         }
     }
 
-    @Around("execution(* socialnet.controller.*.*(..))")
+    @Around("@annotation(OnlineStatusUpdatable)")
     public Object updateLastOnlineTime(ProceedingJoinPoint joinPoint) {
         try {
             CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();

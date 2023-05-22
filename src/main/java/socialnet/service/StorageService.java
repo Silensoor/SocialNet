@@ -25,9 +25,11 @@ public class StorageService {
     private final PersonRepository personRepository;
     private final StorageRepository storageRepository;
     private final AmazonService amazonService;
-    private static final ResourceBundle textProperties = ResourceBundle.getBundle("text");
     @Value("${s3.bucket}")
     private String bucket;
+
+    @Value("${defaultPhoto}")
+    private String defaultPhoto;
 
     public CommonRs<Storage> photoUpload(String fileType, MultipartFile file) throws IOException {
 
@@ -87,7 +89,7 @@ public class StorageService {
     }
 
     private Storage getPhotoUrl(Long personId, String url) {
-        if (url == null) url = textProperties.getString("default.photo");
+        if (url == null) url = defaultPhoto;
         return new Storage(
                 personId,
                 url,

@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -23,17 +24,15 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import socialnet.api.request.PostRq;
-import socialnet.controller.PostsController;
-import socialnet.exception.EntityNotFoundException;
 import socialnet.schedules.RemoveDeletedPosts;
 import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,10 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = { PostsControllerTest.Initializer.class })
-@Sql(
-    value = { "/sql/posts_controller_test.sql" },
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-)
+@Sql({ "/sql/posts_controller_test.sql" })
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
@@ -57,6 +53,9 @@ public class PostsControllerTest {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private final String TEST_EMAIL = "user1@email.com";
 
@@ -87,6 +86,7 @@ public class PostsControllerTest {
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
         assertThat(jwtUtils).isNotNull();
+        assertThat(jdbcTemplate).isNotNull();
     }
 
     @Test
@@ -108,30 +108,19 @@ public class PostsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.id", is(1)))
-            .andExpect(jsonPath("$.data.title", is("Post title #1")))
+            .andExpect(jsonPath("$.data.title", is("Title #1")))
             .andDo(print());
-    }
-
-    @Test
-    @DisplayName("Получение поста по несуществующему ID")
-    @Transactional
-    public void getPostByNotExistsId() throws Exception {
-        /*mockMvc
-            .perform(get("/api/v1/post/0").with(authorization()))
-            .andExpect(result -> assertTrue(result.getResolvedException() instanceof EntityNotFoundException))
-            .andExpect(result -> assertEquals("Post with id = 0 not found", result.getResolvedException().getMessage()))
-            .andDo(print());*/
     }
 
     @Test
     @DisplayName("Обновление поста по ID")
     @Transactional
     public void updatePostById() throws Exception {
-        String expectedText = "Updated post";
+        String expectedText = "Some text updated";
 
         PostRq postRq = new PostRq();
-        postRq.setTitle("Post title #1");
-        postRq.setPost_text(expectedText);
+        postRq.setTitle("Title #1");
+        postRq.setPostText(expectedText);
 
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String content = ow.writeValueAsString(postRq);
@@ -145,6 +134,7 @@ public class PostsControllerTest {
                     .content(content)
             )
             .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.post_text", is(expectedText)))
             .andDo(print());
     }
@@ -161,7 +151,24 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data.id", is(1)))
             .andDo(print());
+
+        boolean isError = false;
+        boolean isDeleted = false;
+
+        try {
+            isDeleted = jdbcTemplate.queryForObject(
+                "select is_deleted from posts where id = 1",
+                Boolean.class
+            );
+        } catch (Exception ignored) {
+            isError = true;
+        }
+
+        assertFalse(isError);
+        assertTrue(isDeleted);
     }
 
     @Test
@@ -176,7 +183,194 @@ public class PostsControllerTest {
                     .accept("application/json")
             )
             .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
             .andExpect(jsonPath("$.data.id", is(1)))
+            .andDo(print());
+
+        boolean isError = false;
+        boolean isDeleted = false;
+
+        try {
+            isDeleted = jdbcTemplate.queryForObject(
+                "select is_deleted from posts where id = 1",
+                Boolean.class
+            );
+        } catch (Exception ignored) {
+            isError = true;
+        }
+
+        assertFalse(isError);
+        assertFalse(isDeleted);
+    }
+
+    @Test
+    @DisplayName("Создание поста")
+    @Transactional
+    public void createPost() throws Exception {
+        String expectedTitle = "Title #19";
+        String expectedText = "Some text";
+
+        PostRq postRq = new PostRq();
+        postRq.setTitle(expectedTitle);
+        postRq.setPostText(expectedText);
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(postRq);
+
+        mockMvc
+            .perform(
+                post("/api/v1/users/1/wall")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+                    .content(content)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data.author.id", is(1)))
+            .andExpect(jsonPath("$.data.title", is(expectedTitle)))
+            .andExpect(jsonPath("$.data.post_text", is(expectedText)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Создание поста со спецсимволами")
+    @Transactional
+    public void createPostWithBadContent() throws Exception {
+        String expectedTitle = "Title #19";
+        String expectedText = "'";
+
+        PostRq postRq = new PostRq();
+        postRq.setTitle(expectedTitle);
+        postRq.setPostText(expectedText);
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(postRq);
+
+        mockMvc
+            .perform(
+                post("/api/v1/users/1/wall")
+                    .with(authorization())
+                    .contentType("application/json")
+                    .accept("application/json")
+                    .content(content)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data.author.id", is(1)))
+            .andExpect(jsonPath("$.data.title", is(expectedTitle)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Получение всех постов с пагинацией")
+    @Transactional
+    public void getPostsWithPagination() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/users/1/wall")
+                    .with(authorization())
+                    .param("offset", "5")
+                    .param("perPage", "5")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(5)))
+            .andExpect(jsonPath("$.data[0].id", is(6)))
+            .andExpect(jsonPath("$.data[4].id", is(10)))
+            .andExpect(jsonPath("$.data[0].author.id", is(1)))
+            .andExpect(jsonPath("$.data[1].author.id", is(1)))
+            .andExpect(jsonPath("$.data[2].author.id", is(1)))
+            .andExpect(jsonPath("$.data[3].author.id", is(1)))
+            .andExpect(jsonPath("$.data[4].author.id", is(1)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Получение всех постов")
+    @Transactional
+    public void getPosts() throws Exception {
+        mockMvc
+            .perform(get("/api/v1/users/1/wall").with(authorization()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(10)))
+            .andExpect(jsonPath("$.data[0].author.id", is(1)))
+            .andExpect(jsonPath("$.data[1].author.id", is(1)))
+            .andExpect(jsonPath("$.data[2].author.id", is(1)))
+            .andExpect(jsonPath("$.data[3].author.id", is(1)))
+            .andExpect(jsonPath("$.data[4].author.id", is(1)))
+            .andExpect(jsonPath("$.data[5].author.id", is(1)))
+            .andExpect(jsonPath("$.data[6].author.id", is(1)))
+            .andExpect(jsonPath("$.data[7].author.id", is(1)))
+            .andExpect(jsonPath("$.data[8].author.id", is(1)))
+            .andExpect(jsonPath("$.data[9].author.id", is(1)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Поиск постов по тексту")
+    @Transactional
+    public void getPostsByText() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/post")
+                    .with(authorization())
+                    .param("text", "fucking post")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(1)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Проверка поиска на спецсимволы")
+    @Transactional
+    public void getPostsByBadText() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/post")
+                    .with(authorization())
+                    .param("text", "'")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Список новостей не должен содержать удалённые посты")
+    @Transactional
+    public void getFeeds() throws Exception {
+        mockMvc
+            .perform(get("/api/v1/feeds").with(authorization()))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(17)))
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("Получение всех новостей с пагинацией")
+    @Transactional
+    public void getFeedsWithPagination() throws Exception {
+        mockMvc
+            .perform(
+                get("/api/v1/feeds")
+                    .with(authorization())
+                    .param("offset", "0")
+                    .param("perPage", "5")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data", hasSize(5)))
+            .andExpect(jsonPath("$.total", is(17)))
             .andDo(print());
     }
 }

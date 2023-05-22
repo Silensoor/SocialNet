@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Notification;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,8 +34,14 @@ public class NotificationRepository {
 
     public List<Notification> getNotifications(Long id, Integer itemPerPage, Integer offset) {
         return jdbcTemplate.query("select * from notifications where person_id = ? " +
-                        "and is_read = false order by sent_time",
-                notificationRowMapper, id).stream().skip(offset).limit(itemPerPage).collect(Collectors.toList());
+            "and is_read = false order by sent_time DESC offset ? limit ?",
+            notificationRowMapper, id, offset, itemPerPage);
+    }
+
+    public Long countNotifications(Long id) {
+        return jdbcTemplate.queryForObject(
+            "select count(1) from notifications where person_id = ? and is_read = false",
+            Long.class, id);
     }
 
     private final RowMapper<Notification> notificationRowMapper = (rs, rowNum) -> {

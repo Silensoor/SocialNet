@@ -81,4 +81,7 @@ public class TagRepository {
         }
     }
 
+    public Integer getAllTags() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tags", Integer.class);
+    }
 }

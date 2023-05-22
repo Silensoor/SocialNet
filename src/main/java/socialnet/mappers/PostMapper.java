@@ -19,7 +19,7 @@ public interface PostMapper {
     PostRs toDTO(Post post);
 
     @Mapping(ignore = true, target = "timeDelete")
-    @Mapping(source = "post_text", target = "postText")
+    @Mapping(source = "postText", target = "postText")
     @Mapping(ignore = true, target = "id")
     @Mapping(expression = "java(false)", target = "isDeleted")
     @Mapping(expression = "java(false)", target = "isBlocked")

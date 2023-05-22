@@ -9,32 +9,31 @@ import socialnet.mappers.NotificationMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Notification;
 import socialnet.model.Person;
-import socialnet.model.PersonSettings;
 import socialnet.repository.NotificationRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationsService {
     private final JwtUtils jwtUtils;
+
     private final PersonRepository personRepository;
     private final NotificationRepository notificationRepository;
     private final PersonSettingRepository personSettingRepository;
 
     public CommonRs<List<NotificationRs>> putNotifications(Boolean all, Integer notificationId, String token) {
         String email = jwtUtils.getUserEmail(token);
-        Person personList = personRepository.findPersonsEmail(email);
+        Person personList = personRepository.findByEmail(email);
         if (personList == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         }
         List<NotificationRs> notificationRsList = new ArrayList<>();
-        if (all) {
+        if (all!=null&&all) {
             Long personId = personList.getId();
             List<Notification> notifications = notificationRepository.getNotificationsByPersonId(personId);
             notificationRepository.updateIsReadAll(personId);
@@ -58,7 +57,7 @@ public class NotificationsService {
 
     public CommonRs<List<NotificationRs>> getAllNotifications(Integer itemPerPage, String token, Integer offset) {
         String email = jwtUtils.getUserEmail(token);
-        Person person = personRepository.findPersonsEmail(email);
+        Person person = personRepository.findByEmail(email);
         if (person == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
@@ -72,46 +71,33 @@ public class NotificationsService {
                     notificationRs.setEntityAuthor(personRs);
                     rsList.add(notificationRs);
                 }
-                return getResponseNotifications(rsList);
+
+                CommonRs<List<NotificationRs>> result = getResponseNotifications(rsList);
+                result.setTotal(notificationRepository.countNotifications(id));
+
+                return result;
             } else {
                 List<NotificationRs> rsList = new ArrayList<>();
                 return getResponseNotifications(rsList);
             }
-
-
         }
     }
 
-
-    public CommonRs<List<PersonSettingsRs>> getNotificationByPerson(String token) {
-        String email = jwtUtils.getUserEmail(token);
-        Person personsEmail = personRepository.findPersonsEmail(email);
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            Long id = personsEmail.getId();
-            PersonSettings personSettings = personSettingRepository.getPersonSettings(id);
-            return getResponsePersonSettings(personSettings);
-        }
-
-    }
 
     public CommonRs<ComplexRs> putNotificationByPerson(String token, NotificationRq notificationRq) {
         String email = jwtUtils.getUserEmail(token);
-        Person personsEmail = personRepository.findPersonsEmail(email);
+        Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
             Long id = personsEmail.getId();
-            String typeNotification = getTypeNotification(notificationRq.getNotificationType());
+            String typeNotification = getSqlFieldName(notificationRq.getNotificationType());
             personSettingRepository.updatePersonSetting(notificationRq.getEnable(), typeNotification, id);
             return getResponseByPutTypeNotification();
         }
-
     }
 
-
-    private String getTypeNotification(String notificationRq) {
+    private String getSqlFieldName(String notificationRq) {
         switch (NotificationType.valueOf(notificationRq)) {
             case POST:
                 return "post_notification";
@@ -132,13 +118,10 @@ public class NotificationsService {
     }
 
     private CommonRs<ComplexRs> getResponseByPutTypeNotification() {
-        ComplexRs complexRs = new ComplexRs("string");
-        CommonRs<ComplexRs> commonRs = new CommonRs<>(complexRs);
-        commonRs.setTotal(500L);
-        return commonRs;
-
+        return new CommonRs<>(new ComplexRs("string"));
     }
 
+/*
     private CommonRs<List<PersonSettingsRs>> getResponsePersonSettings(PersonSettings personSettings) {
         PersonSettingsRs personSettingsRs1 = new PersonSettingsRs(personSettings.getCommentCommentNotification(),
                 "COMMENT_COMMENT");
@@ -160,11 +143,9 @@ public class NotificationsService {
         commonRs.setTotal(500L);
         return commonRs;
     }
+*/
 
     private CommonRs<List<NotificationRs>> getResponseNotifications(List<NotificationRs> notificationRs) {
-        CommonRs<List<NotificationRs>> commonRs = new CommonRs<>(notificationRs);
-        commonRs.setTotal(500L);
-        return commonRs;
+        return new CommonRs<>(notificationRs);
     }
-
 }

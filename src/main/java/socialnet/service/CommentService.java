@@ -30,19 +30,26 @@ public class CommentService {
     private final PostRepository postRepository;
     private final PersonSettingRepository personSettingRepository;
 
-    public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage, String jwtToken) {
-        int itemPerPage = offset / perPage;
+    public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage) {
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
-        if (commentList == null) return new CommonRs<>(new ArrayList<>(), itemPerPage, offset, perPage, System.currentTimeMillis(), 0L);
+
+        if (commentList == null) {
+            return new CommonRs<>(new ArrayList<>(), perPage, offset, perPage, System.currentTimeMillis(), 0L);
+        }
+
         List<CommentRs> comments = new ArrayList<>();
+
         for (Comment comment : commentList) {
             if (comment.getIsDeleted()) continue;
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
         }
+
         comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        return new CommonRs<>(comments, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) comments.size());
+        Long total = commentRepository.countByPostId(postId);
+
+        return new CommonRs<>(comments, perPage, offset, perPage, System.currentTimeMillis(), total);
     }
 
     private CommentRs getCommentRs(Comment comment, CommentServiceDetails details) {
@@ -55,6 +62,7 @@ public class CommentService {
         return commentRs;
     }
 
+
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
         Person person =getPerson(jwtToken);
         CommentServiceDetails toModelDetails = getToModelDetails(person,postId);
@@ -64,23 +72,23 @@ public class CommentService {
         CommentRs commentRs = getCommentRs(comment, toDTODetails);
 
         Post post = postRepository.findById(postId.intValue());
-        PersonSettings personSettingsPostAuthor = personSettingRepository.getPersonSettings(post.getAuthorId());
+        PersonSettings personSettingsPostAuthor = personSettingRepository.getSettings(post.getAuthorId());
         if (commentRq.getParentId() != null) {
             Comment comment1 = commentRepository.findById(commentRq.getParentId().longValue());
-            PersonSettings personSettingsCommentAuthor = personSettingRepository.getPersonSettings(comment1.getAuthorId());
-            if (personSettingsCommentAuthor.getPostCommentNotification() &&
+            PersonSettings personSettingsCommentAuthor = personSettingRepository.getSettings(comment1.getAuthorId());
+            if (personSettingsCommentAuthor.getPostComment() &&
                     !person.getId().equals(comment1.getAuthorId())) {
                 Notification notification = NotificationPusher.
                         getNotification(NotificationType.COMMENT_COMMENT, comment1.getAuthorId(), person.getId());
                 NotificationPusher.sendPush(notification, person.getId());
             } else if (!person.getId().equals(post.getAuthorId()) && commentRq.getParentId().longValue() !=
-                    (post.getAuthorId()) && personSettingsPostAuthor.getPostCommentNotification()) {
+                    (post.getAuthorId()) && personSettingsPostAuthor.getPostComment()) {
                 Notification notification = NotificationPusher.
                         getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
                 NotificationPusher.sendPush(notification, person.getId());
                 return new CommonRs<>(commentRs, System.currentTimeMillis());
             }
-        } else if (personSettingsPostAuthor.getPostCommentNotification() &&
+        } else if (personSettingsPostAuthor.getPostComment() &&
                 !post.getAuthorId().equals(person.getId())) {
             Notification notification = NotificationPusher.
                     getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
@@ -88,6 +96,7 @@ public class CommentService {
         }
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
+
 
     private Comment getCommentModel(CommentRq commentRq, CommentServiceDetails details) {
         Comment comment = CommentMapper.INSTANCE.toModel(commentRq);

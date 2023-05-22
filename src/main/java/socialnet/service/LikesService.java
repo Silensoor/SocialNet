@@ -51,16 +51,17 @@ public class LikesService {
         }
         if (likeRq.getType().equals("Comment")) {
             Comment comment = commentRepository.findById(likeRq.getItem_id().longValue());
-            PersonSettings personSettings = personSettingRepository.getPersonSettings(comment.getAuthorId());
-            if (personSettings.getLikeNotification() && !comment.getAuthorId().equals(authUser.getId())) {
+            PersonSettings personSettings = personSettingRepository.getSettings(comment.getAuthorId());
+
+            if (personSettings.getPostLike() && !comment.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
                         comment.getAuthorId(), authUser.getId());
                 NotificationPusher.sendPush(notification, authUser.getId());
             }
         } else {
             Post post = postRepository.findById(likeRq.getItem_id());
-            PersonSettings personSettings = personSettingRepository.getPersonSettings(post.getAuthorId());
-            if (personSettings.getLikeNotification() && !post.getAuthorId().equals(authUser.getId())) {
+            PersonSettings personSettings = personSettingRepository.getSettings(post.getAuthorId());
+            if (personSettings.getPostLike() && !post.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
                         post.getAuthorId(), authUser.getId());
                 NotificationPusher.sendPush(notification, authUser.getId());
@@ -84,6 +85,4 @@ public class LikesService {
         likes.forEach(l -> users.add(l.getPersonId().intValue()));
         return new CommonRs<>(new LikeRs(likesAfterDelete.size(), users), System.currentTimeMillis());
     }
-
-
 }

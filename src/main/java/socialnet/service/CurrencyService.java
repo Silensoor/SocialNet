@@ -18,9 +18,14 @@ public class CurrencyService {
     private final String EUR = "R01239";
 
     public CurrencyRs getCurrency(LocalDate date) {
-        String usd = getCurrencyByDateAndName(date, "usd");
-        String eur = getCurrencyByDateAndName(date, "eur");
-        return new CurrencyRs(eur, usd);
+        try {
+            String usd = getCurrencyByDateAndName(date, "usd");
+            String eur = getCurrencyByDateAndName(date, "eur");
+            return new CurrencyRs(eur, usd);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new CurrencyRs("Сервис недоступен.","Сервис недоступен.");
     }
     public String getCurrencyByDateAndName(LocalDate date, String currency) throws RuntimeException {
         String currencyId;
