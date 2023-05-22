@@ -3,6 +3,7 @@ package socialnet.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import socialnet.api.response.TgMessagesRs;
 import socialnet.api.response.TgNotificationFromRs;
 
 import java.util.ArrayList;
@@ -56,42 +57,38 @@ public class TelegramBotRepository {
         );
     }
 
-    public Map<String, List<TgNotificationFromRs>> getNotifications(String listUserId) {
-        Map<String, List<TgNotificationFromRs>> result = new HashMap<>();
+    public List<TgMessagesRs> getMessages(long userId, String offsetPerPage) {
+        String[] opp = offsetPerPage.split(";");
+        int offset = Integer.parseInt(opp[0]);
+        int perPage = Integer.parseInt(opp[1]);
 
-        jdbcTemplate.query(
-            "SELECT n.person_id, " +
-            "       n.notification_type, " +
-            "       p.first_name || ' ' || p.last_name as name " +
-            "  FROM notifications n, " +
+        return jdbcTemplate.query(
+            "SELECT d.id, " +
+            "       m.message_text as msg, " +
+            "       p.first_name || ' ' || p.last_name as from " +
+            "  FROM messages m, " +
+            "       dialogs d, " +
             "       persons p " +
-            " WHERE p.id = n.entity_id " +
-            "   AND n.is_read = false " +
-            "   AND n.person_id IN (" + listUserId + ") " +
-            " GROUP BY n.person_id, " +
-            "          n.notification_type, " +
-            "          name " +
-            " ORDER BY n.person_id",
-            (rs, rowNum) -> {
-                TgNotificationFromRs n = TgNotificationFromRs.builder()
-                    .from(rs.getString(3))
-                    .type(rs.getString(2))
-                    .build();
-
-                String to = String.valueOf(rs.getLong(1));
-
-                if (result.get(to) == null) {
-                    List<TgNotificationFromRs> notifications = new ArrayList<>();
-                    notifications.add(n);
-                    result.put(to, notifications);
-                } else {
-                    result.get(to).add(n);
-                }
-
-                return n;
-            }
+            " WHERE m.recipient_id = d.second_person_id " +
+            "   AND p.id = m.author_id " +
+            "   AND m.read_status = 'UNREAD' " +
+            "   AND m.recipient_id = ? " +
+            " ORDER BY m.author_id " +
+            "OFFSET ? LIMIT ?",
+            (rs, rowNum) -> TgMessagesRs.builder()
+                .dialogId(rs.getLong(1))
+                .message(rs.getString(2))
+                .from(rs.getString(3))
+                .build(),
+            userId, offset, perPage
         );
+    }
 
-        return result;
+    public long getCountMessages(long userId) {
+        return jdbcTemplate.queryForObject(
+            "SELECT COUNT(1) FROM messages WHERE recipient_id = ? AND read_status = 'UNREAD'",
+            Long.class,
+            userId
+        );
     }
 }
