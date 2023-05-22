@@ -30,6 +30,9 @@ public class UpdateOnlineStatusScheduler {
         List<Person> users = personRepository.findAll();
         for (Person user : users) {
             Timestamp lastOnlineTime = user.getLastOnlineTime();
+            if (lastOnlineTime == null) {
+                continue;
+            }
             Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now().minusMinutes(ONLINE_TIME_TO_LIVE));
             if (lastOnlineTime.before(timestamp)) {
                 personRepository.updateOnlineStatus(user.getId(), PersonOnlineStatus.OFFLINE.name());

@@ -1,7 +1,7 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/postgres4
+    url: jdbc:postgresql://localhost:5433/postgres6
     username: postgres
     password: postgres
     main:
@@ -33,4 +33,5 @@ mail:
 mailFrom: java.development@mail.ru
 defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
 baseUrl:  http://localhost:8080/
+tgApi: http://81.177.6.228:8079/api
 #--------------------------------------------------------

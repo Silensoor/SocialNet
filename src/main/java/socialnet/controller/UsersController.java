@@ -1,5 +1,7 @@
 package socialnet.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "users-controller", description = "Get user. Get, update, delete, recover personal info. User search")
 public class UsersController {
 
     private final PersonService personService;
@@ -23,12 +26,14 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @GetMapping("/me")
+    @ApiOperation(value = "get information about me")
     public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
         return personService.getMyProfile(authorization);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/{id}")
+    @ApiOperation(value = "get user by id")
     public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") String authorization,
                                           @PathVariable(name = "id") Integer id) {
         return personService.getUserById(authorization, id);
@@ -36,6 +41,7 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @GetMapping("/search")
+    @ApiOperation(value = "search post by query")
     public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
                                                 @RequestParam(required = false, defaultValue = "0")
                                                 Integer age_from,
@@ -60,6 +66,7 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @PutMapping("/me")
+    @ApiOperation(value = "update information about me")
     public ResponseEntity<?> updateUserInfo(@RequestHeader("authorization") String authorization,
                                             @RequestBody UserRq userData) {
         return personService.updateUserInfo(authorization, userData);
@@ -67,15 +74,16 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @DeleteMapping("/me")
+    @ApiOperation(value = "delete information about me")
     public CommonRs deleteUser(@RequestHeader("authorization") String authorization) {
         return personService.delete(authorization);
     }
 
     @OnlineStatusUpdatable
     @PostMapping("/me/recover")
+    @ApiOperation(value = "recover information about me")
     public CommonRs recoverUser(@RequestHeader("authorization") String authorization) {
         return personService.recover(authorization);
     }
-
 
 }
