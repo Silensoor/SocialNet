@@ -1,5 +1,6 @@
 package socialnet.controller;
 
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class DialogsController {
 
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "recover comment by id")
     public CommonRs<List<DialogRs>> getDialogs(@RequestHeader String authorization) {
         CommonRs<List<DialogRs>> dialogs;
         try {
@@ -39,12 +41,14 @@ public class DialogsController {
 
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "get count of unread messages")
     public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
         return dialogsService.getUnreadedMessages(authorization);
     }
 
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "get messages from dialog")
     public CommonRs<List<MessageRs>> getMessagesFromDialog(
         @RequestHeader String authorization,
         @PathVariable("dialogId") Long dialogId,
@@ -57,6 +61,7 @@ public class DialogsController {
 
     @OnlineStatusUpdatable
     @PutMapping(value = "/dialogs/{dialogId}/read", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "read messages in dialog")
     public CommonRs<ComplexRs> readMessagesInDialog(@RequestHeader String authorization,
                                                     @PathVariable("dialogId") Long dialogId) {
         log.debug("token = {}", authorization);

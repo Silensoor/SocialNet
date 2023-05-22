@@ -279,7 +279,7 @@
                 <version>1.4</version>
                 <executions>
                     <execution>
-                        <phase>integration-test</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
