@@ -1,3 +1,4 @@
+
 insert into countries (name, full_name, international_name, code2) values
                 ('Афганистан','Афганистан','Afghanistan','AF'),
                 ('Аландские острова','Аландские острова','Åland Islands','AX'),

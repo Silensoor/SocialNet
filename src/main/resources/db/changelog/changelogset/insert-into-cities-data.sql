@@ -1,3 +1,5 @@
+ALTER SEQUENCE cities_id_seq RESTART WITH 201;
+
 Insert into Cities (open_Weather_Id, name, state, code2, lon, lat) values
 (463254, 'Zhelud’yevo', '', 'RU', 39.116669, 55.966667),
 (505345, 'Prikubanskiy', '', 'RU', 41.179501, 45.001499),

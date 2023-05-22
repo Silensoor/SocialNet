@@ -11,7 +11,7 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-    #data: data.sql
+    #data: insert-test-data.sql
     main:
       allow-bean-definition-overriding: true
   mail:
