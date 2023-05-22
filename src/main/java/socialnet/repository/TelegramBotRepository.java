@@ -71,7 +71,7 @@ public class TelegramBotRepository {
             "       persons p " +
             " WHERE m.recipient_id = d.second_person_id " +
             "   AND p.id = m.author_id " +
-            "   AND m.read_status = 'UNREAD' " +
+            "   AND m.read_status = 'SENT' " +
             "   AND m.recipient_id = ? " +
             " ORDER BY m.author_id " +
             "OFFSET ? LIMIT ?",
