@@ -1,35 +1,11 @@
-auth:
-  secret: socialNet
-  timeLive: 999999999
-  logging:
-    yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
-Server:
-  port: 8086
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/postgres4
     username: postgres
     password: postgres
-    driver-class-name: org.postgresql.Driver
-    #data: insert-test-data.sql
     main:
       allow-bean-definition-overriding: true
-  mail:
-    host: smtp.mail.ru
-    port: 2525
-    username: java.development@mail.ru
-    password: eDhZJ9bk8t0hx2WNDAev
-    protocol: smtp
-
-  liquibase:
-    enabled: true
-    #change-log: classpath:db.changelog/db.changelog-master.xml
-#logging:
-# level:
-#    org:
-#      springframework:
-#        web: trace
-#        apache: trace
 
 schedules:
   deleteOldCaptchasInterval: 0 0 0 * * *
