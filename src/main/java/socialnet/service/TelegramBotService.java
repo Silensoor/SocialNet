@@ -115,20 +115,16 @@ public class TelegramBotService {
     private TgApiRs handleMessagesCommand(TgApiRequest request) {
         List<TgMessagesRs> messages = telegramBotRepository.getMessages(request.getId(), request.getData());
 
-        if (messages.isEmpty()) {
-            return makeResponse("fail", "No data", null);
-        }
-
         String[] opp = request.getData().split(";");
         int offset = Integer.parseInt(opp[0]);
         int perPage = Integer.parseInt(opp[1]);
 
-        CommonRs<?> rs = new CommonRs(messages);
+        CommonRs<?> rs = new CommonRs<>(messages);
         rs.setOffset(offset);
         rs.setPerPage(perPage);
         rs.setTotal(telegramBotRepository.getCountMessages(request.getId()));
 
-        return makeResponse("ok", null, new JSONObject(messages).toString());
+        return makeResponse("ok", null, new JSONObject(rs).toString());
     }
 
     private TgApiRs handleTokenCommand(TgApiRequest request) {
