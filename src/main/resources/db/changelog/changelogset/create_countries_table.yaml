@@ -1,13 +1,12 @@
 databaseChangeLog:
   - changeSet:
-      id: 17(1)
+      id: create_countries_table
       author: Michael
       changes:
         - createTable:
             columns:
               - column:
                   constraints:
-                    nullable: false
                     primaryKey: true
                     primaryKeyName: countries_key
                   name: id
@@ -19,9 +18,9 @@ databaseChangeLog:
                   name: full_name
                   type: VARCHAR(255)
               - column:
-                  name: internationalname
-                  type: VARCHAR(255)
-              - column:
                   name: code2
+                  type: VARCHAR(2)
+              - column:
+                  name: international_name
                   type: VARCHAR(255)
             tableName: countries

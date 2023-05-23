@@ -17,37 +17,37 @@ databaseChangeLog:
             tableName: notifications
         - addNotNullConstraint:
             columnDataType: boolean
-            columnName: comment_comment_notification
+            columnName: comment_comment
             constraintName: comment_comment_notification_constraint
             defaultNullValue: false
             tableName: person_settings
         - addNotNullConstraint:
             columnDataType: boolean
-            columnName: friend_birthday_notification
+            columnName: friend_birthday
             constraintName: friend_birthday_notification_constraint
             defaultNullValue: false
             tableName: person_settings
         - addNotNullConstraint:
             columnDataType: boolean
-            columnName: like_notification
+            columnName: post_like
             constraintName: like_notification_constraint
             defaultNullValue: false
             tableName: person_settings
         - addNotNullConstraint:
             columnDataType: boolean
-            columnName: message_notification
+            columnName: message
             constraintName: message_notification_constraint
             defaultNullValue: false
             tableName: person_settings
         - addNotNullConstraint:
             columnDataType: boolean
-            columnName: post_comment_notification
+            columnName: post_comment
             constraintName: post_comment_notification_constraint
             defaultNullValue: false
             tableName: person_settings
         - addNotNullConstraint:
             columnDataType: boolean
-            columnName: post_notification
+            columnName: post
             constraintName: post_notification_constraint
             defaultNullValue: false
             tableName: person_settings
