@@ -8,6 +8,11 @@ spring:
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true
+  kafka:
+    consumer:
+      group-id: group-1
+      auto-offset-reset: earliest
+      bootstrap-servers: 81.177.6.228:9092
 #--------------------------------------------------------
   mail:
     host: smtp.mail.ru
