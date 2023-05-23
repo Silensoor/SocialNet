@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,14 @@ public class TelegramBotController {
 
     @PostMapping
     @ApiOperation(value = "telegramBot execute command")
-    public ResponseEntity<TgApiRs> execCommand(@RequestBody TgApiRequest request) {
+    public ResponseEntity<TgApiRs> execCommand(@RequestBody @Parameter TgApiRequest request) {
         return ResponseEntity.ok(telegramBotService.execCommand(request));
     }
 
     @GetMapping
     @ApiOperation(value = "telegramBot register user")
-    public ResponseEntity<TgApiRs> register(@RequestParam long id, @RequestParam String email, @RequestParam String cmd) {
+    public ResponseEntity<TgApiRs> register(@RequestParam @Parameter long id, @RequestParam @Parameter String email,
+                                            @RequestParam @Parameter String cmd) {
         return ResponseEntity.ok(telegramBotService.register(id, email, cmd));
     }
 }

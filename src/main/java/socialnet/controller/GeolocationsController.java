@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,21 +23,21 @@ public class GeolocationsController {
 
     @GetMapping("cities/api")
     @ApiOperation(value = "get cities from api")
-    public CommonRs<List<GeolocationRs>> getCitiesFromApiStartsWith(@RequestParam("country") String country,
-                                                                    @RequestParam("starts") String starts) {
+    public CommonRs<List<GeolocationRs>> getCitiesFromApiStartsWith(@RequestParam("country") @Parameter String country,
+                                                                    @RequestParam("starts") @Parameter String starts) {
         return new CommonRs<>(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
 
     @GetMapping("cities/db")
     @ApiOperation(value = "get cities from database")
-    public CommonRs<List<GeolocationRs>> getCitiesByStarts(@RequestParam("country") String country,
-                                                           @RequestParam("starts") String starts) {
+    public CommonRs<List<GeolocationRs>> getCitiesByStarts(@RequestParam("country") @Parameter String country,
+                                                           @RequestParam("starts") @Parameter String starts) {
         return new CommonRs<>(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
 
     @GetMapping("cities/uses")
     @ApiOperation(value = "get cities from persons")
-    public CommonRs<List<GeolocationRs>> getCitiesByCountry(@RequestParam("country") String country) {
+    public CommonRs<List<GeolocationRs>> getCitiesByCountry(@RequestParam("country") @Parameter String country) {
         return new CommonRs<>(geolocationsService.getCitiesByCountry(country));
     }
 

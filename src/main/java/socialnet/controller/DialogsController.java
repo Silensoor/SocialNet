@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class DialogsController {
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "recover comment by id")
-    public CommonRs<List<DialogRs>> getDialogs(@RequestHeader String authorization) {
+    public CommonRs<List<DialogRs>> getDialogs(@RequestHeader @Parameter String authorization) {
         CommonRs<List<DialogRs>> dialogs;
         try {
             dialogs = dialogsService.getDialogs(authorization);
@@ -43,7 +44,7 @@ public class DialogsController {
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "get count of unread messages")
-    public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
+    public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader @Parameter String authorization) {
         return dialogsService.getUnreadedMessages(authorization);
     }
 
@@ -51,25 +52,25 @@ public class DialogsController {
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "get messages from dialog")
     public CommonRs<List<MessageRs>> getMessagesFromDialog(
-            @RequestHeader String authorization,
-            @PathVariable("dialogId") Long dialogId,
-            @RequestParam(defaultValue = "0") Integer offset,
-            @RequestParam(defaultValue = "20") Integer perPage) {
+            @RequestHeader @Parameter String authorization,
+            @PathVariable("dialogId") @Parameter Long dialogId,
+            @RequestParam(defaultValue = "0") @Parameter Integer offset,
+            @RequestParam(defaultValue = "20") @Parameter Integer perPage) {
         return dialogsService.getMessagesFromDialog(authorization, dialogId, offset, perPage);
     }
 
     @OnlineStatusUpdatable
     @PutMapping(value = "/dialogs/{dialogId}/read", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "read messages in dialog")
-    public CommonRs<ComplexRs> readMessagesInDialog(@RequestHeader String authorization,
-                                                    @PathVariable("dialogId") Long dialogId) {
+    public CommonRs<ComplexRs> readMessagesInDialog(@RequestHeader @Parameter String authorization,
+                                                    @PathVariable("dialogId") @Parameter Long dialogId) {
         return dialogsService.readMessagesInDialog(dialogId);
     }
 
     @OnlineStatusUpdatable
     @PostMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public CommonRs<ComplexRs> startDialog(@RequestHeader String authorization,
-                                           @RequestBody DialogUserShortListDto dialogUserShortListDto) {
+    public CommonRs<ComplexRs> startDialog(@RequestHeader @Parameter String authorization,
+                                           @RequestBody @Parameter DialogUserShortListDto dialogUserShortListDto) {
         return dialogsService.registerDialog(authorization, dialogUserShortListDto);
     }
 }

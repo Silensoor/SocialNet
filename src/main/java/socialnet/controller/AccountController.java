@@ -3,8 +3,11 @@ package socialnet.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.sonatype.inject.Parameters;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.EmailRq;
 import socialnet.api.request.PasswordSetRq;
@@ -35,55 +38,57 @@ public class AccountController {
     @OnlineStatusUpdatable
     @PutMapping("/email/recovery")
     @ApiOperation(value = "user email recovery")
-    public void emailSet(@RequestHeader String authorization) {
+    public void emailSet(@RequestHeader @Parameter(description =  "Access Token", example = "JWT Token") String authorization) {
         emailService.shiftEmailConfirm(authorization);
     }
 
     @PutMapping("/email")
     @ApiOperation(value = "set email")
-    public RegisterRs setNewEmail(@RequestBody EmailRq emailRq) {return personService.setNewEmail(emailRq);}
+    public RegisterRs setNewEmail(@RequestBody @Parameter EmailRq emailRq) {
+        return personService.setNewEmail(emailRq);
+    }
 
     @OnlineStatusUpdatable
     @PutMapping("/password/recovery")
     @ApiOperation(value = "user password recovery")
-    public void passwordChangeConfirm(@RequestHeader String authorization) {
+    public void passwordChangeConfirm(@RequestHeader @Parameter String authorization) {
         emailService.passwordChangeConfirm(authorization);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/password/reset")
     @ApiOperation(value = "user password reset")
-    public RegisterRs resetPassword(@RequestHeader String authorization,
-                                       @RequestBody PasswordSetRq passwordSetRq) {
+    public RegisterRs resetPassword(@RequestHeader @Parameter String authorization,
+                                    @RequestBody @Parameter PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/password/set")
     @ApiOperation(value = "set user password")
-    public RegisterRs setNewPassword(@RequestHeader String authorization,
-                                        @RequestBody PasswordSetRq passwordSetRq) {
+    public RegisterRs setNewPassword(@RequestHeader @Parameter String authorization,
+                                     @RequestBody @Parameter PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
 
     @PostMapping("/register")
     @ApiOperation(value = "user registration")
-    public RegisterRs register(@Valid @RequestBody RegisterRq regRequest) {
+    public RegisterRs register(@Valid @RequestBody @Parameter RegisterRq regRequest) {
         return accountService.getRegisterData(regRequest);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
     @ApiOperation(value = "get user's notifications properties")
-    public CommonRs notifications(@RequestHeader String authorization){
+    public CommonRs notifications(@RequestHeader @Parameter String authorization) {
         return personService.getPersonSettings(authorization);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/notifications")
     @ApiOperation(value = "edit notifications properties")
-    public CommonRs saveSettings(@RequestHeader String authorization,
-                                 @RequestBody PersonSettingsRq personSettingsRq) {
+    public CommonRs saveSettings(@RequestHeader @Parameter String authorization,
+                                 @RequestBody @Parameter PersonSettingsRq personSettingsRq) {
         return personService.setSetting(authorization, personSettingsRq);
     }
 

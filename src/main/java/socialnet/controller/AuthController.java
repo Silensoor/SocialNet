@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +30,14 @@ public class AuthController {
 
     @PostMapping("/login")
     @ApiOperation(value = "login by email and password")
-    public CommonRs<PersonRs> login(@RequestBody LoginRq loginRq) {
+    public CommonRs<PersonRs> login(@RequestBody @Parameter LoginRq loginRq) {
         return personService.getLogin(loginRq);
     }
 
     @OnlineStatusUpdatable
     @PostMapping("/logout")
     @ApiOperation(value = "logout current user")
-    public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization") String authorization) {
+    public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization") @Parameter String authorization) {
         return personService.getLogout(authorization);
     }
 }

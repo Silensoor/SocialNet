@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -25,8 +26,8 @@ public class StorageController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ApiOperation(value = "storage")
-    public ResponseEntity<?> addFile(@RequestParam String type,
-                                     @RequestBody MultipartFile file)
+    public ResponseEntity<?> addFile(@RequestParam @Parameter String type,
+                                     @RequestBody @Parameter MultipartFile file)
             throws InterruptedException, IOException {
         return ResponseEntity.ok(storageService.photoUpload(type, file));
     }

@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +24,9 @@ public class NotificationController {
     @GetMapping("/notifications")
     @ApiOperation(value = "get all notifications for user")
     public CommonRs<List<NotificationRs>> notifications(
-        @RequestHeader String authorization,
-        @RequestParam(required = false, defaultValue = "10") Integer itemPerPage,
-        @RequestParam(required = false, defaultValue = "0") Integer offset)
-    {
+            @RequestHeader @Parameter String authorization,
+            @RequestParam(required = false, defaultValue = "10") @Parameter Integer itemPerPage,
+            @RequestParam(required = false, defaultValue = "0") @Parameter Integer offset) {
         return notificationsService.getAllNotifications(itemPerPage, authorization, offset);
     }
 
@@ -34,10 +34,9 @@ public class NotificationController {
     @PutMapping("/notifications")
     @ApiOperation(value = "read notification")
     public CommonRs<List<NotificationRs>> notifications(
-        @RequestHeader String authorization,
-        @RequestParam(required = false) Integer id,
-        @RequestParam(required = false) Boolean all)
-    {
+            @RequestHeader @Parameter String authorization,
+            @RequestParam(required = false) @Parameter Integer id,
+            @RequestParam(required = false) @Parameter Boolean all) {
         return notificationsService.putNotifications(all, id, authorization);
     }
 }

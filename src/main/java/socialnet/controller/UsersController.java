@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,38 +28,38 @@ public class UsersController {
     @OnlineStatusUpdatable
     @GetMapping("/me")
     @ApiOperation(value = "get information about me")
-    public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
+    public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") @Parameter String authorization) {
         return personService.getMyProfile(authorization);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/{id}")
     @ApiOperation(value = "get user by id")
-    public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") String authorization,
-                                          @PathVariable(name = "id") Integer id) {
+    public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") @Parameter String authorization,
+                                          @PathVariable(name = "id") @Parameter Integer id) {
         return personService.getUserById(authorization, id);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/search")
     @ApiOperation(value = "search post by query")
-    public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
+    public CommonRs<List<PersonRs>> findPersons(@RequestHeader @Parameter String authorization,
                                                 @RequestParam(required = false, defaultValue = "0")
-                                                Integer age_from,
+                                                @Parameter Integer age_from,
                                                 @RequestParam(required = false, defaultValue = "0")
-                                                Integer age_to,
+                                                @Parameter Integer age_to,
                                                 @RequestParam(required = false, defaultValue = "")
-                                                String city,
+                                                @Parameter String city,
                                                 @RequestParam(required = false, defaultValue = "")
-                                                String country,
+                                                @Parameter String country,
                                                 @RequestParam(required = false, defaultValue = "")
-                                                String first_name,
+                                                @Parameter String first_name,
                                                 @RequestParam(required = false, defaultValue = "")
-                                                String last_name,
+                                                @Parameter String last_name,
                                                 @RequestParam(required = false, defaultValue = "0")
-                                                Integer offset,
+                                                @Parameter Integer offset,
                                                 @RequestParam(required = false, defaultValue = "20")
-                                                Integer perPage) {
+                                                @Parameter Integer perPage) {
 
         return findService.findPersons(authorization, age_from, age_to, city, country, first_name,
                 last_name, offset, perPage);
@@ -67,22 +68,22 @@ public class UsersController {
     @OnlineStatusUpdatable
     @PutMapping("/me")
     @ApiOperation(value = "update information about me")
-    public ResponseEntity<?> updateUserInfo(@RequestHeader("authorization") String authorization,
-                                            @RequestBody UserRq userData) {
+    public ResponseEntity<?> updateUserInfo(@RequestHeader("authorization") @Parameter String authorization,
+                                            @RequestBody @Parameter UserRq userData) {
         return personService.updateUserInfo(authorization, userData);
     }
 
     @OnlineStatusUpdatable
     @DeleteMapping("/me")
     @ApiOperation(value = "delete information about me")
-    public CommonRs deleteUser(@RequestHeader("authorization") String authorization) {
+    public CommonRs deleteUser(@RequestHeader("authorization") @Parameter String authorization) {
         return personService.delete(authorization);
     }
 
     @OnlineStatusUpdatable
     @PostMapping("/me/recover")
     @ApiOperation(value = "recover information about me")
-    public CommonRs recoverUser(@RequestHeader("authorization") String authorization) {
+    public CommonRs recoverUser(@RequestHeader("authorization") @Parameter String authorization) {
         return personService.recover(authorization);
     }
 
