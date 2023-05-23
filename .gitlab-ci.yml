@@ -9,7 +9,7 @@ stages:
 build:
   stage: build
   only:
-    - dev
+    - SonarCube
   tags:
     - socialnet_runner
   script:
@@ -23,7 +23,7 @@ build:
 test:
   stage: test
   only:
-    - dev
+    - SonarCube
   tags:
     - socialnet_runner
   script:
@@ -54,7 +54,7 @@ sonarqube-check:
 package:
   stage: package
   only:
-    - dev
+    - SonarCube
   tags:
     - socialnet_runner
   script:
@@ -71,7 +71,7 @@ package:
 deploy:
   stage: deploy
   only:
-    - dev
+    - SonarCube
   tags:
     - socialnet_runner
   script:
@@ -84,7 +84,7 @@ deploy:
 check-exceptions:
   stage: check-exceptions
   only:
-    - dev
+    - SonarCube
   tags:
     - socialnet_runner
   script:
