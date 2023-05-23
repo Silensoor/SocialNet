@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -21,6 +22,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import socialnet.api.request.UserRq;
+import socialnet.config.KafkaConsumerConfig;
+import socialnet.config.KafkaProducerConfig;
+import socialnet.config.KafkaTopicConfig;
+import socialnet.schedules.RemoveDeletedPosts;
+import socialnet.schedules.RemoveOldCaptchasSchedule;
+import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 
 import java.sql.Connection;
@@ -44,6 +51,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "/sql/clear_tables.sql")
 @Sql(scripts = "/sql/find-service-test.sql")
 @SqlMergeMode(MERGE)
+@MockBean(RemoveOldCaptchasSchedule.class)
+@MockBean(RemoveDeletedPosts.class)
+@MockBean(UpdateOnlineStatusScheduler.class)
+@MockBean(KafkaController.class)
+@MockBean(KafkaConsumerConfig.class)
+@MockBean(KafkaProducerConfig.class)
+@MockBean(KafkaTopicConfig.class)
 public class UsersControllerTest {
 
     @Autowired
