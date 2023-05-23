@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: 14(1)
-      author: Michael
+      id: create-Friends
+      author: isakov
       changes:
         - createTable:
             columns:
@@ -25,4 +25,3 @@ databaseChangeLog:
                   name: status_name
                   type: VARCHAR(255)
             tableName: friendships
-

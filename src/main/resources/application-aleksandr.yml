@@ -1,67 +1,10 @@
-auth:
-  secret: socialNet
-  timeLive: 999999999
-  logging:
-    yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
-Server:
-  port: 8086
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/postgres6
     username: postgres
     password: postgres
-    driver-class-name: org.postgresql.Driver
-    #data: data.sql
     main:
       allow-bean-definition-overriding: true
-  mail:
-    host: smtp.mail.ru
-    port: 2525
-    username: java.development@mail.ru
-    password: eDhZJ9bk8t0hx2WNDAev
-    protocol: smtp
-  kafka:
-    consumer:
-      topic-name: topic-1
-      group-id: group-1
-      auto-offset-reset: earliest
-      bootstrap-servers: 81.177.6.228:9092
 
-  liquibase:
-    enabled: true
-    #change-log: classpath:db.changelog/db.changelog-master.xml
-#logging:
-# level:
-#    org:
-#      springframework:
-#        web: trace
-#        apache: trace
 
-schedules:
-  deleteOldCaptchasInterval: 0 0 0 * * *
-  deletePostsInterval: 0 0 1 * * *
-  deleteLikesInterval: 0 0 1 * * *
-  birthDatePush: 0 1 8 * * *
 
-#--------------------------------------------------------
-s3:
-  accessKey: YCAJE83YiyNT766OLADHNeObE
-  secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
-  bucket: socnet37
-weather:
-  apiKey: 3d29686077f7a60e5b5714b659a688dd
-mail:
-  transport:
-    protocol: smtp
-  debug: true
-  smtp:
-    auth: true
-    starttls: true
-    ssl:
-      enable: true
-
-mailFrom: java.development@mail.ru
-defaultPhoto: https://storage.yandexcloud.net/socnet37/users_photo/man.png
-baseUrl:  http://localhost:8080/
-tgApi: http://81.177.6.228:8079/api
-#--------------------------------------------------------

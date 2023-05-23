@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 19
+      id: create_weather_table
       author: Michael
       changes:
         - createTable:
@@ -11,17 +11,24 @@ databaseChangeLog:
                     primaryKey: true
                     primaryKeyName: weather_key
                   name: id
-                  type: SERIAL
+                  type: BIGSERIAL
               - column:
-                  name: gismeteo_id
-                  type: INTEGER
+                  name: open_weather_id
+                  type: BIGINT
               - column:
-                  name: temperature
-                  type: DOUBLE PRECISION
-              - column:
-                  name: description
+                  name: city
                   type: VARCHAR(255)
               - column:
-                  name: time
+                  name: clouds
+                  type: VARCHAR(150)
+              - column:
+                  name: date
                   type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: temp
+                  type: REAL
             tableName: weather
+        - addUniqueConstraint:
+            tableName: weather
+            columnNames: open_weather_id
+            constraintName: unique_open_weather_id
