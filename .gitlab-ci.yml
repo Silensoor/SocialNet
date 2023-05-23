@@ -48,7 +48,7 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYhDV6UFN4CKDoSKp1NE -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
+    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYhHibq6AyIA3cDgmRn9 -Dsonar.projectName='JavaproTeams37Backend '-Dmaven.test.skip
   allow_failure: true
 
 package:
