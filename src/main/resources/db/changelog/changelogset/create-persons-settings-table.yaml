@@ -7,7 +7,6 @@ databaseChangeLog:
             columns:
               - column:
                   constraints:
-                    nullable: false
                     primaryKey: true
                     primaryKeyName: person_settings_key
                   name: id
@@ -15,43 +14,43 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: comment_comment
                   type: BOOLEAN
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: friend_birthday
                   type: BOOLEAN
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: friend_request
                   type: BOOLEAN
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: post_like
                   type: BOOLEAN
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: message
                   type: BOOLEAN
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: post_comment
                   type: BOOLEAN
               - column:
                   constraints:
                     nullable: false
-                    default: false
+                  defaultValue: true
                   name: post
                   type: BOOLEAN
             tableName: person_settings
