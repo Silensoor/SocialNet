@@ -21,6 +21,7 @@
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <java.version>11</java.version>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.host.url>http://localhost:9000:port</sonar.host.url>
     </properties>
 
     <dependencies>
