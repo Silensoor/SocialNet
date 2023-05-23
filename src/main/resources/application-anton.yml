@@ -12,6 +12,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/test
     logging:
       yandexToken: "OAuth y0_AgAAAABpyRv7AADLWwAAAADgTODc9qxs-Et7T1GdZE2muWAFM0eiubA"
+  kafka:
+    consumer:
+      group-id: group-1
+      auto-offset-reset: earliest
+      bootstrap-servers: 81.177.6.228:9092
 #--------------------------------------------------------
   mail:
     host: smtp.mail.ru

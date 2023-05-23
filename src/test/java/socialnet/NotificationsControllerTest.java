@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -22,6 +23,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import socialnet.config.KafkaConsumerConfig;
+import socialnet.config.KafkaProducerConfig;
+import socialnet.config.KafkaTopicConfig;
+import socialnet.controller.KafkaController;
+import socialnet.schedules.RemoveDeletedPosts;
+import socialnet.schedules.RemoveOldCaptchasSchedule;
+import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 
 import java.util.Objects;
@@ -38,7 +46,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ContextConfiguration(initializers = {NotificationsControllerTest.Initializer.class})
 @Sql(value = {"/sql/create-notifications-test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-
+@MockBean(RemoveOldCaptchasSchedule.class)
+@MockBean(RemoveDeletedPosts.class)
+@MockBean(UpdateOnlineStatusScheduler.class)
+@MockBean(KafkaController.class)
+@MockBean(KafkaConsumerConfig.class)
+@MockBean(KafkaProducerConfig.class)
+@MockBean(KafkaTopicConfig.class)
 public class NotificationsControllerTest {
     @Autowired
     private MockMvc mockMvc;
