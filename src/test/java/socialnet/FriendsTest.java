@@ -25,7 +25,6 @@ import socialnet.config.KafkaConsumerConfig;
 import socialnet.config.KafkaProducerConfig;
 import socialnet.config.KafkaTopicConfig;
 import socialnet.controller.FriendsController;
-import socialnet.controller.KafkaController;
 import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
@@ -51,7 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
-@MockBean(KafkaController.class)
 @MockBean(KafkaConsumerConfig.class)
 @MockBean(KafkaProducerConfig.class)
 @MockBean(KafkaTopicConfig.class)

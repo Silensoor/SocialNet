@@ -54,7 +54,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
-@MockBean(KafkaController.class)
 @MockBean(KafkaConsumerConfig.class)
 @MockBean(KafkaProducerConfig.class)
 @MockBean(KafkaTopicConfig.class)

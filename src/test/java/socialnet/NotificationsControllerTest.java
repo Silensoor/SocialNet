@@ -26,7 +26,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import socialnet.config.KafkaConsumerConfig;
 import socialnet.config.KafkaProducerConfig;
 import socialnet.config.KafkaTopicConfig;
-import socialnet.controller.KafkaController;
 import socialnet.schedules.RemoveDeletedPosts;
 import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
@@ -49,7 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
-@MockBean(KafkaController.class)
 @MockBean(KafkaConsumerConfig.class)
 @MockBean(KafkaProducerConfig.class)
 @MockBean(KafkaTopicConfig.class)
