@@ -5,3 +5,10 @@ spring:
     password: postgres
     main:
       allow-bean-definition-overriding: true
+  kafka:
+    consumer:
+      group-id: group-1
+      auto-offset-reset: earliest
+      bootstrap-servers: 81.177.6.228:9092
+
+
