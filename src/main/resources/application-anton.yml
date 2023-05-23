@@ -6,8 +6,3 @@ spring:
     password: 85778577
     url: jdbc:postgresql://localhost:5432/test
 
-  kafka:
-    consumer:
-      group-id: group-1
-      auto-offset-reset: earliest
-      bootstrap-servers: 81.177.6.228:9092
