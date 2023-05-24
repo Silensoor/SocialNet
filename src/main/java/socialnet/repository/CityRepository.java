@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.model.City;
 
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -38,7 +39,7 @@ public class CityRepository {
     public Boolean containsCity(String city) {
         var rowCount = jdbcTemplate.query("Select Lower(name) from cities where (Lower(name) = Lower(?)) and Code2 = 'RU'",
                 new BeanPropertyRowMapper<>(City.class), city);
-        return rowCount.size() > 0;
+        return !rowCount.isEmpty();
     }
 
     public Integer getAllCity() {
@@ -54,7 +55,7 @@ public class CityRepository {
             return jdbcTemplate.query("SELECT DISTINCT cities.id, cities.name, (SELECT COUNT(*) FROM persons" +
                     " WHERE cities.name=persons.city) FROM cities", regionStatisticsRsRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 

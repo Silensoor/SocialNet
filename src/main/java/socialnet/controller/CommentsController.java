@@ -69,7 +69,7 @@ public class CommentsController {
         @PathVariable Long id,
         @PathVariable(name = "comment_id") Long commentId)
     {
-        CommonRs<CommentRs> commonRs = commentService.deleteComment(authorization, id, commentId);
+        CommonRs<CommentRs> commonRs = commentService.deleteComment(id, commentId);
         return ResponseEntity.ok(commonRs);
     }
 
@@ -81,7 +81,7 @@ public class CommentsController {
         @PathVariable Long id,
         @PathVariable(name = "comment_id") Long commentId)
     {
-        CommonRs<CommentRs> commonRs = commentService.recoverComment(authorization, id, commentId);
+        CommonRs<CommentRs> commonRs = commentService.recoverComment(id, commentId);
         return ResponseEntity.ok(commonRs);
     }
 }

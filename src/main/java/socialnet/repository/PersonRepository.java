@@ -12,6 +12,7 @@ import socialnet.model.Person;
 import socialnet.utils.Reflection;
 
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -93,7 +94,7 @@ public class PersonRepository {
         try {
             return jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -112,7 +113,7 @@ public class PersonRepository {
                             " OFFSET ? LIMIT ?",
                     personRowMapper, id, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -130,7 +131,7 @@ public class PersonRepository {
                             " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -166,7 +167,7 @@ public class PersonRepository {
                     personRowMapper
             );
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -237,23 +238,23 @@ public class PersonRepository {
                 (Object[]) sqlParam.get("values"));
     }
 
-    public List<Person> findPersonsQuery(Integer age_from,
-                                         Integer age_to, String city, String country,
-                                         String first_name, String last_name,
+    public List<Person> findPersonsQuery(Integer ageFrom,
+                                         Integer ageTo, String city, String country,
+                                         String firstName, String lastName,
                                          Integer offset, Integer perPage, Boolean flagQueryAll, Integer id) {
         try {
-            return jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
+            return jdbcTemplate.query(createSqlPerson(ageFrom, ageTo, city, country, firstName, lastName,
                     flagQueryAll, id), personRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
-    public Integer findPersonsQueryAll(Integer age_from, Integer age_to, String city, String country,
-                                       String first_name, String last_name, Boolean flagQueryAll, Integer id) {
+    public Integer findPersonsQueryAll(Integer ageFrom, Integer ageTo, String city, String country,
+                                       String firstName, String lastName, Boolean flagQueryAll, Integer id) {
         try {
-            return jdbcTemplate.queryForObject(createSqlPerson(age_from, age_to, city,
-                    country, first_name, last_name, flagQueryAll, id), Integer.class);
+            return jdbcTemplate.queryForObject(createSqlPerson(ageFrom, ageTo, city,
+                    country, firstName, lastName, flagQueryAll, id), Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return 0;
         }
@@ -263,7 +264,7 @@ public class PersonRepository {
                                    String first_name, String last_name, Boolean flagQueryAll, Integer id) {
         StringBuilder str = new StringBuilder();
         String sql;
-        if (flagQueryAll) {
+        if (Boolean.TRUE.equals(flagQueryAll)) {
             str.append("SELECT COUNT(*) FROM persons WHERE is_deleted=false AND ");
         } else {
             str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
@@ -285,7 +286,7 @@ public class PersonRepository {
         } else {
             sql = str.toString();
         }
-        if (!flagQueryAll) {
+        if (Boolean.FALSE.equals(flagQueryAll)) {
             return sql + " OFFSET ? LIMIT ?";
         } else {
             return sql;
@@ -330,7 +331,7 @@ public class PersonRepository {
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -368,7 +369,7 @@ public class PersonRepository {
                             " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -390,7 +391,7 @@ public class PersonRepository {
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -401,7 +402,7 @@ public class PersonRepository {
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 

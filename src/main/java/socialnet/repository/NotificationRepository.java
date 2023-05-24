@@ -61,10 +61,9 @@ public class NotificationRepository {
                 notification.getContact(), notification.getNotificationType(),
                 notification.getEntityId(), notification.getIsRead(),
                 notification.getSentTime(), notification.getPersonId());
-        return jdbcTemplate.query("select * from notifications where id =(select max(id) from notifications)", (rs, rowNum) -> {
-            return rs.getLong("id");
-        }).stream().findAny().orElse(null);
+        return jdbcTemplate.query(
+            "select * from notifications where id =(select max(id) from notifications)",
+            (rs, rowNum) -> rs.getLong("id")
+        ).stream().findAny().orElse(null);
     }
-
-
 }

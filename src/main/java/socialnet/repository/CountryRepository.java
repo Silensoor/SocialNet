@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.model.Country;
 
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -27,7 +28,7 @@ public class CountryRepository {
             return jdbcTemplate.query("SELECT DISTINCT countries.id, countries.name, (SELECT COUNT(*) FROM persons" +
                 " WHERE countries.international_name=persons.country) FROM countries ", countryStatisticsRsRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 

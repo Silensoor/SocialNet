@@ -32,6 +32,16 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.badRequest().body(makeErrorRs("EntityNotFoundException", e));
     }
 
+    @ExceptionHandler(CurrencyParseException.class)
+    public ResponseEntity<ErrorRs> handleCurrencyParseException(CurrencyParseException e) {
+        return ResponseEntity.badRequest().body(makeErrorRs("CurrencyParseException", e));
+    }
+
+    @ExceptionHandler(SendEmailException.class)
+    public ResponseEntity<ErrorRs> handleSendEmailException(SendEmailException e) {
+        return ResponseEntity.badRequest().body(makeErrorRs("SendEmailException", e));
+    }
+
     private ErrorRs makeErrorRs(String error, Exception e) {
         ErrorRs errorRs = new ErrorRs();
         errorRs.setError(error);

@@ -119,11 +119,12 @@ public class FriendsService {
     public CommonRs<List<PersonRs>> getRecommendedFriends(String authorization) {
         Person personsEmail = tokenToMail(authorization);
         List<Person> recommendationFriends = new ArrayList<>();
-        List<Person> friends = personRepository.findFriendsAll(personsEmail.getId(), 0, 20);
+        List<Person> friends = personRepository.findFriendsAll(personsEmail.getId(), 0, RECOMMENDED_FRIENDS_COUNT);
 
-        if (friends != null) {
-            recommendationFriends = personRepository.findRecommendedFriends(personsEmail.getId(),
-                    friends, 0, 20);
+        if (!friends.isEmpty()) {
+            recommendationFriends = personRepository.findRecommendedFriends(
+                personsEmail.getId(), friends, 0, RECOMMENDED_FRIENDS_COUNT
+            );
         }
 
         if (recommendationFriends.size() < RECOMMENDED_FRIENDS_COUNT) {
@@ -131,11 +132,12 @@ public class FriendsService {
         }
 
         if (recommendationFriends.size() < RECOMMENDED_FRIENDS_COUNT) {
-            assert friends != null;
             recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends));
         }
 
-        return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(), personsEmail.getId());
+        return personToPersonRs(
+            recommendationFriends, 0, RECOMMENDED_FRIENDS_COUNT, recommendationFriends.size(), personsEmail.getId()
+        );
     }
 
     public List<Person> getRecommendedFriendsCity(Person personsEmail, List<Person> recommendationFriends){
@@ -165,7 +167,7 @@ public class FriendsService {
             );
         }
 
-        if (cityFriends == null) {
+        if (cityFriends.isEmpty()) {
             return recommendationFriendsCity;
         }
 

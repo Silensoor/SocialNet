@@ -43,9 +43,9 @@ public class BirthdayNotifications {
             Notification notification = null;
             PersonSettings settingsDst = personSettingRepository.getSettings(friendships.getDstPersonId());
             PersonSettings settingsSrc = personSettingRepository.getSettings(friendships.getSrcPersonId());
-            if (!id.equals(friendships.getDstPersonId()) && settingsDst.getFriendBirthday()) {
+            if (!id.equals(friendships.getDstPersonId()) && Boolean.TRUE.equals(settingsDst.getFriendBirthday())) {
                 notification = NotificationPusher.getNotification(NotificationType.FRIEND_BIRTHDAY, friendships.getDstPersonId(), id);
-            } else if (settingsSrc.getFriendBirthday()) {
+            } else if (Boolean.TRUE.equals(settingsSrc.getFriendBirthday())) {
                 notification = NotificationPusher.getNotification(NotificationType.FRIEND_BIRTHDAY, friendships.getSrcPersonId(), id);
             }
             if (notification != null) {

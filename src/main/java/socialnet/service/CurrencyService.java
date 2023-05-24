@@ -5,6 +5,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.xml.sax.SAXException;
 import socialnet.api.response.CurrencyRs;
+import socialnet.exception.CurrencyParseException;
 import socialnet.utils.CbRfParser;
 
 import javax.xml.parsers.SAXParser;
@@ -14,8 +15,8 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class CurrencyService {
-    private final String USD = "R01235";
-    private final String EUR = "R01239";
+    private static final String USD = "R01235";
+    private static final String EUR = "R01239";
 
     public CurrencyRs getCurrency(LocalDate date) {
         try {
@@ -48,7 +49,7 @@ public class CurrencyService {
             parser.parse(uriComponents.toUriString(), currencyParser);
             return currencyParser.getCurValue();
         } catch (SAXException | IOException e) {
-            throw new RuntimeException(e);
+            throw new CurrencyParseException(e.getMessage());
         }
     }
 }

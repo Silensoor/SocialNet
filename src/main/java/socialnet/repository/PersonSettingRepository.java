@@ -8,6 +8,7 @@ import socialnet.api.request.PersonSettingsRq;
 import socialnet.model.PersonSettings;
 import socialnet.utils.Reflection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class PersonSettingRepository {
         PersonSettings personSettings = jdbcTemplate.query("Select * from Person_Settings Where Id = ?",
                 new BeanPropertyRowMapper<>(PersonSettings.class), personId).stream().findAny().orElse(null);
 
-        if (personSettings == null) return null;
+        if (personSettings == null) return Collections.emptyList();
 
         List<PersonSettings> result = new ArrayList<>();
         for (Map.Entry<String, Object> entry : reflection.getFieldsAndValues(personSettings).entrySet()) {

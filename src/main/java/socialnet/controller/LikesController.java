@@ -25,7 +25,7 @@ public class LikesController {
             @RequestParam(name = "item_id") Integer itemId,
             @RequestParam String type) {
 
-        return likesService.getLikes(authorization, itemId, type);
+        return likesService.getLikes(itemId, type);
     }
 
     @OnlineStatusUpdatable
