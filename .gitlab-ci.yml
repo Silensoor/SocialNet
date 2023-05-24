@@ -49,7 +49,8 @@ sonarqube-check:
       - ./target
       - ./.m2
   script:
-    - mvn clean verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYhHmC44Z8Z_ucLeKO2N -Dsonar.projectName='JavaproTeams37Backend' -Dmaven.test.skip -Dmaven.repo.local=./.m2/repository
+    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYhCd9rcgC1DxgVpVaar -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
+#    - mvn clean verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYgjeYeefLdHS3cra806 -Dsonar.projectName='JavaproTeams37Backend '  -Dmaven.repo.local=./.m2/repository
   allow_failure: true
 
 package:
