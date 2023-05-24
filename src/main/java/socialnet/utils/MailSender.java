@@ -9,6 +9,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 @Component
@@ -26,7 +27,7 @@ public class MailSender {
     @Value("${spring.mail.password}")
     private String mailAuthPass;
 
-    public void send(String to, String subject, String text) throws Exception {
+    public void send(String to, String subject, String text) throws UnsupportedEncodingException, MessagingException {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -34,7 +35,6 @@ public class MailSender {
         props.put("mail.smtp.port", mailSmtpPort);
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.smtp.socketFactory.port", mailSmtpPort);
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
         props.put("mail.debug", "true");
 

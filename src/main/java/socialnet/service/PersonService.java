@@ -198,7 +198,7 @@ public class PersonService {
 
         Person person = personRepository.findByEmail(jwtUtils.getUserEmail(authorization));
 
-        if (person.getIsBlocked()) {
+        if (Boolean.TRUE.equals(person.getIsBlocked())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
