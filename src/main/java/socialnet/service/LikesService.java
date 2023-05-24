@@ -26,7 +26,7 @@ public class LikesService {
     private final PersonSettingRepository personSettingRepository;
     private final CommentRepository commentRepository;
 
-    public CommonRs<LikeRs> getLikes (String jwtToken, Integer itemId, String type) {
+    public CommonRs<LikeRs> getLikes(Integer itemId, String type) {
         List<Like> likes = likeRepository.getLikesByEntityId(itemId);
         likes = likes.stream().filter(l -> l.getType().equals(type)).collect(Collectors.toList());
         List<Integer> users = new ArrayList<>();
@@ -53,7 +53,7 @@ public class LikesService {
             Comment comment = commentRepository.findById(likeRq.getItem_id().longValue());
             PersonSettings personSettings = personSettingRepository.getSettings(comment.getAuthorId());
 
-            if (personSettings.getPostLike() && !comment.getAuthorId().equals(authUser.getId())) {
+            if (Boolean.TRUE.equals(personSettings.getPostLike()) && !comment.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
                         comment.getAuthorId(), authUser.getId());
                 NotificationPusher.sendPush(notification, authUser.getId());
@@ -61,7 +61,7 @@ public class LikesService {
         } else {
             Post post = postRepository.findById(likeRq.getItem_id());
             PersonSettings personSettings = personSettingRepository.getSettings(post.getAuthorId());
-            if (personSettings.getPostLike() && !post.getAuthorId().equals(authUser.getId())) {
+            if (Boolean.TRUE.equals(personSettings.getPostLike()) && !post.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,
                         post.getAuthorId(), authUser.getId());
                 NotificationPusher.sendPush(notification, authUser.getId());

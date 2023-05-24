@@ -25,7 +25,6 @@ import socialnet.config.KafkaConsumerConfig;
 import socialnet.config.KafkaProducerConfig;
 import socialnet.config.KafkaTopicConfig;
 import socialnet.controller.FriendsController;
-import socialnet.controller.KafkaController;
 import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
@@ -33,6 +32,7 @@ import socialnet.schedules.RemoveDeletedPosts;
 import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.service.KafkaService;
 import socialnet.service.PersonService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,10 +51,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
-@MockBean(KafkaController.class)
 @MockBean(KafkaConsumerConfig.class)
 @MockBean(KafkaProducerConfig.class)
 @MockBean(KafkaTopicConfig.class)
+@MockBean(KafkaService.class)
 public class FriendsTest {
     @Autowired
     private FriendsController friendsController;

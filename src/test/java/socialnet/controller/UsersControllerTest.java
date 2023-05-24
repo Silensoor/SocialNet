@@ -29,6 +29,7 @@ import socialnet.schedules.RemoveDeletedPosts;
 import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.service.KafkaService;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -54,10 +55,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
-@MockBean(KafkaController.class)
 @MockBean(KafkaConsumerConfig.class)
 @MockBean(KafkaProducerConfig.class)
 @MockBean(KafkaTopicConfig.class)
+@MockBean(KafkaService.class)
 public class UsersControllerTest {
 
     @Autowired

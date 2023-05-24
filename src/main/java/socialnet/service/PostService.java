@@ -240,8 +240,6 @@ public class PostService {
     }
 
     private List<Comment> getPostComments(int id) {
-        List<Comment> comments = commentRepository.findByPostId((long) id);
-        if (comments == null) return new ArrayList<>();
         return commentRepository.findByPostId((long) id);
     }
 
@@ -298,7 +296,7 @@ public class PostService {
         List<PostRs> postRsList = new ArrayList<>();
         List<Post> postList = postRepository.findPostsByUserId(authorId, offset, perPage);
 
-        if (postList == null) {
+        if (postList.isEmpty()) {
             return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), 0L);
         }
 
@@ -319,12 +317,14 @@ public class PostService {
             Notification notification= null;
             PersonSettings settingsSrc = personSettingRepository.getSettings(friendships.getSrcPersonId());
             PersonSettings settingsDst = personSettingRepository.getSettings(friendships.getDstPersonId());
-            if (!id.equals(friendships.getDstPersonId())&&settingsDst.getPost()) {
+
+            if (!id.equals(friendships.getDstPersonId()) && Boolean.TRUE.equals(settingsDst.getPost())) {
                 notification = NotificationPusher.getNotification(NotificationType.POST, friendships.getDstPersonId(), id);
-            } else if(settingsSrc.getPost()){
+            } else if (Boolean.TRUE.equals(settingsSrc.getPost())) {
                 notification = NotificationPusher.getNotification(NotificationType.POST, friendships.getSrcPersonId(), id);
             }
-            if (notification!=null){
+
+            if (notification != null) {
                 NotificationPusher.sendPush(notification, id);
             }
 

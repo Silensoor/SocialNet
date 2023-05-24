@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Tag;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class TagRepository {
         try {
             return jdbcTemplate.query(select, tagRowMapper, postId);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -77,7 +78,7 @@ public class TagRepository {
         if (!sql.toString().equals("SELECT * FROM tags WHERE")) {
             return this.jdbcTemplate.query(sql.toString(), tagRowMapper);
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

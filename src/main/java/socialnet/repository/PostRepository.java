@@ -24,7 +24,7 @@ public class PostRepository {
         try {
             return jdbcTemplate.query("SELECT * FROM posts", postRowMapper);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -32,7 +32,7 @@ public class PostRepository {
         try {
             return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -105,7 +105,7 @@ public class PostRepository {
                     perPage
             );
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -126,7 +126,7 @@ public class PostRepository {
         try{
             return jdbcTemplate.query(select, postRowMapper);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -136,7 +136,7 @@ public class PostRepository {
             return jdbcTemplate.query(createSqlPost(authorId, dateFrom, dateTo, text, tags, flagQueryAll),
                     postRowMapper, offset, limit);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -154,7 +154,7 @@ public class PostRepository {
                                  String text, String[] tags, Boolean flagQueryAll) {
         String post2TagList = "";
         StringBuilder sql = new StringBuilder();
-        if (flagQueryAll) {
+        if (Boolean.TRUE.equals(flagQueryAll)) {
             sql.append("SELECT DISTINCT COUNT(posts.id) FROM posts");
         } else {
             sql.append("SELECT DISTINCT posts.id, posts.is_blocked, posts.is_deleted, posts.post_text," +
@@ -182,7 +182,7 @@ public class PostRepository {
         } else {
             sql1 = sql.toString();
         }
-        if (flagQueryAll) {
+        if (Boolean.TRUE.equals(flagQueryAll)) {
             return sql1;
         } else {
             return sql1 + " ORDER BY posts.time DESC OFFSET ? LIMIT ?";

@@ -60,12 +60,10 @@ public class LogClean {
     }
 
     public Date dateFormat(String dateFile) throws ParseException {
-
-        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").
-                parse(dateFile.
-                        replace("T", " ").substring(0, 19));
-
-        return date;
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").
+            parse(dateFile.
+            replace("T", " ")
+            .substring(0, 19));
     }
 
     public void cleanLogs(HashMap<String, Date> logs, Integer afterDayDelete,String yandexToken) throws IOException {

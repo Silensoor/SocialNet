@@ -10,6 +10,7 @@ spring:
     enabled: true
   kafka:
     consumer:
+      topic-name: topic-1
       group-id: group-1
       auto-offset-reset: earliest
       bootstrap-servers: 81.177.6.228:9092

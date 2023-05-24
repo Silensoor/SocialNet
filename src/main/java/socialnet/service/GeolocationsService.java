@@ -21,13 +21,12 @@ public class GeolocationsService {
     }
 
     public List<GeolocationRs> getCitiesByCountryAndStarts(String country, String starts) {
-        var cities = cityRepository.getCitiesByStarts(country, starts).stream()
-                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
-        return cities;
-    }
-    public List<GeolocationRs> getCitiesByCountry(String country) {
-        return cityRepository.getCitiesByCountry(country).stream()
-                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+        return cityRepository.getCitiesByStarts(country, starts).stream()
+            .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
     }
 
+    public List<GeolocationRs> getCitiesByCountry(String country) {
+        return cityRepository.getCitiesByCountry(country).stream()
+            .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+    }
 }

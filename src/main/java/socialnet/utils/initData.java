@@ -1,6 +1,7 @@
 package socialnet.utils;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Component
+@Slf4j
 public class initData {
     @Bean
     public CommandLineRunner commandLineRunner(CityParser cityParser,
@@ -40,7 +42,7 @@ public class initData {
                             Path path = Paths.get(String.format("%s_%s.sql", args[1], "cities"));
                             byte[] stringToByte = sqlCities.getBytes();
                             Files.write(path, stringToByte);
-                            System.out.println(sqlCities);
+                            log.info(sqlCities);
                         }
                         break;
                     }
