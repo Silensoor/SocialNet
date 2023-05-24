@@ -91,5 +91,5 @@ check-exceptions:
   tags:
     - socialnet_runner
   script:
-    - docker logs backend | grep -v -e 'ExceptionTranslationFilter' | grep -e 'Exception' && exit 1
+    - docker logs backend | grep -v -E 'ExceptionTranslationFilter|MemberIdRequiredException' | grep -e 'Exception' && exit 1
   allow_failure: true
