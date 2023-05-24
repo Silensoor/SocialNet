@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -20,11 +21,18 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import socialnet.config.KafkaConsumerConfig;
+import socialnet.config.KafkaProducerConfig;
+import socialnet.config.KafkaTopicConfig;
 import socialnet.controller.FriendsController;
 import socialnet.model.Friendships;
 import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
+import socialnet.schedules.RemoveDeletedPosts;
+import socialnet.schedules.RemoveOldCaptchasSchedule;
+import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.service.KafkaService;
 import socialnet.service.PersonService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +48,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = { FriendsTest.Initializer.class })
 @Sql(value = {"/sql/create-user-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(value = {"/sql/create-friendships-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@MockBean(RemoveOldCaptchasSchedule.class)
+@MockBean(RemoveDeletedPosts.class)
+@MockBean(UpdateOnlineStatusScheduler.class)
+@MockBean(KafkaConsumerConfig.class)
+@MockBean(KafkaProducerConfig.class)
+@MockBean(KafkaTopicConfig.class)
+@MockBean(KafkaService.class)
 public class FriendsTest {
     @Autowired
     private FriendsController friendsController;

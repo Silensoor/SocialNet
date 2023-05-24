@@ -12,6 +12,12 @@ spring:
     username: java.development@mail.ru
     password: eDhZJ9bk8t0hx2WNDAev
     protocol: smtp
+  kafka:
+    consumer:
+      topic-name: topic-1
+      group-id: group-1
+      auto-offset-reset: earliest
+      bootstrap-servers: 81.177.6.228:9092
 
 server:
   port: 8086

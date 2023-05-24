@@ -24,10 +24,14 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import socialnet.api.request.PostRq;
+import socialnet.config.KafkaConsumerConfig;
+import socialnet.config.KafkaProducerConfig;
+import socialnet.config.KafkaTopicConfig;
 import socialnet.schedules.RemoveDeletedPosts;
 import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
+import socialnet.service.KafkaService;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -47,6 +51,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
 @MockBean(UpdateOnlineStatusScheduler.class)
+@MockBean(KafkaConsumerConfig.class)
+@MockBean(KafkaProducerConfig.class)
+@MockBean(KafkaTopicConfig.class)
+@MockBean(KafkaService.class)
 public class PostsControllerTest {
     @Autowired
     private MockMvc mockMvc;

@@ -12,6 +12,7 @@ import socialnet.model.Message;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -132,7 +133,7 @@ public class MessageRepository {
                     messageRowMapper,
                     firstUserId, secondUserId, firstUserId, secondUserId);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
 

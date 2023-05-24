@@ -91,15 +91,15 @@ public class PostsController {
     @GetMapping("/api/v1/post")
     @ApiOperation(value = "get posts by query")
     public CommonRs<List<PostRs>> getPostsByQuery(
-            @RequestHeader String authorization,
-            @RequestParam(required = false, defaultValue = "") String author,
-            @RequestParam(required = false, name = "date_from", defaultValue = "0") Long dateFrom,
-            @RequestParam(required = false, name = "date_to", defaultValue = "0") Long dateTo,
-            @RequestParam(required = false, defaultValue = "0") Integer offset,
-            @RequestParam(required = false, defaultValue = "20") Integer perPage,
-            @RequestParam(required = false) String[] tags,
-            @RequestParam(required = false, defaultValue = "") String text) throws ParseException {
+        @RequestHeader String authorization,
+        @RequestParam(required = false, defaultValue = "") String author,
+        @RequestParam(required = false, name = "date_from", defaultValue = "0") Long dateFrom,
+        @RequestParam(required = false, name = "date_to", defaultValue = "0") Long dateTo,
+        @RequestParam(required = false, defaultValue = "0") Integer offset,
+        @RequestParam(required = false, defaultValue = "20") Integer perPage,
+        @RequestParam(required = false) String[] tags,
+        @RequestParam(required = false, defaultValue = "") String text)
+    {
         return findService.getPostsByQuery(authorization, author, dateFrom, dateTo, offset, perPage, tags, text);
-
     }
 }

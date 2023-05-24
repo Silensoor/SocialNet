@@ -33,7 +33,7 @@ public class WeatherService {
 
         if (city == null) return new WeatherRs();
 
-        if (!cityRepository.containsCity(city)) return new WeatherRs();
+        if (Boolean.FALSE.equals(cityRepository.containsCity(city))) return new WeatherRs();
 
         var weatherFromDb = weatherRepository.getWeatherByCity(city);
 

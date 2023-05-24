@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Like;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class LikeRepository {
         try {
             return jdbcTemplate.query(select, likeRowMapper, postId);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 

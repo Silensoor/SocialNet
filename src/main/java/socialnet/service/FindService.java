@@ -57,25 +57,23 @@ public class FindService {
                     postListAll);
     }
 
-    public CommonRs<List<PersonRs>> findPersons(String authorization, Integer age_from, Integer age_to, String city,
-                                                String country, String first_name, String last_name,
+    public CommonRs<List<PersonRs>> findPersons(String authorization, Integer ageFrom, Integer ageTo, String city,
+                                                String country, String firstName, String lastName,
                                                 Integer offset, Integer perPage) {
         String email = jwtUtils.getUserEmail(authorization);
         Person personsEmail = personRepository.findByEmail(email);
-        long findPersonQueryAll = 0L;
+        long findPersonQueryAll;
         List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            personList = personRepository.findPersonsQuery(age_from, age_to, city, country,
-                    first_name, last_name, offset, perPage, false, Math.toIntExact(personsEmail.getId()));
-            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(age_from,
-                    age_to, city, country, first_name, last_name, true, Math.toIntExact(personsEmail.getId())));
-            if (personList == null) {
-                personList = new ArrayList<>();
-            }
-            personList.forEach((person) -> {
+            personList = personRepository.findPersonsQuery(ageFrom, ageTo, city, country,
+                    firstName, lastName, offset, perPage, false, Math.toIntExact(personsEmail.getId()));
+            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(ageFrom,
+                    ageTo, city, country, firstName, lastName, true, Math.toIntExact(personsEmail.getId())));
+
+            personList.forEach(person -> {
                 PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
                 personRsList.add(personRs);
             });

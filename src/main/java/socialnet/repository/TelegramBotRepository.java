@@ -4,12 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import socialnet.api.response.TgMessagesRs;
-import socialnet.api.response.TgNotificationFromRs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -71,7 +67,7 @@ public class TelegramBotRepository {
             "       persons p " +
             " WHERE m.recipient_id = d.second_person_id " +
             "   AND p.id = m.author_id " +
-            "   AND m.read_status = 'UNREAD' " +
+            "   AND m.read_status = 'SENT' " +
             "   AND m.recipient_id = ? " +
             " ORDER BY m.author_id " +
             "OFFSET ? LIMIT ?",

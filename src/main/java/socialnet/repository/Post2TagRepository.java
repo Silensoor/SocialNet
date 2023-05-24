@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Post2Tag;
 import socialnet.model.Tag;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +51,10 @@ public class Post2TagRepository {
             try {
                 return this.jdbcTemplate.query(sql1.toString(), post2TagRowMapper);
             } catch (EmptyResultDataAccessException ignored) {
-                return null;
+                return Collections.emptyList();
             }
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

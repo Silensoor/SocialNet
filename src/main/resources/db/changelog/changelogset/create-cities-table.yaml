@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: 16(2)
-      author: Michael
+      id: create-FriendsCountryCity
+      author: isakov
       changes:
         - createTable:
             columns:
@@ -16,16 +16,29 @@ databaseChangeLog:
                   name: name
                   type: VARCHAR(255)
               - column:
-                  name: gismeteo_id
-                  type: INTEGER
-              - column:
                   name: country_id
                   type: BIGINT
               - column:
-                  name: district
-                  type: VARCHAR(255)
+                  name: state
+                  type: varchar(2)
               - column:
-                  name: sub_district
-                  type: VARCHAR(255)
+                  name: lon
+                  type: decimal
+              - column:
+                  name: lat
+                  type: decimal
+              - column:
+                  name: open_weather_id
+                  type: bigint
+              - column:
+                  name: code2
+                  type: varchar(2)
+              - column:
+                  name: international_name
+                  type: varchar(255)
+            tableName: cities
+        - addUniqueConstraint:
+            columnNames: open_weather_id
+            constraintName: unique_weather_id
             tableName: cities
 

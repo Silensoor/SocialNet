@@ -41,10 +41,12 @@ public class StatisticsService {
 
     public RegionStatisticsRs[] getCitiesUsers() {
         List<RegionStatisticsRs> rs = cityRepository.getCitiesUsers();
-        if (rs != null) {
+
+        if (!rs.isEmpty()) {
             return rs.toArray(RegionStatisticsRs[]::new);
         }
-        return null;
+
+        return new RegionStatisticsRs[0];
     }
 
     public Integer getCommentsByPost(Integer postId) {
@@ -81,7 +83,7 @@ public class StatisticsService {
 
     public Integer getLikeEntity(Integer entityId) {
         List<Like> like = likeRepository.getLikesByEntityId(entityId);
-        if (like == null || like.isEmpty()) {
+        if (like.isEmpty()) {
             throw new EmptyEmailException("Field 'entityId' " + entityId + " is empty");
         } else {
             return likeRepository.getLikesByEntityId(entityId).size();
@@ -94,7 +96,7 @@ public class StatisticsService {
 
     public TreeMap<String, Integer> getMessage(Integer firstUserId, Integer secondUserId) {
         final List<Message> messageList = messageRepository.getMessage(firstUserId, secondUserId);
-        if (messageList == null || messageList.isEmpty()) {
+        if (messageList.isEmpty()) {
             throw new EntityNotFoundException("Field 'firstUserId' " + firstUserId
                             + " or 'secondUserId' " + secondUserId + " is empty");
         } else {

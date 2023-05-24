@@ -1,6 +1,7 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CommonRs;
@@ -37,6 +38,8 @@ public class FriendsService {
 
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
+
+    private static final int RECOMMENDED_FRIENDS_COUNT = 10;
 
     public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         Person personsEmail = tokenToMail(authorization);
@@ -116,56 +119,97 @@ public class FriendsService {
     public CommonRs<List<PersonRs>> getRecommendedFriends(String authorization) {
         Person personsEmail = tokenToMail(authorization);
         List<Person> recommendationFriends = new ArrayList<>();
-        List<Person> friends = personRepository.findFriendsAll(personsEmail.getId(), 0, 20);
-        if (friends != null) {
-            recommendationFriends = personRepository.findRecommendedFriends(personsEmail.getId(),
-                    friends, 0, 20);
+        List<Person> friends = personRepository.findFriendsAll(personsEmail.getId(), 0, RECOMMENDED_FRIENDS_COUNT);
+
+        if (!friends.isEmpty()) {
+            recommendationFriends = personRepository.findRecommendedFriends(
+                personsEmail.getId(), friends, 0, RECOMMENDED_FRIENDS_COUNT
+            );
         }
-        if (recommendationFriends.size() < 10) {
+
+        if (recommendationFriends.size() < RECOMMENDED_FRIENDS_COUNT) {
             recommendationFriends.addAll(getRecommendedFriendsCity(personsEmail, recommendationFriends));
         }
-        if (recommendationFriends.size() < 10) {
-            assert friends != null;
+
+        if (recommendationFriends.size() < RECOMMENDED_FRIENDS_COUNT) {
             recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends));
         }
-        return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(),
-                personsEmail.getId());
+
+        return personToPersonRs(
+            recommendationFriends, 0, RECOMMENDED_FRIENDS_COUNT, recommendationFriends.size(), personsEmail.getId()
+        );
     }
 
     public List<Person> getRecommendedFriendsCity(Person personsEmail, List<Person> recommendationFriends){
         List<Person> recommendationFriendsCity = new ArrayList<>();
-        StringBuilder str1 = new StringBuilder();
-        recommendationFriends.forEach(friend -> str1.append(friend.getId()).append(", "));
+        List<String> recommendedFriendsIdList = new ArrayList<>();
         List<Person> cityFriends;
-        if (!str1.toString().equals("")) {
-            cityFriends = personRepository.findByCityForFriends(personsEmail.getId(),
-                    personsEmail.getCity(), str1.substring(0, str1.length() - 2), 0, 20);
+
+        for (Person friend : recommendationFriends) {
+            recommendedFriendsIdList.add(friend.getId().toString());
+        }
+
+        if (!recommendedFriendsIdList.isEmpty()) {
+            cityFriends = personRepository.findByCityForFriends(
+                personsEmail.getId(),
+                personsEmail.getCity(),
+                StringUtils.join(recommendedFriendsIdList, ","),
+                0,
+                20
+            );
         } else {
-            cityFriends = personRepository.findByCityForFriends(personsEmail.getId(),
-                    personsEmail.getCity(), "", 0, 20);
+            cityFriends = personRepository.findByCityForFriends(
+                personsEmail.getId(),
+                personsEmail.getCity(),
+                "",
+                0,
+                20
+            );
         }
-        if (cityFriends != null && !cityFriends.isEmpty()) {
-                int i = 0;
-                while (i < cityFriends.size()) {
-                    recommendationFriendsCity.add(cityFriends.get(i));
-                    if (i >= 10 - recommendationFriends.size()){
-                        return recommendationFriendsCity;
-                    }
-                    i++;
-                }
+
+        if (cityFriends.isEmpty()) {
+            return recommendationFriendsCity;
         }
+
+        int neededFriendsCount = Math.max(RECOMMENDED_FRIENDS_COUNT - recommendationFriends.size(), 0);
+
+        for (Person p : cityFriends) {
+            if (recommendationFriendsCity.size() >= neededFriendsCount) {
+                break;
+            }
+
+            recommendationFriendsCity.add(p);
+        }
+
         return recommendationFriendsCity;
     }
 
-    public List<Person> getRecommendedFriendsAll(Person personsEmail, List<Person> recommendationFriends,
-                                                 List<Person> friends){
-        StringBuilder str2 = new StringBuilder();
-        recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
-        assert friends != null;
-        friends.forEach(friend -> str2.append(friend.getId()).append(", "));
-        return new ArrayList<>(personRepository.
-                findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
-                        10 - recommendationFriends.size()));
+    public List<Person> getRecommendedFriendsAll(
+        Person personsEmail, List<Person> recommendationFriends, List<Person> friends)
+    {
+        List<String> recommendedFriendsIdList = new ArrayList<>();
+
+        for (Person recommendationFriend : recommendationFriends) {
+            recommendedFriendsIdList.add(recommendationFriend.getId().toString());
+        }
+
+        if (friends != null) {
+            for (Person friend : friends) {
+                recommendedFriendsIdList.add(friend.getId().toString());
+            }
+        }
+
+        if (recommendedFriendsIdList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return new ArrayList<>(
+            personRepository.findAllForFriends(
+                personsEmail.getId(),
+                StringUtils.join(recommendedFriendsIdList, ","),
+                Math.max(RECOMMENDED_FRIENDS_COUNT - recommendationFriends.size(), 0)
+            )
+        );
     }
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
