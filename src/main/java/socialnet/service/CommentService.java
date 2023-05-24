@@ -33,14 +33,14 @@ public class CommentService {
     public CommonRs<List<CommentRs>> getComments(Long postId, Integer offset, Integer perPage) {
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
 
-        if (commentList == null) {
+        if (commentList.isEmpty()) {
             return new CommonRs<>(new ArrayList<>(), perPage, offset, perPage, System.currentTimeMillis(), 0L);
         }
 
         List<CommentRs> comments = new ArrayList<>();
 
         for (Comment comment : commentList) {
-            if (comment.getIsDeleted()) continue;
+            if (Boolean.TRUE.equals(comment.getIsDeleted())) continue;
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
@@ -76,19 +76,19 @@ public class CommentService {
         if (commentRq.getParentId() != null) {
             Comment comment1 = commentRepository.findById(commentRq.getParentId().longValue());
             PersonSettings personSettingsCommentAuthor = personSettingRepository.getSettings(comment1.getAuthorId());
-            if (personSettingsCommentAuthor.getPostComment() &&
+            if (Boolean.TRUE.equals(personSettingsCommentAuthor.getPostComment()) &&
                     !person.getId().equals(comment1.getAuthorId())) {
                 Notification notification = NotificationPusher.
                         getNotification(NotificationType.COMMENT_COMMENT, comment1.getAuthorId(), person.getId());
                 NotificationPusher.sendPush(notification, person.getId());
             } else if (!person.getId().equals(post.getAuthorId()) && commentRq.getParentId().longValue() !=
-                    (post.getAuthorId()) && personSettingsPostAuthor.getPostComment()) {
+                    (post.getAuthorId()) && Boolean.TRUE.equals(personSettingsPostAuthor.getPostComment())) {
                 Notification notification = NotificationPusher.
                         getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
                 NotificationPusher.sendPush(notification, person.getId());
                 return new CommonRs<>(commentRs, System.currentTimeMillis());
             }
-        } else if (personSettingsPostAuthor.getPostComment() &&
+        } else if (Boolean.TRUE.equals(personSettingsPostAuthor.getPostComment()) &&
                 !post.getAuthorId().equals(person.getId())) {
             Notification notification = NotificationPusher.
                     getNotification(NotificationType.POST_COMMENT, post.getAuthorId(), person.getId());
@@ -151,7 +151,7 @@ public class CommentService {
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
 
-    public CommonRs<CommentRs> deleteComment(String jwtToken, Long id, Long commentId) {
+    public CommonRs<CommentRs> deleteComment(Long id, Long commentId) {
         Comment commentFromDB = commentRepository.findById(commentId);
         commentFromDB.setIsDeleted(true);
         commentRepository.updateById(commentFromDB, commentId);
@@ -168,61 +168,11 @@ public class CommentService {
         likeRepository.deleteAll(likes);
     }
 
-    public CommonRs<CommentRs> recoverComment(String jwtToken, Long id, Long commentId) {
+    public CommonRs<CommentRs> recoverComment(Long id, Long commentId) {
         Comment commentFromDB = commentRepository.findById(commentId);
         commentFromDB.setIsDeleted(false);
         commentRepository.updateById(commentFromDB, commentId);
         CommentRs commentRs = getCommentRs(commentFromDB, getToDTODetails(id, commentFromDB, commentId));
         return new CommonRs<>(commentRs, System.currentTimeMillis());
     }
-
-//    @Data
-//    @NoArgsConstructor
-//    public class Details {
-//        List<CommentRs> subComments;
-//        Boolean myLike;
-//        Integer likes;
-//        PersonRs author;
-//        Timestamp time;
-//        Long postId;
-//        Boolean isBlocked;
-//        Boolean isDeleted;
-//        Long id;
-//        Long authorId;
-//
-//        public Details(Timestamp time, Long postId, Boolean isBlocked, Boolean isDeleted, Long id, Long authorId) {
-//            this.time = time;
-//            this.postId = postId;
-//            this.isBlocked = isBlocked;
-//            this.isDeleted = isDeleted;
-//            this.id = id;
-//            this.authorId = authorId;
-//            this.subComments = findSubComments(id);
-//            this.likes = likeRepository.getLikesByEntityId(id).size();
-//        }
-//
-//        private List<CommentRs> findSubComments(Long id) {
-//            List<Comment> comments = commentRepository.findByPostIdParentId(id);
-//            List<CommentRs> commentRsList = new ArrayList<>();
-//            for (Comment comment : comments) {
-//                CommentRs commentRs = commentMapper.toDTO(comment, getToDTODetails(postId, comment, comment.getId()));
-//                commentRsList.add(commentRs);
-//            }
-//            return commentRsList;
-//        }
-//
-//        public Details(PersonRs author, long postId) {
-//            this.subComments = new ArrayList<>();
-//            this.myLike = false;
-//            this.likes = 0;
-//            this.author = author;
-//            this.authorId = author.getId();
-//            this.myLike = false;
-//            this.isBlocked = false;
-//            this.isDeleted = false;
-//            this.postId = postId;
-//            this.time = new Timestamp(System.currentTimeMillis());
-//
-//        }
-//    }
 }

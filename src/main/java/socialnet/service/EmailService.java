@@ -16,13 +16,13 @@ public class EmailService {
     public void passwordChangeConfirm(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         String token = jwtUtils.generateJwtToken(email);
-        String message = String.format("<p><a href=\"%schange-password?token=%s\">Confirm change [PASSWORD]!</a></p>\n", baseUrl, token);
+        String message = String.format("<p><a href=\"%schange-password?token=%s\">Confirm change [PASSWORD]!</a></p>", baseUrl, token);
         emailSender.send(email,"Подтверждение изменения пароля.", message);
     }
     public void shiftEmailConfirm(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);
         String token = jwtUtils.generateJwtToken(email);
-        String message = String.format("<p><a href=\"%sshift-email?token=%s\">Confirm change [EMAIL]!</a></p>\n", baseUrl,token);
+        String message = String.format("<p><a href=\"%sshift-email?token=%s\">Confirm change [EMAIL]!</a></p>", baseUrl,token);
         emailSender.send(email,"Подтверждение изменения email.", message);
     }
 }

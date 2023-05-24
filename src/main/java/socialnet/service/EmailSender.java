@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import socialnet.exception.SendEmailException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -25,7 +26,7 @@ public class EmailSender {
             helper.setSubject(subject);
             helper.setText(message,true);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new SendEmailException(e.getMessage());
         }
         javaMailSender.send(htmlMessage);
     }

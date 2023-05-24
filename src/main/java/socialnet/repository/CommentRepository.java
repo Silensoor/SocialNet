@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Comment;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class CommentRepository {
         try {
             return jdbcTemplate.query(select, commentRowMapper, postId);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -33,7 +34,7 @@ public class CommentRepository {
         try {
             return jdbcTemplate.query(select, commentRowMapper, postId, offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -52,7 +53,7 @@ public class CommentRepository {
         try {
             return jdbcTemplate.query(select, commentRowMapper, parentId);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -93,7 +94,7 @@ public class CommentRepository {
         try {
             return jdbcTemplate.query(select, commentRowMapper);
         } catch (EmptyResultDataAccessException ex) {
-            return null;
+            return Collections.emptyList();
         }
     }
 

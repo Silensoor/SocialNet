@@ -12,10 +12,10 @@ public class Tag {
     private String tag;
 
     public Tag(String tag) {
-        this.tag = tag.replaceAll("#", "");
+        this.tag = tag.replace("#", "");
     }
 
     public void setTag(String tag) {
-        this.tag = tag.replaceAll("#", "");
+        this.tag = tag.replace("#", "");
     }
 }
