@@ -26,7 +26,7 @@ public interface PostMapper {
     Post postRqToPost(PostRq postRq);
 
     default String getType(Post post) {
-        if (post.getIsDeleted()) {
+        if (Boolean.TRUE.equals(post.getIsDeleted())) {
             return PostType.DELETED.toString();
         }
         Timestamp postTime = post.getTime();

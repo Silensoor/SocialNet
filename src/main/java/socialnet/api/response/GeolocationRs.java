@@ -1,4 +1,4 @@
-package socialnet.dto.geolocation;
+package socialnet.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
