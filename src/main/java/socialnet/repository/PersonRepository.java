@@ -300,12 +300,21 @@ public class PersonRepository {
     }
 
 
-    public Person findPersonsName(String author) {
+    public Person findPersonByFirstOrLastName(String author) {
+        String[] firstLastName = author.split("\\s+");
+        String firstName = firstLastName[0].toLowerCase();
+        String lastName = firstLastName.length > 1 ? firstLastName[1].toLowerCase() : firstName;
+
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM persons" +
-                            " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
-                    personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
-                    author.substring(author.indexOf(" ") + 1).toLowerCase());
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM persons " +
+                " WHERE is_deleted = false " +
+                "   AND ((lower(first_name) = ? AND lower (last_name) = ?) " +
+                "    OR (lower(first_name) = ? AND lower (last_name) = ?))",
+                personRowMapper,
+                firstName, lastName,
+                lastName, firstName
+            );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
