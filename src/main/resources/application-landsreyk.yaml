@@ -1,11 +1,5 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/test
     username: landsreyk
     password: landsreyk
-
-logging:
-  level:
-    socialnet:
-      controller:
-        NewsController: debug
+    url: jdbc:postgresql://localhost:5432/test
