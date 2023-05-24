@@ -88,22 +88,12 @@ public class FindService {
             return 0;
         }
 
-        Person person = personRepository.findPersonByFirstOrLastName(author);
+        Person person = personRepository.findPersonByFirstAndLastName(author);
 
         if (person == null) {
             return 0;
         }
 
         return person.getId().intValue();
-
-        /*if (author.trim().indexOf(" ") > 0) {
-            if (personRepository.findPersonByFirstOrLastName(author) != null) {
-                return Math.toIntExact(personRepository.findPersonByFirstOrLastName(author).getId());
-            } else {
-                return 0;
-            }
-        } else {
-            return null;
-        }*/
     }
 }
