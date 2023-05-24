@@ -2,7 +2,7 @@ package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import socialnet.dto.geolocation.GeolocationRs;
+import socialnet.api.response.GeolocationRs;
 import socialnet.repository.CityRepository;
 import socialnet.repository.CountryRepository;
 
