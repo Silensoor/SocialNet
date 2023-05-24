@@ -278,6 +278,7 @@
                 <configuration>
                     <excludes>
                         <exclude>socialnet/utils/*</exclude>
+                        <exclude>socialnet/config/*</exclude>
                         <exclude>socialnet/api/*</exclude>
                         <exclude>socialnet/model/*</exclude>
                     </excludes>
