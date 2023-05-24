@@ -91,7 +91,7 @@ public class PostService {
     }
 
     public CommonRs<List<PostRs>> getFeeds(String jwtToken, int offset, int perPage) {
-        List<Post> postList = postRepository.findAll(offset, perPage);
+        List<Post> postList = postRepository.findAll(offset, perPage, System.currentTimeMillis());
         postList.sort(Comparator.comparing(Post::getTime).reversed());
         List<PostRs> postRsList = new ArrayList<>();
         long total = postRepository.getAllCount();
@@ -183,7 +183,7 @@ public class PostService {
         return commentRepository.findByPostIdParentId(parentId);
     }
 
-    public CommonRs<PostRs> createPost(PostRq postRq, int id, Integer publishDate, String jwtToken) {
+    public CommonRs<PostRs> createPost(PostRq postRq, int id, Long publishDate, String jwtToken) {
         personRepository.findById((long) id);
         Post post = setPost(postRq, publishDate, id);
         int postId = postRepository.save(post);
@@ -196,7 +196,7 @@ public class PostService {
         return new CommonRs<>(postRs, System.currentTimeMillis());
     }
 
-    private Post setPost(PostRq postRq, Integer publishDate, int id) {
+    private Post setPost(PostRq postRq, Long publishDate, int id) {
         Post post = PostMapper.INSTANCE.postRqToPost(postRq);
         post.setAuthorId((long) id);
         post.setTime(getTime(publishDate));
@@ -204,7 +204,7 @@ public class PostService {
         return post;
     }
 
-    Timestamp getTime(Integer publishDate) {
+    Timestamp getTime(Long publishDate) {
         if (publishDate == null) return new Timestamp(System.currentTimeMillis());
         return new Timestamp(publishDate);
     }
@@ -247,7 +247,7 @@ public class PostService {
 
     public CommonRs<PostRs> updatePost(int id, PostRq postRq, String jwtToken) {
         Post postFromDB = postRepository.findById(id);
-        int publishDate = (int) postFromDB.getTime().getTime();
+        long publishDate = postFromDB.getTime().getTime();
         Post post = setPost(postRq, publishDate, id);
         postRepository.updateById(id, post);
         tagRepository.deleteAll(tagRepository.findByPostId((long) id));
@@ -273,6 +273,8 @@ public class PostService {
     public CommonRs<PostRs> recoverPost(int id, String jwtToken) {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
+        postFromDB.setTimeDelete(null);
+        postRepository.save(postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);

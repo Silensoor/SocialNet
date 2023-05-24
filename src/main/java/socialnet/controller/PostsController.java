@@ -49,8 +49,9 @@ public class PostsController {
     public CommonRs<PostRs> createPost(
             @RequestHeader String authorization,
             @RequestBody PostRq postRq,
-            @RequestParam(required = false, name = "publish_date") Integer publishDate,
+            @RequestParam(required = false, name = "publish_date") Long publishDate,
             @PathVariable int id) {
+        System.out.println(publishDate);
         return postsService.createPost(postRq, id, publishDate, authorization);
     }
 
