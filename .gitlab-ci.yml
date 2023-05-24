@@ -46,10 +46,8 @@ sonarqube-check:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
-      - ./target
-      - ./.m2
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYhCd9rcgC1DxgVpVaar -Dsonar.projectName='JavaproTeams37Backend ' -Dmaven.test.skip
+    - mvn verify sonar:sonar -Dsonar.projectKey=javapro_team37_javaproteams37backend_AYhCd9rcgC1DxgVpVaar -Dsonar.projectName='JavaproTeams37Backend '
   allow_failure: true
 
 package:
