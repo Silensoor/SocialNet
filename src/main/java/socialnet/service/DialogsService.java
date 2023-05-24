@@ -120,7 +120,12 @@ public class DialogsService {
         ComplexRs complexRs = new ComplexRs();
         String userEmail = jwtUtils.getUserEmail(token);
         Person person = personRepository.getPersonByEmail(userEmail);
-        Dialog dialog = dialogsRepository.findByAuthorAndRecipient(person.getId(), dialogUserShortListDto.getUserIds().get(0));
+        long authorId = person.getId();
+        long recipientId = dialogUserShortListDto.getUserIds().get(0);
+        Dialog dialog = dialogsRepository.findByAuthorAndRecipient(authorId, recipientId);
+        if (dialog == null) {
+            dialog = dialogsRepository.findByAuthorAndRecipient(recipientId, authorId);
+        }
         long savedDialogId;
         if (dialog == null) {
             dialog = Dialog.builder()
