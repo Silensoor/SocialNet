@@ -2,6 +2,7 @@ package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,8 @@ public class FriendsController {
     @GetMapping("/friends")
     @ApiOperation(value = "get friends of current user")
     public CommonRs<List<PersonRs>> getFriends(
-            @RequestHeader @Parameter String authorization,
+            @RequestHeader @Parameter(description =  "Access Token", name = "authorization",
+                    in = ParameterIn.HEADER, required = true, example = "JWT Token") String authorization,
             @RequestParam(required = false, defaultValue = "0") @Parameter Integer offset,
             @RequestParam(required = false, defaultValue = "20") @Parameter Integer perPage) {
         return friendsService.getFriends(authorization, offset, perPage);

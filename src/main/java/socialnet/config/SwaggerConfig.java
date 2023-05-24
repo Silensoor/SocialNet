@@ -21,9 +21,9 @@ public class SwaggerConfig {
     public Docket docket() {
         Collection<ServerVariable> variables = new ArrayList<>();
         ArrayList<VendorExtension> extensions = new ArrayList<>();
-        Server server1 = new Server("server1", "http://81.177.6.228:8086",
+        Server server1 = new Server("server1", "http://81.177.6.228:8086/swagger-ui/",
                 "server1", variables, extensions);
-        Server server2 = new Server("server2", "http://localhost:8086", "server2", variables, extensions);
+        Server server2 = new Server("server2", "http://localhost:8086/swagger-ui/", "server2", variables, extensions);
         Docket docket = new Docket(DocumentationType.OAS_30)
                 .apiInfo(new ApiInfoBuilder()
                         .title("Zerone API")
@@ -35,7 +35,6 @@ public class SwaggerConfig {
                         .build())
                 .tags(new Tag("message-controller", "Endpoints for CRUD operations on messages WebSocket"))
                 .servers(server1, server2)
-                //.host("http://81.177.6.228:8086")
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .build();
