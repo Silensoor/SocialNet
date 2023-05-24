@@ -126,7 +126,10 @@ public class FriendsService {
         }
         if (recommendationFriends.size() < 10) {
             assert friends != null;
-            recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends));
+            List<Person> recommendAll = getRecommendedFriendsAll(personsEmail, recommendationFriends, friends);
+            if (recommendAll != null) {
+                recommendationFriends.addAll(recommendAll);
+            }
         }
         return personToPersonRs(recommendationFriends, 0, 20, recommendationFriends.size(),
                 personsEmail.getId());
@@ -160,12 +163,15 @@ public class FriendsService {
     public List<Person> getRecommendedFriendsAll(Person personsEmail, List<Person> recommendationFriends,
                                                  List<Person> friends){
         StringBuilder str2 = new StringBuilder();
+        List<Person> allForFriends = null;
         recommendationFriends.forEach(friend -> str2.append(friend.getId()).append(", "));
         assert friends != null;
         friends.forEach(friend -> str2.append(friend.getId()).append(", "));
-        return new ArrayList<>(personRepository.
-                findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
-                        10 - recommendationFriends.size()));
+        if (str2.length() > 2) {
+            allForFriends = personRepository.findAllForFriends(personsEmail.getId(), str2.substring(0, str2.length() - 2),
+                    10 - recommendationFriends.size());
+        }
+        return allForFriends;
     }
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
