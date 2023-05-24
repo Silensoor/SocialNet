@@ -277,9 +277,7 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>com/baeldung/**/ExcludedPOJO.class</exclude>
-                        <exclude>com/baeldung/**/*DTO.*</exclude>
-                        <exclude>**/config/*</exclude>
+                        <exclude>socialnet/utils/*</exclude>
                         <exclude>socialnet/api/*</exclude>
                         <exclude>socialnet/model/*</exclude>
                     </excludes>
