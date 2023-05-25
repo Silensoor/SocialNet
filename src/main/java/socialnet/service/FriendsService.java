@@ -8,7 +8,6 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.NotificationType;
 import socialnet.api.response.PersonRs;
-import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Friendships;
 import socialnet.model.Notification;
@@ -52,12 +51,8 @@ public class FriendsService {
 
     public Person tokenToMail(String jwtToken) {
         String email = jwtUtils.getUserEmail(jwtToken);
-        Person personsEmail = personRepository.findByEmail(email);
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            return personsEmail;
-        }
+        return personRepository.findByEmail(email);
+
     }
 
     public synchronized CommonRs<List<PersonRs>> personToPersonRs(List<Person> personList, Integer offset, Integer perPage,

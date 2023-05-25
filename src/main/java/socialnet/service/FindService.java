@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PersonRs;
 import socialnet.api.response.PostRs;
-import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.model.Post;
@@ -27,16 +26,7 @@ public class FindService {
     private final PostRepository postRepository;
     private final PostService postService;
 
-    public CommonRs<List<PostRs>> getPostsByQuery(SearchOptions searchOptions)
-
-    {
-        String email = jwtUtils.getUserEmail(searchOptions.getJwtToken());
-        Person person = personRepository.findByEmail(email);
-
-        if (person == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        }
-
+    public CommonRs<List<PostRs>> getPostsByQuery(SearchOptions searchOptions) {
         List<PostRs> postRsList = new ArrayList<>();
         long postListAll;
         searchOptions.setFlagQueryAll(false);
@@ -64,21 +54,18 @@ public class FindService {
         long findPersonQueryAll;
         List<Person> personList;
         List<PersonRs> personRsList = new ArrayList<>();
-        if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
-        } else {
-            searchOptions.setFlagQueryAll(false);
-            searchOptions.setId(Math.toIntExact(personsEmail.getId()));
-            personList = personRepository.findPersonsQuery(searchOptions);
+        searchOptions.setFlagQueryAll(false);
+        searchOptions.setId(Math.toIntExact(personsEmail.getId()));
+        personList = personRepository.findPersonsQuery(searchOptions);
 
-            searchOptions.setFlagQueryAll(true);
-            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(searchOptions));
+        searchOptions.setFlagQueryAll(true);
+        findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(searchOptions));
 
-            personList.forEach(person -> {
-                PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-                personRsList.add(personRs);
-            });
-        }
+        personList.forEach(person -> {
+            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+            personRsList.add(personRs);
+        });
+
         personRsList.sort(Comparator.comparing(PersonRs::getRegDate).reversed());
         return new CommonRs<>(personRsList, personRsList.size(), searchOptions.getOffset(), searchOptions.getPerPage(),
                 System.currentTimeMillis(), findPersonQueryAll);
