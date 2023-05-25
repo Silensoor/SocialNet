@@ -9,6 +9,7 @@ import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.model.Person;
 import socialnet.model.Post;
+import socialnet.model.SearchOptions;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -26,11 +27,10 @@ public class FindService {
     private final PostRepository postRepository;
     private final PostService postService;
 
-    public CommonRs<List<PostRs>> getPostsByQuery(String jwtToken, String author, Long dateFrom,
-                                                  Long dateTo, Integer offset, Integer perPage,
-                                                  String[] tags, String text)
+    public CommonRs<List<PostRs>> getPostsByQuery(SearchOptions searchOptions)
+
     {
-        String email = jwtUtils.getUserEmail(jwtToken);
+        String email = jwtUtils.getUserEmail(searchOptions.getJwtToken());
         Person person = personRepository.findByEmail(email);
 
         if (person == null) {
@@ -39,28 +39,27 @@ public class FindService {
 
         List<PostRs> postRsList = new ArrayList<>();
         long postListAll;
-        List<Post> postList = postRepository.findPostStringSql(findAuthorId(author), dateFrom, dateTo, text,
-                    perPage, offset, tags, false);
-        postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthorId(author), dateFrom,
-                    dateTo, text, tags, true));
+        searchOptions.setFlagQueryAll(false);
+
+        List<Post> postList = postRepository.findPostStringSql(searchOptions);
+
+        searchOptions.setFlagQueryAll(true);
+        postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(searchOptions));
 
         postList.forEach(post -> {
             int postId = post.getId().intValue();
-            PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, jwtToken);
+            PostServiceDetails details1 = postService.getDetails(post.getAuthorId(), postId, searchOptions.getJwtToken());
             PostRs postRs = PostService.setPostRs(post, details1);
             postRsList.add(postRs);
         });
 
-        postRsList.sort(Comparator.comparing(PostRs::getTime).reversed());
-
-        return new CommonRs<>(postRsList, postRsList.size(), offset, perPage, System.currentTimeMillis(),
-                    postListAll);
+        return new CommonRs<>(postRsList, postRsList.size(), searchOptions.getOffset(), searchOptions.getPerPage(),
+                System.currentTimeMillis(), postListAll);
     }
 
-    public CommonRs<List<PersonRs>> findPersons(String authorization, Integer ageFrom, Integer ageTo, String city,
-                                                String country, String firstName, String lastName,
-                                                Integer offset, Integer perPage) {
-        String email = jwtUtils.getUserEmail(authorization);
+    public CommonRs<List<PersonRs>> findPersons(SearchOptions searchOptions) {
+
+        String email = jwtUtils.getUserEmail(searchOptions.getJwtToken());
         Person personsEmail = personRepository.findByEmail(email);
         long findPersonQueryAll;
         List<Person> personList;
@@ -68,10 +67,12 @@ public class FindService {
         if (personsEmail == null) {
             throw new EmptyEmailException("Field 'email' is empty");
         } else {
-            personList = personRepository.findPersonsQuery(ageFrom, ageTo, city, country,
-                    firstName, lastName, offset, perPage, false, Math.toIntExact(personsEmail.getId()));
-            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(ageFrom,
-                    ageTo, city, country, firstName, lastName, true, Math.toIntExact(personsEmail.getId())));
+            searchOptions.setFlagQueryAll(false);
+            searchOptions.setId(Math.toIntExact(personsEmail.getId()));
+            personList = personRepository.findPersonsQuery(searchOptions);
+
+            searchOptions.setFlagQueryAll(true);
+            findPersonQueryAll = Integer.toUnsignedLong(personRepository.findPersonsQueryAll(searchOptions));
 
             personList.forEach(person -> {
                 PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
@@ -79,20 +80,8 @@ public class FindService {
             });
         }
         personRsList.sort(Comparator.comparing(PersonRs::getRegDate).reversed());
-        return new CommonRs<>(personRsList, personRsList.size(), offset, perPage, System.currentTimeMillis(),
-                findPersonQueryAll);
+        return new CommonRs<>(personRsList, personRsList.size(), searchOptions.getOffset(), searchOptions.getPerPage(),
+                System.currentTimeMillis(), findPersonQueryAll);
     }
 
-    public Integer findAuthorId(String author) {
-        if (author.trim().contains(" ")) {
-            if (personRepository.findPersonsName(author) != null) {
-                return Math.toIntExact(personRepository.findPersonsName(author).getId());
-            } else {
-                return 0;
-            }
-        } else {
-            return null;
-        }
-
-    }
 }

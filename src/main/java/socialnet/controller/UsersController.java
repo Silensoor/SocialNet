@@ -10,6 +10,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.ComplexRs;
 import socialnet.api.response.PersonRs;
 import socialnet.aspects.OnlineStatusUpdatable;
+import socialnet.model.SearchOptions;
 import socialnet.service.FindService;
 import socialnet.service.PersonService;
 
@@ -61,8 +62,18 @@ public class UsersController {
                                                 @RequestParam(required = false, defaultValue = "20")
                                                 Integer perPage) {
 
-        return findService.findPersons(authorization, ageFrom, ageTo, city, country, firstName,
-                lastName, offset, perPage);
+        SearchOptions searchOptions = new SearchOptions();
+        searchOptions.setJwtToken(authorization);
+        searchOptions.setAgeFrom(ageFrom);
+        searchOptions.setAgeTo(ageTo);
+        searchOptions.setCity(city);
+        searchOptions.setCountry(country);
+        searchOptions.setFirstName(firstName);
+        searchOptions.setLastName(lastName);
+        searchOptions.setOffset(offset);
+        searchOptions.setPerPage(perPage);
+        return findService.findPersons(searchOptions);
+
     }
 
     @OnlineStatusUpdatable

@@ -9,6 +9,7 @@ import socialnet.api.request.PostRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.PostRs;
 import socialnet.aspects.OnlineStatusUpdatable;
+import socialnet.model.SearchOptions;
 import socialnet.service.FindService;
 import socialnet.service.PostService;
 
@@ -101,6 +102,15 @@ public class PostsController {
         @RequestParam(required = false) String[] tags,
         @RequestParam(required = false, defaultValue = "") String text)
     {
-        return findService.getPostsByQuery(authorization, author, dateFrom, dateTo, offset, perPage, tags, text);
+        SearchOptions searchOptions = new SearchOptions();
+        searchOptions.setJwtToken(authorization);
+        searchOptions.setAuthor(author);
+        searchOptions.setDateFrom(dateFrom);
+        searchOptions.setDateTo(dateTo);
+        searchOptions.setTags(tags);
+        searchOptions.setText(text);
+        searchOptions.setOffset(offset);
+        searchOptions.setPerPage(perPage);
+        return findService.getPostsByQuery(searchOptions);
     }
 }
