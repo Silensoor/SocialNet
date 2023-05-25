@@ -23,6 +23,8 @@ public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
 
+    private static final String AND = "' AND ";
+
 
     public Long insert(Person person) {
         String sql = "Insert into Persons " + reflection.getFieldNames(person, new String[] {"id"}) +
@@ -260,8 +262,9 @@ public class PersonRepository {
         }
     }
 
-    private String createSqlPerson(Integer pAgeFrom, Integer pAgeTo, String city, String country,
+    private String createSqlPerson(Integer ageFrom, Integer ageTo, String city, String country,
                                    String firstName, String lastName, Boolean flagQueryAll, Integer id) {
+
         StringBuilder str = new StringBuilder();
         String sql;
         if (Boolean.TRUE.equals(flagQueryAll)) {
@@ -269,18 +272,21 @@ public class PersonRepository {
         } else {
             str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
         }
-        val ageFrom = searchDate(pAgeFrom);
-        val ageTo = searchDate(pAgeTo);
-        str.append(pAgeFrom > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
-                .append(pAgeTo > 0 ? " birth_date > '" + ageTo + "' AND " : "")
-                .append(!city.equals("") ? " city = '" + city + "' AND " : "")
-                .append(!country.equals("") ? " country = '" + country + "' AND " : "");
-        if (firstName.equals("'")){
+        Timestamp ageFromTimestamp = searchDate(ageFrom);
+        Timestamp ageToTimestamp = searchDate(ageTo);
+        if (firstName.equals("'")) {
             firstName = "\"";
         }
-        str.append(!firstName.equals("") ? " first_name = '" + firstName + "' AND " : "")
-                .append(!lastName.equals("") ? " last_name = '" + lastName + "' AND " : "");
-        str.append(" NOT id = " + id + " ");
+        str.append(ageFrom > 0 ? " birth_date < '" + ageFromTimestamp + AND : "")
+                .append(ageTo > 0 ? " birth_date > '" + ageToTimestamp + AND : "")
+                .append(!city.equals("") ? " city = '" + city + AND : "")
+                .append(!country.equals("") ? " country = '" + country + AND : "")
+                .append(!firstName.equals("") ? " first_name = '" + firstName + AND : "")
+                .append(!lastName.equals("") ? " last_name = '" + lastName + AND : "")
+                .append(" NOT id = ")
+                .append(id)
+                .append(" ");
+
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);
         } else {
@@ -293,9 +299,9 @@ public class PersonRepository {
         }
     }
 
-    private Timestamp searchDate(Integer age) {
+    private Timestamp searchDate(Integer ageSearch) {
         val timestamp = new Timestamp(new Date().getTime());
-        timestamp.setYear(timestamp.getYear() - age);
+        timestamp.setYear(timestamp.getYear() - ageSearch);
         return timestamp;
     }
 
@@ -365,7 +371,7 @@ public class PersonRepository {
                             " p.city, p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
                             " JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
                             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=?" +
-                            " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
+                            " AND friendships.status_name IN ('REQUEST', 'RECEIVED_REQUEST') OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
@@ -378,7 +384,7 @@ public class PersonRepository {
             "  FROM persons AS p " +
             "  JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id " +
             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=? " +
-            "   AND friendships.status_name = 'REQUEST' ",
+            "   AND friendships.status_name  IN ('REQUEST', 'RECEIVED_REQUEST') ",
             Long.class, id, id);
     }
 
@@ -395,9 +401,9 @@ public class PersonRepository {
     }
 
     public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND NOT id IN(")
-                .append(friendsRecommended)
-                .append(") AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
+        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false ")
+                .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(" AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
         } catch (EmptyResultDataAccessException ignored) {

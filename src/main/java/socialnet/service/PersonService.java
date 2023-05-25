@@ -21,6 +21,7 @@ import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Friendships;
 import socialnet.model.Person;
 import socialnet.model.PersonSettings;
+import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
@@ -121,10 +122,15 @@ public class PersonService {
     private void changeFriendStatus(String authorization, Integer id, PersonRs personRs) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
-        final Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
-        if (friendStatus != null){
-            personRs.setFriendStatus(friendStatus.getStatusName().toString());
-            if (friendStatus.equals("BLOCKED")){
+        Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
+        if (friendStatus != null) {
+            if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
+                    && friendStatus.getDstPersonId().equals(person.getId())) {
+                personRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
+            } else {
+                personRs.setFriendStatus(friendStatus.getStatusName().toString());
+            }
+            if (friendStatus.getStatusName().toString().equals("BLOCKED")) {
                 personRs.setIsBlockedByCurrentUser(true);
             }
         } else {
