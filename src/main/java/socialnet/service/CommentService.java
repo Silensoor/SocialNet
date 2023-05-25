@@ -40,16 +40,18 @@ public class CommentService {
         List<CommentRs> comments = new ArrayList<>();
 
         for (Comment comment : commentList) {
-            if (Boolean.TRUE.equals(comment.getIsDeleted())) continue;
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
         }
 
-        comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        Long total = commentRepository.countByPostId(postId);
+        Long total = commentRepository.countCommentsByPostId(postId);
 
         return new CommonRs<>(comments, perPage, offset, perPage, System.currentTimeMillis(), total);
+    }
+
+    public long getCommentsCount(long postId) {
+        return commentRepository.countCommentsByPostId(postId);
     }
 
     private CommentRs getCommentRs(Comment comment, CommentServiceDetails details) {
