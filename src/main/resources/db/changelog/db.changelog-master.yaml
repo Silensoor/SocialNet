@@ -47,4 +47,6 @@ databaseChangeLog:
       file: db/changelog/changelogset/add-fk-constraints.yaml
   - include:
       file: db/changelog/changelogset/add-notnull-constraints.yaml
+  - include:
+      file: db/changelog/changelogset/city-international-rus.sql
 
