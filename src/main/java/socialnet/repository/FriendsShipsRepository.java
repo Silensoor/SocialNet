@@ -28,10 +28,11 @@ public class FriendsShipsRepository {
 
     public Friendships findFriend(Long id, Long idFriend) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM friendships" +
-                            " WHERE status_name = 'FRIEND' AND (dst_person_id = ? AND src_person_id = ?)" +
-                            " OR (dst_person_id = ? AND src_person_id = ?)",
-                    friendshipsRowMapper, id, idFriend, idFriend, id);
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM friendships " +
+                " WHERE status_name = 'FRIEND' AND (dst_person_id = ? AND src_person_id = ?) " +
+                "    OR (dst_person_id = ? AND src_person_id = ?)",
+                friendshipsRowMapper, id, idFriend, idFriend, id);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }

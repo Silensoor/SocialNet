@@ -11,6 +11,7 @@ import socialnet.repository.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 @Service
@@ -94,7 +95,7 @@ public class StatisticsService {
         return messageRepository.getAllMessage();
     }
 
-    public TreeMap<String, Integer> getMessage(Integer firstUserId, Integer secondUserId) {
+    public SortedMap<String, Integer> getMessage(Integer firstUserId, Integer secondUserId) {
         final List<Message> messageList = messageRepository.getMessage(firstUserId, secondUserId);
         if (messageList.isEmpty()) {
             throw new EntityNotFoundException("Field 'firstUserId' " + firstUserId

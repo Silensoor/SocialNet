@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
 import org.springframework.stereotype.Component;
+import socialnet.exception.ParserException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -96,7 +97,7 @@ public class CityParser {
             }
             return cityDtoSet;
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new ParserException(e.getMessage());
         }
     }
 

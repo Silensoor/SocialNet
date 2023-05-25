@@ -2,6 +2,7 @@ package socialnet.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.SortedMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.service.StatisticsService;
-
-import java.util.TreeMap;
 
 @RestController
 @RequestMapping("/api/v1/statistics")
@@ -93,7 +92,7 @@ public class StatisticsController {
     @GetMapping("/message/all")
     @ApiOperation(value = "get the number of messages by id's of two persons. This method return map where key is" +
             " description who author, and who recipient. And value is number of message")
-    public TreeMap<String, Integer> getMessage(@RequestParam(required = false, defaultValue = "0") Integer firstUserId,
+    public SortedMap<String, Integer> getMessage(@RequestParam(required = false, defaultValue = "0") Integer firstUserId,
                                                @RequestParam(required = false, defaultValue = "0") Integer secondUserId)
     {
         return statisticsService.getMessage(firstUserId, secondUserId);

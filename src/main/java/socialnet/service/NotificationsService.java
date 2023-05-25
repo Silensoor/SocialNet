@@ -26,11 +26,13 @@ public class NotificationsService {
     private final NotificationRepository notificationRepository;
     private final PersonSettingRepository personSettingRepository;
 
+    private static final String EMPTY_EMAIL_ERROR = "Field 'email' is empty";
+
     public CommonRs<List<NotificationRs>> putNotifications(Boolean all, Integer notificationId, String token) {
         String email = jwtUtils.getUserEmail(token);
         Person personList = personRepository.findByEmail(email);
         if (personList == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
+            throw new EmptyEmailException(EMPTY_EMAIL_ERROR);
         }
         List<NotificationRs> notificationRsList = new ArrayList<>();
         if (all!=null&&all) {
@@ -59,7 +61,7 @@ public class NotificationsService {
         String email = jwtUtils.getUserEmail(token);
         Person person = personRepository.findByEmail(email);
         if (person == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
+            throw new EmptyEmailException(EMPTY_EMAIL_ERROR);
         } else {
             Long id = person.getId();
             List<Notification> notifications = notificationRepository.getNotifications(id, itemPerPage, offset);
@@ -88,7 +90,7 @@ public class NotificationsService {
         String email = jwtUtils.getUserEmail(token);
         Person personsEmail = personRepository.findByEmail(email);
         if (personsEmail == null) {
-            throw new EmptyEmailException("Field 'email' is empty");
+            throw new EmptyEmailException(EMPTY_EMAIL_ERROR);
         } else {
             Long id = personsEmail.getId();
             String typeNotification = getSqlFieldName(notificationRq.getNotificationType());

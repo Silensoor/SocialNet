@@ -2,6 +2,7 @@ package socialnet.utils;
 
 
 import org.springframework.stereotype.Component;
+import socialnet.exception.InvokeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -34,12 +35,8 @@ public class Reflection {
             Method method = cls.getClass().getDeclaredMethod(methodName);
             method.setAccessible(true);
             return method.invoke(cls);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new InvokeException(e.getMessage());
         }
     }
 

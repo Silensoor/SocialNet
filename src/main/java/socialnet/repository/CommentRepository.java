@@ -29,12 +29,38 @@ public class CommentRepository {
     }
 
     public List<Comment> findByPostId(Long postId, int offset, int perPage) {
-        String select = "SELECT * FROM post_comments WHERE is_deleted = false AND post_id = ? " +
-                "ORDER BY time DESC OFFSET ? ROWS LIMIT ?";
+        String select =
+            "SELECT * " +
+            "  FROM post_comments " +
+            " WHERE is_deleted = false " +
+            "   AND post_id = ? " +
+            "   AND is_blocked = false " +
+            "   AND (parent_id IS NULL OR pc.parent_id = 0) " +
+            " ORDER BY time DESC OFFSET ? ROWS LIMIT ?";
+
         try {
             return jdbcTemplate.query(select, commentRowMapper, postId, offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
+        }
+    }
+
+    public Long countCommentsByPostId(long postId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT (COUNT(1) " +
+                "  FROM post_comments pc " +
+                " WHERE pc.post_id = ? " +
+                "   AND pc.is_blocked = false " +
+                "   AND pc.is_deleted = false " +
+                "   AND (pc.parent_id IS NULL " +
+                "    OR pc.parent_id = 0) " +
+                " ORDER BY pc.time DESC",
+                Long.class,
+                postId
+            );
+        } catch (EmptyResultDataAccessException | NullPointerException e) {
+            return 0L;
         }
     }
 

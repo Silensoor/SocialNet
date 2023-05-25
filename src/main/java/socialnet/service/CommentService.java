@@ -17,8 +17,8 @@ import socialnet.utils.NotificationPusher;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,20 +34,18 @@ public class CommentService {
         List<Comment> commentList = commentRepository.findByPostId(postId, offset, perPage);
 
         if (commentList.isEmpty()) {
-            return new CommonRs<>(new ArrayList<>(), perPage, offset, perPage, System.currentTimeMillis(), 0L);
+            return new CommonRs<>(Collections.emptyList(), perPage, offset, perPage, System.currentTimeMillis(), 0L);
         }
 
         List<CommentRs> comments = new ArrayList<>();
 
         for (Comment comment : commentList) {
-            if (Boolean.TRUE.equals(comment.getIsDeleted())) continue;
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
         }
 
-        comments = comments.stream().filter(c -> c.getParentId() == 0).collect(Collectors.toList());
-        Long total = commentRepository.countByPostId(postId);
+        Long total = commentRepository.countCommentsByPostId(postId);
 
         return new CommonRs<>(comments, perPage, offset, perPage, System.currentTimeMillis(), total);
     }
@@ -61,7 +59,6 @@ public class CommentService {
 
         return commentRs;
     }
-
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
         Person person =getPerson(jwtToken);
