@@ -299,19 +299,12 @@ public class PersonRepository {
         return timestamp;
     }
 
-    public Person findPersonByFirstAndLastName(String author) {
-        String[] firstLastName = author.split("\\s+");
-        String firstName = firstLastName[0].toLowerCase();
-        String lastName = firstLastName.length > 1 ? firstLastName[1].toLowerCase() : "";
-
+    public Person findPersonsName(String author) {
         try {
-            return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons " +
-                " WHERE is_deleted = false " +
-                "   AND lower(first_name) = ? " +
-                "   AND lower(last_name) = ?",
-                personRowMapper, firstName, lastName
-            );
+            return jdbcTemplate.queryForObject("SELECT * FROM persons" +
+                            " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
+                    personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
+                    author.substring(author.indexOf(" ") + 1).toLowerCase());
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }

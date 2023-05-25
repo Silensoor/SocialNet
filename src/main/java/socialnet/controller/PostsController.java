@@ -51,7 +51,7 @@ public class PostsController {
             @RequestBody PostRq postRq,
             @RequestParam(required = false, name = "publish_date") Long publishDate,
             @PathVariable int id) {
-        log.info(publishDate.toString());
+        log.info(String.valueOf(publishDate));
         return postsService.createPost(postRq, id, publishDate, authorization);
     }
 

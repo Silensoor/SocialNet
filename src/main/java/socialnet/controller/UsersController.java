@@ -44,17 +44,17 @@ public class UsersController {
     @GetMapping("/search")
     @ApiOperation(value = "search post by query")
     public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
-                                                @RequestParam(required = false, defaultValue = "0")
+                                                @RequestParam(name = "age_from", required = false, defaultValue = "0")
                                                 Integer ageFrom,
-                                                @RequestParam(required = false, defaultValue = "0")
+                                                @RequestParam(name = "age_to", required = false, defaultValue = "0")
                                                 Integer ageTo,
                                                 @RequestParam(required = false, defaultValue = "")
                                                 String city,
                                                 @RequestParam(required = false, defaultValue = "")
                                                 String country,
-                                                @RequestParam(required = false, defaultValue = "")
+                                                @RequestParam(name = "first_name", required = false, defaultValue = "")
                                                 String firstName,
-                                                @RequestParam(required = false, defaultValue = "")
+                                                @RequestParam(name = "last_name", required = false, defaultValue = "")
                                                 String lastName,
                                                 @RequestParam(required = false, defaultValue = "0")
                                                 Integer offset,
