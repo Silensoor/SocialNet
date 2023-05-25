@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
@@ -25,8 +24,7 @@ public class MailConfig {
     private String debug;
 
     @Bean
-    public JavaMailSender getMailSender() throws IOException {
-
+    public JavaMailSender getMailSender() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 
         javaMailSender.setHost(host);
@@ -45,5 +43,4 @@ public class MailConfig {
 
         return javaMailSender;
     }
-
 }

@@ -260,8 +260,8 @@ public class PersonRepository {
         }
     }
 
-    private String createSqlPerson(Integer age_from, Integer age_to, String city, String country,
-                                   String first_name, String last_name, Boolean flagQueryAll, Integer id) {
+    private String createSqlPerson(Integer pAgeFrom, Integer pAgeTo, String city, String country,
+                                   String firstName, String lastName, Boolean flagQueryAll, Integer id) {
         StringBuilder str = new StringBuilder();
         String sql;
         if (Boolean.TRUE.equals(flagQueryAll)) {
@@ -269,17 +269,17 @@ public class PersonRepository {
         } else {
             str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
         }
-        val ageFrom = searchDate(age_from);
-        val ageTo = searchDate(age_to);
-        str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
-                .append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "")
+        val ageFrom = searchDate(pAgeFrom);
+        val ageTo = searchDate(pAgeTo);
+        str.append(pAgeFrom > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
+                .append(pAgeTo > 0 ? " birth_date > '" + ageTo + "' AND " : "")
                 .append(!city.equals("") ? " city = '" + city + "' AND " : "")
                 .append(!country.equals("") ? " country = '" + country + "' AND " : "");
-        if (first_name.equals("'")){
-            first_name = "\"";
+        if (firstName.equals("'")){
+            firstName = "\"";
         }
-        str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
-                .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
+        str.append(!firstName.equals("") ? " first_name = '" + firstName + "' AND " : "")
+                .append(!lastName.equals("") ? " last_name = '" + lastName + "' AND " : "");
         str.append(" NOT id = " + id + " ");
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);

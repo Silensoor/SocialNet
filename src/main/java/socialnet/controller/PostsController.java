@@ -3,6 +3,7 @@ package socialnet.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.CommonRs;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "posts-controller", description = "Get feeds. Get, update, delete, recover, find post, get users post, create post")
 public class PostsController {
     private final PostService postsService;
@@ -49,7 +51,7 @@ public class PostsController {
             @RequestBody PostRq postRq,
             @RequestParam(required = false, name = "publish_date") Long publishDate,
             @PathVariable int id) {
-        System.out.println(publishDate);
+        log.info(publishDate.toString());
         return postsService.createPost(postRq, id, publishDate, authorization);
     }
 

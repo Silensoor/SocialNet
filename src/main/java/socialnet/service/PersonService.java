@@ -52,12 +52,12 @@ public class PersonService {
 
     private final FriendsShipsRepository friendsShipsRepository;
 
-    public CommonRs delete(String authorization) {
+    public CommonRs<ComplexRs> delete(String authorization) {
         personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
         return new CommonRs<>(new ComplexRs());
     }
 
-    public CommonRs recover(String authorization) {
+    public CommonRs<ComplexRs> recover(String authorization) {
         personRepository.recover(jwtUtils.getUserEmail(authorization));
         return new CommonRs<>(new ComplexRs());
     }
@@ -106,8 +106,7 @@ public class PersonService {
         return new RegisterRs(jwtUtils.getUserEmail(authorization), System.currentTimeMillis());
     }
 
-    public CommonRs<ComplexRs> getLogout(String authorization) {
-
+    public CommonRs<ComplexRs> getLogout() {
         return setCommonRs(setComplexRs());
     }
 
@@ -194,8 +193,7 @@ public class PersonService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
-
+    public ResponseEntity<CommonRs<PersonRs>> updateUserInfo(String authorization, UserRq userRq) {
         Person person = personRepository.findByEmail(jwtUtils.getUserEmail(authorization));
 
         if (Boolean.TRUE.equals(person.getIsBlocked())) {
@@ -204,18 +202,19 @@ public class PersonService {
 
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         UserUpdateDto userUpdateDto = UserDtoMapper.INSTANCE.toDto(userRq);
-
         userUpdateDto.setPhoto(person.getPhoto());
-        if (userUpdateDto.getPhoto() == null)
+
+        if (userUpdateDto.getPhoto() == null) {
             userUpdateDto.setPhoto(defaultPhoto);
+        }
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
-        return ResponseEntity.ok(new CommonRs(personRs));
+        return ResponseEntity.ok(new CommonRs<>(personRs));
     }
 
 
-    public CommonRs getPersonSettings(String authorization) {
+    public CommonRs<List<PersonSettingsRs>> getPersonSettings(String authorization) {
         PersonSettings personSettings = personSettingRepository
                 .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
 
@@ -228,7 +227,7 @@ public class PersonService {
         return new CommonRs<>(list);
     }
 
-    public CommonRs setSetting(String authorization, PersonSettingsRq personSettingsRq) {
+    public CommonRs<ComplexRs> setSetting(String authorization, PersonSettingsRq personSettingsRq) {
         personSettingRepository.setSetting(
                 personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)),
                 personSettingsRq);

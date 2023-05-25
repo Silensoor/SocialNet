@@ -42,6 +42,11 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.badRequest().body(makeErrorRs("SendEmailException", e));
     }
 
+    @ExceptionHandler(ParserException.class)
+    public ResponseEntity<ErrorRs> handleParserException(ParserException e) {
+        return ResponseEntity.badRequest().body(makeErrorRs("ParserException", e));
+    }
+
     private ErrorRs makeErrorRs(String error, Exception e) {
         ErrorRs errorRs = new ErrorRs();
         errorRs.setError(error);

@@ -60,7 +60,6 @@ public class CommentServiceDetails {
         this.likes = 0;
         this.author = author;
         this.authorId = author.getId();
-        this.myLike = false;
         this.isBlocked = false;
         this.isDeleted = false;
         this.postId = postId;
