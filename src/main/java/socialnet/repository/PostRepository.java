@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import socialnet.model.Post;
 import socialnet.service.TagService;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -32,6 +33,14 @@ public class PostRepository {
             return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
+        }
+    }
+
+    public List<Post> findAll(int offset, int perPage, long currentTime) {
+        try {
+            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, new Timestamp(currentTime), offset, perPage);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
         }
     }
 
