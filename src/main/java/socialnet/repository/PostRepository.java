@@ -161,7 +161,7 @@ public class PostRepository {
         }
         if (tags != null) {
             post2TagList = tagService.getPostByQueryTags(tags);
-            sql.append("JOIN post2tag ON posts.id=post2tag.post_id");
+            sql.append(" JOIN post2tag ON posts.id=post2tag.post_id");
         }
         sql.append(" WHERE is_deleted = false AND ");
         if (authorId != null) {
@@ -169,7 +169,7 @@ public class PostRepository {
         }
         sql.append(dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
         sql.append(dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
-        sql.append(post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "");
+        sql.append(!Objects.equals(post2TagList, "") ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "");
         if (text.equals("'")){
             text = "\"";
         }

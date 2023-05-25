@@ -39,9 +39,9 @@ public class FindService {
 
         List<PostRs> postRsList = new ArrayList<>();
         long postListAll;
-        List<Post> postList = postRepository.findPostStringSql(findAuthor(author), dateFrom, dateTo, text,
+        List<Post> postList = postRepository.findPostStringSql(findAuthorId(author), dateFrom, dateTo, text,
                     perPage, offset, tags, false);
-        postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthor(author), dateFrom,
+        postListAll = Integer.toUnsignedLong(postRepository.findPostStringSqlAll(findAuthorId(author), dateFrom,
                     dateTo, text, tags, true));
 
         postList.forEach(post -> {
@@ -83,8 +83,8 @@ public class FindService {
                 findPersonQueryAll);
     }
 
-    public Integer findAuthor(String author) {
-        if (author.trim().indexOf(" ") > 0) {
+    public Integer findAuthorId(String author) {
+        if (author.trim().contains(" ")) {
             if (personRepository.findPersonsName(author) != null) {
                 return Math.toIntExact(personRepository.findPersonsName(author).getId());
             } else {
