@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
 import socialnet.model.Person;
+import socialnet.model.SearchOptions;
 import socialnet.utils.Reflection;
 
 import java.sql.Timestamp;
@@ -22,6 +23,8 @@ import java.util.Objects;
 public class PersonRepository {
     private final JdbcTemplate jdbcTemplate;
     private final Reflection reflection;
+
+    private static final String AND = "' AND ";
 
 
     public Long insert(Person person) {
@@ -232,78 +235,88 @@ public class PersonRepository {
                 (Object[]) sqlParam.get("values"));
     }
 
-    public List<Person> findPersonsQuery(Integer ageFrom,
-                                         Integer ageTo, String city, String country,
-                                         String firstName, String lastName,
-                                         Integer offset, Integer perPage, Boolean flagQueryAll, Integer id) {
+    public List<Person> findPersonsQuery(SearchOptions searchOptions){
+
         try {
-            return jdbcTemplate.query(createSqlPerson(ageFrom, ageTo, city, country, firstName, lastName,
-                    flagQueryAll, id), personRowMapper, offset, perPage);
+            return jdbcTemplate.query(createSqlPerson(searchOptions), personRowMapper, searchOptions.getOffset(),
+                    searchOptions.getPerPage());
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
         }
     }
 
-    public Integer findPersonsQueryAll(Integer ageFrom, Integer ageTo, String city, String country,
-                                       String firstName, String lastName, Boolean flagQueryAll, Integer id) {
+    public Integer findPersonsQueryAll(SearchOptions searchOptions){
+
         try {
-            return jdbcTemplate.queryForObject(createSqlPerson(ageFrom, ageTo, city,
-                    country, firstName, lastName, flagQueryAll, id), Integer.class);
+            return jdbcTemplate.queryForObject(createSqlPerson(searchOptions), Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return 0;
         }
     }
 
-    private String createSqlPerson(Integer age_from, Integer age_to, String city, String country,
-                                   String first_name, String last_name, Boolean flagQueryAll, Integer id) {
+    private String createSqlPerson(SearchOptions searchOptions){
+
         StringBuilder str = new StringBuilder();
         String sql;
-        if (Boolean.TRUE.equals(flagQueryAll)) {
+        if (Boolean.TRUE.equals(searchOptions.getFlagQueryAll())) {
             str.append("SELECT COUNT(*) FROM persons WHERE is_deleted=false AND ");
         } else {
             str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
         }
-        val ageFrom = searchDate(age_from);
-        val ageTo = searchDate(age_to);
-        str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "")
-                .append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "")
-                .append(!city.equals("") ? " city = '" + city + "' AND " : "")
-                .append(!country.equals("") ? " country = '" + country + "' AND " : "");
-        if (first_name.equals("'")){
-            first_name = "\"";
+        Timestamp ageFromTimestamp = searchDate(searchOptions.getAgeFrom());
+        Timestamp ageToTimestamp = searchDate(searchOptions.getAgeTo());
+        if (searchOptions.getFirstName().equals("'")) {
+            searchOptions.setFirstName("\"");
         }
-        str.append(!first_name.equals("") ? " first_name = '" + first_name + "' AND " : "")
-                .append(!last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
-        str.append(" NOT id = " + id + " ");
+        str.append(searchOptions.getAgeFrom() > 0 ? " birth_date < '" + ageFromTimestamp + AND : "")
+                .append(searchOptions.getAgeTo() > 0 ? " birth_date > '" + ageToTimestamp + AND : "")
+                .append(!searchOptions.getCity().equals("") ? " city = '" + searchOptions.getCity() + AND : "")
+                .append(!searchOptions.getCountry().equals("") ? " country = '" + searchOptions.getCountry() + AND : "")
+                .append(!searchOptions.getFirstName().equals("") ? " first_name = '" + searchOptions.getFirstName() + AND : "")
+                .append(!searchOptions.getLastName().equals("") ? " last_name = '" + searchOptions.getLastName() + AND : "")
+                .append(" NOT id = ")
+                .append(searchOptions.getId())
+                .append(" ");
+
         if (str.substring(str.length() - 5).equals(" AND ")) {
             sql = str.substring(0, str.length() - 5);
         } else {
             sql = str.toString();
         }
-        if (Boolean.FALSE.equals(flagQueryAll)) {
+        if (Boolean.FALSE.equals(searchOptions.getFlagQueryAll())) {
             return sql + " OFFSET ? LIMIT ?";
         } else {
             return sql;
         }
     }
 
-    private Timestamp searchDate(Integer age) {
+    private Timestamp searchDate(Integer ageSearch) {
         val timestamp = new Timestamp(new Date().getTime());
-        timestamp.setYear(timestamp.getYear() - age);
+        timestamp.setYear(timestamp.getYear() - ageSearch);
         return timestamp;
     }
 
-
-    public Person findPersonsName(String author) {
+    public List<Person> findPersonsName(String author) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM persons" +
+            return jdbcTemplate.query("SELECT * FROM persons" +
                             " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
                     personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
                     author.substring(author.indexOf(" ") + 1).toLowerCase());
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
+
+    public List<Person> findPersonsFirstNameOrLastName(String name) {
+        try {
+            return jdbcTemplate.query("SELECT * FROM persons" +
+                            " WHERE is_deleted=false AND lower (first_name) = ? OR lower (last_name) = ?",
+                    personRowMapper, name.toLowerCase(), name.toLowerCase());
+        } catch (EmptyResultDataAccessException ignored) {
+            return Collections.emptyList();
+        }
+    }
+
 
     public void updateOnlineStatus(Long personId, String status) {
         jdbcTemplate.update("UPDATE persons SET online_status = ? WHERE id = ?", status, personId);
@@ -360,7 +373,7 @@ public class PersonRepository {
                             " p.city, p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
                             " JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
                             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=?" +
-                            " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
+                            " AND friendships.status_name IN ('REQUEST', 'RECEIVED_REQUEST') OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
@@ -373,7 +386,7 @@ public class PersonRepository {
             "  FROM persons AS p " +
             "  JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id " +
             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=? " +
-            "   AND friendships.status_name = 'REQUEST' ",
+            "   AND friendships.status_name  IN ('REQUEST', 'RECEIVED_REQUEST') ",
             Long.class, id, id);
     }
 
@@ -390,9 +403,9 @@ public class PersonRepository {
     }
 
     public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND NOT id IN(")
-                .append(friendsRecommended)
-                .append(") AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
+        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false ")
+                .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(" AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
         } catch (EmptyResultDataAccessException ignored) {

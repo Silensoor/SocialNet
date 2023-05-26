@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import socialnet.exception.ParserException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -22,7 +23,7 @@ public class CbRfParser extends DefaultHandler {
         try {
             return factory.newSAXParser();
         } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+            throw new ParserException(e.getMessage());
         }
     }
 

@@ -53,18 +53,15 @@ public class CommentServiceDetails {
 //        return commentRsList;
 //    }
 
-    public CommentServiceDetails (PersonRs author,
-                                  long postId) {
+    public CommentServiceDetails (PersonRs author, long postId) {
         this.subComments = new ArrayList<>();
         this.myLike = false;
         this.likes = 0;
         this.author = author;
         this.authorId = author.getId();
-        this.myLike = false;
         this.isBlocked = false;
         this.isDeleted = false;
         this.postId = postId;
         this.time = new Timestamp(System.currentTimeMillis());
-
     }
 }

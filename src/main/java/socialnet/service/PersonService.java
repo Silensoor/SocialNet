@@ -21,6 +21,7 @@ import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Friendships;
 import socialnet.model.Person;
 import socialnet.model.PersonSettings;
+import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
@@ -52,12 +53,12 @@ public class PersonService {
 
     private final FriendsShipsRepository friendsShipsRepository;
 
-    public CommonRs delete(String authorization) {
+    public CommonRs<ComplexRs> delete(String authorization) {
         personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
         return new CommonRs<>(new ComplexRs());
     }
 
-    public CommonRs recover(String authorization) {
+    public CommonRs<ComplexRs> recover(String authorization) {
         personRepository.recover(jwtUtils.getUserEmail(authorization));
         return new CommonRs<>(new ComplexRs());
     }
@@ -106,8 +107,7 @@ public class PersonService {
         return new RegisterRs(jwtUtils.getUserEmail(authorization), System.currentTimeMillis());
     }
 
-    public CommonRs<ComplexRs> getLogout(String authorization) {
-
+    public CommonRs<ComplexRs> getLogout() {
         return setCommonRs(setComplexRs());
     }
 
@@ -122,14 +122,19 @@ public class PersonService {
     private void changeFriendStatus(String authorization, Integer id, PersonRs personRs) {
         String email = jwtUtils.getUserEmail(authorization);
         Person person = personRepository.findByEmail(email);
-        final Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
+        Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
         if (friendStatus != null) {
-            personRs.setFriendStatus(friendStatus.getStatusName().toString());
-            if (friendStatus.equals("BLOCKED")) {
+            if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
+                    && friendStatus.getDstPersonId().equals(person.getId())) {
+                personRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
+            } else {
+                personRs.setFriendStatus(friendStatus.getStatusName().name());
+            }
+            if (friendStatus.getStatusName().toString().equals(FriendshipStatusTypes.BLOCKED.name())) {
                 personRs.setIsBlockedByCurrentUser(true);
             }
         } else {
-            personRs.setFriendStatus("UNKNOWN");
+            personRs.setFriendStatus(FriendshipStatusTypes.UNKNOWN.name());
             personRs.setIsBlockedByCurrentUser(null);
         }
     }
@@ -194,28 +199,28 @@ public class PersonService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
-
+    public ResponseEntity<CommonRs<PersonRs>> updateUserInfo(String authorization, UserRq userRq) {
         Person person = personRepository.findByEmail(jwtUtils.getUserEmail(authorization));
 
-        if (person.getIsBlocked()) {
+        if (Boolean.TRUE.equals(person.getIsBlocked())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         UserUpdateDto userUpdateDto = UserDtoMapper.INSTANCE.toDto(userRq);
-
         userUpdateDto.setPhoto(person.getPhoto());
-        if (userUpdateDto.getPhoto() == null)
+
+        if (userUpdateDto.getPhoto() == null) {
             userUpdateDto.setPhoto(defaultPhoto);
+        }
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
-        return ResponseEntity.ok(new CommonRs(personRs));
+        return ResponseEntity.ok(new CommonRs<>(personRs));
     }
 
 
-    public CommonRs getPersonSettings(String authorization) {
+    public CommonRs<List<PersonSettingsRs>> getPersonSettings(String authorization) {
         PersonSettings personSettings = personSettingRepository
                 .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
 
@@ -229,7 +234,7 @@ public class PersonService {
         return new CommonRs<>(list);
     }
 
-    public CommonRs setSetting(String authorization, PersonSettingsRq personSettingsRq) {
+    public CommonRs<ComplexRs> setSetting(String authorization, PersonSettingsRq personSettingsRq) {
         personSettingRepository.setSetting(
                 personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)),
                 personSettingsRq);

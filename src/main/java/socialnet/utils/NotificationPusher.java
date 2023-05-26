@@ -20,14 +20,10 @@ import java.time.Instant;
 @Component
 @Slf4j
 public class NotificationPusher {
-
     private static SimpMessagingTemplate messagingTemplate;
-
     private static PersonRepository personRepository;
-
     private static NotificationRepository repository;
     private static TelegramBotService telegramBotService;
-
 
     public NotificationPusher(
         SimpMessagingTemplate simpMessagingTemplate,

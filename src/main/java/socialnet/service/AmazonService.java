@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.io.InputStream;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AmazonService {
     @Value("${s3.bucket}")
     private String bucket;
@@ -25,7 +27,7 @@ public class AmazonService {
         try {
             amazonS3.putObject(bucket, fileName, inputStream, objectMetadata);
         } catch (AmazonServiceException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             throw new IllegalStateException("Failed to upload the file", e);
         }
     }

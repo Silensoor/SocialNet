@@ -2,7 +2,7 @@ package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import socialnet.dto.geolocation.GeolocationRs;
+import socialnet.api.response.GeolocationRs;
 import socialnet.repository.CityRepository;
 import socialnet.repository.CountryRepository;
 
@@ -17,7 +17,7 @@ public class GeolocationsService {
 
     public List<GeolocationRs> findAllCountry() {
         return countryRepository.findAll().stream()
-                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+            .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
     }
 
     public List<GeolocationRs> getCitiesByCountryAndStarts(String country, String starts) {

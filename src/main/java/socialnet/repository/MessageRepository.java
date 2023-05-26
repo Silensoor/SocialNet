@@ -79,7 +79,7 @@ public class MessageRepository {
                 readStatus, dialogId, queryStatus);
     }
 
-    public long save(Message message) {
+    public Long save(Message message) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -103,7 +103,7 @@ public class MessageRepository {
             return prepStatement;
         }, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return (long) keyHolder.getKey();
     }
 
     private <T> void setValue(T arg, PreparedStatement preparedStatement, int parameterIndex) throws SQLException {

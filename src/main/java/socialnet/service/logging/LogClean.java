@@ -13,18 +13,19 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LogClean {
 
     public void deleteOldLogs(String yandexToken) throws IOException, ParseException {
 
         Integer afterDayDelete = 14;
-        HashMap<String, Date> logs = getListLogsFiles(yandexToken);
+        Map<String, Date> logs = getListLogsFiles(yandexToken);
         cleanLogs(logs, afterDayDelete, yandexToken);
 
     }
 
-    public HashMap<String, Date> getListLogsFiles(String yandexToken) throws IOException, ParseException {
+    public Map<String, Date> getListLogsFiles(String yandexToken) throws IOException, ParseException {
 
         HashMap<String, Date> logsList = new HashMap<>();
 
@@ -34,18 +35,17 @@ public class LogClean {
         con.setRequestMethod("GET");
         con.setRequestProperty("Authorization", yandexToken);
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+        StringBuilder content = new StringBuilder();
+
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
         }
-        in.close();
 
-        String jsonString = String.valueOf(content);
-        JSONObject obj = new JSONObject(jsonString);
-
+        JSONObject obj = new JSONObject(content.toString());
         JSONArray arr = obj.getJSONArray("items");
 
         for (int i = 0; i < arr.length(); i++) {
@@ -66,20 +66,21 @@ public class LogClean {
             .substring(0, 19));
     }
 
-    public void cleanLogs(HashMap<String, Date> logs, Integer afterDayDelete,String yandexToken) throws IOException {
-
+    public void cleanLogs(Map<String, Date> logs, Integer afterDayDelete,String yandexToken) throws IOException {
         Date today = new Date(System.currentTimeMillis());
         Calendar deleteData = Calendar.getInstance();
         deleteData.setTime(today);
         deleteData.add(Calendar.DATE, -afterDayDelete);
 
-        for (String path : logs.keySet()) {
-            Date date = logs.get(path);
+        for (Map.Entry<String, Date> entry : logs.entrySet()) {
+            String path = entry.getKey();
+            Date date = entry.getValue();
+
             Calendar logCal = Calendar.getInstance();
             logCal.setTime(date);
 
             if (logCal.getTime().before(deleteData.getTime())) {
-                delete(path,yandexToken);
+                delete(path, yandexToken);
             }
         }
     }
@@ -90,13 +91,13 @@ public class LogClean {
         con.setRequestMethod("DELETE");
         con.setRequestProperty("Authorization", yandexToken);
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
         }
-        in.close();
     }
 }
