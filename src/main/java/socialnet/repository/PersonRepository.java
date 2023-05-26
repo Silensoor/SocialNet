@@ -25,7 +25,7 @@ public class PersonRepository {
     private final Reflection reflection;
 
     private static final String AND = "' AND ";
-
+    private static final String SELECT = "SELECT * FROM persons";
 
     public Long insert(Person person) {
         String sql = "Insert into Persons " + reflection.getFieldNames(person, new String[] {"id"}) +
@@ -55,7 +55,7 @@ public class PersonRepository {
     }
 
     public List<Person> findPersonsByBirthDate(){
-        return jdbcTemplate.query("select * from persons as p  " +
+        return jdbcTemplate.query( SELECT + " as p  " +
                 "where extract(month from timestamp 'now()')=extract(month from p.birth_date) " +
                 "and extract(day from timestamp 'now()')=extract(day from p.birth_date)",personRowMapper);
     }
@@ -63,7 +63,7 @@ public class PersonRepository {
     public Person findByEmail(String email) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE lower(email) = ?",
+                SELECT + " WHERE lower(email) = ?",
                 personRowMapper,
                 email.toLowerCase()
             );
@@ -75,7 +75,7 @@ public class PersonRepository {
     public Person findByTelegramId(long telegramId) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT * FROM persons WHERE telegram_id = ?",
+                SELECT + " WHERE telegram_id = ?",
                 personRowMapper,
                 telegramId
             );
@@ -86,7 +86,7 @@ public class PersonRepository {
 
     public Person findById(Long personId) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM persons WHERE id = ?",
+            return jdbcTemplate.queryForObject(SELECT + " WHERE id = ?",
                     new BeanPropertyRowMapper<>(Person.class), personId);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -95,7 +95,7 @@ public class PersonRepository {
 
     public List<Person> findAll() {
         try {
-            return jdbcTemplate.query("SELECT * FROM persons", personRowMapper);
+            return jdbcTemplate.query(SELECT, personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
         }
@@ -165,7 +165,7 @@ public class PersonRepository {
     public List<Person> findByCity(String city) {
         try {
             return this.jdbcTemplate.query(
-                    "SELECT * FROM persons WHERE city = ?",
+                    SELECT + " WHERE city = ?",
                     new Object[]{city},
                     personRowMapper
             );
@@ -225,7 +225,7 @@ public class PersonRepository {
     }
 
     public Person getPersonByEmail(String email) {
-        return jdbcTemplate.queryForObject("SELECT * FROM Persons WHERE email = ?",
+        return jdbcTemplate.queryForObject(SELECT + " WHERE email = ?",
                 personRowMapper,
                 email);
     }
@@ -267,7 +267,7 @@ public class PersonRepository {
         if (Boolean.TRUE.equals(searchOptions.getFlagQueryAll())) {
             str.append("SELECT COUNT(*) FROM persons WHERE is_deleted=false AND ");
         } else {
-            str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
+            str.append(SELECT + " WHERE is_deleted=false AND ");
         }
         Timestamp ageFromTimestamp = searchDate(searchOptions.getAgeFrom());
         Timestamp ageToTimestamp = searchDate(searchOptions.getAgeTo());
@@ -304,7 +304,7 @@ public class PersonRepository {
 
     public List<Person> findPersonsName(String author) {
         try {
-            return jdbcTemplate.query("SELECT * FROM persons" +
+            return jdbcTemplate.query(SELECT +
                             " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
                     personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
                     author.substring(author.indexOf(" ") + 1).toLowerCase());
@@ -315,7 +315,7 @@ public class PersonRepository {
 
     public List<Person> findPersonsFirstNameOrLastName(String name) {
         try {
-            return jdbcTemplate.query("SELECT * FROM persons" +
+            return jdbcTemplate.query(SELECT +
                             " WHERE is_deleted=false AND lower (first_name) = ? OR lower (last_name) = ?",
                     personRowMapper, name.toLowerCase(), name.toLowerCase());
         } catch (EmptyResultDataAccessException ignored) {
@@ -398,7 +398,7 @@ public class PersonRepository {
 
     public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
                                              Integer offset, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false AND city = ?")
+        StringBuilder sql = new StringBuilder(SELECT + " WHERE is_deleted = false AND city = ?")
                 .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
                 .append(" AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
         try {
@@ -409,7 +409,7 @@ public class PersonRepository {
     }
 
     public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM persons WHERE is_deleted = false ")
+        StringBuilder sql = new StringBuilder(SELECT + " WHERE is_deleted = false ")
                 .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
                 .append(" AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
