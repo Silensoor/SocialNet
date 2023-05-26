@@ -38,10 +38,10 @@ public class LikesService {
         Person authUser = personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
         Like like = new Like();
         like.setType(likeRq.getType());
-        like.setEntityId(likeRq.getItem_id().longValue());
+        like.setEntityId(likeRq.getItemId().longValue());
         like.setPersonId(authUser.getId());
         likeRepository.save(like);
-        List<Like> likes = likeRepository.getLikesByEntityId(likeRq.getItem_id());
+        List<Like> likes = likeRepository.getLikesByEntityId(likeRq.getItemId());
         likes = likes.stream().filter(l -> l.getType().equals(likeRq.getType())).collect(Collectors.toList());
         List<Integer> users = new ArrayList<>();
         likes.forEach(l -> users.add(l.getPersonId().intValue()));
@@ -50,7 +50,7 @@ public class LikesService {
             users.add(l.getPersonId().intValue());
         }
         if (likeRq.getType().equals("Comment")) {
-            Comment comment = commentRepository.findById(likeRq.getItem_id().longValue());
+            Comment comment = commentRepository.findById(likeRq.getItemId().longValue());
             PersonSettings personSettings = personSettingRepository.getSettings(comment.getAuthorId());
 
             if (Boolean.TRUE.equals(personSettings.getPostLike()) && !comment.getAuthorId().equals(authUser.getId())) {
@@ -59,7 +59,7 @@ public class LikesService {
                 NotificationPusher.sendPush(notification, authUser.getId());
             }
         } else {
-            Post post = postRepository.findById(likeRq.getItem_id());
+            Post post = postRepository.findById(likeRq.getItemId());
             PersonSettings personSettings = personSettingRepository.getSettings(post.getAuthorId());
             if (Boolean.TRUE.equals(personSettings.getPostLike()) && !post.getAuthorId().equals(authUser.getId())) {
                 Notification notification = NotificationPusher.getNotification(NotificationType.POST_LIKE,

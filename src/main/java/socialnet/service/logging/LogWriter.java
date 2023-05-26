@@ -1,5 +1,6 @@
 package socialnet.service.logging;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.FileEntity;
@@ -21,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Component
+@Slf4j
 public class LogWriter {
 
     @Value("${auth.logging.yandexToken}")
@@ -46,63 +48,60 @@ public class LogWriter {
 
         con.setRequestProperty("Authorization", yandexToken);
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+        StringBuilder content = new StringBuilder();
+
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
         }
-        in.close();
 
-        String s = String.valueOf(content);
-        String[] split = s.split("\"");
-        String href = split[7];
+        String[] split = content.toString().split("\"");
 
-        return href;
+        return split[7];
     }
 
     public void pushLogs(String href) throws IOException{
-
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-
             logArchiving();
             File file = new File("logs/logs.zip");
             HttpPut httpPut = new HttpPut(href);
             httpPut.setEntity(new FileEntity(file));
             HttpResponse response = httpclient.execute(httpPut);
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                log.error(response.getStatusLine().getReasonPhrase());
+            }
         }
     }
 
     public String createLogFile() {
-
-        SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-        String dateToday = DATE_FORMATTER.format(new Date());
-        String pathLogFile = "log_" + dateToday + ".zip";
-
-        return pathLogFile;
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dateToday = dateFormatter.format(new Date());
+        return "log_" + dateToday + ".zip";
     }
 
     public void logArchiving() throws IOException {
-
         String sourceFile = "logs/logs.log";
-        FileOutputStream fos = new FileOutputStream("logs/logs.zip");
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
 
-        File fileToZip = new File(sourceFile);
-        FileInputStream fis = new FileInputStream(fileToZip);
-        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
-        zipOut.putNextEntry(zipEntry);
+        try (FileOutputStream fos = new FileOutputStream("logs/logs.zip")) {
+            try (ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+                File fileToZip = new File(sourceFile);
 
-        byte[] bytes = new byte[1024];
-        int length;
-        while ((length = fis.read(bytes)) >= 0) {
-            zipOut.write(bytes, 0, length);
+                try (FileInputStream fis = new FileInputStream(fileToZip)) {
+                    ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                    zipOut.putNextEntry(zipEntry);
+
+                    byte[] bytes = new byte[1024];
+                    int length;
+
+                    while ((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                }
+            }
         }
-
-        zipOut.close();
-        fis.close();
-        fos.close();
     }
-
 }

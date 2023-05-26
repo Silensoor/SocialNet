@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 @Aspect
 @Component
 public class LogConfig {
-
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private static final String INFO_WITH_RESULT = "Старт метода: {} в классе: {} результат: {}";
+    private static final String INFO_WITHOUT_RESULT = "Старт метода: {} в классе: {}";
+    private static final String INFO_ERROR = "Ошибка метода: {} в классе: {} результат: {}";
 
     @Pointcut("execution(* socialnet.controller.*.*(..))")
     public void methodExecutingDebug() {
@@ -26,40 +27,38 @@ public class LogConfig {
     }
 
     @AfterReturning(pointcut = "methodExecutingInfo()", returning = "returningValue")
-    public void recordSuccessfulExecutionInfo(JoinPoint joinPoint, Object returningValue) throws IOException {
-
+    public void recordSuccessfulExecutionInfo(JoinPoint joinPoint, Object returningValue) {
         if (returningValue != null) {
-
-            log.info("Старт метода :" + joinPoint.getSignature().getName() +
-                    " в классе: " + joinPoint.getSourceLocation().getWithinType().getName() +
-                    " результат: " + returningValue);
+            log.info(INFO_WITH_RESULT,
+                joinPoint.getSignature().getName(),
+                joinPoint.getSourceLocation().getWithinType().getName(),
+                returningValue);
         } else {
-
-            log.info("Старт метода :" + joinPoint.getSignature().getName() +
-                    " в классе: " + joinPoint.getSourceLocation().getWithinType().getName());
+            log.info(INFO_WITHOUT_RESULT,
+                joinPoint.getSignature().getName(),
+                joinPoint.getSourceLocation().getWithinType().getName());
         }
     }
 
     @AfterReturning(pointcut = "methodExecutingDebug()", returning = "returningValue")
     public void recordSuccessfulExecutionDebug(JoinPoint joinPoint, Object returningValue) {
         if (returningValue != null) {
-
-            log.debug("Старт метода :" + joinPoint.getSignature().getName() +
-                    " в классе : " + joinPoint.getSourceLocation().getWithinType().getName() +
-                    " результат : " + returningValue);
-
+            log.debug(INFO_WITH_RESULT,
+                joinPoint.getSignature().getName(),
+                joinPoint.getSourceLocation().getWithinType().getName(),
+                returningValue);
         } else {
-
-            log.debug("Старт метода :" + joinPoint.getSignature().getName() +
-                    " в классе: " + joinPoint.getSourceLocation().getWithinType().getName());
+            log.debug(INFO_WITHOUT_RESULT,
+                joinPoint.getSignature().getName(),
+                joinPoint.getSourceLocation().getWithinType().getName());
         }
     }
 
     @AfterThrowing(pointcut = "methodExecutingInfo() || methodExecutingDebug()", throwing = "exception")
     public void recordFailedExecutionInfo(JoinPoint joinPoint, Exception exception) {
-
-        log.error("Ошибка метода: " + joinPoint.getSignature().getName() +
-                " в классе" + joinPoint.getSourceLocation().getWithinType().getName() +
-                " результат : " + exception);
+        log.error(INFO_ERROR,
+            joinPoint.getSignature().getName(),
+            joinPoint.getSourceLocation().getWithinType().getName(),
+            exception);
     }
 }
