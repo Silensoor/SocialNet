@@ -221,12 +221,6 @@ public class PersonRepository {
         jdbcTemplate.update("Update Persons Set password = ? Where email = ?", newPassword, email);
     }
 
-    public Person getPersonByEmail(String email) {
-        return jdbcTemplate.queryForObject("SELECT * FROM Persons WHERE email = ?",
-                personRowMapper,
-                email);
-    }
-
     public Long getPersonIdByEmail(String email) {
         return jdbcTemplate.queryForObject("Select id from Persons where email = ?",
                 new Object[]{email}, Long.class);

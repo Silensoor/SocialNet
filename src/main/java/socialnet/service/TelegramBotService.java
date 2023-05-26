@@ -11,7 +11,6 @@ import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.TgApiRs;
 import socialnet.api.response.TgMessagesRs;
-import socialnet.api.response.TgNotificationFromRs;
 import socialnet.model.Notification;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
