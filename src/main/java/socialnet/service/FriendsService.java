@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +43,12 @@ public class FriendsService {
 
     public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         Person personsEmail = tokenToMail(authorization);
-        List<Person> friendsList;
-        long friendsListAll;
-        friendsList = personRepository.findFriendsAll(personsEmail.getId(), offset, perPage);
-        friendsListAll = Integer.toUnsignedLong(personRepository.findFriendsAllCount(personsEmail.getId()));
-        return personToPersonRs(friendsList, offset, perPage, friendsListAll, personsEmail.getId());
+
+        return personToPersonRs(personRepository.findFriendsAll(personsEmail.getId(), offset, perPage),
+                offset,
+                perPage,
+                Integer.toUnsignedLong(personRepository.findFriendsAllCount(personsEmail.getId())),
+                personsEmail.getId());
     }
 
     public Person tokenToMail(String jwtToken) {
@@ -62,35 +64,46 @@ public class FriendsService {
             PersonRs friendRs = personMapper.toDTO(person);
             friendRs.setWeather(weatherService.getWeatherByCity(friendRs.getCity()));
             friendRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-            Friendships friendStatus = friendsShipsRepository.getFriendStatus(id, friendRs.getId());
-            if (friendStatus != null) {
-                if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
-                        && friendStatus.getDstPersonId().equals(id)){
-                    friendRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
-                } else {
-                    friendRs.setFriendStatus(friendStatus.getStatusName().toString());
-                }
-                if (friendStatus.getStatusName().equals(FriendshipStatusTypes.BLOCKED)) {
-                    friendRs.setIsBlockedByCurrentUser(true);
-                }
-            } else {
-                friendRs.setFriendStatus("UNKNOWN");
-                friendRs.setIsBlockedByCurrentUser(null);
-            }
-
-            personRsList.add(friendRs);
+            PersonRs friendRs1 = readFriendStatus(friendRs, person.getId(), id);
+            personRsList.add(friendRs1);
         });
         return new CommonRs<>(personRsList, personRsList.size(), offset, perPage, System.currentTimeMillis(),
                 friendsListAll);
     }
 
+    public PersonRs readFriendStatus(PersonRs personRs, long personGetId, long id){
+        personRs.setFriendStatus("UNKNOWN");
+        Friendships friendStatus = friendsShipsRepository.getFriendStatus(id, personGetId);
+        if (friendStatus != null) {
+            if (friendStatus.getStatusName().equals(FriendshipStatusTypes.FRIEND)){
+                personRs.setFriendStatus(FriendshipStatusTypes.FRIEND.toString());
+            } else {
+                if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
+                        && friendStatus.getDstPersonId().equals(personGetId)) {
+                    personRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
+                } else {
+                    personRs.setFriendStatus(FriendshipStatusTypes.REQUEST.toString());
+                }
+            }
+        }
+        Friendships friendStatusBlocked = friendsShipsRepository.getFriendStatusBlocked(id, personGetId);
+        if (friendStatusBlocked != null) {
+            personRs.setIsBlockedByCurrentUser(friendStatusBlocked.getStatusName().toString().equals("BLOCKED"));
+        }
+        return personRs;
+    }
+
     public HttpStatus userBlocks(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
-        Friendships friend = friendsShipsRepository.findFriend(personsEmail.getId(), Long.valueOf(id));
-        if (friend.getStatusName().equals(FriendshipStatusTypes.BLOCKED)) {
-            friendsShipsRepository.insertStatusFriend(friend.getId(), FriendshipStatusTypes.FRIEND);
+        Friendships friend = friendsShipsRepository.getFriendStatusBlocked(personsEmail.getId(), id);
+        if (friend != null) {
+            if (friend.getStatusName().equals(FriendshipStatusTypes.BLOCKED)) {
+                friendsShipsRepository.updateStatusFriend(friend.getId(), FriendshipStatusTypes.FRIEND);
+            } else {
+                friendsShipsRepository.updateStatusFriend(friend.getId(), FriendshipStatusTypes.BLOCKED);
+            }
         } else {
-            friendsShipsRepository.insertStatusFriend(friend.getId(), FriendshipStatusTypes.BLOCKED);
+            friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.BLOCKED);
         }
         return HttpStatus.OK;
     }
@@ -129,12 +142,11 @@ public class FriendsService {
 
     public List<Person> getRecommendedFriendsCity(Person personsEmail, List<Person> recommendationFriends){
         List<Person> recommendationFriendsCity = new ArrayList<>();
-        List<String> recommendedFriendsIdList = new ArrayList<>();
+        List<String> recommendedFriendsIdList;
         List<Person> cityFriends;
 
-        for (Person friend : recommendationFriends) {
-            recommendedFriendsIdList.add(friend.getId().toString());
-        }
+        recommendedFriendsIdList = recommendationFriends.stream().map(friend ->
+                friend.getId().toString()).collect(Collectors.toList());
 
         if (!recommendedFriendsIdList.isEmpty()) {
             cityFriends = personRepository.findByCityForFriends(

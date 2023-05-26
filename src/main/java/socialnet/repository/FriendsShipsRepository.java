@@ -40,7 +40,7 @@ public class FriendsShipsRepository {
         }
     }
 
-    public void insertStatusFriend(Long id, FriendshipStatusTypes status) {
+    public void updateStatusFriend(Long id, FriendshipStatusTypes status) {
         jdbcTemplate.update("UPDATE friendships SET status_name = ? WHERE id = ?",
                 status.toString(), id);
     }
@@ -75,9 +75,8 @@ public class FriendsShipsRepository {
     public Friendships getFriendStatus(Long id, Long idFriend) {
         try {
             return jdbcTemplate.queryForObject(SQL_SELECT +
-                            " WHERE (dst_person_id = ? AND src_person_id = ?)" +
-                            DST_SRC,
-                    friendshipsRowMapper, id, idFriend, idFriend, id);
+                            " WHERE NOT status_name = 'BLOCKED' AND (dst_person_id = ? AND src_person_id = ?)" +
+                            DST_SRC, friendshipsRowMapper, id, idFriend, idFriend, id);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -86,5 +85,15 @@ public class FriendsShipsRepository {
     public List<Friendships> findAllFriendships(Long id) {
         return jdbcTemplate.query("select * from friendships as f where f.status_name = 'FRIEND' " +
                 "and (f.dst_person_id =? OR f.src_person_id =?)", friendshipsRowMapper, id, id);
+    }
+
+    public Friendships getFriendStatusBlocked(long id, long personGetId) {
+        try {
+            return jdbcTemplate.queryForObject(SQL_SELECT +
+                    " WHERE status_name = 'BLOCKED' AND (dst_person_id = ? AND src_person_id = ?)" +
+                    DST_SRC, friendshipsRowMapper, id, personGetId, personGetId, id);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 }

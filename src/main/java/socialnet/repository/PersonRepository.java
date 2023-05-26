@@ -131,7 +131,7 @@ public class PersonRepository {
                             " p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
                             " JOIN friendships ON friendships.src_person_id=p.id  OR friendships.dst_person_id=p.id" +
                             " WHERE is_deleted = false AND friendships.src_person_id=? AND NOT p.id=?" +
-                            " AND friendships.status_name = 'REQUEST' OFFSET ? LIMIT ?",
+                            " AND friendships.status_name = 'REQUEST' ORDER BY p.last_online_time DESC OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
@@ -145,7 +145,7 @@ public class PersonRepository {
                             " WHERE is_deleted = false AND status_name = 'REQUEST' AND src_person_id = ? AND NOT p.id=?",
                     Integer.class, id, id);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return 0;
         }
     }
 
@@ -158,7 +158,7 @@ public class PersonRepository {
                             " AND friendships.status_name='FRIEND'  AND NOT persons.id=?",
                     Integer.class, id, id, id);
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return 0;
         }
     }
 

@@ -51,7 +51,7 @@ public class PersonService {
     @Value("${defaultPhoto}")
     private String defaultPhoto;
 
-    private final FriendsShipsRepository friendsShipsRepository;
+    private final FriendsService friendsService;
 
     public CommonRs<ComplexRs> delete(String authorization) {
         personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
@@ -115,28 +115,11 @@ public class PersonService {
         Person person = findUser(id);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
-        changeFriendStatus(authorization, id, personRs);
-        return new CommonRs<>(personRs);
-    }
-
-    private void changeFriendStatus(String authorization, Integer id, PersonRs personRs) {
         String email = jwtUtils.getUserEmail(authorization);
-        Person person = personRepository.findByEmail(email);
-        Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
-        if (friendStatus != null) {
-            if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
-                    && friendStatus.getDstPersonId().equals(person.getId())) {
-                personRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
-            } else {
-                personRs.setFriendStatus(friendStatus.getStatusName().toString());
-            }
-            if (friendStatus.getStatusName().toString().equals("BLOCKED")) {
-                personRs.setIsBlockedByCurrentUser(true);
-            }
-        } else {
-            personRs.setFriendStatus("UNKNOWN");
-            personRs.setIsBlockedByCurrentUser(null);
-        }
+        PersonRs personRsAndFriend= friendsService
+                .readFriendStatus(personRs, personRepository.findByEmail(email).getId(), id);
+
+        return new CommonRs<>(personRsAndFriend);
     }
 
     private Person findUser(Integer id) {
