@@ -65,15 +65,13 @@ public class PersonService {
 
 
     public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
-
         Person person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword());
+        jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
+        authenticated(loginRq);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+        changePersonStatus(personRs);
 
-            jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
-            authenticated(loginRq);
-            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-            changePersonStatus(personRs);
-            return new CommonRs<>(personRs);
-
+        return new CommonRs<>(personRs);
     }
 
     public CommonRs<PersonRs> getMyProfile(String authorization) {
@@ -81,6 +79,7 @@ public class PersonService {
         Person person = personRepository.findByEmail(email);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
+
         return new CommonRs<>(personRs);
     }
 
@@ -94,16 +93,17 @@ public class PersonService {
         if (personRs.getPhoto() == null) {
             personRs.setPhoto(defaultPhoto);
         }
-
     }
 
     public RegisterRs setNewEmail(EmailRq emailRq) {
         personRepository.setEmail(jwtUtils.getUserEmail(emailRq.getSecret()), emailRq.getEmail());
+
         return new RegisterRs();
     }
 
     public RegisterRs resetPassword(String authorization, PasswordSetRq passwordSetRq) {
         personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
+
         return new RegisterRs(jwtUtils.getUserEmail(authorization), System.currentTimeMillis());
     }
 
@@ -151,6 +151,7 @@ public class PersonService {
         commonRs.setTotal(0L);
         commonRs.setItemPerPage(0);
         commonRs.setPerPage(0);
+
         return commonRs;
     }
 
@@ -166,14 +167,13 @@ public class PersonService {
 
     public Person getAuthPerson() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return personRepository.getPersonByEmail(email);
+        return personRepository.findByEmail(email);
     }
 
     public Long getAuthPersonId() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return personRepository.getPersonIdByEmail(email);
     }
-
 
 
     public Person checkLoginAndPassword(String email, String password) {
@@ -193,7 +193,7 @@ public class PersonService {
         return person;
     }
 
-        private void authenticated(LoginRq loginRq) {
+    private void authenticated(LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -230,6 +230,7 @@ public class PersonService {
             if (!entry.getKey().equalsIgnoreCase("id"))
                 list.add(new PersonSettingsRs((boolean) entry.getValue(), entry.getKey().toUpperCase()));
         }
+
         return new CommonRs<>(list);
     }
 
@@ -237,6 +238,7 @@ public class PersonService {
         personSettingRepository.setSetting(
                 personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)),
                 personSettingsRq);
+
         return new CommonRs<>(new ComplexRs());
     }
 

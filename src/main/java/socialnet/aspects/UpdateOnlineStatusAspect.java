@@ -53,7 +53,7 @@ public class UpdateOnlineStatusAspect {
                     .orElse(-1);
             if (parameterNumber != -1) {
                 String userEmail = jwtUtils.getUserEmail((String) joinPoint.getArgs()[parameterNumber]);
-                Person person = personRepository.getPersonByEmail(userEmail);
+                Person person = personRepository.findByEmail(userEmail);
                 long personId = person.getId();
                 personRepository.updateLastOnlineTime(personId, Timestamp.from(Instant.now()));
                 personRepository.updateOnlineStatus(personId, PersonOnlineStatus.ONLINE.name());
@@ -71,7 +71,7 @@ public class UpdateOnlineStatusAspect {
     public void afterLogout(JoinPoint joinPoint) {
         try {
             String userEmail = jwtUtils.getUserEmail((String) joinPoint.getArgs()[0]);
-            Person person = personRepository.getPersonByEmail(userEmail);
+            Person person = personRepository.findByEmail(userEmail);
             long personId = person.getId();
             personRepository.updateOnlineStatus(personId, PersonOnlineStatus.OFFLINE.name());
         } catch (Exception e) {

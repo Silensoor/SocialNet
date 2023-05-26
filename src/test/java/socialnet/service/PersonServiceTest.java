@@ -1,6 +1,7 @@
 package socialnet.service;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +14,25 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import socialnet.api.request.EmailRq;
+import socialnet.api.request.LoginRq;
 import socialnet.api.response.CommonRs;
-import socialnet.controller.UsersControllerTest;
-import socialnet.repository.PersonRepository;
+import socialnet.api.response.PersonRs;
+import socialnet.api.response.RegisterRs;
 import socialnet.security.jwt.JwtUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
@@ -39,15 +43,17 @@ import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE
 @Sql(scripts = "/sql/clear_tables.sql")
 @SqlMergeMode(MERGE)
 class PersonServiceTest {
+    static final String USER_EMAIL = "user@email.com";
+    static final String USER_EMAIL_2 = "another@email.com";
     @Autowired
-    private PersonService personService;
+    PersonService personService;
     @MockBean
-    private JwtUtils jwtUtils;
+    JwtUtils jwtUtils;
 
     @Container
-    private static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:12.14");
+    static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:12.14");
 
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
@@ -57,6 +63,11 @@ class PersonServiceTest {
                     "spring.datasource.password=" + POSTGRES_CONTAINER.getPassword()
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
+    }
+
+    @BeforeEach
+    void setUp() {
+        doReturn(USER_EMAIL).when(jwtUtils).getUserEmail(anyString());
     }
 
     @Test
@@ -70,30 +81,62 @@ class PersonServiceTest {
     @Test
     @Sql(scripts = "/sql/create_random_user.sql")
     void delete() throws Exception {
-        doReturn("user@email.com").when(jwtUtils).getUserEmail(anyString());
         CommonRs result = personService.delete("anything");
         assertNotNull(result);
         Connection connection = POSTGRES_CONTAINER.createConnection("");
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons WHERE email = 'user@email.com'");
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons WHERE email = '" + USER_EMAIL + "'");
         resultSet.next();
         assertTrue(resultSet.getBoolean("is_deleted"));
     }
 
     @Test
-    void recover() {
+    @Sql(scripts = "/sql/create_random_user.sql")
+    @Sql(statements = "UPDATE persons SET is_deleted = true WHERE email = '" + USER_EMAIL + "'")
+    void recover() throws Exception {
+        CommonRs result = personService.recover("anything");
+        assertNotNull(result);
+        Connection connection = POSTGRES_CONTAINER.createConnection("");
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons WHERE email = '" + USER_EMAIL + "'");
+        resultSet.next();
+        assertFalse(resultSet.getBoolean("is_deleted"));
     }
 
     @Test
+    @Sql(scripts = "/sql/create_random_user.sql")
     void getLogin() {
+        ReflectionTestUtils.setField(jwtUtils, "jwtSecret", "socialNet");
+        doCallRealMethod().when(jwtUtils).generateJwtToken(anyString());
+        LoginRq loginRq = new LoginRq();
+        loginRq.setEmail(USER_EMAIL);
+        loginRq.setPassword("12345678");
+        CommonRs<PersonRs> commonRs = personService.getLogin(loginRq);
+        assertNotNull(commonRs.getData());
     }
 
     @Test
+    @Sql(scripts = "/sql/create_random_user.sql")
     void getMyProfile() {
+        CommonRs<PersonRs> retVal = personService.getMyProfile("anystring");
+        assertNotNull(retVal.getData());
+        PersonRs personRs = retVal.getData();
+        assertTrue(personRs.getOnline());
     }
 
     @Test
-    void setNewEmail() {
+    @Sql(scripts = "/sql/create_random_user.sql")
+    void setNewEmail() throws Exception {
+        EmailRq emailRq = new EmailRq();
+        emailRq.setEmail(USER_EMAIL_2);
+        emailRq.setSecret("anything");
+        RegisterRs registerRs = personService.setNewEmail(emailRq);
+        assertNotNull(registerRs);
+        Connection connection = POSTGRES_CONTAINER.createConnection("");
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM persons");
+        resultSet.next();
+        assertEquals(USER_EMAIL_2, resultSet.getString("email"));
     }
 
     @Test
