@@ -57,6 +57,9 @@ public class PersonSettingRepository {
     }
 
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {
-        jdbcTemplate.update("update person_settings set " + typeNotification + " =? where id =?", enable, id);
+        jdbcTemplate.update(
+            "update person_settings set ? = ? where id = ?",
+            typeNotification, enable, id
+        );
     }
 }

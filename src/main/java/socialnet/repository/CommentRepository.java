@@ -35,7 +35,7 @@ public class CommentRepository {
             " WHERE is_deleted = false " +
             "   AND post_id = ? " +
             "   AND is_blocked = false " +
-            "   AND (parent_id IS NULL OR pc.parent_id = 0) " +
+            "   AND (parent_id IS NULL OR parent_id = 0) " +
             " ORDER BY time DESC OFFSET ? ROWS LIMIT ?";
 
         try {
@@ -125,8 +125,8 @@ public class CommentRepository {
     }
 
     public void delete(Comment comment) {
-        String delete = "DELETE FROM post_comments WHERE id = " + comment.getId();
-        jdbcTemplate.execute(delete);
+        String delete = "DELETE FROM post_comments WHERE id = ?";
+        jdbcTemplate.update(delete, comment.getId());
     }
 
     private final RowMapper<Comment> commentRowMapper = (rs, rowNum) -> {

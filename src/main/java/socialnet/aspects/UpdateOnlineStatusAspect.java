@@ -1,6 +1,7 @@
 package socialnet.aspects;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 @Aspect
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UpdateOnlineStatusAspect {
 
     private final PersonRepository personRepository;
@@ -36,7 +38,7 @@ public class UpdateOnlineStatusAspect {
             personRepository.updateOnlineStatus(personId, PersonOnlineStatus.ONLINE.name());
             personRepository.updateLastOnlineTime(personId, Timestamp.from(Instant.now()));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -59,7 +61,7 @@ public class UpdateOnlineStatusAspect {
 
             return joinPoint.proceed();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         return null;
@@ -73,7 +75,7 @@ public class UpdateOnlineStatusAspect {
             long personId = person.getId();
             personRepository.updateOnlineStatus(personId, PersonOnlineStatus.OFFLINE.name());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 }

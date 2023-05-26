@@ -1,6 +1,7 @@
 package socialnet.utils;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -8,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.zip.GZIPInputStream;
 
 @NoArgsConstructor
+@Slf4j
 public class GzipFile {
     private static final int BUFFER_SIZE = 1024;
 
@@ -23,7 +25,7 @@ public class GzipFile {
                 fileOutputStream.write(buffer, 0, length);
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.error(ex.getMessage());
         }
     }
 
@@ -39,7 +41,7 @@ public class GzipFile {
                 fileOutputStream.write(buffer, 0, length);
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            log.error(ex.getMessage());
         }
     }
 

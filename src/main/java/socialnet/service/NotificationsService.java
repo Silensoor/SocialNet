@@ -56,7 +56,6 @@ public class NotificationsService {
         return getResponseNotifications(notificationRsList);
     }
 
-
     public CommonRs<List<NotificationRs>> getAllNotifications(Integer itemPerPage, String token, Integer offset) {
         String email = jwtUtils.getUserEmail(token);
         Person person = personRepository.findByEmail(email);
@@ -84,7 +83,6 @@ public class NotificationsService {
             }
         }
     }
-
 
     public CommonRs<ComplexRs> putNotificationByPerson(String token, NotificationRq notificationRq) {
         String email = jwtUtils.getUserEmail(token);

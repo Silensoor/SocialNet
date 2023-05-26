@@ -16,22 +16,18 @@ public class AmazonConfig {
     private String accessKey;
     @Value("${s3.secretKey}")
     private String secretKey;
+
     @Bean
     public AmazonS3 s3(){
         AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
-//        return AmazonS3ClientBuilder.standard()
-//                .withRegion("eu-west-2")
-//                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-//                .build();
 
         return AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .withEndpointConfiguration(
-                        new AmazonS3ClientBuilder.EndpointConfiguration(
-                                "storage.yandexcloud.net","ru-central1"
-                        )
+            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+            .withEndpointConfiguration(
+                new AmazonS3ClientBuilder.EndpointConfiguration(
+                    "storage.yandexcloud.net","ru-central1"
                 )
-                .build();
+            )
+            .build();
     }
-
 }

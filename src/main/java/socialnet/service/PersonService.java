@@ -128,13 +128,13 @@ public class PersonService {
                     && friendStatus.getDstPersonId().equals(person.getId())) {
                 personRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
             } else {
-                personRs.setFriendStatus(friendStatus.getStatusName().toString());
+                personRs.setFriendStatus(friendStatus.getStatusName().name());
             }
-            if (friendStatus.getStatusName().toString().equals("BLOCKED")) {
+            if (friendStatus.getStatusName().toString().equals(FriendshipStatusTypes.BLOCKED.name())) {
                 personRs.setIsBlockedByCurrentUser(true);
             }
         } else {
-            personRs.setFriendStatus("UNKNOWN");
+            personRs.setFriendStatus(FriendshipStatusTypes.UNKNOWN.name());
             personRs.setIsBlockedByCurrentUser(null);
         }
     }
