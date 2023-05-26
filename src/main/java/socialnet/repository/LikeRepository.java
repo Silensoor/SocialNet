@@ -47,8 +47,8 @@ public class LikeRepository {
     }
 
     public void delete(Like like) {
-        String delete = "DELETE FROM likes WHERE id = " + like.getId();
-        jdbcTemplate.execute(delete);
+        String delete = "DELETE FROM likes WHERE id = ?";
+        jdbcTemplate.update(delete, like.getId());
     }
 
     public void deleteAll(List<Like> likes) {

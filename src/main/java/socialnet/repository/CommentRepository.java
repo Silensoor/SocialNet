@@ -125,8 +125,8 @@ public class CommentRepository {
     }
 
     public void delete(Comment comment) {
-        String delete = "DELETE FROM post_comments WHERE id = " + comment.getId();
-        jdbcTemplate.execute(delete);
+        String delete = "DELETE FROM post_comments WHERE id = ?";
+        jdbcTemplate.update(delete, comment.getId());
     }
 
     private final RowMapper<Comment> commentRowMapper = (rs, rowNum) -> {

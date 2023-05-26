@@ -114,8 +114,7 @@ public class DialogsRepository {
     }
 
     public int updateField(long dialogId, String fieldName, long fieldValue) {
-        return jdbcTemplate.update("UPDATE dialogs SET " + fieldName + " = ? WHERE id = ?",
-                fieldValue,
-                dialogId);
+        return jdbcTemplate.update("UPDATE dialogs SET ? = ? WHERE id = ?",
+            fieldName, fieldValue, dialogId);
     }
 }
