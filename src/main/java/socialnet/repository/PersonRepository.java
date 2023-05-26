@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import socialnet.api.request.UserUpdateDto;
 import socialnet.model.Person;
+import socialnet.model.SearchOptions;
 import socialnet.utils.Reflection;
 
 import java.sql.Timestamp;
@@ -240,51 +241,47 @@ public class PersonRepository {
                 (Object[]) sqlParam.get("values"));
     }
 
-    public List<Person> findPersonsQuery(Integer ageFrom,
-                                         Integer ageTo, String city, String country,
-                                         String firstName, String lastName,
-                                         Integer offset, Integer perPage, Boolean flagQueryAll, Integer id) {
+    public List<Person> findPersonsQuery(SearchOptions searchOptions){
+
         try {
-            return jdbcTemplate.query(createSqlPerson(ageFrom, ageTo, city, country, firstName, lastName,
-                    flagQueryAll, id), personRowMapper, offset, perPage);
+            return jdbcTemplate.query(createSqlPerson(searchOptions), personRowMapper, searchOptions.getOffset(),
+                    searchOptions.getPerPage());
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
         }
     }
 
-    public Integer findPersonsQueryAll(Integer ageFrom, Integer ageTo, String city, String country,
-                                       String firstName, String lastName, Boolean flagQueryAll, Integer id) {
+    public Integer findPersonsQueryAll(SearchOptions searchOptions){
+
         try {
-            return jdbcTemplate.queryForObject(createSqlPerson(ageFrom, ageTo, city,
-                    country, firstName, lastName, flagQueryAll, id), Integer.class);
+            return jdbcTemplate.queryForObject(createSqlPerson(searchOptions), Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return 0;
         }
     }
 
-    private String createSqlPerson(Integer ageFrom, Integer ageTo, String city, String country,
-                                   String firstName, String lastName, Boolean flagQueryAll, Integer id) {
+    private String createSqlPerson(SearchOptions searchOptions){
 
         StringBuilder str = new StringBuilder();
         String sql;
-        if (Boolean.TRUE.equals(flagQueryAll)) {
+        if (Boolean.TRUE.equals(searchOptions.getFlagQueryAll())) {
             str.append("SELECT COUNT(*) FROM persons WHERE is_deleted=false AND ");
         } else {
             str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
         }
-        Timestamp ageFromTimestamp = searchDate(ageFrom);
-        Timestamp ageToTimestamp = searchDate(ageTo);
-        if (firstName.equals("'")) {
-            firstName = "\"";
+        Timestamp ageFromTimestamp = searchDate(searchOptions.getAgeFrom());
+        Timestamp ageToTimestamp = searchDate(searchOptions.getAgeTo());
+        if (searchOptions.getFirstName().equals("'")) {
+            searchOptions.setFirstName("\"");
         }
-        str.append(ageFrom > 0 ? " birth_date < '" + ageFromTimestamp + AND : "")
-                .append(ageTo > 0 ? " birth_date > '" + ageToTimestamp + AND : "")
-                .append(!city.equals("") ? " city = '" + city + AND : "")
-                .append(!country.equals("") ? " country = '" + country + AND : "")
-                .append(!firstName.equals("") ? " first_name = '" + firstName + AND : "")
-                .append(!lastName.equals("") ? " last_name = '" + lastName + AND : "")
+        str.append(searchOptions.getAgeFrom() > 0 ? " birth_date < '" + ageFromTimestamp + AND : "")
+                .append(searchOptions.getAgeTo() > 0 ? " birth_date > '" + ageToTimestamp + AND : "")
+                .append(!searchOptions.getCity().equals("") ? " city = '" + searchOptions.getCity() + AND : "")
+                .append(!searchOptions.getCountry().equals("") ? " country = '" + searchOptions.getCountry() + AND : "")
+                .append(!searchOptions.getFirstName().equals("") ? " first_name = '" + searchOptions.getFirstName() + AND : "")
+                .append(!searchOptions.getLastName().equals("") ? " last_name = '" + searchOptions.getLastName() + AND : "")
                 .append(" NOT id = ")
-                .append(id)
+                .append(searchOptions.getId())
                 .append(" ");
 
         if (str.substring(str.length() - 5).equals(" AND ")) {
@@ -292,7 +289,7 @@ public class PersonRepository {
         } else {
             sql = str.toString();
         }
-        if (Boolean.FALSE.equals(flagQueryAll)) {
+        if (Boolean.FALSE.equals(searchOptions.getFlagQueryAll())) {
             return sql + " OFFSET ? LIMIT ?";
         } else {
             return sql;
@@ -305,16 +302,27 @@ public class PersonRepository {
         return timestamp;
     }
 
-    public Person findPersonsName(String author) {
+    public List<Person> findPersonsName(String author) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM persons" +
+            return jdbcTemplate.query("SELECT * FROM persons" +
                             " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
                     personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
                     author.substring(author.indexOf(" ") + 1).toLowerCase());
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            return Collections.emptyList();
         }
     }
+
+    public List<Person> findPersonsFirstNameOrLastName(String name) {
+        try {
+            return jdbcTemplate.query("SELECT * FROM persons" +
+                            " WHERE is_deleted=false AND lower (first_name) = ? OR lower (last_name) = ?",
+                    personRowMapper, name.toLowerCase(), name.toLowerCase());
+        } catch (EmptyResultDataAccessException ignored) {
+            return Collections.emptyList();
+        }
+    }
+
 
     public void updateOnlineStatus(Long personId, String status) {
         jdbcTemplate.update("UPDATE persons SET online_status = ? WHERE id = ?", status, personId);
