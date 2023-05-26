@@ -35,7 +35,7 @@ public class CommentRepository {
             " WHERE is_deleted = false " +
             "   AND post_id = ? " +
             "   AND is_blocked = false " +
-            "   AND (parent_id IS NULL OR pc.parent_id = 0) " +
+            "   AND (parent_id IS NULL OR parent_id = 0) " +
             " ORDER BY time DESC OFFSET ? ROWS LIMIT ?";
 
         try {
