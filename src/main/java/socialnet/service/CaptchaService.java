@@ -4,7 +4,6 @@ import com.github.cage.Cage;
 import com.github.cage.GCage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import socialnet.api.response.CaptchaRs;
 import socialnet.model.Captcha;
