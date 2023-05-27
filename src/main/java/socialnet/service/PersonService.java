@@ -84,7 +84,6 @@ public class PersonService {
         personRs.setToken(jwt);
         personRs.setOnline(true);
         personRs.setIsBlockedByCurrentUser(false);
-        personRs.setIsBlockedByCurrentUser(false);
         personRs.setWeather(weatherService.getWeatherByCity(personRs.getCity()));
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
         if (personRs.getPhoto() == null) {
@@ -109,7 +108,7 @@ public class PersonService {
     }
 
     public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
-        Person person = findUser(id);
+        Person person = personRepository.findById(Long.valueOf(id));
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
         String email = jwtUtils.getUserEmail(authorization);
@@ -120,11 +119,7 @@ public class PersonService {
         return new CommonRs<>(personRs);
     }
 
-    private Person findUser(Integer id) {
-        return personRepository.findById(Long.valueOf(id));
-    }
-
-    public CommonRs<ComplexRs> setCommonRs(ComplexRs complexRs) {
+    private CommonRs<ComplexRs> setCommonRs(ComplexRs complexRs) {
         CommonRs<ComplexRs> commonRs = new CommonRs<>();
         commonRs.setData(complexRs);
         commonRs.setOffset(0);
@@ -136,7 +131,7 @@ public class PersonService {
         return commonRs;
     }
 
-    public ComplexRs setComplexRs() {
+    private ComplexRs setComplexRs() {
 
         return ComplexRs.builder()
                 .id(0)
