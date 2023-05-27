@@ -93,24 +93,24 @@ public class PostsController {
     @GetMapping("/api/v1/post")
     @ApiOperation(value = "get posts by query")
     public CommonRs<List<PostRs>> getPostsByQuery(
-        @RequestHeader String authorization,
-        @RequestParam(required = false, defaultValue = "") String author,
-        @RequestParam(required = false, name = "date_from", defaultValue = "0") Long dateFrom,
-        @RequestParam(required = false, name = "date_to", defaultValue = "0") Long dateTo,
-        @RequestParam(required = false, defaultValue = "0") Integer offset,
-        @RequestParam(required = false, defaultValue = "20") Integer perPage,
-        @RequestParam(required = false) String[] tags,
-        @RequestParam(required = false, defaultValue = "") String text)
-    {
-        SearchOptions searchOptions = new SearchOptions();
-        searchOptions.setJwtToken(authorization);
-        searchOptions.setAuthor(author);
-        searchOptions.setDateFrom(dateFrom);
-        searchOptions.setDateTo(dateTo);
-        searchOptions.setTags(tags);
-        searchOptions.setText(text);
-        searchOptions.setOffset(offset);
-        searchOptions.setPerPage(perPage);
-        return findService.getPostsByQuery(searchOptions);
+            @RequestHeader String authorization,
+            @RequestParam(required = false, defaultValue = "") String author,
+            @RequestParam(required = false, name = "date_from", defaultValue = "0") Long dateFrom,
+            @RequestParam(required = false, name = "date_to", defaultValue = "0") Long dateTo,
+            @RequestParam(required = false, defaultValue = "0") Integer offset,
+            @RequestParam(required = false, defaultValue = "20") Integer perPage,
+            @RequestParam(required = false) String[] tags,
+            @RequestParam(required = false, defaultValue = "") String text) {
+
+        return findService.getPostsByQuery(SearchOptions.builder()
+                .jwtToken(authorization)
+                .author(author)
+                .dateFrom(dateFrom)
+                .dateTo(dateTo)
+                .tags(tags)
+                .text(text)
+                .offset(offset)
+                .perPage(perPage)
+                .build());
     }
 }

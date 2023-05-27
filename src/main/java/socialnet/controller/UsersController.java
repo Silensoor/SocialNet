@@ -62,18 +62,18 @@ public class UsersController {
                                                 @RequestParam(required = false, defaultValue = "20")
                                                 Integer perPage) {
 
-        SearchOptions searchOptions = new SearchOptions();
-        searchOptions.setJwtToken(authorization);
-        searchOptions.setAgeFrom(ageFrom);
-        searchOptions.setAgeTo(ageTo);
-        searchOptions.setCity(city);
-        searchOptions.setCountry(country);
-        searchOptions.setFirstName(firstName);
-        searchOptions.setLastName(lastName);
-        searchOptions.setOffset(offset);
-        searchOptions.setPerPage(perPage);
-        return findService.findPersons(searchOptions);
 
+        return findService.findPersons(SearchOptions.builder()
+                .jwtToken(authorization)
+                .ageFrom(ageFrom)
+                .ageTo(ageTo)
+                .city(city)
+                .country(country)
+                .firstName(firstName)
+                .lastName(lastName)
+                .offset(offset)
+                .perPage(perPage)
+                .build());
     }
 
     @OnlineStatusUpdatable
