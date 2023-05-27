@@ -35,15 +35,12 @@ public class FriendsService {
     private final FriendsShipsRepository friendsShipsRepository;
     private final PersonSettingRepository personSettingRepository;
     private final PersonMapper personMapper;
-
     private final WeatherService weatherService;
     private final CurrencyService currencyService;
-
     private static final int RECOMMENDED_FRIENDS_COUNT = 10;
 
     public CommonRs<List<PersonRs>> getFriends(String authorization, Integer offset, Integer perPage) {
         Person personsEmail = tokenToMail(authorization);
-
         return personToPersonRs(personRepository.findFriendsAll(personsEmail.getId(), offset, perPage),
                 offset,
                 perPage,
@@ -54,7 +51,6 @@ public class FriendsService {
     public Person tokenToMail(String jwtToken) {
         String email = jwtUtils.getUserEmail(jwtToken);
         return personRepository.findByEmail(email);
-
     }
 
     public synchronized CommonRs<List<PersonRs>> personToPersonRs(List<Person> personList, Integer offset, Integer perPage,
@@ -64,46 +60,46 @@ public class FriendsService {
             PersonRs friendRs = personMapper.toDTO(person);
             friendRs.setWeather(weatherService.getWeatherByCity(friendRs.getCity()));
             friendRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
-            PersonRs friendRs1 = readFriendStatus(friendRs, person.getId(), id);
-            personRsList.add(friendRs1);
+            friendRs.setIsBlockedByCurrentUser(getIsBlockedByCurrentUser(id, person.getId()));
+            friendRs.setFriendStatus(getFriendStatus(id, person.getId()));
+            personRsList.add(friendRs);
         });
         return new CommonRs<>(personRsList, personRsList.size(), offset, perPage, System.currentTimeMillis(),
                 friendsListAll);
     }
 
-    public PersonRs readFriendStatus(PersonRs personRs, long personGetId, long id){
-        personRs.setFriendStatus("UNKNOWN");
-        Friendships friendStatus = friendsShipsRepository.getFriendStatus(id, personGetId);
+    Boolean getIsBlockedByCurrentUser(long personId, long idFriend) {
+        Friendships friendStatusBlocked = friendsShipsRepository.getFriendStatusBlocked(idFriend, personId);
+        return friendStatusBlocked != null;
+    }
+
+    public String getFriendStatus(long personId, long idFriend) {
+        Friendships friendStatus = friendsShipsRepository.getFriendStatus(idFriend, personId);
         if (friendStatus != null) {
-            if (friendStatus.getStatusName().equals(FriendshipStatusTypes.FRIEND)){
-                personRs.setFriendStatus(FriendshipStatusTypes.FRIEND.toString());
+            if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
+                    && (friendStatus.getDstPersonId().equals(personId))) {
+                    return FriendshipStatusTypes.RECEIVED_REQUEST.toString();
+            }
+            if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null){
+                return FriendshipStatusTypes.BLOCKED.toString();
             } else {
-                if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
-                        && friendStatus.getDstPersonId().equals(personGetId)) {
-                    personRs.setFriendStatus(FriendshipStatusTypes.RECEIVED_REQUEST.toString());
-                } else {
-                    personRs.setFriendStatus(FriendshipStatusTypes.REQUEST.toString());
-                }
+                return friendStatus.getStatusName().toString();
+            }
+        } else {
+            if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null){
+                return FriendshipStatusTypes.BLOCKED.toString();
             }
         }
-        Friendships friendStatusBlocked = friendsShipsRepository.getFriendStatusBlocked(id, personGetId);
-        if (friendStatusBlocked != null) {
-            personRs.setIsBlockedByCurrentUser(friendStatusBlocked.getStatusName().toString().equals("BLOCKED"));
-        }
-        return personRs;
+        return FriendshipStatusTypes.UNKNOWN.toString();
     }
 
     public HttpStatus userBlocks(String authorization, Integer id) {
         Person personsEmail = tokenToMail(authorization);
         Friendships friend = friendsShipsRepository.getFriendStatusBlocked(personsEmail.getId(), id);
         if (friend != null) {
-            if (friend.getStatusName().equals(FriendshipStatusTypes.BLOCKED)) {
-                friendsShipsRepository.updateStatusFriend(friend.getId(), FriendshipStatusTypes.FRIEND);
-            } else {
-                friendsShipsRepository.updateStatusFriend(friend.getId(), FriendshipStatusTypes.BLOCKED);
-            }
+            friendsShipsRepository.deleteStatusBlocked(friend.getId());
         } else {
-            friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.BLOCKED);
+            friendsShipsRepository.addStatusBlocked(personsEmail.getId(), Long.valueOf(id));
         }
         return HttpStatus.OK;
     }
@@ -119,99 +115,70 @@ public class FriendsService {
     public CommonRs<List<PersonRs>> getRecommendedFriends(String authorization) {
         Person personsEmail = tokenToMail(authorization);
         List<Person> recommendationFriends = new ArrayList<>();
-        List<Person> friends = personRepository.findFriendsAll(personsEmail.getId(), 0, RECOMMENDED_FRIENDS_COUNT);
-
+        List<Long> friends = new ArrayList<>();
+        personRepository.findFriendsAll(personsEmail.getId(), 0, RECOMMENDED_FRIENDS_COUNT)
+                .forEach(friend -> friends.add(friend.getId()));
+        List<Long> notFriends = new ArrayList<>();
+        personRepository.findNotFriends(personsEmail.getId()).forEach(notFriend -> notFriends.add(notFriend.getId()));
         if (!friends.isEmpty()) {
             recommendationFriends = personRepository.findRecommendedFriends(
-                personsEmail.getId(), friends, 0, RECOMMENDED_FRIENDS_COUNT
-            );
+                    personsEmail.getId(), friends, 0, RECOMMENDED_FRIENDS_COUNT, notFriends);
         }
-
         if (recommendationFriends.size() < RECOMMENDED_FRIENDS_COUNT) {
-            recommendationFriends.addAll(getRecommendedFriendsCity(personsEmail, recommendationFriends));
+            recommendationFriends.addAll(getRecommendedFriendsCity(personsEmail, recommendationFriends, notFriends));
         }
-
         if (recommendationFriends.size() < RECOMMENDED_FRIENDS_COUNT) {
-            recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends));
+            recommendationFriends.addAll(getRecommendedFriendsAll(personsEmail, recommendationFriends, friends, notFriends));
         }
-
         return personToPersonRs(
-            recommendationFriends, 0, RECOMMENDED_FRIENDS_COUNT, recommendationFriends.size(), personsEmail.getId()
+                recommendationFriends, 0, RECOMMENDED_FRIENDS_COUNT, recommendationFriends.size(), personsEmail.getId()
         );
     }
 
-    public List<Person> getRecommendedFriendsCity(Person personsEmail, List<Person> recommendationFriends){
+    public List<Person> getRecommendedFriendsCity(Person personsEmail, List<Person> recommendationFriends,
+                                                  List<Long> notFriends) {
         List<Person> recommendationFriendsCity = new ArrayList<>();
-        List<String> recommendedFriendsIdList;
-        List<Person> cityFriends;
-
-        recommendedFriendsIdList = recommendationFriends.stream().map(friend ->
-                friend.getId().toString()).collect(Collectors.toList());
-
-        if (!recommendedFriendsIdList.isEmpty()) {
-            cityFriends = personRepository.findByCityForFriends(
-                personsEmail.getId(),
-                personsEmail.getCity(),
-                StringUtils.join(recommendedFriendsIdList, ","),
-                0,
-                20
-            );
-        } else {
-            cityFriends = personRepository.findByCityForFriends(
-                personsEmail.getId(),
-                personsEmail.getCity(),
-                "",
-                0,
-                20
-            );
-        }
-
+        List<Person> cityFriends = personRepository.findByCityForFriends(personsEmail.getId(),
+                personsEmail.getCity(), recommendationFriends.stream().map(friend ->
+                        friend.getId().toString()).collect(Collectors.toList()), 0, 20, notFriends);
         if (cityFriends.isEmpty()) {
             return recommendationFriendsCity;
         }
-
         int neededFriendsCount = Math.max(RECOMMENDED_FRIENDS_COUNT - recommendationFriends.size(), 0);
-
         for (Person p : cityFriends) {
             if (recommendationFriendsCity.size() >= neededFriendsCount) {
                 break;
             }
-
             recommendationFriendsCity.add(p);
         }
-
         return recommendationFriendsCity;
     }
 
     public List<Person> getRecommendedFriendsAll(
-            Person personsEmail, List<Person> recommendationFriends, List<Person> friends) {
+            Person personsEmail, List<Person> recommendationFriends, List<Long> friends, List<Long> notFriends) {
         List<String> recommendedFriendsIdList = new ArrayList<>();
-
         for (Person recommendationFriend : recommendationFriends) {
             recommendedFriendsIdList.add(recommendationFriend.getId().toString());
         }
-
         if (friends != null && !friends.isEmpty()) {
-            for (Person friend : friends) {
-                recommendedFriendsIdList.add(friend.getId().toString());
+            for (Long friend : friends) {
+                recommendedFriendsIdList.add(friend.toString());
             }
         }
-
         return new ArrayList<>(
                 personRepository.findAllForFriends(
                         personsEmail.getId(),
                         StringUtils.join(recommendedFriendsIdList, ","),
-                        Math.max(RECOMMENDED_FRIENDS_COUNT - recommendationFriends.size(), 0)
+                        Math.max(RECOMMENDED_FRIENDS_COUNT - recommendationFriends.size(), 0),
+                        notFriends
                 )
         );
-
     }
 
     public CommonRs<List<PersonRs>> getPotentialFriends(String authorization, Integer offset, Integer perPage) {
         Person personsEmail = tokenToMail(authorization);
         List<Person> potentialFriends = personRepository.findAllPotentialFriends(personsEmail.getId(), offset, perPage);
         Long total = personRepository.countAllPotentialFriends(personsEmail.getId());
-
         return personToPersonRs(potentialFriends, offset, perPage, total, personsEmail.getId());
     }
 
@@ -219,8 +186,8 @@ public class FriendsService {
         Person personsEmail = tokenToMail(authorization);
         Friendships friendships = friendsShipsRepository.getFriendStatus(personsEmail.getId(), Long.valueOf(id));
         if (friendships != null) {
-                friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
-                        FriendshipStatusTypes.FRIEND, friendships.getId());
+            friendsShipsRepository.updateFriend(friendships.getDstPersonId(), friendships.getSrcPersonId(),
+                    FriendshipStatusTypes.FRIEND, friendships.getId());
         } else {
             friendsShipsRepository.addFriend(personsEmail.getId(), Long.valueOf(id), FriendshipStatusTypes.FRIEND);
         }
@@ -242,7 +209,6 @@ public class FriendsService {
         if (friendships != null && (friendships.getStatusName().equals(FriendshipStatusTypes.REQUEST)
                 || friendships.getStatusName().equals(FriendshipStatusTypes.RECEIVED_REQUEST))) {
             friendsShipsRepository.deleteFriendUsing(friendships.getId());
-
         }
         return fillingCommonRsComplexRs(id);
     }
@@ -260,10 +226,9 @@ public class FriendsService {
         }
         PersonSettings personSettings = personSettingRepository.getSettings(id.longValue());
         if (personSettings != null && (Boolean.TRUE.equals(personSettings.getFriendRequest()))) {
-                Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
-                        (long) id, personsEmail.getId());
-                NotificationPusher.sendPush(notification, personsEmail.getId());
-
+            Notification notification = NotificationPusher.getNotification(NotificationType.FRIEND_REQUEST,
+                    (long) id, personsEmail.getId());
+            NotificationPusher.sendPush(notification, personsEmail.getId());
         }
         return fillingCommonRsComplexRs(id);
     }

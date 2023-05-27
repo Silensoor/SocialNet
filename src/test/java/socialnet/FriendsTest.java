@@ -127,8 +127,8 @@ public class FriendsTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
-            .andExpect(jsonPath("$.data[1].email", is("jjewell5@ebay.com")))
+            .andExpect(jsonPath("$.data[0].email", is("jjewell5@ebay.com")))
+            .andExpect(jsonPath("$.data[1].email", is("fbrisset4@zimbio.com")))
             .andReturn();
     }
     @Test

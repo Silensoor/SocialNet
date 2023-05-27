@@ -113,10 +113,11 @@ public class PersonService {
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
         String email = jwtUtils.getUserEmail(authorization);
-        PersonRs personRsAndFriend= friendsService
-                .readFriendStatus(personRs, personRepository.findByEmail(email).getId(), id);
-
-        return new CommonRs<>(personRsAndFriend);
+        personRs.setFriendStatus(friendsService
+                .getFriendStatus(personRepository.findByEmail(email).getId(), id));
+        personRs.setIsBlockedByCurrentUser(friendsService
+                .getIsBlockedByCurrentUser(personRepository.findByEmail(email).getId(), id));
+        return new CommonRs<>(personRs);
     }
 
     private Person findUser(Integer id) {

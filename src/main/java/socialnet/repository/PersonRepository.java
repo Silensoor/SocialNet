@@ -2,6 +2,7 @@ package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,6 +27,16 @@ public class PersonRepository {
 
     private static final String AND = "' AND ";
     private static final String SELECT = "SELECT * FROM persons";
+
+    private static final String SELECT2 = "SELECT DISTINCT p.id, p.about, p.birth_date," +
+            " p.change_password_token, p.configuration_code, p.deleted_time," +
+            " p.email, p.first_name, p.is_approved, p.is_blocked," +
+            " p.is_deleted, p.last_name, p.last_online_time," +
+            " p.message_permissions, p.notifications_session_id, p.online_status," +
+            " p.password, p.phone, p.photo, p.reg_date, p.city," +
+            " p.country, p.telegram_id, p.person_settings_id FROM persons AS p";
+
+    private static final String AND_NOT_ID = " AND NOT id IN(";
 
     public Long insert(Person person) {
         String sql = "Insert into Persons " + reflection.getFieldNames(person, new String[] {"id"}) +
@@ -103,13 +114,7 @@ public class PersonRepository {
 
     public List<Person> findFriendsAll(Long id, Integer offset, Integer perPage) {
         try {
-            return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
-                            " p.change_password_token, p.configuration_code, p.deleted_time," +
-                            " p.email, p.first_name, p.is_approved, p.is_blocked, p.is_deleted," +
-                            " p.last_name, p.last_online_time, p.message_permissions," +
-                            " p.notifications_session_id, p.online_status, p.password, p.phone," +
-                            " p.photo, p.reg_date, p.city, p.country, p.telegram_id," +
-                            " p.person_settings_id FROM persons AS p JOIN friendships ON" +
+            return jdbcTemplate.query(SELECT2 + " JOIN friendships ON" +
                             " friendships.dst_person_id=p.id OR friendships.src_person_id=p.id WHERE is_deleted = false" +
                             " AND (friendships.dst_person_id=? OR friendships.src_person_id=?) AND" +
                             " friendships.status_name='FRIEND' AND NOT p.id=? ORDER BY p.last_online_time DESC" +
@@ -122,14 +127,8 @@ public class PersonRepository {
 
     public List<Person> findAllOutgoingRequests(Long id, Integer offset, Integer perPage) {
         try {
-            return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
-                            " p.change_password_token, p.configuration_code, p.deleted_time," +
-                            " p.email, p.first_name, p.is_approved, p.is_blocked," +
-                            " p.is_deleted, p.last_name, p.last_online_time," +
-                            " p.message_permissions, p.notifications_session_id, p.online_status," +
-                            " p.password, p.phone, p.photo, p.reg_date, p.city," +
-                            " p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
-                            " JOIN friendships ON friendships.src_person_id=p.id  OR friendships.dst_person_id=p.id" +
+            return jdbcTemplate.query(SELECT2 + " JOIN friendships ON friendships.src_person_id=p.id" +
+                            "  OR friendships.dst_person_id=p.id" +
                             " WHERE is_deleted = false AND friendships.src_person_id=? AND NOT p.id=?" +
                             " AND friendships.status_name = 'REQUEST' ORDER BY p.last_online_time DESC OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
@@ -332,15 +331,11 @@ public class PersonRepository {
         jdbcTemplate.update("UPDATE persons SET last_online_time = ? WHERE id = ?", lastOnlineTime, personId);
     }
 
-    public List<Person> findRecommendedFriends(Long id, List<Person> friends, Integer offset, Integer perPage) {
-        StringBuilder sql = new StringBuilder("SELECT DISTINCT p.id, p.about, p.birth_date, p.change_password_token," +
-                " p.configuration_code, p.deleted_time, p.email, p.first_name, p.is_approved," +
-                " p.is_blocked, p.is_deleted, p.last_name, p.last_online_time, p.message_permissions," +
-                " p.notifications_session_id, p.online_status, p.password, p.phone, p.photo," +
-                " p.reg_date, p.city, p.country, p.telegram_id, p.person_settings_id" +
-                " FROM persons AS p JOIN friendships ON friendships.dst_person_id=p.id" +
+    public List<Person> findRecommendedFriends(Long id, List<Long> friends, Integer offset, Integer perPage,
+                                               List<Long> notFriends) {
+        StringBuilder sql = new StringBuilder(SELECT2 + " JOIN friendships ON friendships.dst_person_id=p.id" +
                 " OR friendships.src_person_id=p.id WHERE is_deleted = false AND ")
-                .append(createSqlWhere(id, friends, offset, perPage));
+                .append(createSqlWhere(id, friends, offset, perPage, notFriends));
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper);
         } catch (EmptyResultDataAccessException ignored) {
@@ -348,18 +343,17 @@ public class PersonRepository {
         }
     }
 
-    public String createSqlWhere(Long id, List<Person> friends, Integer offset, Integer perPage) {
+    public String createSqlWhere(Long id, List<Long> friends, Integer offset, Integer perPage, List<Long> notFriends) {
         StringBuilder strWhere = new StringBuilder();
-        StringBuilder str = new StringBuilder();
-        friends.forEach(friend -> str.append(friend.getId()).append(", "));
         if (!friends.isEmpty()) {
             strWhere.append(" (friendships.dst_person_id IN (")
-                    .append(str.substring(0, str.length() - 2))
+                    .append(StringUtils.join(friends, ","))
                     .append(") OR friendships.src_person_id IN (")
-                    .append(str.substring(0, str.length() - 2))
+                    .append(StringUtils.join(friends, ","))
                     .append("))")
                     .append(" AND NOT p.id IN (")
-                    .append(str.substring(0, str.length() - 2))
+                    .append(StringUtils.join(friends, ","))
+                    .append(StringUtils.join(notFriends, ","))
                     .append(")")
                     .append(" AND NOT p.id=")
                     .append(id);
@@ -372,12 +366,7 @@ public class PersonRepository {
 
     public List<Person> findAllPotentialFriends(Long id, Integer offset, Integer perPage) {
         try {
-            return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date, p.change_password_token," +
-                            " p.configuration_code, p.deleted_time, p.email, p.first_name, p.is_approved, p.is_blocked," +
-                            " p.is_deleted, p.last_name, p.last_online_time, p.message_permissions," +
-                            " p.notifications_session_id, p.online_status, p.password, p.phone, p.photo, p.reg_date," +
-                            " p.city, p.country, p.telegram_id, p.person_settings_id FROM persons AS p" +
-                            " JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
+            return jdbcTemplate.query(SELECT2 + " JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
                             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=?" +
                             " AND friendships.status_name IN ('REQUEST', 'RECEIVED_REQUEST') OFFSET ? LIMIT ?",
                     personRowMapper, id, id, offset, perPage);
@@ -388,18 +377,19 @@ public class PersonRepository {
 
     public Long countAllPotentialFriends(Long id) {
         return jdbcTemplate.queryForObject(
-            "SELECT DISTINCT COUNT(p.*) " +
-            "  FROM persons AS p " +
+            "SELECT DISTINCT COUNT(p.*) FROM persons AS p " +
             "  JOIN friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id " +
             " WHERE is_deleted = false AND friendships.dst_person_id=? AND NOT p.id=? " +
             "   AND friendships.status_name  IN ('REQUEST', 'RECEIVED_REQUEST') ",
             Long.class, id, id);
     }
 
-    public List<Person> findByCityForFriends(Long id, String city, String friendsRecommended,
-                                             Integer offset, Integer perPage) {
+    public List<Person> findByCityForFriends(Long id, String city, List<String> recommendedFriendsIdList,
+                                             Integer offset, Integer perPage, List<Long> notFriends) {
         StringBuilder sql = new StringBuilder(SELECT + " WHERE is_deleted = false AND city = ?")
-                .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(!recommendedFriendsIdList.isEmpty() ? AND_NOT_ID + " " +
+                        StringUtils.join(recommendedFriendsIdList, ",") + ")" : "")
+                .append(!notFriends.isEmpty() ? AND_NOT_ID + " " + StringUtils.join(notFriends, ",") + ")" : "")
                 .append(" AND NOT id=? ORDER BY reg_date DESC OFFSET ? LIMIT ?");
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper, city, id, offset, perPage);
@@ -408,9 +398,10 @@ public class PersonRepository {
         }
     }
 
-    public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage) {
+    public List<Person> findAllForFriends(Long id, String friendsRecommended, Integer perPage, List<Long> notFriends) {
         StringBuilder sql = new StringBuilder(SELECT + " WHERE is_deleted = false ")
-                .append(!Objects.equals(friendsRecommended, "") ? " AND NOT id IN(" + friendsRecommended + ")" : "")
+                .append(!Objects.equals(friendsRecommended, "") ? AND_NOT_ID + friendsRecommended  + ")" : "")
+                .append(!notFriends.isEmpty() ? AND_NOT_ID + StringUtils.join(notFriends, ",")  + ")" : "")
                 .append(" AND NOT id=? ORDER BY reg_date DESC LIMIT ?");
         try {
             return jdbcTemplate.query(sql.toString(), personRowMapper, id, perPage);
@@ -421,5 +412,17 @@ public class PersonRepository {
 
     public Integer getAllUsersByCountry(String country) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM persons WHERE country=?", Integer.class, country);
+    }
+
+    public List<Person> findNotFriends(Long id) {
+        try {
+            return jdbcTemplate.query(SELECT2 + " JOIN friendships ON friendships.src_person_id=p.id" +
+                            " OR friendships.dst_person_id=p.id" +
+                            " WHERE is_deleted = false AND NOT p.id=? AND (friendships.src_person_id=?" +
+                            " OR friendships.dst_person_id=?) AND friendships.status_name = 'BLOCKED'",
+                    personRowMapper, id, id, id);
+        } catch (EmptyResultDataAccessException ignored) {
+            return Collections.emptyList();
+        }
     }
 }
