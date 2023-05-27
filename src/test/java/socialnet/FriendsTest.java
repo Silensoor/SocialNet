@@ -127,8 +127,8 @@ public class FriendsTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.data[0].email", is("fbrisset4@zimbio.com")))
-            .andExpect(jsonPath("$.data[1].email", is("jjewell5@ebay.com")))
+            .andExpect(jsonPath("$.data[0].email", is("jjewell5@ebay.com")))
+            .andExpect(jsonPath("$.data[1].email", is("fbrisset4@zimbio.com")))
             .andReturn();
     }
     @Test
@@ -143,7 +143,7 @@ public class FriendsTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        String newValue = friendsShipsRepository.findFriend(1L, 3L).getStatusName().toString();
+        String newValue = friendsShipsRepository.getFriendStatusBlocked(1L, 3L).getStatusName().toString();
         assertThat(!startValue.equals(newValue)).isTrue();
     }
     @Test
