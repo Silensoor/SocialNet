@@ -12,7 +12,6 @@ import socialnet.api.response.ComplexRs;
 import socialnet.api.response.DialogRs;
 import socialnet.api.response.MessageRs;
 import socialnet.aspects.OnlineStatusUpdatable;
-import socialnet.exception.DialogsException;
 import socialnet.service.DialogsService;
 
 import java.util.List;
@@ -30,14 +29,7 @@ public class DialogsController {
     @GetMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "recover comment by id")
     public CommonRs<List<DialogRs>> getDialogs(@RequestHeader String authorization) {
-        CommonRs<List<DialogRs>> dialogs;
-        try {
-            dialogs = dialogsService.getDialogs(authorization);
-        } catch (Exception e) {
-            log.error("Error in DialogsService::getDialogs", e);
-            throw new DialogsException(e);
-        }
-        return dialogs;
+        return dialogsService.getDialogs(authorization);
     }
 
     @OnlineStatusUpdatable

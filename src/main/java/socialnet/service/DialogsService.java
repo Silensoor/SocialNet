@@ -34,7 +34,7 @@ public class DialogsService {
 
     public CommonRs<List<DialogRs>> getDialogs(String token) {
         String userEmail = jwtUtils.getUserEmail(token);
-        Person person = personRepository.getPersonByEmail(userEmail);
+        Person person = personRepository.findByEmail(userEmail);
         List<Dialog> ownDialogs = dialogsRepository.findByAuthorId(person.getId());
         List<Dialog> companionDialogs = dialogsRepository.findByRecipientId(person.getId());
         List<Dialog> dialogsModelAll = new ArrayList<>();
@@ -72,7 +72,7 @@ public class DialogsService {
 
     public CommonRs<ComplexRs> getUnreadedMessages(String token) {
         String userEmail = jwtUtils.getUserEmail(token);
-        Person person = personRepository.getPersonByEmail(userEmail);
+        Person person = personRepository.findByEmail(userEmail);
         long count = messageRepository.findCountByPersonIdAndReadStatus(person.getId(), MessageReadStatus.UNREAD.name());
 
         ComplexRs complexRs = new ComplexRs();
@@ -87,7 +87,7 @@ public class DialogsService {
 
     public CommonRs<List<MessageRs>> getMessagesFromDialog(String token, Long dialogId, Integer offset, Integer perPage) {
         String userEmail = jwtUtils.getUserEmail(token);
-        Person person = personRepository.getPersonByEmail(userEmail);
+        Person person = personRepository.findByEmail(userEmail);
         List<Message> messagesModel = messageRepository.findByDialogId(dialogId, offset, perPage);
         List<MessageRs> messagesDto = new ArrayList<>();
         for (Message messageModel : messagesModel) {
@@ -119,7 +119,7 @@ public class DialogsService {
     public CommonRs<ComplexRs> registerDialog(String token, DialogUserShortListDto dialogUserShortListDto) {
         ComplexRs complexRs = new ComplexRs();
         String userEmail = jwtUtils.getUserEmail(token);
-        Person person = personRepository.getPersonByEmail(userEmail);
+        Person person = personRepository.findByEmail(userEmail);
         long authorId = person.getId();
         long recipientId = dialogUserShortListDto.getUserIds().get(0);
         Dialog dialog = dialogsRepository.findByAuthorAndRecipient(authorId, recipientId);

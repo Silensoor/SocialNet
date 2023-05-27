@@ -1,5 +1,6 @@
 package socialnet.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@Slf4j
 public class CurrencyService {
     private static final String USD = "R01235";
     private static final String EUR = "R01239";
@@ -24,7 +26,7 @@ public class CurrencyService {
             String eur = getCurrencyByDateAndName(date, "eur");
             return new CurrencyRs(eur, usd);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return new CurrencyRs("Сервис недоступен.","Сервис недоступен.");
     }

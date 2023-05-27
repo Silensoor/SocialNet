@@ -1,5 +1,6 @@
 package socialnet.api.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LikeRq {
-    private Integer item_id;
+    @JsonProperty("item_id")
+    private Integer itemId;
     private String type;
 }

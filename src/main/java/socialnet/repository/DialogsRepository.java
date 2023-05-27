@@ -88,7 +88,7 @@ public class DialogsRepository {
                 dialog.getId());
     }
 
-    public int save(Dialog dialog) {
+    public Long save(Dialog dialog) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
@@ -102,7 +102,7 @@ public class DialogsRepository {
             return preparedStatement;
         }, keyHolder);
 
-        return keyHolder.getKey().intValue();
+        return (long) keyHolder.getKey();
     }
 
     private <T> void setValue(T arg, PreparedStatement preparedStatement, int parameterIndex) throws SQLException {
@@ -114,8 +114,7 @@ public class DialogsRepository {
     }
 
     public int updateField(long dialogId, String fieldName, long fieldValue) {
-        return jdbcTemplate.update("UPDATE dialogs SET " + fieldName + " = ? WHERE id = ?",
-                fieldValue,
-                dialogId);
+        return jdbcTemplate.update("UPDATE dialogs SET ? = ? WHERE id = ?",
+            fieldName, fieldValue, dialogId);
     }
 }
