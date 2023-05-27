@@ -143,7 +143,7 @@ public class FriendsTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        String newValue = friendsShipsRepository.findFriend(1L, 3L).getStatusName().toString();
+        String newValue = friendsShipsRepository.getFriendStatusBlocked(1L, 3L).getStatusName().toString();
         assertThat(!startValue.equals(newValue)).isTrue();
     }
     @Test

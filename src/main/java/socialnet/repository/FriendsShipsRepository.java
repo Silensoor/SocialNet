@@ -69,9 +69,9 @@ public class FriendsShipsRepository {
     public Friendships getFriendStatus(Long id, Long idFriend) {
         try {
             return jdbcTemplate.queryForObject(SQL_SELECT +
-                    " WHERE NOT status_name = 'BLOCKED' AND sent_time IS NOT NULL" +
+                    " WHERE sent_time IS NOT NULL" +
                     " AND (dst_person_id = ? AND src_person_id = ?)" +
-                    DST_SRC, friendshipsRowMapper, id, idFriend, idFriend, id);
+                    DST_SRC + " AND NOT status_name = 'BLOCKED'", friendshipsRowMapper, id, idFriend, idFriend, id);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }

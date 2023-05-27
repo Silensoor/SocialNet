@@ -78,15 +78,18 @@ public class FriendsService {
         if (friendStatus != null) {
             if (friendStatus.getStatusName().equals(FriendshipStatusTypes.REQUEST)
                     && (friendStatus.getDstPersonId().equals(personId))) {
-                    return FriendshipStatusTypes.RECEIVED_REQUEST.toString();
+                if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null) {
+                    return FriendshipStatusTypes.BLOCKED.toString();
+                }
+                return FriendshipStatusTypes.RECEIVED_REQUEST.toString();
             }
-            if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null){
+            if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null) {
                 return FriendshipStatusTypes.BLOCKED.toString();
             } else {
                 return friendStatus.getStatusName().toString();
             }
         } else {
-            if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null){
+            if (friendsShipsRepository.getFriendStatusBlocked2(personId, idFriend) != null) {
                 return FriendshipStatusTypes.BLOCKED.toString();
             }
         }
