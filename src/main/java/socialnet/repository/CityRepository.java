@@ -6,10 +6,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import socialnet.api.response.GeolocationRs;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.model.City;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,6 +21,9 @@ public class CityRepository {
     public List<City> getCitiesByStarts(String country, String starts) {
         if (starts.isEmpty())
             starts = "-";
+
+        starts = Pattern.compile("^.").matcher(starts).replaceFirst(m -> m.group().toUpperCase());
+
         String sql = String.format("Select C1.* from Cities C1\n" +
                 "join Countries C2 on C1.country_id = C2.id\n" +
                 "Where C2.name = '%s'\n" +
@@ -39,6 +44,15 @@ public class CityRepository {
         var rowCount = jdbcTemplate.query("Select Lower(name) from cities where (Lower(name) = Lower(?)) and Code2 = 'RU'",
                 new BeanPropertyRowMapper<>(City.class), city);
         return rowCount.size() > 0;
+    }
+
+    public List<City> getCitiesFromPersons(String country) {
+        return jdbcTemplate.query("select distinct city from persons p\n" +
+                        "join cities c on (p.city = c.name)\n" +
+                        "where p.city notnull \n" +
+                        "  and c.country_id = (select id from Countries where name = ?)\n" +
+                        "order by city",
+                new BeanPropertyRowMapper<>(City.class), country);
     }
 
     public Integer getAllCity() {

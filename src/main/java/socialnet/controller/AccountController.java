@@ -87,8 +87,4 @@ public class AccountController {
         return personService.setSetting(authorization, personSettingsRq);
     }
 
-//    @PutMapping("/notifications")
-//    public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
-//        return notificationsService.putNotificationByPerson(authorization,notificationRq);
-//    }
 }

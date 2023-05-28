@@ -121,30 +121,6 @@ public class NotificationsService {
         return new CommonRs<>(new ComplexRs("string"));
     }
 
-/*
-    private CommonRs<List<PersonSettingsRs>> getResponsePersonSettings(PersonSettings personSettings) {
-        PersonSettingsRs personSettingsRs1 = new PersonSettingsRs(personSettings.getCommentCommentNotification(),
-                "COMMENT_COMMENT");
-        PersonSettingsRs personSettingsRs2 = new PersonSettingsRs(personSettings.getFriendBirthdayNotification(),
-                "FRIEND_BIRTHDAY");
-        PersonSettingsRs personSettingsRs3 = new PersonSettingsRs(personSettings.getFriendRequest(),
-                "FRIEND_REQUEST");
-        PersonSettingsRs personSettingsRs4 = new PersonSettingsRs(personSettings.getMessageNotification(),
-                "MESSAGE");
-        PersonSettingsRs personSettingsRs5 = new PersonSettingsRs(personSettings.getPostNotification(),
-                "POST");
-        PersonSettingsRs personSettingsRs6 = new PersonSettingsRs(personSettings.getPostCommentNotification(),
-                "POST_COMMENT");
-        PersonSettingsRs personSettingsRs7 = new PersonSettingsRs(personSettings.getLikeNotification(),
-                "POST_LIKE");
-        List<PersonSettingsRs> personSettingsRs = Arrays.asList(personSettingsRs1, personSettingsRs2, personSettingsRs3,
-                personSettingsRs4, personSettingsRs5, personSettingsRs6, personSettingsRs7);
-        CommonRs<List<PersonSettingsRs>> commonRs = new CommonRs<>(personSettingsRs);
-        commonRs.setTotal(500L);
-        return commonRs;
-    }
-*/
-
     private CommonRs<List<NotificationRs>> getResponseNotifications(List<NotificationRs> notificationRs) {
         return new CommonRs<>(notificationRs);
     }

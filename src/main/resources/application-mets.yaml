@@ -5,9 +5,10 @@ spring:
         useConfigs: maxPerformance
         rewriteBatchedInserts: true
     platform: postgres
-    url: jdbc:postgresql://localhost:5432/socialnet
-    username: postgres
-    password: test
+    #url: jdbc:postgresql://localhost:5432/socialnet
+    url: jdbc:postgresql://81.177.6.228:5432/socialnet
+    username: snuser
+    password: snpassword
 
   security:
     user:

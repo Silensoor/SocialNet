@@ -5,7 +5,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
   profiles:
-    active: michael
+    active: mets
   mail:
     host: smtp.mail.ru
     port: 2525
