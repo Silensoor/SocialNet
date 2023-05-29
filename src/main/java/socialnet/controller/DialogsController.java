@@ -60,6 +60,7 @@ public class DialogsController {
 
     @OnlineStatusUpdatable
     @PostMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "start dialog with user")
     public CommonRs<ComplexRs> startDialog(@RequestHeader String authorization,
                                            @RequestBody DialogUserShortListDto dialogUserShortListDto) {
         return dialogsService.registerDialog(authorization, dialogUserShortListDto);
