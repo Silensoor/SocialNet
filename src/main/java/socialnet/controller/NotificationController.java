@@ -1,6 +1,6 @@
 package socialnet.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class NotificationController {
 
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
-    @ApiOperation(value = "get all notifications for user")
+    @Operation(summary = "get all notifications for user")
     public CommonRs<List<NotificationRs>> notifications(
         @RequestHeader String authorization,
         @RequestParam(required = false, defaultValue = "10") Integer itemPerPage,
@@ -32,7 +32,7 @@ public class NotificationController {
 
     @OnlineStatusUpdatable
     @PutMapping("/notifications")
-    @ApiOperation(value = "read notification")
+    @Operation(summary = "read notification")
     public CommonRs<List<NotificationRs>> notifications(
         @RequestHeader String authorization,
         @RequestParam(required = false) Integer id,

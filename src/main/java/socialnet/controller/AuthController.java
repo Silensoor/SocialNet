@@ -1,6 +1,6 @@
 package socialnet.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +22,20 @@ public class AuthController {
     private final PersonService personService;
 
     @GetMapping("/captcha")
-    @ApiOperation(value = "get captcha secret code and image url")
+    @Operation(summary = "get captcha secret code and image url")
     public CaptchaRs captcha() {
         return captchaService.getCaptchaData();
     }
 
     @PostMapping("/login")
-    @ApiOperation(value = "login by email and password")
+    @Operation(summary = "login by email and password")
     public CommonRs<PersonRs> login(@RequestBody LoginRq loginRq) {
         return personService.getLogin(loginRq);
     }
 
     @OnlineStatusUpdatable
     @PostMapping("/logout")
-    @ApiOperation(value = "logout current user")
+    @Operation(summary = "logout current user")
     public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization") String authorization) {
         return personService.getLogout();
     }
