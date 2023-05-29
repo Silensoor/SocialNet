@@ -32,8 +32,9 @@ public class FriendsShipsRepository {
     public Friendships findFriend(Long id, Long idFriend) {
         try {
             return jdbcTemplate.queryForObject(SQL_SELECT +
-                            " WHERE status_name = 'FRIEND' AND (dst_person_id = ? AND src_person_id = ?)" +
-                            DST_SRC,
+                            " WHERE sent_time IS NOT NULL " +
+                            " AND ((src_person_id = ? AND dst_person_id = ?)" +
+                            DST_SRC + ")",
                     friendshipsRowMapper, id, idFriend, idFriend, id);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -42,7 +43,7 @@ public class FriendsShipsRepository {
 
     public void addFriend(Long id, Long idFriend, FriendshipStatusTypes status) {
         jdbcTemplate.update("INSERT INTO friendships (sent_time, dst_person_id, src_person_id, status_name)" +
-                " VALUES (NOW(), ?, ?, ?)", idFriend, id, status.toString());
+                " VALUES (NOW(), ?, ?, ?)", idFriend, id,  status.toString());
     }
 
     public void updateFriend(Long id, Long idFriend, FriendshipStatusTypes status, Long idRequest) {
@@ -51,8 +52,9 @@ public class FriendsShipsRepository {
                 idRequest);
     }
 
-    public void deleteFriendUsing(Long id) {
-        jdbcTemplate.update("DELETE FROM friendships WHERE id = ?", id);
+    public void deleteFriendUsing(Long personsId, Long idFriend) {
+        jdbcTemplate.update("DELETE FROM friendships WHERE ((dst_person_id = ? AND src_person_id = ?) "
+                        + DST_SRC + ")", personsId, idFriend, idFriend, personsId);
     }
 
     public Friendships findRequest(Long id, Long idFriend) {
@@ -96,8 +98,8 @@ public class FriendsShipsRepository {
         try {
             return jdbcTemplate.queryForObject(SQL_SELECT +
                             " WHERE sent_time IS NULL AND status_name = 'BLOCKED' AND " +
-                            " ((dst_person_id = ? AND src_person_id = ?)" + DST_SRC + ")",
-                    friendshipsRowMapper, personId, idFriend, idFriend, personId);
+                            " (src_person_id = ? AND dst_person_id = ?)",
+                    friendshipsRowMapper, personId, idFriend);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
