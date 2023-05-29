@@ -3,6 +3,7 @@ package socialnet;
 import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +30,7 @@ import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.service.KafkaService;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,17 +82,61 @@ public class MessageTest {
     }
 
     @Test
+    @DisplayName("recover comment by id")
     @Transactional
-    public void editMessage() throws Exception {
-        Integer messageListStart = messageRepository.getAllMessage();
-        System.out.println("до: " + messageListStart);
+    public void getDialogs() throws Exception {
 
         this.mockMvc
                 .perform(get("/api/v1/dialogs").with(authorization()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
-
-        Integer messageListEnd = messageRepository.getAllMessage();
     }
+
+    @Test
+    @DisplayName("get count of unread messages")
+    @Transactional
+    public void getUnreadedMessages() throws Exception {
+
+        this.mockMvc
+                .perform(get("/api/v1/dialogs/unreaded").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("get messages from dialog")
+    @Transactional
+    public void getMessagesFromDialog() throws Exception {
+
+        this.mockMvc
+                .perform(get("/api/v1/dialogs/1/messages").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("read messages in dialog")
+    @Transactional
+    public void readMessagesInDialog() throws Exception {
+
+        this.mockMvc
+                .perform(put("/api/v1/dialogs/1/read").with(authorization()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+//    @Test
+//    @Transactional
+//    public void startDialog() throws Exception {
+//
+//        this.mockMvc
+//                .perform(post("/api/v1/dialogs").with(authorization()))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andReturn();
+//    }
 }
