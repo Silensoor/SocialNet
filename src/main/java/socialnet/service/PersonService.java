@@ -18,10 +18,8 @@ import socialnet.api.response.*;
 import socialnet.exception.EmptyEmailException;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
-import socialnet.model.Friendships;
 import socialnet.model.Person;
 import socialnet.model.PersonSettings;
-import socialnet.repository.FriendsShipsRepository;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -50,29 +48,27 @@ public class PersonService {
     @Value("${defaultPhoto}")
     private String defaultPhoto;
 
-    private final FriendsShipsRepository friendsShipsRepository;
+    private final FriendsService friendsService;
 
-    public CommonRs delete(String authorization) {
+    public CommonRs<ComplexRs> delete(String authorization) {
         personRepository.markUserDelete(jwtUtils.getUserEmail(authorization));
         return new CommonRs<>(new ComplexRs());
     }
 
-    public CommonRs recover(String authorization) {
+    public CommonRs<ComplexRs> recover(String authorization) {
         personRepository.recover(jwtUtils.getUserEmail(authorization));
         return new CommonRs<>(new ComplexRs());
     }
 
 
     public CommonRs<PersonRs> getLogin(LoginRq loginRq) {
-
         Person person = checkLoginAndPassword(loginRq.getEmail(), loginRq.getPassword());
+        jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
+        authenticated(loginRq);
+        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
+        changePersonStatus(personRs);
 
-            jwt = jwtUtils.generateJwtToken(loginRq.getEmail());
-            authenticated(loginRq);
-            PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-            changePersonStatus(personRs);
-            return new CommonRs<>(personRs);
-
+        return new CommonRs<>(personRs);
     }
 
     public CommonRs<PersonRs> getMyProfile(String authorization) {
@@ -80,6 +76,7 @@ public class PersonService {
         Person person = personRepository.findByEmail(email);
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
+
         return new CommonRs<>(personRs);
     }
 
@@ -87,58 +84,42 @@ public class PersonService {
         personRs.setToken(jwt);
         personRs.setOnline(true);
         personRs.setIsBlockedByCurrentUser(false);
-        personRs.setIsBlockedByCurrentUser(false);
         personRs.setWeather(weatherService.getWeatherByCity(personRs.getCity()));
         personRs.setCurrency(currencyService.getCurrency(LocalDate.now()));
         if (personRs.getPhoto() == null) {
             personRs.setPhoto(defaultPhoto);
         }
-
     }
 
     public RegisterRs setNewEmail(EmailRq emailRq) {
         personRepository.setEmail(jwtUtils.getUserEmail(emailRq.getSecret()), emailRq.getEmail());
+
         return new RegisterRs();
     }
 
     public RegisterRs resetPassword(String authorization, PasswordSetRq passwordSetRq) {
         personRepository.setPassword(passwordEncoder.encode(passwordSetRq.getPassword()), jwtUtils.getUserEmail(authorization));
+
         return new RegisterRs(jwtUtils.getUserEmail(authorization), System.currentTimeMillis());
     }
 
-    public CommonRs<ComplexRs> getLogout(String authorization) {
-
+    public CommonRs<ComplexRs> getLogout() {
         return setCommonRs(setComplexRs());
     }
 
     public CommonRs<PersonRs> getUserById(String authorization, Integer id) {
-        Person person = findUser(id);
+        Person person = personRepository.findById(Long.valueOf(id));
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         changePersonStatus(personRs);
-        changeFriendStatus(authorization, id, personRs);
+        String email = jwtUtils.getUserEmail(authorization);
+        personRs.setFriendStatus(friendsService
+                .getFriendStatus(personRepository.findByEmail(email).getId(), id));
+        personRs.setIsBlockedByCurrentUser(friendsService
+                .getIsBlockedByCurrentUser(personRepository.findByEmail(email).getId(), id));
         return new CommonRs<>(personRs);
     }
 
-    private void changeFriendStatus(String authorization, Integer id, PersonRs personRs) {
-        String email = jwtUtils.getUserEmail(authorization);
-        Person person = personRepository.findByEmail(email);
-        final Friendships friendStatus = friendsShipsRepository.getFriendStatus(Long.valueOf(id), person.getId());
-        if (friendStatus != null){
-            personRs.setFriendStatus(friendStatus.getStatusName().toString());
-            if (friendStatus.equals("BLOCKED")){
-                personRs.setIsBlockedByCurrentUser(true);
-            }
-        } else {
-            personRs.setFriendStatus("UNKNOWN");
-            personRs.setIsBlockedByCurrentUser(null);
-        }
-    }
-
-    private Person findUser(Integer id) {
-        return personRepository.findById(Long.valueOf(id));
-    }
-
-    public CommonRs<ComplexRs> setCommonRs(ComplexRs complexRs) {
+    private CommonRs<ComplexRs> setCommonRs(ComplexRs complexRs) {
         CommonRs<ComplexRs> commonRs = new CommonRs<>();
         commonRs.setData(complexRs);
         commonRs.setOffset(0);
@@ -146,10 +127,11 @@ public class PersonService {
         commonRs.setTotal(0L);
         commonRs.setItemPerPage(0);
         commonRs.setPerPage(0);
+
         return commonRs;
     }
 
-    public ComplexRs setComplexRs() {
+    private ComplexRs setComplexRs() {
 
         return ComplexRs.builder()
                 .id(0)
@@ -161,14 +143,13 @@ public class PersonService {
 
     public Person getAuthPerson() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return personRepository.getPersonByEmail(email);
+        return personRepository.findByEmail(email);
     }
 
     public Long getAuthPersonId() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return personRepository.getPersonIdByEmail(email);
     }
-
 
 
     public Person checkLoginAndPassword(String email, String password) {
@@ -188,34 +169,34 @@ public class PersonService {
         return person;
     }
 
-        private void authenticated(LoginRq loginRq) {
+    private void authenticated(LoginRq loginRq) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRq.getEmail(), loginRq.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    public ResponseEntity<?> updateUserInfo(String authorization, UserRq userRq) {
-
+    public ResponseEntity<CommonRs<PersonRs>> updateUserInfo(String authorization, UserRq userRq) {
         Person person = personRepository.findByEmail(jwtUtils.getUserEmail(authorization));
 
-        if (person.getIsBlocked()) {
+        if (Boolean.TRUE.equals(person.getIsBlocked())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);  //403
         }
 
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         UserUpdateDto userUpdateDto = UserDtoMapper.INSTANCE.toDto(userRq);
-
         userUpdateDto.setPhoto(person.getPhoto());
-        if (userUpdateDto.getPhoto() == null)
+
+        if (userUpdateDto.getPhoto() == null) {
             userUpdateDto.setPhoto(defaultPhoto);
+        }
 
         personRepository.updatePersonInfo(userUpdateDto, person.getEmail());
 
-        return ResponseEntity.ok(new CommonRs(personRs));
+        return ResponseEntity.ok(new CommonRs<>(personRs));
     }
 
 
-    public CommonRs getPersonSettings(String authorization) {
+    public CommonRs<List<PersonSettingsRs>> getPersonSettings(String authorization) {
         PersonSettings personSettings = personSettingRepository
                 .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
 
@@ -225,13 +206,15 @@ public class PersonService {
             if (!entry.getKey().equalsIgnoreCase("id"))
                 list.add(new PersonSettingsRs((boolean) entry.getValue(), entry.getKey().toUpperCase()));
         }
+
         return new CommonRs<>(list);
     }
 
-    public CommonRs setSetting(String authorization, PersonSettingsRq personSettingsRq) {
+    public CommonRs<ComplexRs> setSetting(String authorization, PersonSettingsRq personSettingsRq) {
         personSettingRepository.setSetting(
                 personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)),
                 personSettingsRq);
+
         return new CommonRs<>(new ComplexRs());
     }
 

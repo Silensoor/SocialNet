@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import socialnet.api.response.CommonRs;
 import socialnet.service.GeolocationsService;
-import socialnet.dto.geolocation.GeolocationRs;
+import socialnet.api.response.GeolocationRs;
 
 import java.util.List;
 

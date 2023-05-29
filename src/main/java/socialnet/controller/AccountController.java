@@ -9,6 +9,8 @@ import socialnet.api.request.PasswordSetRq;
 import socialnet.api.request.PersonSettingsRq;
 import socialnet.api.request.RegisterRq;
 import socialnet.api.response.CommonRs;
+import socialnet.api.response.ComplexRs;
+import socialnet.api.response.PersonSettingsRs;
 import socialnet.api.response.RegisterRs;
 import socialnet.aspects.OnlineStatusUpdatable;
 import socialnet.repository.PersonSettingRepository;
@@ -18,6 +20,7 @@ import socialnet.service.NotificationsService;
 import socialnet.service.PersonService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/account")
@@ -73,20 +76,15 @@ public class AccountController {
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
     @ApiOperation(value = "get user's notifications properties")
-    public CommonRs notifications(@RequestHeader String authorization){
+    public CommonRs<List<PersonSettingsRs>> notifications(@RequestHeader String authorization){
         return personService.getPersonSettings(authorization);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/notifications")
     @ApiOperation(value = "edit notifications properties")
-    public CommonRs saveSettings(@RequestHeader String authorization,
-                                 @RequestBody PersonSettingsRq personSettingsRq) {
+    public CommonRs<ComplexRs> saveSettings(@RequestHeader String authorization,
+                                            @RequestBody PersonSettingsRq personSettingsRq) {
         return personService.setSetting(authorization, personSettingsRq);
     }
-
-//    @PutMapping("/notifications")
-//    public CommonRs<ComplexRs> notifications(@RequestHeader String authorization, @RequestBody NotificationRq notificationRq){
-//        return notificationsService.putNotificationByPerson(authorization,notificationRq);
-//    }
 }

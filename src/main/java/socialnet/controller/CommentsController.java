@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "comments-controller", description = "Create, delete, read, edit and recover comments")
 public class CommentsController {
-
     private final CommentService commentService;
 
     @OnlineStatusUpdatable
@@ -32,7 +31,6 @@ public class CommentsController {
         CommonRs<List<CommentRs>> commonRs = commentService.getComments(postId, offset, perPage);
         return ResponseEntity.ok(commonRs);
     }
-
 
     @OnlineStatusUpdatable
     @PostMapping("/api/v1/post/{postId}/comments")

@@ -37,6 +37,6 @@ public class AuthController {
     @PostMapping("/logout")
     @ApiOperation(value = "logout current user")
     public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization") String authorization) {
-        return personService.getLogout(authorization);
+        return personService.getLogout();
     }
 }

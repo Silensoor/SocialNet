@@ -11,7 +11,6 @@ import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.TgApiRs;
 import socialnet.api.response.TgMessagesRs;
-import socialnet.api.response.TgNotificationFromRs;
 import socialnet.model.Notification;
 import socialnet.model.Person;
 import socialnet.repository.PersonRepository;
@@ -38,6 +37,8 @@ public class TelegramBotService {
 
     @Value("${tgApi}")
     String tgApi;
+
+    private static final String TG_MAIL_REGISTER_URL = "http://81.177.6.228:8086/api/v1/tg";
 
     public TgApiRs register(long telegramId, String email, String cmd) {
         boolean isRegister = telegramBotRepository.register(telegramId, email, cmd);
@@ -157,7 +158,7 @@ public class TelegramBotService {
             mailSender.send(
                 request.getData(),
                 "Подтверждение регистрации",
-                "Для подтверждения регистрации перейдите по ссылке: <a href='http://81.177.6.228:8086/api/v1/tg?id=" + request.getId()
+                "Для подтверждения регистрации перейдите по ссылке: <a href='" + TG_MAIL_REGISTER_URL + "?id=" + request.getId()
                     + "&email=" + request.getData()
                     + "&cmd=" + request.getCommand().substring(1)
                     + "'>подтвердить регистрацию</a>"

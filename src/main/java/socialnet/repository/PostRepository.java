@@ -1,12 +1,14 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Post;
+import socialnet.model.SearchOptions;
 import socialnet.service.TagService;
 
 import java.sql.Timestamp;
@@ -18,6 +20,7 @@ public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final TagService tagService;
+    private final PersonRepository personRepository;
 
     public List<Post> findAll() {
         try {
@@ -30,6 +33,14 @@ public class PostRepository {
     public List<Post> findAll(int offset, int perPage) {
         try {
             return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Post> findAll(int offset, int perPage, long currentTime) {
+        try {
+            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, new Timestamp(currentTime), offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
@@ -121,59 +132,43 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findPostStringSql(Integer authorId, Long dateFrom, Long dateTo, String text,
-                                        Integer limit, Integer offset, String[] tags, Boolean flagQueryAll) {
+    public List<Post> findPostStringSql(SearchOptions searchOptions) {
         try {
-            return jdbcTemplate.query(createSqlPost(authorId, dateFrom, dateTo, text, tags, flagQueryAll),
-                    postRowMapper, offset, limit);
+            return jdbcTemplate.query(createSqlPost(searchOptions),
+                    postRowMapper, searchOptions.getOffset(), searchOptions.getPerPage());
         } catch (EmptyResultDataAccessException ignored) {
             return Collections.emptyList();
         }
     }
 
-    public Integer findPostStringSqlAll(Integer authorId, Long dateFrom, Long dateTo,
-                                        String text, String[] tags, Boolean flagQueryAll) {
+    public Integer findPostStringSqlAll(SearchOptions searchOptions) {
         try {
-            return jdbcTemplate.queryForObject(createSqlPost(authorId, dateFrom, dateTo, text, tags, flagQueryAll),
+            return jdbcTemplate.queryForObject(createSqlPost(searchOptions),
                     Integer.class);
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
 
-    private String createSqlPost(Integer authorId, Long dateFrom, Long dateTo,
-                                 String text, String[] tags, Boolean flagQueryAll) {
-        String post2TagList = "";
+    private String createSqlPost(SearchOptions searchOptions) {
         StringBuilder sql = new StringBuilder();
-        if (Boolean.TRUE.equals(flagQueryAll)) {
+        if (Boolean.TRUE.equals(searchOptions.getFlagQueryAll())) {
             sql.append("SELECT DISTINCT COUNT(posts.id) FROM posts");
         } else {
             sql.append("SELECT DISTINCT posts.id, posts.is_blocked, posts.is_deleted, posts.post_text," +
                     " posts.time, posts.time_delete, posts.title, posts.author_id FROM posts");
         }
-        if (tags != null) {
-            post2TagList = tagService.getPostByQueryTags(tags);
-            sql.append("JOIN post2tag ON posts.id=post2tag.post_id");
+        if (searchOptions.getText().equals("'")) {
+            searchOptions.setText("\"");
         }
-        sql.append(" WHERE is_deleted = false AND ");
-        if (authorId != null) {
-            sql.append(" author_id = ").append(authorId).append(" AND ");
-        }
-        sql.append(dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
-        sql.append(dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
-        sql.append(post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "");
-        if (text.equals("'")){
-            text = "\"";
-        }
-        sql.append(!text.equals("") ? " lower (post_text) LIKE '%" + text.toLowerCase() + "%'" : "");
-        String str = sql.substring(sql.length() - 5);
+        sql.append(createWhereAndTags(searchOptions));
         String sql1;
-        if (str.equals(" AND ")) {
+        if (sql.substring(sql.length() - 5).equals(" AND ")) {
             sql1 = sql.substring(0, sql.length() - 5);
         } else {
             sql1 = sql.toString();
         }
-        if (Boolean.TRUE.equals(flagQueryAll)) {
+        if (Boolean.TRUE.equals(searchOptions.getFlagQueryAll())) {
             return sql1;
         } else {
             return sql1 + " ORDER BY posts.time DESC OFFSET ? LIMIT ?";
@@ -202,5 +197,34 @@ public class PostRepository {
     public Integer getAllPostByUser(Integer userId) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM posts WHERE author_id = ?",
                 Integer.class, userId);
+    }
+
+    private String createWhereAndTags(SearchOptions searchOptions) {
+        StringBuilder sqlWhere = new StringBuilder();
+        List<Long> authorListId = new ArrayList<>();
+        String post2TagList = "";
+        if (searchOptions.getTags() != null) {
+            post2TagList = tagService.getPostByQueryTags(searchOptions.getTags());
+            sqlWhere.append(" JOIN post2tag ON posts.id=post2tag.post_id");
+        }
+        sqlWhere.append(" WHERE is_deleted = false AND ");
+        if (searchOptions.getAuthor() != null && !searchOptions.getAuthor().equals("")) {
+            if (searchOptions.getAuthor().trim().contains(" ")) {
+                personRepository.findPersonsName(searchOptions.getAuthor())
+                        .forEach(author -> authorListId.add(author.getId()));
+            } else {
+                personRepository.findPersonsFirstNameOrLastName(searchOptions.getAuthor())
+                        .forEach(author -> authorListId.add(author.getId()));
+            }
+            sqlWhere.append(!authorListId.isEmpty() ? " author_id IN (" + StringUtils.join(authorListId, ",")
+                    + ") AND " : " author_id IN (0) AND ");
+        }
+        sqlWhere.append(searchOptions.getDateFrom() > 0 ? " time > '"
+                        + parseDate(searchOptions.getDateFrom()) + "' AND " : "")
+                .append(searchOptions.getDateTo() > 0 ? " time < '" + parseDate(searchOptions.getDateTo()) + "' AND " : "")
+                .append(!Objects.equals(post2TagList, "") ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "")
+                .append(!searchOptions.getText().equals("") ? " lower (post_text) LIKE '%" + searchOptions.getText()
+                        .toLowerCase() + "%'" : "");
+        return sqlWhere.toString();
     }
 }

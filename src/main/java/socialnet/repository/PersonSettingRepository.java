@@ -51,12 +51,15 @@ public class PersonSettingRepository {
     }
     public void setSetting(Long personId, PersonSettingsRq personSettingsRq) {
         String sql = String.format("Update Person_Settings Set %s = %s where id = ?",
-                personSettingsRq.getNotification_type(),
+                personSettingsRq.getNotificationType(),
                 personSettingsRq.getEnable().toString());
         jdbcTemplate.update(sql, personId);
     }
 
     public void updatePersonSetting(Boolean enable, String typeNotification, Long id) {
-        jdbcTemplate.update("update person_settings set " + typeNotification + " =? where id =?", enable, id);
+        jdbcTemplate.update(
+            "update person_settings set ? = ? where id = ?",
+            typeNotification, enable, id
+        );
     }
 }
