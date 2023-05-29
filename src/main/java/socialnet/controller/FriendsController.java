@@ -85,7 +85,7 @@ public class FriendsController {
     public CommonRs<ComplexRs> deleteFriendsRequest(@RequestHeader String authorization,
                                                     @PathVariable(value = "id") Integer id)
     {
-        return friendsService.deleteFriendsRequest(authorization, id);
+        return friendsService.deleteFriend(authorization, id);
     }
 
     @OnlineStatusUpdatable
