@@ -1,6 +1,5 @@
 package socialnet.controller;
 
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -14,7 +13,6 @@ import socialnet.service.MessageService;
 
 @Controller
 @RequiredArgsConstructor
-@Api(tags = "message-controller")
 public class MessageWsController {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;

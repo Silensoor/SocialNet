@@ -1,6 +1,6 @@
 package socialnet.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,25 +36,25 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/email/recovery")
-    @ApiOperation(value = "user email recovery")
+    @Operation(summary = "user email recovery")
     public void emailSet(@RequestHeader @Parameter(description =  "Access Token", example = "JWT Token") String authorization) {
         emailService.shiftEmailConfirm(authorization);
     }
 
     @PutMapping("/email")
-    @ApiOperation(value = "set email")
+    @Operation(summary = "set email")
     public RegisterRs setNewEmail(@RequestBody @Parameter EmailRq emailRq) {return personService.setNewEmail(emailRq);}
 
     @OnlineStatusUpdatable
     @PutMapping("/password/recovery")
-    @ApiOperation(value = "user password recovery")
+    @Operation(summary = "user password recovery")
     public void passwordChangeConfirm(@RequestHeader @Parameter String authorization) {
         emailService.passwordChangeConfirm(authorization);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/password/reset")
-    @ApiOperation(value = "user password reset")
+    @Operation(summary = "user password reset")
     public RegisterRs resetPassword(@RequestHeader @Parameter String authorization,
                                        @RequestBody @Parameter PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
@@ -62,28 +62,28 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/password/set")
-    @ApiOperation(value = "set user password")
+    @Operation(summary = "set user password")
     public RegisterRs setNewPassword(@RequestHeader @Parameter String authorization,
                                         @RequestBody @Parameter PasswordSetRq passwordSetRq) {
         return personService.resetPassword(authorization, passwordSetRq);
     }
 
     @PostMapping("/register")
-    @ApiOperation(value = "user registration")
+    @Operation(summary = "user registration")
     public RegisterRs register(@Valid @RequestBody @Parameter RegisterRq regRequest) {
         return accountService.getRegisterData(regRequest);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
-    @ApiOperation(value = "get user's notifications properties")
+    @Operation(summary = "get user's notifications properties")
     public CommonRs<List<PersonSettingsRs>> notifications(@RequestHeader @Parameter String authorization){
         return personService.getPersonSettings(authorization);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/notifications")
-    @ApiOperation(value = "edit notifications properties")
+    @Operation(summary = "edit notifications properties")
     public CommonRs<ComplexRs> saveSettings(@RequestHeader @Parameter String authorization,
                                             @RequestBody @Parameter PersonSettingsRq personSettingsRq) {
         return personService.setSetting(authorization, personSettingsRq);
