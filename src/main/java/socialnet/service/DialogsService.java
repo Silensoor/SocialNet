@@ -175,39 +175,5 @@ public class DialogsService {
         commonRs.setData(complexRs);
 
         return commonRs;
-
-        /*ComplexRs complexRs = new ComplexRs();
-        String userEmail = jwtUtils.getUserEmail(token);
-        Person person = personRepository.findByEmail(userEmail);
-        long authorId = person.getId();
-        long recipientId = dialogUserShortListDto.getUserIds().get(0);
-        Dialog dialog = dialogsRepository.findByAuthorAndRecipient(authorId, recipientId);
-        if (dialog == null) {
-            dialog = dialogsRepository.findByAuthorAndRecipient(recipientId, authorId);
-        }
-        long savedDialogId;
-        if (dialog == null) {
-            dialog = Dialog.builder()
-                    .firstPersonId(person.getId())
-                    .secondPersonId(dialogUserShortListDto.getUserIds().get(0))
-                    .lastActiveTime(new Timestamp(System.currentTimeMillis()))
-                    .build();
-            savedDialogId = dialogsRepository.save(dialog);
-            Message message = Message.builder()
-                    .isDeleted(true)
-                    .dialogId(savedDialogId)
-                    .authorId(dialog.getFirstPersonId())
-                    .recipientId(dialog.getSecondPersonId())
-                    .build();
-            long savedMessageId = messageRepository.save(message);
-            dialogsRepository.updateField(savedDialogId, "last_message_id", savedMessageId);
-        } else {
-            savedDialogId = dialog.getId();
-        }
-        complexRs.setId((int) savedDialogId);
-        CommonRs<ComplexRs> commonRs = new CommonRs<>();
-        commonRs.setData(complexRs);
-
-        return commonRs;*/
     }
 }
