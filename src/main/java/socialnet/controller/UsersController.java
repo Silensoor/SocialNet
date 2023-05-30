@@ -1,6 +1,6 @@
 package socialnet.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +28,14 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @GetMapping("/me")
-    @ApiOperation(value = "get information about me")
+    @Operation(summary = "get information about me")
     public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
         return personService.getMyProfile(authorization);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/{id}")
-    @ApiOperation(value = "get user by id")
+    @Operation(summary = "get user by id")
     public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") String authorization,
                                           @PathVariable(name = "id") Integer id) {
         return personService.getUserById(authorization, id);
@@ -43,7 +43,7 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @GetMapping("/search")
-    @ApiOperation(value = "search post by query")
+    @Operation(summary = "search post by query")
     public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
                                                 @RequestParam(name = "age_from", required = false, defaultValue = "0")
                                                 Integer ageFrom,
@@ -78,7 +78,7 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @PutMapping("/me")
-    @ApiOperation(value = "update information about me")
+    @Operation(summary = "update information about me")
     public ResponseEntity<CommonRs<PersonRs>> updateUserInfo(@RequestHeader("authorization") String authorization,
                                             @RequestBody UserRq userData) {
         return personService.updateUserInfo(authorization, userData);
@@ -86,14 +86,14 @@ public class UsersController {
 
     @OnlineStatusUpdatable
     @DeleteMapping("/me")
-    @ApiOperation(value = "delete information about me")
+    @Operation(summary = "delete information about me")
     public CommonRs<ComplexRs> deleteUser(@RequestHeader("authorization") String authorization) {
         return personService.delete(authorization);
     }
 
     @OnlineStatusUpdatable
     @PostMapping("/me/recover")
-    @ApiOperation(value = "recover information about me")
+    @Operation(summary = "recover information about me")
     public CommonRs<ComplexRs> recoverUser(@RequestHeader("authorization") String authorization) {
         return personService.recover(authorization);
     }
