@@ -254,7 +254,8 @@ public class PostService {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
         postFromDB.setTimeDelete(null);
-        postRepository.save(postFromDB);
+        postRepository.updateById(id, postFromDB);
+//        postRepository.save(postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);
