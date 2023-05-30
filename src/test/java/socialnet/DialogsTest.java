@@ -1,5 +1,7 @@
 package socialnet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import socialnet.api.request.DialogUserShortListDto;
 import socialnet.config.KafkaConsumerConfig;
 import socialnet.config.KafkaProducerConfig;
 import socialnet.config.KafkaTopicConfig;
@@ -30,6 +33,9 @@ import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.service.KafkaService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = { MessageTest.Initializer.class })
+@ContextConfiguration(initializers = { DialogsTest.Initializer.class })
 @Sql({ "/sql/posts_controller_test.sql" })
 @MockBean(RemoveOldCaptchasSchedule.class)
 @MockBean(RemoveDeletedPosts.class)
@@ -47,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(KafkaProducerConfig.class)
 @MockBean(KafkaTopicConfig.class)
 @MockBean(KafkaService.class)
-public class MessageTest {
+public class DialogsTest {
 
     @Autowired
     private MessageRepository messageRepository;
@@ -87,7 +93,8 @@ public class MessageTest {
     public void getDialogs() throws Exception {
 
         this.mockMvc
-                .perform(get("/api/v1/dialogs").with(authorization()))
+                .perform(get("/api/v1/dialogs")
+                        .with(authorization()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -99,7 +106,8 @@ public class MessageTest {
     public void getUnreadedMessages() throws Exception {
 
         this.mockMvc
-                .perform(get("/api/v1/dialogs/unreaded").with(authorization()))
+                .perform(get("/api/v1/dialogs/unreaded")
+                        .with(authorization()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -111,7 +119,8 @@ public class MessageTest {
     public void getMessagesFromDialog() throws Exception {
 
         this.mockMvc
-                .perform(get("/api/v1/dialogs/1/messages").with(authorization()))
+                .perform(get("/api/v1/dialogs/1/messages")
+                        .with(authorization()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -123,20 +132,35 @@ public class MessageTest {
     public void readMessagesInDialog() throws Exception {
 
         this.mockMvc
-                .perform(put("/api/v1/dialogs/1/read").with(authorization()))
+                .perform(put("/api/v1/dialogs/1/read")
+                        .with(authorization()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
     }
 
-//    @Test
-//    @Transactional
-//    public void startDialog() throws Exception {
-//
-//        this.mockMvc
-//                .perform(post("/api/v1/dialogs").with(authorization()))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andReturn();
-//    }
+    @Test
+    @Transactional
+    public void startDialog() throws Exception {
+
+        Long expectUserId = 1L;
+        List<Long> expectUserIds = new ArrayList<>();
+
+        DialogUserShortListDto dialogUserShortListDto = new DialogUserShortListDto();
+        dialogUserShortListDto.setUserId(expectUserId);
+        dialogUserShortListDto.setUserIds(expectUserIds);
+
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String content = ow.writeValueAsString(dialogUserShortListDto);
+
+        this.mockMvc
+                .perform(post("/api/v1/dialogs")
+                        .with(authorization())
+                        .contentType("application/json")
+                        .accept("application/json")
+                        .content(content))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
 }
