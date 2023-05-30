@@ -41,19 +41,31 @@ public class DialogsService {
         dialogsModelAll.addAll(ownDialogs);
         dialogsModelAll.addAll(companionDialogs);
         List<DialogRs> dialogList = new ArrayList<>();
+
         for (Dialog dialog : dialogsModelAll) {
             DialogRs dialogRs = DialogMapper.INSTANCE.toDTO(dialog);
             Message lastMessage = messageRepository.findById(dialog.getLastMessageId());
+
             if (lastMessage == null) {
-                continue;
+                lastMessage = Message.builder()
+                    .id(Long.MAX_VALUE)
+                    .dialogId(dialog.getId())
+                    .authorId(dialog.getFirstPersonId())
+                    .recipientId(dialog.getSecondPersonId())
+                    .readStatus("READ")
+                    .messageText("Напишите своё первое сообщение")
+                    .build();
             }
+
             MessageRs messageRs = MessageMapper.INSTANCE.toDTO(lastMessage);
             PersonRs recipient;
+
             if (Objects.equals(person.getId(), dialog.getFirstPersonId())) {
                 recipient = PersonMapper.INSTANCE.toDTO(personRepository.findById(dialog.getSecondPersonId()));
             } else {
                 recipient = PersonMapper.INSTANCE.toDTO(personRepository.findById(dialog.getFirstPersonId()));
             }
+
             messageRs.setRecipient(recipient);
             messageRs.setIsSentByMe(lastMessage.getAuthorId().equals(person.getId()));
             dialogRs.setLastMessage(messageRs);
@@ -90,12 +102,33 @@ public class DialogsService {
         Person person = personRepository.findByEmail(userEmail);
         List<Message> messagesModel = messageRepository.findByDialogId(dialogId, offset, perPage);
         List<MessageRs> messagesDto = new ArrayList<>();
+
         for (Message messageModel : messagesModel) {
             MessageRs messageDto = MessageMapper.INSTANCE.toDTO(messageModel);
             Person recipientModel = personRepository.findById(messageModel.getRecipientId());
             PersonRs recipientDto = PersonMapper.INSTANCE.toDTO(recipientModel);
             messageDto.setRecipient(recipientDto);
             messageDto.setIsSentByMe(messageModel.getAuthorId().equals(person.getId()));
+            messagesDto.add(messageDto);
+        }
+
+        if (messagesModel.isEmpty()) {
+            Dialog dialog = dialogsRepository.findByDialogId(dialogId);
+            Person recipient = personRepository.findById(dialog.getSecondPersonId());
+
+            Message msg = Message.builder()
+                .id(Long.MAX_VALUE)
+                .dialogId(Long.MAX_VALUE)
+                .authorId(person.getId())
+                .recipientId(recipient.getId())
+                .readStatus("READ")
+                .messageText("Напишите своё первое сообщение")
+                .build();
+
+            MessageRs messageDto = MessageMapper.INSTANCE.toDTO(msg);
+            PersonRs recipientDto = PersonMapper.INSTANCE.toDTO(recipient);
+            messageDto.setRecipient(recipientDto);
+            messageDto.setIsSentByMe(msg.getAuthorId().equals(person.getId()));
             messagesDto.add(messageDto);
         }
 
@@ -117,7 +150,33 @@ public class DialogsService {
     }
 
     public CommonRs<ComplexRs> registerDialog(String token, DialogUserShortListDto dialogUserShortListDto) {
+        Person me = personRepository.findByEmail(jwtUtils.getUserEmail(token));
+        long recipientId = dialogUserShortListDto.getUserIds().get(0);
+        Dialog dialog = dialogsRepository.findByAutorOrRecipient(me.getId(), recipientId);
+        long dialogId;
+
+        if (dialog == null) {
+            dialog = Dialog.builder()
+                .lastActiveTime(new Timestamp(System.currentTimeMillis()))
+                .firstPersonId(me.getId())
+                .secondPersonId(recipientId)
+                .lastMessageId(Long.MAX_VALUE)
+                .build();
+
+            dialogId = dialogsRepository.save(dialog);
+        } else {
+            dialogId = dialog.getId();
+        }
+
         ComplexRs complexRs = new ComplexRs();
+        complexRs.setId((int) dialogId);
+
+        CommonRs<ComplexRs> commonRs = new CommonRs<>();
+        commonRs.setData(complexRs);
+
+        return commonRs;
+
+        /*ComplexRs complexRs = new ComplexRs();
         String userEmail = jwtUtils.getUserEmail(token);
         Person person = personRepository.findByEmail(userEmail);
         long authorId = person.getId();
@@ -149,6 +208,6 @@ public class DialogsService {
         CommonRs<ComplexRs> commonRs = new CommonRs<>();
         commonRs.setData(complexRs);
 
-        return commonRs;
+        return commonRs;*/
     }
 }
