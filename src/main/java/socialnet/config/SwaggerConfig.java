@@ -30,10 +30,19 @@ public class SwaggerConfig {
         serverList.add(new Server().url("http://81.177.6.228:8080/").description("server"));
         return new OpenAPI()
                 .info(new Info()
+    public OpenAPI springShopOpenAPI() {
+        List<Server> serverList = new ArrayList<>();
+        serverList.add(new Server().url("http://localhost:8086/").description("localhost"));
+        serverList.add(new Server().url("http://81.177.6.228:8086/").description("server"));
+        return new OpenAPI()
+                .info(new Info()
                         .title("Zerone API")
                         .description("API for social network")
                         .version("1.0")
                         .contact(new Contact().name("JAVA Pro 37 Group").url("http://81.177.6.228:8080").email("aaa@aaaa.aa"))
+                        .license(new License().name("Apache 2.0").url("http://springdoc.org")))
+                .servers(serverList);
+                        .contact(new Contact().name("JAVA Pro 37 Group").url("http://81.177.6.228:8086").email("aaa@aaaa.aa"))
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")))
                 .servers(serverList);
     }
