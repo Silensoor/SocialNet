@@ -48,7 +48,6 @@ public class DialogsService {
 
             if (lastMessage == null) {
                 lastMessage = Message.builder()
-                    .id(Long.MAX_VALUE)
                     .dialogId(dialog.getId())
                     .authorId(dialog.getFirstPersonId())
                     .recipientId(dialog.getSecondPersonId())
@@ -117,7 +116,6 @@ public class DialogsService {
             Person recipient = personRepository.findById(dialog.getSecondPersonId());
 
             Message msg = Message.builder()
-                .id(Long.MAX_VALUE)
                 .dialogId(Long.MAX_VALUE)
                 .authorId(person.getId())
                 .recipientId(recipient.getId())
