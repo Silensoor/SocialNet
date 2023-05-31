@@ -30,26 +30,21 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findAll(int offset, int perPage) {
-        try {
-            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        }
-    }
-
     public List<Post> findAll(int offset, int perPage, long currentTime) {
         try {
-            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, new Timestamp(currentTime), offset, perPage);
+            return jdbcTemplate.query(
+                "SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?",
+                postRowMapper,
+                new Timestamp(currentTime), offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
     }
 
-    public long getAllCount() {
+    public long getAllCountNotDeleted() {
         try {
             return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM posts WHERE is_deleted = false", Long.class);
-        } catch (EmptyResultDataAccessException ignored) {
+        } catch (EmptyResultDataAccessException | NullPointerException ignored) {
             return 0L;
         }
     }
@@ -180,20 +175,6 @@ public class PostRepository {
         return new Timestamp(date.getTime());
     }
 
-    private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
-        Post post = new Post();
-        post.setId(resultSet.getLong("id"));
-        post.setIsBlocked(resultSet.getBoolean("is_blocked"));
-        post.setIsDeleted(resultSet.getBoolean("is_deleted"));
-        post.setPostText(resultSet.getString("post_text"));
-        post.setTime(resultSet.getTimestamp("time"));
-        post.setTimeDelete(resultSet.getTimestamp("time_delete"));
-        post.setTitle(resultSet.getString("title"));
-        post.setAuthorId(resultSet.getLong("author_id"));
-        return post;
-    };
-
-
     public Integer getAllPostByUser(Integer userId) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM posts WHERE author_id = ?",
                 Integer.class, userId);
@@ -205,7 +186,7 @@ public class PostRepository {
         String post2TagList = "";
         if (searchOptions.getTags() != null) {
             post2TagList = tagService.getPostByQueryTags(searchOptions.getTags());
-            sqlWhere.append(" JOIN post2tag ON posts.id=post2tag.post_id");
+            sqlWhere.append(" JOIN post2tag ON posts.id = post2tag.post_id");
         }
         sqlWhere.append(" WHERE is_deleted = false AND ");
         if (searchOptions.getAuthor() != null && !searchOptions.getAuthor().equals("")) {
@@ -225,6 +206,21 @@ public class PostRepository {
                 .append(!Objects.equals(post2TagList, "") ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "")
                 .append(!searchOptions.getText().equals("") ? " lower (post_text) LIKE '%" + searchOptions.getText()
                         .toLowerCase() + "%'" : "");
+
         return sqlWhere.toString();
     }
+
+    private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
+        Post post = new Post();
+        post.setId(resultSet.getLong("id"));
+        post.setIsBlocked(resultSet.getBoolean("is_blocked"));
+        post.setIsDeleted(resultSet.getBoolean("is_deleted"));
+        post.setPostText(resultSet.getString("post_text"));
+        post.setTime(resultSet.getTimestamp("time"));
+        post.setTimeDelete(resultSet.getTimestamp("time_delete"));
+        post.setTitle(resultSet.getString("title"));
+        post.setAuthorId(resultSet.getLong("author_id"));
+
+        return post;
+    };
 }

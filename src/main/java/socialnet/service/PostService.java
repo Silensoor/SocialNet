@@ -9,7 +9,6 @@ import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.PostMapper;
 import socialnet.model.*;
-import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.NotificationPusher;
@@ -17,7 +16,6 @@ import socialnet.model.PostServiceDetails;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +31,7 @@ public class PostService {
     private final FriendsShipsRepository friendsShipsRepository;
     private final PersonSettingRepository personSettingRepository;
 
-    public PostRs convertToPostRs(Post post) {
+    /*public PostRs convertToPostRs(Post post) {
         Person person = personRepository.findById(post.getAuthorId());
         PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
         personRs.setOnline(null);
@@ -55,9 +53,9 @@ public class PostService {
         postRs.setType(null);
 
         return postRs;
-    }
+    }*/
 
-    private List<CommentRs> convertToCommentRs(List<Comment> comments) {
+    /*private List<CommentRs> convertToCommentRs(List<Comment> comments) {
         List<CommentRs> result = new ArrayList<>(comments.size());
         for (Comment comment : comments) {
             CommentRs commentRs = CommentMapper.INSTANCE.toDTO(comment);
@@ -70,13 +68,12 @@ public class PostService {
         }
 
         return result;
-    }
+    }*/
 
     public CommonRs<List<PostRs>> getFeeds(String jwtToken, int offset, int perPage) {
         List<Post> postList = postRepository.findAll(offset, perPage, System.currentTimeMillis());
-        postList.sort(Comparator.comparing(Post::getTime).reversed());
         List<PostRs> postRsList = new ArrayList<>();
-        long total = postRepository.getAllCount();
+        long total = postRepository.getAllCountNotDeleted();
 
         for (Post post : postList) {
             int postId = post.getId().intValue();
@@ -166,7 +163,6 @@ public class PostService {
     }
 
     public CommonRs<PostRs> createPost(PostRq postRq, int id, Long publishDate, String jwtToken) {
-        personRepository.findById((long) id);
         Post post = setPost(postRq, publishDate, id);
         int postId = postRepository.save(post);
         tagRepository.saveAll(postRq.getTags(), postId);
@@ -307,9 +303,9 @@ public class PostService {
         return new CommonRs<>(postRsList, perPage, offset, perPage, System.currentTimeMillis(), total);
     }
 
-    private void sendAllFriendShips(List<Friendships> list,Long id) {
+    private void sendAllFriendShips(List<Friendships> list, Long id) {
         for (Friendships friendships : list) {
-            Notification notification= null;
+            Notification notification = null;
             PersonSettings settingsSrc = personSettingRepository.getSettings(friendships.getSrcPersonId());
             PersonSettings settingsDst = personSettingRepository.getSettings(friendships.getDstPersonId());
 
@@ -322,8 +318,6 @@ public class PostService {
             if (notification != null) {
                 NotificationPusher.sendPush(notification, id);
             }
-
         }
     }
-
 }
