@@ -11,7 +11,6 @@ public class EmailService {
     private final EmailSender emailSender;
     private final JwtUtils jwtUtils;
     @Value("${baseUrl}")
-
     private String baseUrl;
     public void passwordChangeConfirm(String authorization) {
         String email = jwtUtils.getUserEmail(authorization);

@@ -29,4 +29,10 @@ public class GeolocationsService {
         return cityRepository.getCitiesByCountry(country).stream()
             .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
     }
+
+    public List<GeolocationRs> getCitiesUses(String country) {
+        return cityRepository.getCitiesFromPersons(country).stream()
+                .map(c -> new GeolocationRs(c.getName())).collect(Collectors.toList());
+    }
+
 }

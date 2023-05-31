@@ -11,6 +11,7 @@ import socialnet.model.City;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,12 +21,24 @@ public class CityRepository {
     public List<City> getCitiesByStarts(String country, String starts) {
         if (starts.isEmpty())
             starts = "-";
+
+        starts = Pattern.compile("^.").matcher(starts).replaceFirst(m -> m.group().toUpperCase());
+
         String sql = String.format("Select C1.* from Cities C1\n" +
                 "join Countries C2 on C1.country_id = C2.id\n" +
                 "Where C2.name = '%s'\n" +
                 "  and Lower(C1.name) like Lower('%s')\n" +
                 "Order by Name", country, starts + "%");
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(City.class));
+    }
+
+    public List<City> getCitiesFromPersons(String country) {
+        return jdbcTemplate.query("select distinct city from persons p\n" +
+                        "join cities c on (p.city = c.name)\n" +
+                        "where p.city notnull \n" +
+                        "  and c.country_id = (select id from Countries where name = ?)\n" +
+                        "order by city",
+                new BeanPropertyRowMapper<>(City.class), country);
     }
 
     public List<City> getCitiesByCountry(String country) {
