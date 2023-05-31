@@ -186,7 +186,7 @@ public class PostRepository {
         String post2TagList = "";
         if (searchOptions.getTags() != null) {
             post2TagList = tagService.getPostByQueryTags(searchOptions.getTags());
-            sqlWhere.append(" JOIN post2tag ON posts.id=post2tag.post_id");
+            sqlWhere.append(" JOIN post2tag ON posts.id = post2tag.post_id");
         }
         sqlWhere.append(" WHERE is_deleted = false AND ");
         if (searchOptions.getAuthor() != null && !searchOptions.getAuthor().equals("")) {
