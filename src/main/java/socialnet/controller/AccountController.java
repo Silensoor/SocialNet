@@ -93,13 +93,18 @@ public class AccountController {
 
     @PostMapping("/register")
     @Operation(summary = "user registration")
-    public RegisterRs register(@Valid @RequestBody @Parameter RegisterRq regRequest) {
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = RegisterRs.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
+    public RegisterRs register(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "regRequest") RegisterRq regRequest) {
         return accountService.getRegisterData(regRequest);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsListPersonSettingsRs"))}),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = CommonRs.class))}),
             @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
