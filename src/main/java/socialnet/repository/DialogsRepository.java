@@ -53,6 +53,22 @@ public class DialogsRepository {
         }
     }
 
+    public Dialog findByAutorOrRecipient(long autorId, long recipientId) {
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * " +
+                "  FROM dialogs " +
+                " WHERE (first_person_id = ? AND second_person_id = ?) " +
+                "    OR (first_person_id = ? AND second_person_id = ?)",
+                dialogRowMapper,
+                autorId, recipientId,
+                recipientId, autorId
+            );
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
     public Dialog findByDialogId(Long dialogId) {
         try {
             return jdbcTemplate.queryForObject("SELECT * FROM dialogs WHERE id = ?",

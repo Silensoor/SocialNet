@@ -25,12 +25,13 @@ public class CommentsController {
     @Operation(summary = "get comment by id")
     public ResponseEntity<CommonRs<List<CommentRs>>> getComments(
         @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
+    public CommonRs<List<CommentRs>> getComments(
+        @RequestHeader String authorization,
         @PathVariable Long postId,
         @RequestParam(required = false, defaultValue = "0") Integer offset,
         @RequestParam(required = false, defaultValue = "20") Integer perPage)
     {
-        CommonRs<List<CommentRs>> commonRs = commentService.getComments(postId, offset, perPage);
-        return ResponseEntity.ok(commonRs);
+        return commentService.getComments(postId, offset, perPage);
     }
 
     @OnlineStatusUpdatable
@@ -38,11 +39,12 @@ public class CommentsController {
     @Operation(summary = "create comment")
     public ResponseEntity<CommonRs<CommentRs>> createComment(
         @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
+    public CommonRs<CommentRs> createComment(
+        @RequestHeader String authorization,
         @PathVariable Long postId,
         @RequestBody CommentRq commentRq)
     {
-        CommonRs<CommentRs> commonRs = commentService.createComment(commentRq, postId, authorization);
-        return ResponseEntity.ok(commonRs);
+        return commentService.createComment(commentRq, postId, authorization);
     }
 
 
@@ -51,12 +53,13 @@ public class CommentsController {
     @Operation(summary = "edit comment by id")
     public ResponseEntity<CommonRs<CommentRs>> editComment(
         @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
+    public CommonRs<CommentRs> editComment(
+        @RequestHeader String authorization,
         @PathVariable Long id,
         @PathVariable(name = "comment_id") Long commentId,
         @RequestBody CommentRq commentRq)
     {
-        CommonRs<CommentRs> commonRs = commentService.editComment(authorization, id, commentId, commentRq);
-        return ResponseEntity.ok(commonRs);
+        return commentService.editComment(authorization, id, commentId, commentRq);
     }
 
 
@@ -65,11 +68,12 @@ public class CommentsController {
     @Operation(summary = "delete comment by id")
     public ResponseEntity<CommonRs<CommentRs>> deleteComment(
         @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
+    public CommonRs<CommentRs> deleteComment(
+        @RequestHeader String authorization,
         @PathVariable Long id,
         @PathVariable(name = "comment_id") Long commentId)
     {
-        CommonRs<CommentRs> commonRs = commentService.deleteComment(id, commentId);
-        return ResponseEntity.ok(commonRs);
+        return commentService.deleteComment(id, commentId);
     }
 
     @OnlineStatusUpdatable
@@ -77,10 +81,11 @@ public class CommentsController {
     @Operation(summary = "recover comment by id")
     public ResponseEntity<CommonRs<CommentRs>> recoverComment(
         @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
+    public CommonRs<CommentRs> recoverComment(
+        @RequestHeader String authorization,
         @PathVariable Long id,
         @PathVariable(name = "comment_id") Long commentId)
     {
-        CommonRs<CommentRs> commonRs = commentService.recoverComment(id, commentId);
-        return ResponseEntity.ok(commonRs);
+        return commentService.recoverComment(id, commentId);
     }
 }
