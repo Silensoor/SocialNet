@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import socialnet.api.response.ErrorRs;
 import socialnet.api.response.RegionStatisticsRs;
 import socialnet.service.StatisticsService;
 
@@ -33,9 +34,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/city/all")
-    @Operation(summary = "get cities with number of users", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/RegionStatisticsRs"))})})
+    @Operation(summary = "get cities with number of users")
     public RegionStatisticsRs[] getCitiesUsers() {
         return statisticsService.getCitiesUsers();
     }
@@ -43,7 +42,9 @@ public class StatisticsController {
     @GetMapping("/comment/post")
     @Operation(summary = "get the number of comments by post id", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getCommentsByPost(@RequestParam(required = false, defaultValue = "0")
                                      @Parameter(description = "postId", example = "1") Integer postId) {
         return statisticsService.getCommentsByPost(postId);
@@ -76,7 +77,9 @@ public class StatisticsController {
     @GetMapping("/dialog/user")
     @Operation(summary = "get the number of dialogs by user id", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getDialogsUser(@RequestParam(required = false, defaultValue = "0")
                                   @Parameter(description = "userId", example = "1") Integer userId) {
         return statisticsService.getDialogsUser(userId);
@@ -93,7 +96,9 @@ public class StatisticsController {
     @GetMapping("/like/entity")
     @Operation(summary = "get the number of likes by post or comment id", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getLikeEntity(@RequestParam(required = false, defaultValue = "0")
                                  @Parameter(description = "entityId", example = "1") Integer entityId) {
         return statisticsService.getLikeEntity(entityId);
@@ -120,7 +125,9 @@ public class StatisticsController {
     @GetMapping("/message/dialog")
     @Operation(summary = "get the number of all messages by dialog id", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getMessageByDialog(@RequestParam(required = false, defaultValue = "0")
                                       @Parameter(description = "dialogId", example = "1") Integer dialogId) {
         return statisticsService.getMessageByDialog(dialogId);
@@ -137,7 +144,9 @@ public class StatisticsController {
     @GetMapping("/post/user")
     @Operation(summary = "get the number of post by user id", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+            content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getAllPostByUser(@RequestParam(required = false, defaultValue = "0")
                                     @Parameter(description = "userId", example = "1") Integer userId) {
         return statisticsService.getAllPostByUser(userId);
@@ -154,7 +163,9 @@ public class StatisticsController {
     @GetMapping("/tag/post")
     @Operation(summary = "get the number of tags by post id", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+    @ApiResponse(responseCode = "400", description = "Name of error",
+            content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getTagsByPost(@RequestParam(required = false, defaultValue = "0")
                                  @Parameter(description = "postId", example = "1") Integer postId) {
         return statisticsService.getTagsByPost(postId);
@@ -171,7 +182,9 @@ public class StatisticsController {
     @GetMapping("/user/city")
     @Operation(summary = "get the number of all users by city name", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getAllUsersByCity(@RequestParam(required = false, defaultValue = "")
                                      @Parameter(description = "city", example = "city") String city) {
         return statisticsService.getAllUsersByCity(city);
@@ -180,7 +193,9 @@ public class StatisticsController {
     @GetMapping("/user/country")
     @Operation(summary = "get the number of all users by country name", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = Integer.class))})})
+                    content = {@Content(schema = @Schema(implementation = Integer.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public Integer getAllUsersByCountry(@RequestParam(required = false, defaultValue = "")
                                         @Parameter(description = "country", example = "country") String country) {
         return statisticsService.getAllUsersByCountry(country);

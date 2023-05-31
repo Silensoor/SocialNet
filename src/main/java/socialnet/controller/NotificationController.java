@@ -26,13 +26,7 @@ public class NotificationController {
 
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
-    @Operation(summary = "get all notifications for user", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsListNotificationRs"))}),
-            @ApiResponse(responseCode = "400", description = "Name of error",
-                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
+    @Operation(summary = "get all notifications for user")
     public CommonRs<List<NotificationRs>> notifications(
         @RequestHeader @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
         @RequestParam(required = false, defaultValue = "10")

@@ -51,9 +51,7 @@ public class GeolocationsController {
     }
 
     @GetMapping("cities/uses")
-    @Operation(summary = "get cities from persons", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsListGeolocationRs"))})})
+    @Operation(summary = "get cities from persons")
     public CommonRs<List<GeolocationRs>> getCitiesByCountry(@RequestParam("country")
                                                            @Parameter(description = "country", example = "country")
                                                            String country) {
