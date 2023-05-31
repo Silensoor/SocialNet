@@ -48,5 +48,5 @@ databaseChangeLog:
   - include:
       file: db/changelog/changelogset/add-notnull-constraints.yaml
   - include:
-      file: db/changelog/changelogset/insert-into-city-international-rus.sql
+      file: db/changelog/changelogset/city-international-rus.sql
 
