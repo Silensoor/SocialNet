@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import socialnet.BasicTest;
@@ -16,6 +17,7 @@ import socialnet.security.jwt.JwtUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
@@ -33,6 +35,9 @@ class PostServiceTest extends BasicTest {
     @MockBean
     JwtUtils jwtUtils;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     static final String USER_EMAIL = "user1@email.com";
     static final String TOKEN = "token";
 
@@ -48,6 +53,7 @@ class PostServiceTest extends BasicTest {
         assertThat(postService).isNotNull();
         assertThat(postRepository).isNotNull();
         assertThat(jwtUtils).isNotNull();
+        assertThat(jdbcTemplate).isNotNull();
     }
 
     @Test
@@ -116,17 +122,42 @@ class PostServiceTest extends BasicTest {
     void hardDeletingPosts() {
         postService.markAsDelete(3, TOKEN);
         postService.hardDeletingPosts();
+
+        int cntPosts = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM posts", Integer.class);
+        int cntComments = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM post_comments", Integer.class);
+        int cntTags = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM tags", Integer.class);
+        int cntPost2Tags = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM post2tag", Integer.class);
+        int cntLikes = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM likes", Integer.class);
+
+        assertEquals(2, cntPosts);
+        assertEquals(0, cntComments);
+        assertEquals(0, cntTags);
+        assertEquals(0, cntPost2Tags);
+        assertEquals(0, cntLikes);
     }
 
     @Test
     @DisplayName("Обновление поста")
     void updatePost() {
-        postService.updatePost(3, null, TOKEN);
+        String expectedTitle = "Updated title";
+        String expectedText = "Updated text";
+
+        PostRq postRq = new PostRq();
+        postRq.setTitle(expectedTitle);
+        postRq.setPostText(expectedText);
+
+        var actual = postService.updatePost(3, postRq, TOKEN);
+
+        assertEquals(expectedTitle, actual.getData().getTitle());
+        assertEquals(expectedText, actual.getData().getPostText());
     }
 
     @Test
     @DisplayName("Получение постов определённого автора")
     void getFeedsByAuthorId() {
-        postService.getFeedsByAuthorId(1L, TOKEN, 0, 10);
+        var actual = postService.getFeedsByAuthorId(2L, TOKEN, 0, 10);
+
+        assertEquals(1, actual.getData().size());
+        assertEquals("Post title #4", actual.getData().get(0).getTitle());
     }
 }
