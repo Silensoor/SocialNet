@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +30,18 @@ public class UsersController {
     @OnlineStatusUpdatable
     @GetMapping("/me")
     @Operation(summary = "get information about me")
-    public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization") String authorization) {
+    public CommonRs<PersonRs> getMyProfile(@RequestHeader(name = "authorization")
+                                               @Parameter(description =  "Access Token", example = "JWT Token")
+                                               String authorization) {
         return personService.getMyProfile(authorization);
     }
 
     @OnlineStatusUpdatable
     @GetMapping("/{id}")
     @Operation(summary = "get user by id")
-    public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization") String authorization,
+    public CommonRs<PersonRs> getUserById(@RequestHeader(name = "authorization")
+                                              @Parameter(description =  "Access Token", example = "JWT Token")
+                                              String authorization,
                                           @PathVariable(name = "id") Integer id) {
         return personService.getUserById(authorization, id);
     }
@@ -44,7 +49,9 @@ public class UsersController {
     @OnlineStatusUpdatable
     @GetMapping("/search")
     @Operation(summary = "search post by query")
-    public CommonRs<List<PersonRs>> findPersons(@RequestHeader String authorization,
+    public CommonRs<List<PersonRs>> findPersons(@RequestHeader
+                                                    @Parameter(description =  "Access Token", example = "JWT Token")
+                                                    String authorization,
                                                 @RequestParam(name = "age_from", required = false, defaultValue = "0")
                                                 Integer ageFrom,
                                                 @RequestParam(name = "age_to", required = false, defaultValue = "0")
@@ -79,7 +86,9 @@ public class UsersController {
     @OnlineStatusUpdatable
     @PutMapping("/me")
     @Operation(summary = "update information about me")
-    public ResponseEntity<CommonRs<PersonRs>> updateUserInfo(@RequestHeader("authorization") String authorization,
+    public ResponseEntity<CommonRs<PersonRs>> updateUserInfo(@RequestHeader("authorization")
+                                                                 @Parameter(description =  "Access Token", example = "JWT Token")
+                                                                 String authorization,
                                             @RequestBody UserRq userData) {
         return personService.updateUserInfo(authorization, userData);
     }
@@ -87,14 +96,18 @@ public class UsersController {
     @OnlineStatusUpdatable
     @DeleteMapping("/me")
     @Operation(summary = "delete information about me")
-    public CommonRs<ComplexRs> deleteUser(@RequestHeader("authorization") String authorization) {
+    public CommonRs<ComplexRs> deleteUser(@RequestHeader("authorization")
+                                              @Parameter(description =  "Access Token", example = "JWT Token")
+                                              String authorization) {
         return personService.delete(authorization);
     }
 
     @OnlineStatusUpdatable
     @PostMapping("/me/recover")
     @Operation(summary = "recover information about me")
-    public CommonRs<ComplexRs> recoverUser(@RequestHeader("authorization") String authorization) {
+    public CommonRs<ComplexRs> recoverUser(@RequestHeader("authorization")
+                                               @Parameter(description =  "Access Token", example = "JWT Token")
+                                               String authorization) {
         return personService.recover(authorization);
     }
 

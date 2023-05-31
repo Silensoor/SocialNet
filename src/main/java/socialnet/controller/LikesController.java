@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class LikesController {
     @GetMapping("/api/v1/likes")
     @Operation(summary = "get all my likes by comment or post")
     public CommonRs<LikeRs> getLikes(
-            @RequestHeader String authorization,
+            @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
             @RequestParam(name = "item_id") Integer itemId,
             @RequestParam String type) {
 
@@ -32,7 +33,7 @@ public class LikesController {
     @PutMapping("/api/v1/likes")
     @Operation(summary = "put like on post or comment")
     public CommonRs<LikeRs> putLike(
-            @RequestHeader String authorization,
+            @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
             @RequestBody LikeRq likeRq) {
 
         return likesService.putLike(authorization, likeRq);
@@ -42,7 +43,7 @@ public class LikesController {
     @DeleteMapping("/api/v1/likes")
     @Operation(summary = "delete like from post or comment")
     public CommonRs<LikeRs> deleteLike(
-            @RequestHeader String authorization,
+            @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
             @RequestParam(name = "item_id") Integer itemId,
             @RequestParam String type) {
 

@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class PostsController {
     @GetMapping("/api/v1/feeds")
     @Operation(summary = "get all news")
     public CommonRs<List<PostRs>> getFeeds(
-            @RequestHeader String authorization,
+            @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @RequestParam(required = false, defaultValue = "0") Integer offset,
             @RequestParam(required = false, defaultValue = "20") Integer perPage) {
         return postsService.getFeeds(authorization, offset, perPage);
@@ -37,7 +38,7 @@ public class PostsController {
     @GetMapping("/api/v1/users/{id}/wall")
     @Operation(summary = "get all post by author id")
     public CommonRs<List<PostRs>> getWall(
-            @RequestHeader String authorization,
+            @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @PathVariable(name = "id") Long id,
             @RequestParam(required = false, defaultValue = "0") Integer offset,
             @RequestParam(required = false, defaultValue = "20") Integer perPage) {
@@ -48,7 +49,7 @@ public class PostsController {
     @PostMapping("/api/v1/users/{id}/wall")
     @Operation(summary = "create new post")
     public CommonRs<PostRs> createPost(
-            @RequestHeader String authorization,
+            @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @RequestBody PostRq postRq,
             @RequestParam(required = false, name = "publish_date") Long publishDate,
             @PathVariable int id) {
@@ -59,7 +60,10 @@ public class PostsController {
     @OnlineStatusUpdatable
     @GetMapping("/api/v1/post/{id}")
     @Operation(summary = "get post by id")
-    public CommonRs<PostRs> getPostById(@RequestHeader String authorization, @PathVariable int id) {
+    public CommonRs<PostRs> getPostById(@RequestHeader
+                                        @Parameter(description = "Access Token", example = "JWT Token")
+                                        String authorization,
+                                        @PathVariable int id) {
         return postsService.getPostById(id, authorization);
     }
 
@@ -67,7 +71,7 @@ public class PostsController {
     @PutMapping("/api/v1/post/{id}")
     @Operation(summary = "create new post")
     public CommonRs<PostRs> updateById(
-            @RequestHeader String authorization,
+            @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @PathVariable int id,
             @RequestBody PostRq postRq) {
 
@@ -77,14 +81,17 @@ public class PostsController {
     @OnlineStatusUpdatable
     @DeleteMapping("/api/v1/post/{id}")
     @Operation(summary = "delete post by id")
-    public CommonRs<PostRs> deleteById(@RequestHeader String authorization, @PathVariable int id) {
+    public CommonRs<PostRs> deleteById(@RequestHeader @Parameter(description = "Access Token", example = "JWT Token")
+                                       String authorization, @PathVariable int id) {
         return postsService.markAsDelete(id, authorization);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/recover")
     @Operation(summary = "recover post by id")
-    public CommonRs<PostRs> recoverPostById(@RequestHeader String authorization,
+    public CommonRs<PostRs> recoverPostById(@RequestHeader
+                                            @Parameter(description = "Access Token", example = "JWT Token")
+                                            String authorization,
                                             @PathVariable int id) {
         return postsService.recoverPost(id, authorization);
     }
@@ -93,7 +100,7 @@ public class PostsController {
     @GetMapping("/api/v1/post")
     @Operation(summary = "get posts by query")
     public CommonRs<List<PostRs>> getPostsByQuery(
-            @RequestHeader String authorization,
+            @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @RequestParam(required = false, defaultValue = "") String author,
             @RequestParam(required = false, name = "date_from", defaultValue = "0") Long dateFrom,
             @RequestParam(required = false, name = "date_to", defaultValue = "0") Long dateTo,

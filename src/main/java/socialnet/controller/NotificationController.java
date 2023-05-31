@@ -1,6 +1,7 @@
 package socialnet.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class NotificationController {
     @GetMapping("/notifications")
     @Operation(summary = "get all notifications for user")
     public CommonRs<List<NotificationRs>> notifications(
-        @RequestHeader String authorization,
+        @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
         @RequestParam(required = false, defaultValue = "10") Integer itemPerPage,
         @RequestParam(required = false, defaultValue = "0") Integer offset)
     {
@@ -34,7 +35,7 @@ public class NotificationController {
     @PutMapping("/notifications")
     @Operation(summary = "read notification")
     public CommonRs<List<NotificationRs>> notifications(
-        @RequestHeader String authorization,
+        @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
         @RequestParam(required = false) Integer id,
         @RequestParam(required = false) Boolean all)
     {
