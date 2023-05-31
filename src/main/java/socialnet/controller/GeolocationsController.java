@@ -19,27 +19,23 @@ import java.util.List;
 @Tag(name = "geolocations-controller", description = "Create or get records about cities and countries")
 public class GeolocationsController {
     private final GeolocationsService geolocationsService;
-
     @GetMapping("cities/api")
     @Operation(summary = "get cities from api")
     public CommonRs<List<GeolocationRs>> getCitiesFromApiStartsWith(@RequestParam("country") String country,
                                                                     @RequestParam("starts") String starts) {
         return new CommonRs<>(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
-
     @GetMapping("cities/db")
     @Operation(summary = "get cities from database")
     public CommonRs<List<GeolocationRs>> getCitiesByStarts(@RequestParam("country") String country,
                                                            @RequestParam("starts") String starts) {
         return new CommonRs<>(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
-
     @GetMapping("cities/uses")
     @Operation(summary = "get cities from persons")
     public CommonRs<List<GeolocationRs>> getCitiesByCountry(@RequestParam("country") String country) {
         return new CommonRs<>(geolocationsService.getCitiesByCountry(country));
     }
-
     @GetMapping("countries")
     @Operation(summary = "get countries")
     public CommonRs<List<GeolocationRs>> getCountries() {
