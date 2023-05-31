@@ -30,13 +30,13 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findAll(int offset, int perPage) {
+    /*public List<Post> findAll(int offset, int perPage) {
         try {
             return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
-    }
+    }*/
 
     public List<Post> findAll(int offset, int perPage, long currentTime) {
         try {
@@ -49,7 +49,7 @@ public class PostRepository {
         }
     }
 
-    public long getAllCount() {
+    public long getAllCountNotDeleted() {
         try {
             return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM posts WHERE is_deleted = false", Long.class);
         } catch (EmptyResultDataAccessException | NullPointerException ignored) {

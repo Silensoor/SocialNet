@@ -9,7 +9,6 @@ import socialnet.mappers.CommentMapper;
 import socialnet.mappers.PersonMapper;
 import socialnet.mappers.PostMapper;
 import socialnet.model.*;
-import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.NotificationPusher;
@@ -74,7 +73,7 @@ public class PostService {
     public CommonRs<List<PostRs>> getFeeds(String jwtToken, int offset, int perPage) {
         List<Post> postList = postRepository.findAll(offset, perPage, System.currentTimeMillis());
         List<PostRs> postRsList = new ArrayList<>();
-        long total = postRepository.getAllCount();
+        long total = postRepository.getAllCountNotDeleted();
 
         for (Post post : postList) {
             int postId = post.getId().intValue();
