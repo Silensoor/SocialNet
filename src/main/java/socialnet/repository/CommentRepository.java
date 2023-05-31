@@ -150,4 +150,10 @@ public class CommentRepository {
             return null;
         }
     }
+
+    public void deleteAll(List<Comment> comments) {
+        for (Comment comment : comments) {
+            delete(comment);
+        }
+    }
 }
