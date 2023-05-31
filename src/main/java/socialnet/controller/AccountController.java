@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -33,28 +32,35 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/email/recovery")
-    @Operation(summary = "user email recovery")
+    @Operation(summary = "user email recovery", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public void emailSet(@RequestHeader @Parameter(description = "Access Token", example = "JWT Token")
                          String authorization) {
         emailService.shiftEmailConfirm(authorization);
     }
 
     @PutMapping("/email")
-    @Operation(summary = "set email")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = RegisterRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "set email", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema(ref = "#/components/schemas/RegisterRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public RegisterRs setNewEmail(@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "emailRq")
-                                      @RequestBody EmailRq emailRq) {
+                                  @RequestBody EmailRq emailRq) {
         return personService.setNewEmail(emailRq);
     }
 
     @OnlineStatusUpdatable
     @PutMapping("/password/recovery")
-    @Operation(summary = "user password recovery")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = RegisterRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "user password recovery", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public void passwordChangeConfirm(@RequestHeader @Parameter(description = "Access Token", example = "JWT Token")
@@ -64,9 +70,10 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/password/reset")
-    @Operation(summary = "user password reset")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = RegisterRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "user password reset", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema(ref = "#/components/schemas/RegisterRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public RegisterRs resetPassword(@RequestHeader @Parameter(description = "Access Token", example = "JWT Token")
@@ -79,9 +86,10 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/password/set")
-    @Operation(summary = "set user password")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = RegisterRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "set user password", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema(ref = "#/components/schemas/RegisterRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public RegisterRs setNewPassword(@RequestHeader @Parameter(description = "Access Token", example = "JWT Token")
@@ -92,9 +100,10 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    @Operation(summary = "user registration")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = RegisterRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "user registration", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema(ref = "#/components/schemas/RegisterRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public RegisterRs register(@Valid @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -104,11 +113,12 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = CommonRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "get user's notifications properties", responses = {@ApiResponse(responseCode = "200",
+            description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsListPersonSettingRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
-    @Operation(summary = "get user's notifications properties")
     public CommonRs<List<PersonSettingsRs>> notifications(@RequestHeader
                                                           @Parameter(description = "Access Token", example = "JWT Token")
                                                           String authorization) {
@@ -117,15 +127,16 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/notifications")
-    @Operation(summary = "edit notifications properties")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsComplexRs"))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "edit notifications properties", responses = {@ApiResponse(responseCode = "200",
+            description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsComplexRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<ComplexRs> saveSettings(@RequestHeader @Parameter(description = "Access Token", example = "JWT Token")
                                             String authorization,
                                             @RequestBody @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                                                    description = "request") PersonSettingsRq personSettingsRq) {
+                                            description = "request") PersonSettingsRq personSettingsRq) {
         return personService.setSetting(authorization, personSettingsRq);
     }
 }

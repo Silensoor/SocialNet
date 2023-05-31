@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +23,10 @@ public class AuthController {
     private final PersonService personService;
 
     @GetMapping("/captcha")
-    @Operation(summary = "get captcha secret code and image url")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(implementation = CaptchaRs.class))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "get captcha secret code and image url", responses = {@ApiResponse(responseCode = "200",
+            description = "OK", content = {@Content(schema = @Schema(implementation = CaptchaRs.class))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CaptchaRs captcha() {
@@ -34,9 +34,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "login by email and password")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsPersonRs"))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "login by email and password", responses = {@ApiResponse(responseCode = "200",
+            description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsPersonRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<PersonRs> login(@io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -46,14 +47,15 @@ public class AuthController {
 
     @OnlineStatusUpdatable
     @PostMapping("/logout")
-    @Operation(summary = "logout current user")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsComplexRs"))}),
-            @ApiResponse(responseCode = "400", description = "Name of error", content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+    @Operation(summary = "logout current user", responses = {@ApiResponse(responseCode = "200", description = "OK",
+            content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsComplexRs"))}),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<ComplexRs> logout(@RequestHeader(name = "authorization")
-                                          @Parameter(description = "Access Token", example = "JWT Token")
-                                          String authorization) {
+                                      @Parameter(description = "Access Token", example = "JWT Token")
+                                      String authorization) {
         return personService.getLogout();
     }
 }
