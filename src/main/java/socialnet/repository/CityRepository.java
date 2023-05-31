@@ -11,6 +11,7 @@ import socialnet.model.City;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,6 +21,9 @@ public class CityRepository {
     public List<City> getCitiesByStarts(String country, String starts) {
         if (starts.isEmpty())
             starts = "-";
+
+        starts = Pattern.compile("^.").matcher(starts).replaceFirst(m -> m.group().toUpperCase());
+
         String sql = String.format("Select C1.* from Cities C1\n" +
                 "join Countries C2 on C1.country_id = C2.id\n" +
                 "Where C2.name = '%s'\n" +
