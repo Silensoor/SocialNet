@@ -32,6 +32,15 @@ public class CityRepository {
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(City.class));
     }
 
+    public List<City> getCitiesFromPersons(String country) {
+        return jdbcTemplate.query("select distinct city from persons p\n" +
+                        "join cities c on (p.city = c.name)\n" +
+                        "where p.city notnull \n" +
+                        "  and c.country_id = (select id from Countries where name = ?)\n" +
+                        "order by city",
+                new BeanPropertyRowMapper<>(City.class), country);
+    }
+
     public List<City> getCitiesByCountry(String country) {
         return jdbcTemplate.query("Select C1.* from Cities C1\n" +
                         "join Countries C2 on C1.country_id = C2.id\n" +
