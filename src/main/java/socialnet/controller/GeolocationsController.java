@@ -23,7 +23,6 @@ import java.util.List;
 @Tag(name = "geolocations-controller", description = "Create or get records about cities and countries")
 public class GeolocationsController {
     private final GeolocationsService geolocationsService;
-
     @GetMapping("cities/api")
     @Operation(summary = "get cities from api", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
@@ -36,7 +35,6 @@ public class GeolocationsController {
                                                                     String starts) {
         return new CommonRs<>(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
-
     @GetMapping("cities/db")
     @Operation(summary = "get cities from database", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
@@ -49,7 +47,6 @@ public class GeolocationsController {
                                                            String starts) {
         return new CommonRs<>(geolocationsService.getCitiesByCountryAndStarts(country, starts));
     }
-
     @GetMapping("cities/uses")
     @Operation(summary = "get cities from persons")
     public CommonRs<List<GeolocationRs>> getCitiesByCountry(@RequestParam("country")
@@ -57,7 +54,6 @@ public class GeolocationsController {
                                                            String country) {
         return new CommonRs<>(geolocationsService.getCitiesByCountry(country));
     }
-
     @GetMapping("countries")
     @Operation(summary = "get countries", responses = {
             @ApiResponse(responseCode = "200", description = "OK",
