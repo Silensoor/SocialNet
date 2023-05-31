@@ -77,8 +77,8 @@ public class PostRepository {
     }
 
     public void updateById(int id, Post post) {
-        String update = "UPDATE posts SET post_text = ?, title = ? WHERE id = ?";
-        jdbcTemplate.update(update, post.getPostText(), post.getTitle(), id);
+        String update = "UPDATE posts SET post_text = ?, title = ?, is_deleted = ?, time_delete = ? WHERE id = ?";
+        jdbcTemplate.update(update, post.getPostText(), post.getTitle(), post.getIsDeleted(), post.getTimeDelete(), id);
     }
 
     public void markAsDeleteById(int id) {

@@ -274,8 +274,10 @@ public class PersonRepository {
                 .append(searchOptions.getAgeTo() > 0 ? " birth_date > '" + ageToTimestamp + AND : "")
                 .append(!searchOptions.getCity().equals("") ? " city = '" + searchOptions.getCity() + AND : "")
                 .append(!searchOptions.getCountry().equals("") ? " country = '" + searchOptions.getCountry() + AND : "")
-                .append(!searchOptions.getFirstName().equals("") ? " first_name = '" + searchOptions.getFirstName() + AND : "")
-                .append(!searchOptions.getLastName().equals("") ? " last_name = '" + searchOptions.getLastName() + AND : "")
+                .append(!searchOptions.getFirstName().equals("") ? " lower (first_name) = '" + searchOptions.getFirstName()
+                        .toLowerCase() + AND : "")
+                .append(!searchOptions.getLastName().equals("") ? " lower (last_name) = '" + searchOptions.getLastName()
+                        .toLowerCase() + AND : "")
                 .append(" NOT id = ")
                 .append(searchOptions.getId())
                 .append(" ");

@@ -250,7 +250,8 @@ public class PostService {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
         postFromDB.setTimeDelete(null);
-        postRepository.save(postFromDB);
+        postRepository.updateById(id, postFromDB);
+//        postRepository.save(postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);
@@ -259,15 +260,27 @@ public class PostService {
 
     public void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
-        deletingPosts.forEach(p -> postRepository.deleteById(p.getId().intValue()));
         List<Tag> tags = new ArrayList<>();
         List<Like> likes = new ArrayList<>();
+        List<Comment> comments = new ArrayList<>();
+        List<Comment> commentsByComments = new ArrayList<>();
         for (Post deletingPost : deletingPosts) {
             tags.addAll(tagRepository.findByPostId(deletingPost.getId()));
             likes.addAll(likeRepository.getLikesByEntityId(deletingPost.getId()));
+            comments.addAll(commentRepository.findByPostId(deletingPost.getId()));
+            for (Comment comment : comments) {
+                likes.addAll(likeRepository.getLikesByEntityId(comment.getId()));
+                commentsByComments.addAll(commentRepository.findByPostIdParentId(comment.getId()));
+            }
+            for (Comment commentsByComment : commentsByComments) {
+                likes.addAll(likeRepository.getLikesByEntityId(commentsByComment.getId()));
+            }
         }
         tagRepository.deleteAll(tags);
         likeRepository.deleteAll(likes);
+        commentRepository.deleteAll(commentsByComments);
+        commentRepository.deleteAll(comments);
+        deletingPosts.forEach(p -> postRepository.deleteById(p.getId().intValue()));
     }
 
     public CommonRs<List<PostRs>> getFeedsByAuthorId(Long authorId, String jwtToken, Integer offset, Integer perPage) {
