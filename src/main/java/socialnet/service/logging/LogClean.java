@@ -19,7 +19,7 @@ public class LogClean {
 
     public void deleteOldLogs(String yandexToken) throws IOException, ParseException {
 
-        Integer afterDayDelete = 14;
+        Integer afterDayDelete = 13;
         Map<String, Date> logs = getListLogsFiles(yandexToken);
         cleanLogs(logs, afterDayDelete, yandexToken);
 
@@ -29,8 +29,7 @@ public class LogClean {
 
         HashMap<String, Date> logsList = new HashMap<>();
 
-        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?" +
-                "media_type=compressed&limit=1000");
+        URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources/last-uploaded?");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setRequestProperty("Authorization", yandexToken);
