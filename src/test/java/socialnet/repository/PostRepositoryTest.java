@@ -27,6 +27,8 @@ import socialnet.schedules.RemoveOldCaptchasSchedule;
 import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.service.KafkaService;
 
+import java.sql.Timestamp;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
@@ -129,9 +131,11 @@ class PostRepositoryTest {
         Post post = new Post();
         post.setTitle(expectedTitle);
         post.setPostText(expectedText);
+        post.setIsDeleted(false);
+        post.setTimeDelete(new Timestamp(System.currentTimeMillis()));
 
-        postRepository.updateById(1, post);
-        var actual = postRepository.findById(1);
+        postRepository.updateById(4, post);
+        var actual = postRepository.findById(4);
 
         assertEquals(expectedTitle, actual.getTitle());
         assertEquals(expectedText, actual.getPostText());
