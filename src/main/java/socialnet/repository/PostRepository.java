@@ -40,7 +40,10 @@ public class PostRepository {
 
     public List<Post> findAll(int offset, int perPage, long currentTime) {
         try {
-            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, new Timestamp(currentTime), offset, perPage);
+            return jdbcTemplate.query(
+                "SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?",
+                postRowMapper,
+                new Timestamp(currentTime), offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
@@ -49,7 +52,7 @@ public class PostRepository {
     public long getAllCount() {
         try {
             return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM posts WHERE is_deleted = false", Long.class);
-        } catch (EmptyResultDataAccessException ignored) {
+        } catch (EmptyResultDataAccessException | NullPointerException ignored) {
             return 0L;
         }
     }
