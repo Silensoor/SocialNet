@@ -1,31 +1,59 @@
 package socialnet.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
-import socialnet.BasicTest;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import socialnet.api.request.PostRq;
 import socialnet.api.response.CommentRs;
 import socialnet.api.response.PostRs;
+import socialnet.config.KafkaConsumerConfig;
+import socialnet.config.KafkaProducerConfig;
+import socialnet.config.KafkaTopicConfig;
+import socialnet.exception.EntityNotFoundException;
 import socialnet.repository.PostRepository;
+import socialnet.schedules.RemoveDeletedPosts;
+import socialnet.schedules.RemoveOldCaptchasSchedule;
+import socialnet.schedules.UpdateOnlineStatusScheduler;
 import socialnet.security.jwt.JwtUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
+@Testcontainers
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+@ContextConfiguration(initializers = { PostServiceTest.Initializer.class })
 @Sql(scripts = "/sql/clear_tables.sql")
 @Sql(scripts = "/sql/post_service.sql")
 @SqlMergeMode(MERGE)
-class PostServiceTest extends BasicTest {
+@MockBean(RemoveOldCaptchasSchedule.class)
+@MockBean(RemoveDeletedPosts.class)
+@MockBean(UpdateOnlineStatusScheduler.class)
+@MockBean(KafkaConsumerConfig.class)
+@MockBean(KafkaProducerConfig.class)
+@MockBean(KafkaTopicConfig.class)
+@MockBean(KafkaService.class)
+class PostServiceTest {
     @Autowired
     PostService postService;
 
@@ -41,6 +69,20 @@ class PostServiceTest extends BasicTest {
     static final String USER_EMAIL = "user1@email.com";
     static final String TOKEN = "token";
 
+    @Container
+    public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:12.14");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                "spring.datasource.url=" + container.getJdbcUrl(),
+                "spring.datasource.username=" + container.getUsername(),
+                "spring.datasource.password=" + container.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
+    }
+
     @BeforeEach
     void setUp() {
         doReturn(USER_EMAIL).when(jwtUtils).getUserEmail(anyString());
@@ -49,7 +91,7 @@ class PostServiceTest extends BasicTest {
     @Test
     @DisplayName("Поднятие контекста")
     void contextLoads() {
-        assertThat(POSTGRES_CONTAINER.isRunning()).isTrue();
+        assertThat(container.isRunning()).isTrue();
         assertThat(postService).isNotNull();
         assertThat(postRepository).isNotNull();
         assertThat(jwtUtils).isNotNull();
@@ -161,5 +203,11 @@ class PostServiceTest extends BasicTest {
 
         assertEquals(1, actual.getData().size());
         assertEquals("Post title #4", actual.getData().get(0).getTitle());
+    }
+
+    @Test
+    @DisplayName("Получение поста с несуществующим ID")
+    void getPostById() {
+        assertThrows(EntityNotFoundException.class, () -> postService.getPostById(666, TOKEN));
     }
 }
