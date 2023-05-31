@@ -1,4 +1,4 @@
-package socialnet.utils;
+package socialnet.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,9 +11,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class PostServiceDetails {
-    Person author;
-    List<Like> likes;
-    List<String> tags;
-    Long authUserId;
-    List<CommentRs> comments;
+    private Person author;
+    private List<Like> likes;
+    private List<String> tags;
+    private Long authUserId;
+    private List<CommentRs> comments;
 }

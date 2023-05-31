@@ -12,7 +12,7 @@ import socialnet.model.SearchOptions;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PostRepository;
 import socialnet.security.jwt.JwtUtils;
-import socialnet.utils.PostServiceDetails;
+import socialnet.model.PostServiceDetails;
 
 import java.util.ArrayList;
 import java.util.Comparator;

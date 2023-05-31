@@ -39,11 +39,11 @@ public class CommentService {
 
         List<CommentRs> comments = new ArrayList<>();
 
-        for (Comment comment : commentList) {
+        commentList.forEach(comment -> {
             CommentServiceDetails details = getToDTODetails(postId, comment, comment.getId());
             CommentRs commentRs = getCommentRs(comment, details);
             comments.add(commentRs);
-        }
+        });
 
         Long total = commentRepository.countCommentsByPostId(postId);
 
@@ -159,9 +159,11 @@ public class CommentService {
         List<Comment> deletingComments = commentRepository.findDeletedPosts();
         deletingComments.forEach(commentRepository::delete);
         List<Like> likes = new ArrayList<>();
-        for (Comment deletingComment : deletingComments) {
-            likes.addAll(likeRepository.getLikesByEntityId(deletingComment.getId()));
-        }
+
+        deletingComments.stream()
+                .map(dc -> likeRepository.getLikesByEntityId(dc.getId()))
+                .forEach(likes::addAll);
+
         likeRepository.deleteAll(likes);
     }
 

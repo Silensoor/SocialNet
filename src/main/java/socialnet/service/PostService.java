@@ -13,7 +13,7 @@ import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.NotificationPusher;
-import socialnet.utils.PostServiceDetails;
+import socialnet.model.PostServiceDetails;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -32,24 +32,6 @@ public class PostService {
     private final JwtUtils jwtUtils;
     private final FriendsShipsRepository friendsShipsRepository;
     private final PersonSettingRepository personSettingRepository;
-
-    public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
-        List<Post> posts = postRepository.findAll();
-        List<PostRs> list = new ArrayList<>();
-        for (Post post : posts) {
-            PostRs postRs = convertToPostRs(post);
-            list.add(postRs);
-        }
-        CommonRs<List<PostRs>> result = new CommonRs<>();
-        result.setOffset(offset);
-        result.setPerPage(perPage);
-        result.setTimestamp(System.currentTimeMillis());
-        result.setItemPerPage(perPage);
-        result.setTotal((long) list.size());
-        result.setData(list.stream().skip(offset).limit(perPage).collect(Collectors.toList()));
-
-        return result;
-    }
 
     public PostRs convertToPostRs(Post post) {
         Person person = personRepository.findById(post.getAuthorId());
@@ -272,7 +254,8 @@ public class PostService {
         Post postFromDB = postRepository.findById(id);
         postFromDB.setIsDeleted(false);
         postFromDB.setTimeDelete(null);
-        postRepository.save(postFromDB);
+        postRepository.updateById(id, postFromDB);
+//        postRepository.save(postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);

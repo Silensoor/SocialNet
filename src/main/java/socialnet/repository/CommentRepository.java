@@ -48,7 +48,7 @@ public class CommentRepository {
     public Long countCommentsByPostId(long postId) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT (COUNT(1) " +
+                "SELECT COUNT(1) " +
                 "  FROM post_comments pc " +
                 " WHERE pc.post_id = ? " +
                 "   AND pc.is_blocked = false " +
