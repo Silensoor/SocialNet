@@ -14,7 +14,7 @@ INSERT INTO posts (title, post_text, author_id, is_blocked, is_deleted, time, ti
 VALUES ('Post title #3', 'А это текст на русском', 1, false, false, NOW(), NULL);
 
 INSERT INTO posts (title, post_text, author_id, is_blocked, is_deleted, time, time_delete)
-VALUES ('Post title #4', 'Не должен отображаться в поиске, потому что автор удалён', 2, false, false, NOW(), NULL);
+VALUES ('Post title #4', 'Автор поста удалён', 2, false, false, NOW(), NULL);
 
 INSERT INTO post_comments (comment_text, is_blocked, is_deleted, time, parent_id, author_id, post_id)
 VALUES ('Комментарий к посту #3', false, false, NOW(), NULL, 2, 3);

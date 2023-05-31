@@ -62,9 +62,9 @@ class PostServiceTest extends BasicTest {
         var actual = postService.getFeeds(TOKEN, 0, 10);
 
         assertThat(actual.getData())
-            .hasSize(2)
+            .hasSize(3)
             .extracting(PostRs::getTitle)
-            .containsExactlyInAnyOrder("Post title #2", "Post title #3");
+            .containsExactlyInAnyOrder("Post title #2", "Post title #3", "Post title #4");
     }
 
     @Test
