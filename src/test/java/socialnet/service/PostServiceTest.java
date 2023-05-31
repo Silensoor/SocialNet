@@ -146,7 +146,9 @@ class PostServiceTest extends BasicTest {
         postRq.setTitle(expectedTitle);
         postRq.setPostText(expectedText);
 
-        var actual = postService.updatePost(3, postRq, TOKEN);
+        postService.updatePost(3, postRq, TOKEN);
+
+        var actual = postService.getPostById(3, TOKEN);
 
         assertEquals(expectedTitle, actual.getData().getTitle());
         assertEquals(expectedText, actual.getData().getPostText());
