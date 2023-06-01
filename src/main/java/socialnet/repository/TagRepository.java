@@ -3,17 +3,13 @@ package socialnet.repository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Tag;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Repository
@@ -36,7 +32,7 @@ public class TagRepository {
         Map<String, Object> values = new HashMap<>();
         values.put("tag", tag.getTag());
         Map<String, Object> valuesPost2Tags = new HashMap<>();
-        Long tagId = simpleJdbcInsert1.executeAndReturnKey(values).longValue();
+        long tagId = simpleJdbcInsert1.executeAndReturnKey(values).longValue();
         SimpleJdbcInsert simpleJdbcInsert2 = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert2.withTableName("post2tag").usingGeneratedKeyColumns("id");
         valuesPost2Tags.put("tag_id", tagId);
@@ -67,32 +63,15 @@ public class TagRepository {
         }
     }
 
-    public List<Tag> getTagsByQuery(String[] tags) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM tags WHERE");
-        for(Object tag : tags){
-            if (tag != "" && tag != null) {
-                sql.append(" tag = '").append(tag).append("' AND ");
-            }
-        }
-        if (sql.substring(sql.length() - 5).equals(" AND ")){
-            sql = new StringBuilder(sql.substring(0, sql.length() - 5));
-        }
-        if (!sql.toString().equals("SELECT * FROM tags WHERE")) {
-            return this.jdbcTemplate.query(sql.toString(), tagRowMapper);
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
     public Integer getAllTags() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tags", Integer.class);
     }
 
-    public List<Long> getTagsIdByName(List<String> tagNames) {
+    public List<Tag> getTagsIdByName(List<String> tagNames) {
+        List<String> tagNames1 = new ArrayList<>();
+        tagNames.forEach(tag -> tagNames1.add("'" + tag + "'"));
         return jdbcTemplate.query(
-            "SELECT id FROM tags WHERE tag IN (?)",
-            new BeanPropertyRowMapper<>(Long.class),
-            StringUtils.join(tagNames, ",")
-        );
+            "SELECT * FROM tags WHERE tag IN (" + StringUtils.join(tagNames1, ", ") + ")",
+            tagRowMapper);
     }
 }
