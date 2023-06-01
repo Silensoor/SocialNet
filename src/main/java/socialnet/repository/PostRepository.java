@@ -1,7 +1,6 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Post;
 import socialnet.model.SearchOptions;
+import socialnet.service.PersonService;
 import socialnet.service.TagService;
 
 import java.sql.Timestamp;
@@ -20,7 +20,8 @@ public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final TagService tagService;
-    private final PersonRepository personRepository;
+
+    private final PersonService personService;
 
     public List<Post> findAll() {
         try {
@@ -182,7 +183,6 @@ public class PostRepository {
 
     private String createWhereAndTags(SearchOptions searchOptions) {
         StringBuilder sqlWhere = new StringBuilder();
-        List<Long> authorListId = new ArrayList<>();
         String post2TagList = "";
         if (searchOptions.getTags() != null) {
             post2TagList = tagService.getPostByQueryTags(searchOptions.getTags());
@@ -190,21 +190,15 @@ public class PostRepository {
         }
         sqlWhere.append(" WHERE is_deleted = false AND ");
         if (searchOptions.getAuthor() != null && !searchOptions.getAuthor().equals("")) {
-            if (searchOptions.getAuthor().trim().contains(" ")) {
-                personRepository.findPersonsName(searchOptions.getAuthor())
-                        .forEach(author -> authorListId.add(author.getId()));
-            } else {
-                personRepository.findPersonsFirstNameOrLastName(searchOptions.getAuthor())
-                        .forEach(author -> authorListId.add(author.getId()));
-            }
-            sqlWhere.append(!authorListId.isEmpty() ? " author_id IN (" + StringUtils.join(authorListId, ",")
-                    + ") AND " : " author_id IN (0) AND ");
+            sqlWhere.append(personService.searchAuthor(searchOptions));
         }
         sqlWhere.append(searchOptions.getDateFrom() > 0 ? " time > '"
                         + parseDate(searchOptions.getDateFrom()) + "' AND " : "")
-                .append(searchOptions.getDateTo() > 0 ? " time < '" + parseDate(searchOptions.getDateTo()) + "' AND " : "")
-                .append(!Objects.equals(post2TagList, "") ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "")
-                .append(!searchOptions.getText().equals("") ? " lower (post_text) LIKE '%" + searchOptions.getText()
+                .append(searchOptions.getDateTo() > 0 ? " time < '" + parseDate(searchOptions.getDateTo()) + "' AND " : "");
+        if (searchOptions.getTags() != null) {
+                sqlWhere.append(post2TagList).append(" AND ");
+        }
+                sqlWhere.append(!searchOptions.getText().equals("") ? " lower (post_text) LIKE '%" + searchOptions.getText()
                         .toLowerCase() + "%'" : "");
 
         return sqlWhere.toString();
