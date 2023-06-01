@@ -28,7 +28,12 @@ public class DialogsController {
 
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "recover comment by id")
+    @Operation(summary = "recover comment by id", responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<List<DialogRs>> getDialogs(@RequestHeader
                                                @Parameter(description = "Access Token", example = "JWT Token")
                                                String authorization) {
@@ -52,7 +57,12 @@ public class DialogsController {
 
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get messages from dialog")
+    @Operation(summary = "get messages from dialog", responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<List<MessageRs>> getMessagesFromDialog(
             @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @PathVariable("dialogId") @Parameter(description = "dialogId", example = "1") Long dialogId,

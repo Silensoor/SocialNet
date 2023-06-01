@@ -34,8 +34,7 @@ public class UsersController {
     @OnlineStatusUpdatable
     @GetMapping("/me")
     @Operation(summary = "get information about me", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsPersonRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -76,22 +75,22 @@ public class UsersController {
                                                 @Parameter(description =  "Access Token", example = "JWT Token")
                                                 String authorization,
                                                 @RequestParam(name = "age_from", required = false, defaultValue = "0")
-                                                @Parameter(description =  "ageFrom", example = "5")
+                                                @Parameter(description =  "after this age", example = "5")
                                                 Integer ageFrom,
                                                 @RequestParam(name = "age_to", required = false, defaultValue = "0")
-                                                @Parameter(description =  "ageTo", example = "50")
+                                                @Parameter(description =  "before this age", example = "50")
                                                 Integer ageTo,
                                                 @RequestParam(required = false, defaultValue = "")
-                                                @Parameter(description =  "city", example = "city")
+                                                @Parameter(description =  "city name", example = "Paris")
                                                 String city,
                                                 @RequestParam(required = false, defaultValue = "")
-                                                @Parameter(description =  "country", example = "country")
+                                                @Parameter(description =  "country name", example = "France")
                                                 String country,
                                                 @RequestParam(name = "first_name", required = false, defaultValue = "")
-                                                @Parameter(description =  "firstName", example = "firstName")
+                                                @Parameter(description =  "possible first name", example = "Максим")
                                                 String firstName,
                                                 @RequestParam(name = "last_name", required = false, defaultValue = "")
-                                                @Parameter(description =  "lastName", example = "lastName")
+                                                @Parameter(description =  "possible last name", example = "Иванов")
                                                 String lastName,
                                                 @RequestParam(required = false, defaultValue = "0")
                                                 @Parameter(description =  "offset", example = "0")
@@ -116,8 +115,7 @@ public class UsersController {
     @OnlineStatusUpdatable
     @PutMapping("/me")
     @Operation(summary = "update information about me", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/ResponseEntityCommonRsPersonRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -126,6 +124,7 @@ public class UsersController {
                                                                  @Parameter(description =  "Access Token", example = "JWT Token")
                                                                  String authorization,
                                             @RequestBody @Parameter(description =  "userData", example = "userData")
+                                            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "userData")
                                             UserRq userData) {
         return personService.updateUserInfo(authorization, userData);
     }

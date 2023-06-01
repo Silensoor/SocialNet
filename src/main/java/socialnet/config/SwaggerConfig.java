@@ -30,9 +30,9 @@ public class SwaggerConfig {
 
         List<Server> serverList = new ArrayList<>();
         serverList.add(new Server().url("http://localhost:8086/").description("localhost"));
-        serverList.add(new Server().url("http://81.177.6.228:8086/").description("server"));
+        serverList.add(new Server().url("https://81.177.6.228:8086/").description("server"));
         List<Tag> tagList = new ArrayList<>();
-        tagList.add(new Tag().name("MessageWsController").description("MessageWsController"));
+        tagList.add(new Tag().name("MessageWsController").description("message WebSocket"));
         return new OpenAPI()
                 .info(new Info()
                         .title("Zerone API")

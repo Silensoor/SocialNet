@@ -26,8 +26,7 @@ public class CommentsController {
     @OnlineStatusUpdatable
     @GetMapping("/api/v1/post/{postId}/comments")
     @Operation(summary = "get comment by id", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(implementation = CommonRs.class))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -63,8 +62,7 @@ public class CommentsController {
     @OnlineStatusUpdatable
     @PutMapping("/api/v1/post/{id}/comments/{comment_id}")
     @Operation(summary = "edit comment by id", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsCommentRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),

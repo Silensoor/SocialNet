@@ -114,7 +114,10 @@ public class StatisticsController {
 
     @GetMapping("/message/all")
     @Operation(summary = "get the number of messages by id's of two persons. This method return map where key is" +
-            " description who author, and who recipient. And value is number of message")
+            " description who author, and who recipient. And value is number of message", responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))})})
     public SortedMap<String, Integer> getMessage(@RequestParam(required = false, defaultValue = "0")
                                                  @Parameter(description = "firstUserId", example = "1") Integer firstUserId,
                                                  @RequestParam(required = false, defaultValue = "0")
