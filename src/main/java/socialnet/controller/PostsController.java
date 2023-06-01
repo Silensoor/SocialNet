@@ -50,8 +50,7 @@ public class PostsController {
     @OnlineStatusUpdatable
     @GetMapping("/api/v1/users/{id}/wall")
     @Operation(summary = "get all post by author id", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsListPostRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -69,8 +68,7 @@ public class PostsController {
     @OnlineStatusUpdatable
     @PostMapping("/api/v1/users/{id}/wall")
     @Operation(summary = "create new post", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsPostRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -87,8 +85,7 @@ public class PostsController {
     @OnlineStatusUpdatable
     @GetMapping("/api/v1/post/{id}")
     @Operation(summary = "get post by id", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsPostRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -159,19 +156,19 @@ public class PostsController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<List<PostRs>> getPostsByQuery(
             @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
-            @RequestParam(required = false, defaultValue = "") @Parameter(description =  "author", example = "author")
-            String author,
+            @RequestParam(required = false, defaultValue = "") @Parameter(description =  "possible post author",
+                    example = "Максим Иванов") String author,
             @RequestParam(required = false, name = "date_from", defaultValue = "0")
-            @Parameter(description =  "dateFrom", example = "dateFrom") Long dateFrom,
+            @Parameter(description =  "post can be written after this date", example = "111111111") Long dateFrom,
             @RequestParam(required = false, name = "date_to", defaultValue = "0")
-            @Parameter(description =  "dateTo", example = "dateTo") Long dateTo,
+            @Parameter(description =  "post can be written before this date", example = "111111111") Long dateTo,
             @RequestParam(required = false, defaultValue = "0")
             @Parameter(description =  "offset", example = "0") Integer offset,
             @RequestParam(required = false, defaultValue = "20")
             @Parameter(description =  "perPage", example = "20") Integer perPage,
-            @RequestParam(required = false) @Parameter(description =  "tags", example = "tags") String[] tags,
-            @RequestParam(required = false, defaultValue = "") @Parameter(description =  "text", example = "text")
-            String text) {
+            @RequestParam(required = false) @Parameter(description =  "post tags") String[] tags,
+            @RequestParam(required = false, defaultValue = "") @Parameter(description =  "text that can contain a post",
+                    example = "Hogwarts") String text) {
 
         return findService.getPostsByQuery(SearchOptions.builder()
                 .jwtToken(authorization)

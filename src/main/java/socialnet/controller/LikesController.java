@@ -25,8 +25,7 @@ public class LikesController {
     @OnlineStatusUpdatable
     @GetMapping("/api/v1/likes")
     @Operation(summary = "get all my likes by comment or post", responses = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsLikeRs"))}),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -50,7 +49,9 @@ public class LikesController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<LikeRs> putLike(
             @RequestHeader  @Parameter(description =  "Access Token", example = "JWT Token") String authorization,
-            @RequestBody @Parameter(description = "likeRq", example = "likeRq") LikeRq likeRq) {
+            @RequestBody @Parameter(description = "data for put or delete like", example = "likeRq")
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "likeRq") LikeRq likeRq) {
 
         return likesService.putLike(authorization, likeRq);
     }

@@ -70,8 +70,7 @@ public class AccountController {
 
     @OnlineStatusUpdatable
     @PutMapping("/password/reset")
-    @Operation(summary = "user password reset", responses = {@ApiResponse(responseCode = "200", description = "OK",
-            content = {@Content(schema = @Schema(ref = "#/components/schemas/RegisterRs"))}),
+    @Operation(summary = "user password reset", responses = {@ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
@@ -114,7 +113,7 @@ public class AccountController {
     @OnlineStatusUpdatable
     @GetMapping("/notifications")
     @Operation(summary = "get user's notifications properties", responses = {@ApiResponse(responseCode = "200",
-            description = "OK", content = {@Content(schema = @Schema(ref = "#/components/schemas/CommonRsListPersonSettingRs"))}),
+            description = "OK"),
             @ApiResponse(responseCode = "400", description = "Name of error",
                     content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
