@@ -1,7 +1,9 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -84,5 +86,13 @@ public class TagRepository {
 
     public Integer getAllTags() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tags", Integer.class);
+    }
+
+    public List<Long> getTagsIdByName(List<String> tagNames) {
+        return jdbcTemplate.query(
+            "SELECT id FROM tags WHERE tag IN (?)",
+            new BeanPropertyRowMapper<>(Long.class),
+            StringUtils.join(tagNames, ",")
+        );
     }
 }

@@ -3,8 +3,6 @@ package socialnet.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import socialnet.api.response.CommentRs;
-import socialnet.model.Like;
-import socialnet.model.Person;
 
 import java.util.List;
 
