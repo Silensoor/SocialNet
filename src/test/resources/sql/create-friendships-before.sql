@@ -6,3 +6,5 @@ insert into friendships (sent_time, dst_person_id, src_person_id, status_name) v
 insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-06-14 14:43:32', 1, 5, 'REQUEST');
 insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-06-14 14:43:32', 3, 7, 'FRIEND');
 insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-06-14 14:43:32', 2, 6, 'FRIEND');
+insert into friendships (sent_time, dst_person_id, src_person_id, status_name) values ('2022-06-14 14:43:32', 1, 8, 'FRIEND');
+insert into friendships (dst_person_id, src_person_id, status_name) values (8, 1, 'BLOCKED');
