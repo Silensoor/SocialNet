@@ -31,45 +31,6 @@ public class PostService {
     private final FriendsShipsRepository friendsShipsRepository;
     private final PersonSettingRepository personSettingRepository;
 
-    /*public PostRs convertToPostRs(Post post) {
-        Person person = personRepository.findById(post.getAuthorId());
-        PersonRs personRs = PersonMapper.INSTANCE.toDTO(person);
-        personRs.setOnline(null);
-        personRs.setWeather(new WeatherRs());
-        personRs.setIsBlockedByCurrentUser(null);
-        personRs.setFriendStatus(FriendshipStatusTypes.FRIEND.name());
-        personRs.setCurrency(new CurrencyRs());
-        List<Comment> comments = commentRepository.findByPostId(post.getId());
-        List<CommentRs> commentsRs = convertToCommentRs(comments);
-        int likesCount = likeRepository.findCountByPersonId(person.getId());
-        List<Tag> tags = tagRepository.findByPostId(post.getId());
-
-        PostRs postRs = PostMapper.INSTANCE.toDTO(post);
-        postRs.setAuthor(personRs);
-        postRs.setComments(commentsRs);
-        postRs.setLikes(likesCount);
-        postRs.setMyLike(null);
-        postRs.setTags(tags.stream().map(Tag::getTag).collect(Collectors.toList()));
-        postRs.setType(null);
-
-        return postRs;
-    }*/
-
-    /*private List<CommentRs> convertToCommentRs(List<Comment> comments) {
-        List<CommentRs> result = new ArrayList<>(comments.size());
-        for (Comment comment : comments) {
-            CommentRs commentRs = CommentMapper.INSTANCE.toDTO(comment);
-            Person person = personRepository.findById(comment.getAuthorId());
-            commentRs.setAuthor(PersonMapper.INSTANCE.toDTO(person));
-            commentRs.setLikes(null);
-            commentRs.setMyLike(null);
-            commentRs.setSubComments(null);
-            result.add(commentRs);
-        }
-
-        return result;
-    }*/
-
     public CommonRs<List<PostRs>> getFeeds(String jwtToken, int offset, int perPage) {
         List<Post> postList = postRepository.findAll(offset, perPage, System.currentTimeMillis());
         List<PostRs> postRsList = new ArrayList<>();
@@ -251,7 +212,6 @@ public class PostService {
         postFromDB.setIsDeleted(false);
         postFromDB.setTimeDelete(null);
         postRepository.updateById(id, postFromDB);
-//        postRepository.save(postFromDB);
         Person author = getAuthor(postFromDB.getAuthorId());
         PostServiceDetails details = getDetails(author.getId(), postFromDB.getId().intValue(), jwtToken);
         PostRs postRs = setPostRs(postFromDB, details);

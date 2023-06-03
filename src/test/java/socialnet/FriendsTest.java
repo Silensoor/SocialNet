@@ -114,8 +114,9 @@ public class FriendsTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].email", is("kutting1@eventbrite.com")))
-                .andExpect(jsonPath("$.data[1].email", is("user2@email.com")))
+                .andExpect(jsonPath("$.data[0].email", is("jjewell55@ebay.com")))
+                .andExpect(jsonPath("$.data[1].email", is("kutting1@eventbrite.com")))
+                .andExpect(jsonPath("$.data[2].email", is("user2@email.com")))
                 .andReturn();
     }
 
