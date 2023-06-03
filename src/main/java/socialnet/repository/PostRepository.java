@@ -1,7 +1,6 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Post;
 import socialnet.model.SearchOptions;
+import socialnet.service.PersonService;
 import socialnet.service.TagService;
 
 import java.sql.Timestamp;
@@ -20,7 +20,8 @@ public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final TagService tagService;
-    private final PersonRepository personRepository;
+
+    private final PersonService personService;
 
     public List<Post> findAll() {
         try {
@@ -30,26 +31,21 @@ public class PostRepository {
         }
     }
 
-    public List<Post> findAll(int offset, int perPage) {
-        try {
-            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, offset, perPage);
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        }
-    }
-
     public List<Post> findAll(int offset, int perPage, long currentTime) {
         try {
-            return jdbcTemplate.query("SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?", postRowMapper, new Timestamp(currentTime), offset, perPage);
+            return jdbcTemplate.query(
+                "SELECT * FROM posts WHERE is_deleted = false AND time < ? ORDER BY time DESC OFFSET ? ROWS LIMIT ?",
+                postRowMapper,
+                new Timestamp(currentTime), offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
     }
 
-    public long getAllCount() {
+    public long getAllCountNotDeleted() {
         try {
             return jdbcTemplate.queryForObject("SELECT COUNT(1) FROM posts WHERE is_deleted = false", Long.class);
-        } catch (EmptyResultDataAccessException ignored) {
+        } catch (EmptyResultDataAccessException | NullPointerException ignored) {
             return 0L;
         }
     }
@@ -180,6 +176,34 @@ public class PostRepository {
         return new Timestamp(date.getTime());
     }
 
+    public Integer getAllPostByUser(Integer userId) {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM posts WHERE author_id = ?",
+                Integer.class, userId);
+    }
+
+    private String createWhereAndTags(SearchOptions searchOptions) {
+        StringBuilder sqlWhere = new StringBuilder();
+        String post2TagList = "";
+        if (searchOptions.getTags() != null) {
+            post2TagList = tagService.getPostByQueryTags(searchOptions.getTags());
+            sqlWhere.append(" JOIN post2tag ON posts.id = post2tag.post_id");
+        }
+        sqlWhere.append(" WHERE is_deleted = false AND ");
+        if (searchOptions.getAuthor() != null && !searchOptions.getAuthor().equals("")) {
+            sqlWhere.append(personService.searchAuthor(searchOptions));
+        }
+        sqlWhere.append(searchOptions.getDateFrom() > 0 ? " time > '"
+                        + parseDate(searchOptions.getDateFrom()) + "' AND " : "")
+                .append(searchOptions.getDateTo() > 0 ? " time < '" + parseDate(searchOptions.getDateTo()) + "' AND " : "");
+        if (searchOptions.getTags() != null) {
+                sqlWhere.append(post2TagList).append(" AND ");
+        }
+                sqlWhere.append(!searchOptions.getText().equals("") ? " lower (post_text) LIKE '%" + searchOptions.getText()
+                        .toLowerCase() + "%'" : "");
+
+        return sqlWhere.toString();
+    }
+
     private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
         Post post = new Post();
         post.setId(resultSet.getLong("id"));
@@ -190,41 +214,7 @@ public class PostRepository {
         post.setTimeDelete(resultSet.getTimestamp("time_delete"));
         post.setTitle(resultSet.getString("title"));
         post.setAuthorId(resultSet.getLong("author_id"));
+
         return post;
     };
-
-
-    public Integer getAllPostByUser(Integer userId) {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM posts WHERE author_id = ?",
-                Integer.class, userId);
-    }
-
-    private String createWhereAndTags(SearchOptions searchOptions) {
-        StringBuilder sqlWhere = new StringBuilder();
-        List<Long> authorListId = new ArrayList<>();
-        String post2TagList = "";
-        if (searchOptions.getTags() != null) {
-            post2TagList = tagService.getPostByQueryTags(searchOptions.getTags());
-            sqlWhere.append(" JOIN post2tag ON posts.id=post2tag.post_id");
-        }
-        sqlWhere.append(" WHERE is_deleted = false AND ");
-        if (searchOptions.getAuthor() != null && !searchOptions.getAuthor().equals("")) {
-            if (searchOptions.getAuthor().trim().contains(" ")) {
-                personRepository.findPersonsName(searchOptions.getAuthor())
-                        .forEach(author -> authorListId.add(author.getId()));
-            } else {
-                personRepository.findPersonsFirstNameOrLastName(searchOptions.getAuthor())
-                        .forEach(author -> authorListId.add(author.getId()));
-            }
-            sqlWhere.append(!authorListId.isEmpty() ? " author_id IN (" + StringUtils.join(authorListId, ",")
-                    + ") AND " : " author_id IN (0) AND ");
-        }
-        sqlWhere.append(searchOptions.getDateFrom() > 0 ? " time > '"
-                        + parseDate(searchOptions.getDateFrom()) + "' AND " : "")
-                .append(searchOptions.getDateTo() > 0 ? " time < '" + parseDate(searchOptions.getDateTo()) + "' AND " : "")
-                .append(!Objects.equals(post2TagList, "") ? " post2tag.tag_id IN (" + post2TagList + ")  AND " : "")
-                .append(!searchOptions.getText().equals("") ? " lower (post_text) LIKE '%" + searchOptions.getText()
-                        .toLowerCase() + "%'" : "");
-        return sqlWhere.toString();
-    }
 }

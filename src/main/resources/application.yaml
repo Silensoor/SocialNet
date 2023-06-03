@@ -7,7 +7,7 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
   profiles:
-    active: michael
+    active: snake
   mail:
     host: smtp.mail.ru
     port: 2525
@@ -69,3 +69,7 @@ management:
     distribution:
       percentiles-histogram:
         "[http.server.requests]": true
+
+springdoc:
+  swagger-ui:
+    tagsSorter: alpha

@@ -2,6 +2,7 @@ package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import socialnet.mappers.PersonMapper;
 import socialnet.mappers.UserDtoMapper;
 import socialnet.model.Person;
 import socialnet.model.PersonSettings;
+import socialnet.model.SearchOptions;
 import socialnet.repository.PersonRepository;
 import socialnet.repository.PersonSettingRepository;
 import socialnet.security.jwt.JwtUtils;
@@ -218,4 +220,16 @@ public class PersonService {
         return new CommonRs<>(new ComplexRs());
     }
 
+    public String searchAuthor(SearchOptions searchOptions){
+        List<Long> authorListId = new ArrayList<>();
+        if (searchOptions.getAuthor().trim().contains(" ")) {
+            personRepository.findPersonsName(searchOptions.getAuthor())
+                    .forEach(author -> authorListId.add(author.getId()));
+        } else {
+            personRepository.findPersonsFirstNameOrLastName(searchOptions.getAuthor())
+                    .forEach(author -> authorListId.add(author.getId()));
+        }
+        return !authorListId.isEmpty() ? " author_id IN (" + StringUtils.join(authorListId, ",")
+                + ") AND " : " author_id IN (0) AND ";
+    }
 }

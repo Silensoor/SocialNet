@@ -28,7 +28,13 @@ public class FriendsController {
 
     @OnlineStatusUpdatable
     @GetMapping("/friends")
-    @Operation(summary = "get friends of current user")
+    @Operation(summary = "get friends of current user"
+            , responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<List<PersonRs>> getFriends(
             @RequestHeader @Parameter(description = "Access Token", example = "JWT Token") String authorization,
             @RequestParam(required = false, defaultValue = "0") @Parameter(description = "offset", example = "0")
@@ -137,7 +143,12 @@ public class FriendsController {
 
     @OnlineStatusUpdatable
     @PostMapping("/friends/{id}")
-    @Operation(summary = "send friendship request by id of another user")
+    @Operation(summary = "send friendship request by id of another user", responses = {@ApiResponse(responseCode = "200",
+            description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Name of error",
+                    content = {@Content(schema = @Schema(implementation = ErrorRs.class))}),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content(schema = @Schema())})})
     public CommonRs<ComplexRs> sendFriendsRequest(@RequestHeader
                                                   @Parameter(description = "Access Token", example = "JWT Token")
                                                   String authorization,
