@@ -69,4 +69,29 @@ public class FriendsServiceTest extends BasicTest{
                             || friends.get(1).getEmail().equals("kutting1@eventbrite.com"))
                     .isTrue();
         }
+        @Test
+        @DisplayName("Block User")
+        void blockUserTest() {
+            String firstActualFriendStatus = friendsService.getFriendStatus(1, 2);
+            String secondActualFriendStatus = friendsService.getFriendStatus(1, 8);
+
+            friendsService.userBlocks(getToken(), 2);
+            friendsService.userBlocks(getToken(), 8);
+
+            String firstFinalFriendStatus = friendsService.getFriendStatus(1, 2);
+            String secondFinalFriendStatus = friendsService.getFriendStatus(1, 8);
+
+            assertThat(firstActualFriendStatus.equals("FRIEND")
+                    && secondActualFriendStatus.equals("BLOCKED"))
+                    .isTrue();
+            assertThat(firstFinalFriendStatus.equals("BLOCKED")
+                    && secondFinalFriendStatus.equals("FRIEND"))
+                    .isTrue();
+        }
+
+//        @Test
+//        @DisplayName("Outgoing Requests")
+        void getOutgoingRequestsTest() {
+//            CommonRs<List<PersonRs>> commonRs = friendsService.getOutgoingRequests(getToken(), 0, 20);
+        }
     }
