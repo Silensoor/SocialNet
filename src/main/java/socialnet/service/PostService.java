@@ -12,7 +12,6 @@ import socialnet.model.*;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.NotificationPusher;
-import socialnet.model.PostServiceDetails;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;

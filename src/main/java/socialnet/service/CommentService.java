@@ -61,7 +61,8 @@ public class CommentService {
     }
 
     public CommonRs<CommentRs> createComment(CommentRq commentRq, Long postId, String jwtToken) {
-        Person person =getPerson(jwtToken);
+        String email = jwtUtils.getUserEmail(jwtToken);
+        Person person = personRepository.findByEmail(email);
         CommentServiceDetails toModelDetails = getToModelDetails(person,postId);
         Comment comment = getCommentModel(commentRq, toModelDetails);
         long commentId = commentRepository.save(comment);
@@ -127,17 +128,14 @@ public class CommentService {
         return commentRsList;
     }
 
-    private Person getPerson(String jwtToken) {
-       return personRepository.findByEmail(jwtUtils.getUserEmail(jwtToken));
-
-    }
     private CommentServiceDetails getToModelDetails(Person person,Long postId){
         PersonRs author = PersonMapper.INSTANCE.toDTO(person);
         return new CommentServiceDetails(author, postId);
     }
 
     public CommonRs<CommentRs> editComment(String jwtToken, Long id, Long commentId, CommentRq commentRq) {
-        Person person = getPerson(jwtToken);
+        String email = jwtUtils.getUserEmail(jwtToken);
+        Person person = personRepository.findByEmail(email);
         CommentServiceDetails toModelDetails = getToModelDetails(person, id);
         Comment comment = getCommentModel(commentRq, toModelDetails);
         Comment commentFromDB = commentRepository.findById(commentId);
@@ -157,7 +155,8 @@ public class CommentService {
     }
     public void hardDeleteComments() {
         List<Comment> deletingComments = commentRepository.findDeletedPosts();
-        deletingComments.forEach(commentRepository::delete);
+        deletingComments.stream().filter(x -> x.getParentId() != 0).forEach(commentRepository::delete);
+        deletingComments.stream().filter(x -> x.getParentId() == 0).forEach(commentRepository::delete);
         List<Like> likes = new ArrayList<>();
 
         deletingComments.stream()
