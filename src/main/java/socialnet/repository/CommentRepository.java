@@ -22,7 +22,7 @@ public class CommentRepository {
     public List<Comment> findByPostId(Long postId) {
         String select = "SELECT * FROM post_comments WHERE post_id = ?";
         try {
-            return jdbcTemplate.query(select, commentRowMapper, postId);
+            return jdbcTemplate.query(select, COMMENT_ROW_MAPPER, postId);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
@@ -30,16 +30,16 @@ public class CommentRepository {
 
     public List<Comment> findByPostId(Long postId, int offset, int perPage) {
         String select =
-            "SELECT * " +
-            "  FROM post_comments " +
-            " WHERE is_deleted = false " +
-            "   AND post_id = ? " +
-            "   AND is_blocked = false " +
-            "   AND (parent_id IS NULL OR parent_id = 0) " +
-            " ORDER BY time DESC OFFSET ? ROWS LIMIT ?";
+                "SELECT * " +
+                "  FROM post_comments " +
+                " WHERE is_deleted = false " +
+                "   AND post_id = ? " +
+                "   AND is_blocked = false " +
+                "   AND (parent_id IS NULL OR parent_id = 0) " +
+                " ORDER BY time DESC OFFSET ? ROWS LIMIT ?";
 
         try {
-            return jdbcTemplate.query(select, commentRowMapper, postId, offset, perPage);
+            return jdbcTemplate.query(select, COMMENT_ROW_MAPPER, postId, offset, perPage);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
@@ -48,17 +48,14 @@ public class CommentRepository {
     public Long countCommentsByPostId(long postId) {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT COUNT(1) " +
-                "  FROM post_comments pc " +
-                " WHERE pc.post_id = ? " +
-                "   AND pc.is_blocked = false " +
-                "   AND pc.is_deleted = false " +
-                "   AND (pc.parent_id IS NULL " +
-                "    OR pc.parent_id = 0) " +
-                " ORDER BY pc.time DESC",
-                Long.class,
-                postId
-            );
+                    "SELECT COUNT(1) " +
+                    "  FROM post_comments pc " +
+                    " WHERE pc.post_id = ? " +
+                    "   AND pc.is_blocked = false " +
+                    "   AND pc.is_deleted = false " +
+                    "   AND (pc.parent_id IS NULL OR pc.parent_id = 0)",
+                    Long.class,
+                    postId);
         } catch (EmptyResultDataAccessException | NullPointerException e) {
             return 0L;
         }
@@ -77,7 +74,7 @@ public class CommentRepository {
     public List<Comment> findByPostIdParentId(Long parentId) {
         String select = "SELECT * FROM post_comments WHERE parent_id = ?";
         try {
-            return jdbcTemplate.query(select, commentRowMapper, parentId);
+            return jdbcTemplate.query(select, COMMENT_ROW_MAPPER, parentId);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
@@ -103,7 +100,7 @@ public class CommentRepository {
     public Comment findById(Long commentId) {
         String select = "SELECT * FROM post_comments WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(select, commentRowMapper, commentId);
+            return jdbcTemplate.queryForObject(select, COMMENT_ROW_MAPPER, commentId);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
@@ -111,14 +108,13 @@ public class CommentRepository {
 
     public void updateById(Comment comment, Long commentId) {
         String update = "UPDATE post_comments SET comment_text = ?, is_deleted = ? WHERE id = ?";
-        jdbcTemplate.execute(update);
         jdbcTemplate.update(update, comment.getCommentText(), comment.getIsDeleted(), commentId);
     }
 
     public List<Comment> findDeletedPosts() {
         String select = "SELECT * FROM post_comments WHERE is_deleted = true";
         try {
-            return jdbcTemplate.query(select, commentRowMapper);
+            return jdbcTemplate.query(select, COMMENT_ROW_MAPPER);
         } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
@@ -129,7 +125,7 @@ public class CommentRepository {
         jdbcTemplate.update(delete, comment.getId());
     }
 
-    private final RowMapper<Comment> commentRowMapper = (rs, rowNum) -> {
+    public static final RowMapper<Comment> COMMENT_ROW_MAPPER = (rs, rowNum) -> {
         Comment comment = new Comment();
         comment.setId(rs.getLong("id"));
         comment.setCommentText(rs.getString("comment_text"));

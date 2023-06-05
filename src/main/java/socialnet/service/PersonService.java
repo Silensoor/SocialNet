@@ -199,8 +199,9 @@ public class PersonService {
 
 
     public CommonRs<List<PersonSettingsRs>> getPersonSettings(String authorization) {
-        PersonSettings personSettings = personSettingRepository
-                .getSettings(personRepository.getPersonIdByEmail(jwtUtils.getUserEmail(authorization)));
+        String email = jwtUtils.getUserEmail(authorization);
+        Long personId = personRepository.getPersonIdByEmail(email);
+        PersonSettings personSettings = personSettingRepository.getSettings(personId);
 
         List<PersonSettingsRs> list = new ArrayList<>();
         var map = reflection.getFieldsAndValues(personSettings).entrySet();
