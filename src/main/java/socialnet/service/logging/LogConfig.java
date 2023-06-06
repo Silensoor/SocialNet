@@ -28,6 +28,11 @@ public class LogConfig {
 
     @AfterReturning(pointcut = "methodExecutingInfo()", returning = "returningValue")
     public void recordSuccessfulExecutionInfo(JoinPoint joinPoint, Object returningValue) {
+
+        if (joinPoint.getSignature().getName().equals("getUnreadedMessages")) {
+            return;
+        }
+
         if (returningValue != null) {
             log.info(INFO_WITH_RESULT,
                 joinPoint.getSignature().getName(),
