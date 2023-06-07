@@ -83,10 +83,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests().antMatchers("/api/v1/auth/login", "/api/v1/auth/captcha", "/api/v1/account/register",
-                        "/api/v1/account/password/recovery", "/api/v1/account/email/recovery", "/api/v1/ws/",
+                        "/api/v1/account/password/recovery", "/api/v1/account/email/recovery", "/api/v1/ws/**",
                         "*/api/v1/change-password", "/api/v1/account/password/set", "/api/v1/account/password/reset",
-                        "/v2/api-docs", "/swagger-ui/**", "/swagger-resources/", "/actuator/*", "/api/v1/statistics/**",
-                        "/api/v1/account/email").permitAll().anyRequest().authenticated()
+                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/", "/actuator/*", "/api/v1/statistics/**",
+                        "/api/v1/account/email", "/api/v1/tg/**").permitAll().anyRequest().authenticated()
                 .and().addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
