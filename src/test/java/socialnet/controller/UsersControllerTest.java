@@ -1,13 +1,21 @@
 package socialnet.controller;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import socialnet.BasicTest;
 import socialnet.api.request.UserRq;
@@ -24,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static socialnet.repository.PersonRepository.PERSON_ROW_MAPPER;
 
+@ContextConfiguration(initializers = {UsersControllerTest.Initializer.class})
 @Sql(scripts = "/sql/clear_tables.sql")
 @Sql(scripts = "/sql/find-service-test.sql")
 @SqlMergeMode(MERGE)
@@ -31,15 +40,30 @@ public class UsersControllerTest extends BasicTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private JwtUtils jwtUtils;
-
     private final String TEST_EMAIL = "user@email.com";
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Container
+    public static final PostgreSQLContainer<?> POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:12.14");
+
+    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+        @Override
+        public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + POSTGRES_CONTAINER.getJdbcUrl(),
+                    "spring.datasource.username=" + POSTGRES_CONTAINER.getUsername(),
+                    "spring.datasource.password=" + POSTGRES_CONTAINER.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+        }
+    }
 
     @Test
     @DisplayName("Поднятие контекста.")
-    public void contextLoads() {
+    void contextLoads() {
         assertThat(POSTGRES_CONTAINER.isRunning()).isTrue();
         assertThat(mockMvc).isNotNull();
         assertThat(jwtUtils).isNotNull();
@@ -123,7 +147,7 @@ public class UsersControllerTest extends BasicTest {
     @Test
     @DisplayName("Find by City")
     @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
-    public void findByCity() throws Exception {
+    void findByCity() throws Exception {
         mockMvc.perform(get("/api/v1/users/search")
                         .with(getToken("mets@inbox.ru")).param("city", "Moscow-test"))
                 .andDo(print())
@@ -135,7 +159,7 @@ public class UsersControllerTest extends BasicTest {
     @Test
     @DisplayName("Find by FirstName")
     @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
-    public void findByFirstName() throws Exception {
+    void findByFirstName() throws Exception {
         mockMvc.perform(get("/api/v1/users/search")
                         .with(getToken("mets@inbox.ru")).param("first_name", "Firstname2"))
                 .andDo(print())
@@ -147,7 +171,7 @@ public class UsersControllerTest extends BasicTest {
     @Test
     @DisplayName("Find by FirstName & Lastname")
     @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
-    public void findByFirstAndLastName() throws Exception {
+    void findByFirstAndLastName() throws Exception {
         mockMvc.perform(get("/api/v1/users/search")
                         .with(getToken("mets@inbox.ru"))
                         .param("first_name", "Firstname1")
@@ -162,7 +186,7 @@ public class UsersControllerTest extends BasicTest {
     @Test
     @DisplayName("Find by Country")
     @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
-    public void findByCountry() throws Exception {
+    void findByCountry() throws Exception {
         mockMvc.perform(get("/api/v1/users/search")
                         .with(getToken("mets@inbox.ru")).param("country", "Russia-test"))
                 .andDo(print())
@@ -175,7 +199,7 @@ public class UsersControllerTest extends BasicTest {
     @Test
     @DisplayName("Find by Age Between")
     @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
-    public void findByAgeFromTo() throws Exception {
+    void findByAgeFromTo() throws Exception {
         mockMvc.perform(get("/api/v1/users/search")
                         .with(getToken("mets@inbox.ru"))
                         .param("age_from", "1")
@@ -189,7 +213,7 @@ public class UsersControllerTest extends BasicTest {
     @Test
     @DisplayName("Find by Age To")
     @Sql(statements = "Insert into Persons (birth_date, email, first_name, last_name, is_approved, is_blocked, is_deleted, password, reg_date, city, country) values ('1982/06/02', 'mets@inbox.ru', 'Александр','Мец',false,false,false,'2a$10$D/tXegeuj2gciN/0N57.gepWAav83PxCASfv..7/OsdkFhZZXBXpm',now(), 'Moscow-test', 'Russia-test')")
-    public void findByAgeTo() throws Exception {
+    void findByAgeTo() throws Exception {
         mockMvc.perform(get("/api/v1/users/search")
                         .with(getToken("mets@inbox.ru"))
                         .param("age_to", "3"))
