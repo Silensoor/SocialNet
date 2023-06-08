@@ -1,6 +1,7 @@
 package socialnet.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import socialnet.api.request.RegisterRq;
@@ -53,6 +54,7 @@ public class AccountService {
         return person;
     }
 
+    @SneakyThrows
     private void validateFields(RegisterRq regRequest) {
         if (!regRequest.getPasswd1().equals(regRequest.getPasswd2())) {
             throw new RegisterException("Password not equals");
