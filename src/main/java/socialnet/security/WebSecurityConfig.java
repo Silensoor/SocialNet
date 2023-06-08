@@ -77,16 +77,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        String[] matchers = new String[] {
+            "/api/v1/auth/login", "/api/v1/auth/captcha", "/api/v1/account/register",
+            "/api/v1/account/password/recovery", "/api/v1/account/email/recovery", "/api/v1/ws/**",
+            "*/api/v1/change-password", "/api/v1/account/password/set", "/api/v1/account/password/reset",
+            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/", "/actuator/*", "/api/v1/statistics/**",
+            "/api/v1/account/email", "/api/v1/tg/**"
+        };
+
         http.csrf().disable().httpBasic().disable().cors().configurationSource(corsConfigurationSource())
-
-                .and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN))
-
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests().antMatchers("/api/v1/auth/login", "/api/v1/auth/captcha", "/api/v1/account/register",
-                        "/api/v1/account/password/recovery", "/api/v1/account/email/recovery", "/api/v1/ws/",
-                        "*/api/v1/change-password", "/api/v1/account/password/set", "/api/v1/account/password/reset",
-                        "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/", "/actuator/*", "/api/v1/statistics/**",
-                        "/api/v1/account/email").permitAll().anyRequest().authenticated()
-                .and().addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+            .and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN))
+            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().authorizeRequests().antMatchers(matchers).permitAll().anyRequest().authenticated()
+            .and().addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
