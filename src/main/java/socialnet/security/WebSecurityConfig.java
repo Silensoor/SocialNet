@@ -86,9 +86,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         };
 
         http.csrf().disable().httpBasic().disable().cors().configurationSource(corsConfigurationSource())
-                .and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN))
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests().antMatchers(matchers).permitAll().anyRequest().authenticated()
-                .and().addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+            .and().exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.FORBIDDEN))
+            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and().authorizeRequests().antMatchers(matchers).permitAll().anyRequest().authenticated()
+            .and().addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
