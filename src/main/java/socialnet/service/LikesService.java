@@ -7,6 +7,7 @@ import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
 import socialnet.api.response.NotificationType;
 import socialnet.model.*;
+import socialnet.model.enums.FriendshipStatusTypes;
 import socialnet.repository.*;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.NotificationPusher;
@@ -26,6 +27,8 @@ public class LikesService {
     private final PersonSettingRepository personSettingRepository;
     private final CommentRepository commentRepository;
 
+    private final FriendsShipsRepository friendsShipsRepository;
+
     public CommonRs<LikeRs> getLikes(Integer itemId, String type) {
         List<Like> likes = likeRepository.getLikesByEntityId(itemId);
         likes = likes.stream().filter(l -> l.getType().equals(type)).collect(Collectors.toList());
@@ -40,7 +43,9 @@ public class LikesService {
         like.setType(likeRq.getType());
         like.setEntityId(likeRq.getItemId().longValue());
         like.setPersonId(authUser.getId());
-        likeRepository.save(like);
+        if (!isBlocked(authUser, likeRq)) {
+            likeRepository.save(like);
+        }
         List<Like> likes = likeRepository.getLikesByEntityId(likeRq.getItemId());
         likes = likes.stream().filter(l -> l.getType().equals(likeRq.getType())).collect(Collectors.toList());
         List<Integer> users = new ArrayList<>();
@@ -68,6 +73,24 @@ public class LikesService {
             }
         }
         return new CommonRs<>(new LikeRs(likes.size(), users), System.currentTimeMillis());
+    }
+
+    private boolean isBlocked(Person authUser, LikeRq likeRq) {
+        if (likeRq.getType().equals("Post")) {
+            Post post = postRepository.findById(likeRq.getItemId());
+            Person person = personRepository.findById(post.getAuthorId());
+            Friendships friendships = friendsShipsRepository.getFriendStatusBlocked(authUser.getId(), person.getId());
+            if (friendships == null) return false;
+            return friendships.getStatusName().equals(FriendshipStatusTypes.BLOCKED);
+        }
+        if (likeRq.getType().equals("Comment")) {
+            Comment comment = commentRepository.findById(likeRq.getItemId().longValue());
+            Person person = personRepository.findById(comment.getAuthorId());
+            Friendships friendships = friendsShipsRepository.getFriendStatusBlocked(authUser.getId(), person.getId());
+            if (friendships == null) return false;
+            return friendships.getStatusName().equals(FriendshipStatusTypes.BLOCKED);
+        }
+        return false;
     }
 
     public CommonRs<LikeRs> deleteLike(String jwtToken, Integer itemId, String type) {
