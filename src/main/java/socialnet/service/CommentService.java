@@ -109,13 +109,14 @@ public class CommentService {
     }
 
     public CommentServiceDetails getToDTODetails(Long postId, Comment comment, long commentId) {
-        return new CommentServiceDetails(new Timestamp(System.currentTimeMillis()),
+        return new CommentServiceDetails(
                 postId,
                 comment.getIsBlocked(),
                 comment.getIsDeleted(),
                 commentId, comment.getAuthorId(),
                 findSubComments(postId, commentId),
-                likeRepository.getLikesByEntityId(commentId).size());
+                likeRepository.getLikesByEntityId(commentId).size()
+        );
     }
 
     private List<CommentRs> findSubComments(Long postId, Long id) {
