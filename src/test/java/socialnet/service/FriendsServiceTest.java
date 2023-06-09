@@ -77,15 +77,13 @@ public class FriendsServiceTest {
     void getFriends() {
         String email = "user1@email.com";
         CommonRs<List<PersonRs>> commonRs = friendsService.getFriends(getToken(email), 0, 20);
-        assertThat(commonRs.getData().size() == 3).isTrue();
+        assertThat(commonRs.getData().size()).isSameAs(3);
         List<PersonRs> friends = commonRs.getData();
         List<String> friendsEmails = friends.stream().map(PersonRs::getEmail).collect(Collectors.toList());
-        assertThat(
-                friendsEmails.containsAll(List.of(
-                    "user2@email.com",
-                    "kutting1@eventbrite.com",
-                    "jjewell55@ebay.com"))
-        ).isTrue();
+        assertThat(friendsEmails).containsAll(List.of(
+                "user2@email.com",
+                "kutting1@eventbrite.com",
+                "jjewell55@ebay.com"));
     }
 
     @Test
@@ -120,10 +118,8 @@ public class FriendsServiceTest {
                 .map(PersonRs::getEmail)
                 .collect(Collectors.toList());
 
-        assertThat(
-                recommendationsEmails.containsAll(List.of(
-                        "fdresser2n@google.com.au",
-                        "enovakovic2m@intel.com"))
-        ).isTrue();
+        assertThat(recommendationsEmails).containsAll(List.of(
+                "fdresser2n@google.com.au",
+                "enovakovic2m@intel.com"));
     }
 }

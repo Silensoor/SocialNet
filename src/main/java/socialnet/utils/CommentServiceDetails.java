@@ -25,7 +25,7 @@ public class CommentServiceDetails {
     Long id;
     Long authorId;
 
-    public CommentServiceDetails (Timestamp time,
+    public CommentServiceDetails (
                                   Long postId,
                                   Boolean isBlocked,
                                   Boolean isDeleted,
@@ -33,7 +33,7 @@ public class CommentServiceDetails {
                                   Long authorId,
                                   List<CommentRs> subComments,
                                   Integer likes) {
-        this.time = time;
+        this.time = new Timestamp(System.currentTimeMillis());
         this.postId = postId;
         this.isBlocked = isBlocked;
         this.isDeleted = isDeleted;
@@ -42,16 +42,6 @@ public class CommentServiceDetails {
         this.subComments = subComments;
         this.likes = likes;
     }
-
-//    private List<CommentRs> findSubComments(Long id) {
-//        List<Comment> comments = commentRepository.findByPostIdParentId(id);
-//        List<CommentRs> commentRsList = new ArrayList<>();
-//        for (Comment comment : comments) {
-//            CommentRs commentRs = commentMapper.toDTO(comment, commentService.getToDTODetails(postId, comment, comment.getId()));
-//            commentRsList.add(commentRs);
-//        }
-//        return commentRsList;
-//    }
 
     public CommentServiceDetails (PersonRs author, long postId) {
         this.subComments = new ArrayList<>();
