@@ -44,7 +44,7 @@ public class MessageRepository {
 
     public List<Message> findByDialogId(Long dialogId, Integer offset, Integer perPage) {
         return jdbcTemplate.query(
-                "SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false OFFSET ? LIMIT ?",
+                "SELECT * FROM messages WHERE dialog_id = ? AND is_deleted = false ORDER BY id OFFSET ? LIMIT ?",
                 messageRowMapper,
                 dialogId, offset, perPage);
     }
