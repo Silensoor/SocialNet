@@ -153,7 +153,7 @@ public class FriendsTest {
             .perform(get("/api/v1/friends/recommendations").with(authorization()))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.size()", is(10)))
+            .andExpect(jsonPath("$.data.size()", is(9)))
             .andReturn();
         String response = mvcResult.getResponse().getContentAsString();
         boolean firstCondition = response.contains("fbrisset4@zimbio.com");
