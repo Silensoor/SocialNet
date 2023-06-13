@@ -9,5 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class KafkaMessageRq {
-    private String data;
+    private long toTgId;
+    private String from;
+    private String type;
 }
