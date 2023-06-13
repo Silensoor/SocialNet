@@ -133,6 +133,8 @@ public class DialogsService {
         CommonRs<List<MessageRs>> result = new CommonRs<>();
         result.setData(messagesDto);
         result.setTotal(messageRepository.countByDialogId(dialogId));
+        result.setOffset(offset);
+        result.setPerPage(perPage);
 
         return result;
     }
