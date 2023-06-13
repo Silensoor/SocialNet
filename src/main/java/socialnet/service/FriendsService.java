@@ -171,7 +171,7 @@ public class FriendsService {
         return new ArrayList<>(
                 personRepository.findAllForFriends(
                         personsEmail.getId(),
-                        StringUtils.join(recommendedFriendsIdList, ","),
+                        StringUtils.join(recommendedFriendsIdList, ", "),
                         Math.max(RECOMMENDED_FRIENDS_COUNT - recommendationFriends.size(), 0),
                         notFriends
                 )

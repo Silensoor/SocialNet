@@ -67,7 +67,7 @@ public class PersonRepository {
                                           " p.password, p.phone, p.photo, p.reg_date, p.city," +
                                           " p.country, p.telegram_id, p.person_settings_id FROM persons AS p";
 
-    private static final String AND_NOT_ID = " AND NOT id IN(";
+    private static final String AND_NOT_ID = " AND NOT id IN (";
 
 
     public Long insert(Person person) {
@@ -346,15 +346,19 @@ public class PersonRepository {
         StringBuilder strWhere = new StringBuilder();
         if (!friends.isEmpty()) {
             strWhere.append(" (friendships.dst_person_id IN (")
-                    .append(StringUtils.join(friends, ","))
+                    .append(StringUtils.join(friends, ", "))
                     .append(") OR friendships.src_person_id IN (")
-                    .append(StringUtils.join(friends, ","))
+                    .append(StringUtils.join(friends, ", "))
                     .append("))")
                     .append(" AND NOT p.id IN (")
-                    .append(StringUtils.join(friends, ","))
-                    .append(StringUtils.join(notFriends, ","))
-                    .append(")")
-                    .append(" AND NOT p.id=")
+                    .append(StringUtils.join(friends, ", "))
+                    .append(") ");
+            if (!notFriends.isEmpty()) {
+                strWhere.append(" AND NOT p.id IN (")
+                        .append(StringUtils.join(notFriends, ", "))
+                        .append(")");
+            }
+                strWhere.append(" AND NOT p.id=")
                     .append(id);
         } else {
             strWhere.append(" NOT p.id=").append(id);
