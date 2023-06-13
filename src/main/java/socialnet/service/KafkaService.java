@@ -12,7 +12,7 @@ import socialnet.api.request.KafkaMessageRq;
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaService {
-    /*private final KafkaTemplate<String, KafkaMessageRq> kafkaTemplate;
+    private final KafkaTemplate<String, KafkaMessageRq> kafkaTemplate;
 
     @Value(value = "${spring.kafka.consumer.topic-name}")
     private String topicName;
@@ -26,6 +26,6 @@ public class KafkaService {
         groupId = "${spring.kafka.consumer.group-id}",
         containerFactory = "kafkaListenerContainerFactory")
     public void messageListener(KafkaMessageRq message) {
-        log.info("Topic [{}] Received message: {}", topicName, message.getData());
-    }*/
+        log.info("Topic [{}] Received message: {}", topicName, message.toString());
+    }
 }

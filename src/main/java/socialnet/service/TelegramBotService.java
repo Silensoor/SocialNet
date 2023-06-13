@@ -1,12 +1,10 @@
 package socialnet.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import socialnet.api.request.KafkaMessageRq;
 import socialnet.api.request.TgApiRequest;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.TgApiRs;
@@ -18,10 +16,6 @@ import socialnet.repository.TelegramBotRepository;
 import socialnet.security.jwt.JwtUtils;
 import socialnet.utils.MailSender;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +28,7 @@ public class TelegramBotService {
     private final PersonRepository personRepository;
     private final MailSender mailSender;
     private final JwtUtils jwtUtils;
-
-    @Value("${tgApi}")
-    String tgApi;
+    private final KafkaService kafkaService;
 
     private static final String TG_MAIL_REGISTER_URL = "http://81.177.6.228:8086/api/v1/tg";
 
@@ -76,41 +68,24 @@ public class TelegramBotService {
         return makeResponse("fail", "Неизвестная команда", null);
     }
 
-    public TgApiRs notificate(Notification notification) {
+    public void notificate(Notification notification) {
         try {
             Person from = personRepository.findById(notification.getEntityId());
             Long tgId = telegramBotRepository.getTelegramIdByPersonId(notification.getPersonId());
 
             if (tgId == null) {
-                return makeResponse("ok", null, "");
+                return;
             }
 
-            HttpClient httpClient = HttpClient.newHttpClient();
-
-            Map<String, String> map = new HashMap<>();
-            map.put("from", from.getFirstName() + " " + from.getLastName());
-            map.put("type", notification.getNotificationType());
-
-            TgApiRequest request = TgApiRequest.builder()
-                .id(tgId)
-                .command("/notificate")
-                .data(new JSONObject(map).toString())
-                .build();
-
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String content = ow.writeValueAsString(request);
-
-            HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(tgApi))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(content))
-                .build();
-
-            httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString());
+            kafkaService.sendMessage(KafkaMessageRq.builder()
+                .toTgId(tgId)
+                .from(from.getFirstName() + " " + from.getLastName())
+                .type(notification.getNotificationType())
+                .build()
+            );
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-
-        return makeResponse("ok", null, "");
     }
 
     private TgApiRs handleMessagesCommand(TgApiRequest request) {
