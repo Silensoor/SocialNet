@@ -15,7 +15,11 @@ import socialnet.utils.Reflection;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+
 import java.util.Objects;
+
+
+
 
 @Repository
 @RequiredArgsConstructor
@@ -192,9 +196,13 @@ public class PersonRepository {
                                          String first_name, String last_name,
                                          Integer offset, Integer perPage) {
         try {
+
             return this.jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
                     offset, perPage), personRowMapper);
-        } catch (EmptyResultDataAccessException ignored) {
+
+
+            return null;
+    } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
@@ -235,7 +243,12 @@ public class PersonRepository {
                             author.substring(author.indexOf(" "))},
                     new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null)).getId();
         } catch (EmptyResultDataAccessException ignored) {
+
+    public Long findPersonsName(String nameFirst, String nameLast) {
+
+
             return null;
-        }
+
+
     }
 }
