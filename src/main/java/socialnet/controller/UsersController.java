@@ -49,9 +49,8 @@ public class UsersController {
                                                 @RequestParam(required = false, defaultValue = "20")
                                                 Integer perPage) {
 
-        return findService.findPersons(
-                new Object[]{authorization, age_from, age_to, city, country, first_name, last_name, offset, perPage}
-        );
+        return findService.findPersons(authorization, age_from, age_to, city, country, first_name, last_name,
+                offset, perPage);
     }
 
     @PutMapping("/me")
