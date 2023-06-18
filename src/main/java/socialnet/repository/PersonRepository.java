@@ -16,6 +16,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+
+
+import java.util.Objects;
+
+
+
+
 @Repository
 @RequiredArgsConstructor
 public class PersonRepository {
@@ -70,11 +77,24 @@ public class PersonRepository {
 
     public Person findByTelegramId(long telegramId) {
         try {
+
             return jdbcTemplate.queryForObject(
                 "SELECT * FROM persons WHERE telegram_id = ?",
                 personRowMapper,
                 telegramId
             );
+
+
+            List<Person> personList = jdbcTemplate.query("SELECT * FROM persons WHERE id = ?",
+                    new Object[]{personId}, new BeanPropertyRowMapper<>(Person.class));
+            if (personList.isEmpty()) throw new PostException("Person с id " + personId + " не существует");
+
+            List<Person> personList = jdbcTemplate.query("SELECT * FROM persons WHERE is_deleted=false AND id = ?",
+                    new Object[]{authorId}, new BeanPropertyRowMapper<>(Person.class));
+            if (personList.isEmpty()) throw new PostException("Person с id " + authorId + " не существует");
+
+            return personList.get(0);
+
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -97,6 +117,7 @@ public class PersonRepository {
         }
     }
 
+
     public List<Person> findFriendsAll(Long id, Integer offset, Integer perPage) {
         try {
             return jdbcTemplate.query("SELECT DISTINCT p.id, p.about, p.birth_date," +
@@ -111,10 +132,16 @@ public class PersonRepository {
                             " friendships.status_name='FRIEND' AND NOT p.id=? ORDER BY p.last_online_time DESC" +
                             " OFFSET ? LIMIT ?",
                     personRowMapper, id, id, id, offset, perPage);
+
+    public List<Person> findFriendsAll(List<Long> friendsId) {
+        try {
+            return this.jdbcTemplate.query(friendsIdStringMethod(friendsId), personRowMapper);
+
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
+
 
     public List<Person> findAllOutgoingRequests(Long id, Integer offset, Integer perPage) {
         try {
@@ -132,10 +159,22 @@ public class PersonRepository {
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
+
+    private String friendsIdStringMethod(List<Long> friendsId) {
+        StringBuilder friendsIdString = new StringBuilder("SELECT * FROM persons WHERE is_deleted=false AND id IN (");
+        for (int i = 0; i < friendsId.size(); i++)
+            if (i < friendsId.size() - 1) {
+                friendsIdString.append(friendsId.get(i)).append(", ");
+            } else {
+                friendsIdString.append(friendsId.get(i)).append(")");
+            }
+        return friendsIdString.toString();
+
     }
 
     public Integer findAllOutgoingRequestsAll(Long id) {
         try {
+
             return jdbcTemplate.queryForObject("SELECT DISTINCT COUNT(p.id) FROM persons AS p JOIN" +
                             " friendships ON friendships.dst_person_id=p.id OR friendships.src_person_id=p.id" +
                             " WHERE is_deleted = false AND status_name = 'REQUEST' AND src_person_id = ? AND NOT p.id=?",
@@ -153,6 +192,18 @@ public class PersonRepository {
                             " (friendships.dst_person_id=? OR friendships.src_person_id=?)" +
                             " AND friendships.status_name='FRIEND'  AND NOT persons.id=?",
                     Integer.class, id, id, id);
+
+
+            return this.jdbcTemplate.queryForObject(
+                    "SELECT * FROM persons WHERE email = ?",
+                    new Object[]{email},
+                    personRowMapper
+            );
+
+            return this.jdbcTemplate.queryForObject("SELECT * FROM persons WHERE email = ?",
+                    new Object[]{email}, personRowMapper);
+
+
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
@@ -161,9 +212,15 @@ public class PersonRepository {
     public List<Person> findByCity(String city) {
         try {
             return this.jdbcTemplate.query(
+
                     "SELECT * FROM persons WHERE city = ?",
                     new Object[]{city},
                     personRowMapper
+
+                "SELECT * FROM persons WHERE is_deleted=false AND city = ?",
+                new Object[] { city },
+                personRowMapper
+
             );
         } catch (EmptyResultDataAccessException ignored) {
             return null;
@@ -237,6 +294,7 @@ public class PersonRepository {
                 (Object[]) sqlParam.get("values"));
     }
 
+
     public List<Person> findPersonsQuery(Integer age_from,
                                          Integer age_to, String city, String country,
                                          String first_name, String last_name,
@@ -244,10 +302,34 @@ public class PersonRepository {
         try {
             return jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
                     flagQueryAll, id), personRowMapper, offset, perPage);
+
+
+
+    public List<Person> findPersonsQuery(Object[] args) {
+        String sql = createSqlPerson(args);
+
+    public List<Person> findPersonsQuery(Integer age_from,
+                                         Integer age_to, String city, String country,
+                                         String first_name, String last_name,
+                                         Integer offset, Integer perPage) {
+
+        try {
+
+            return this.jdbcTemplate.query(createSqlPerson(age_from, age_to, city, country, first_name, last_name,
+                    offset, perPage), personRowMapper);
+
+
+            return null;
+    } catch (EmptyResultDataAccessException ignored) {
+            return null;
+
+
         } catch (EmptyResultDataAccessException ignored) {
             return null;
+
         }
     }
+
 
     public Integer findPersonsQueryAll(Integer age_from, Integer age_to, String city, String country,
                                        String first_name, String last_name, Boolean flagQueryAll, Integer id) {
@@ -290,6 +372,27 @@ public class PersonRepository {
         } else {
             return sql;
         }
+
+    private String createSqlPerson(Integer age_from, Integer age_to, String city, String country,
+                                   String first_name, String last_name, Integer offset, Integer perPage) {
+        StringBuilder str = new StringBuilder();
+        String sql;
+        str.append("SELECT * FROM persons WHERE is_deleted=false AND ");
+        val ageFrom = searchDate(age_from);
+        val ageTo = searchDate(age_to);
+        str.append(age_from > 0 ? " birth_date < '" + ageFrom + "' AND " : "");
+        str.append(age_to > 0 ? " birth_date > '" + ageTo + "' AND " : "");
+        str.append(city.equals("") ? " city = '" + city + "' AND " : "");
+        str.append(country.equals("") ? " country = '" + country + "' AND " : "");
+        str.append(first_name.equals("") ? " first_name = '" + first_name + "' AND " : "");
+        str.append(last_name.equals("") ? " last_name = '" + last_name + "' AND " : "");
+        if (str.substring(str.length() - 5).equals(" AND ")) {
+            sql = str.substring(0, str.length() - 5);
+        } else {
+            sql = str.toString();
+        }
+        return sql + " OFFSET " + offset + " LIMIT " + perPage;
+
     }
 
     private Timestamp searchDate(Integer age) {
@@ -299,15 +402,42 @@ public class PersonRepository {
     }
 
 
+
     public Person findPersonsName(String author) {
         try {
             return jdbcTemplate.queryForObject("SELECT * FROM persons" +
                             " WHERE is_deleted=false AND lower (first_name) = ? AND lower (last_name) = ?",
                     personRowMapper, author.substring(0, author.indexOf(" ")).toLowerCase(),
                     author.substring(author.indexOf(" ") + 1).toLowerCase());
-        } catch (EmptyResultDataAccessException ignored) {
+
+    public Long findPersonsName(String author) {
+        try {
+
+//            DSLContext dsl = DSL.using((Connection) jdbcTemplate.getDataSource());
+//            final Result<Record> person = dsl.select()
+//                    .from(table("persons"))
+//                    .where(field("first_name").eq(nameFirst)
+//                            .and(field("last_name").eq(nameLast)))
+//                    .fetch();
+//            return  (Long) person.get(1).get("id");
             return null;
-        }
+
+        } catch (EmptyResultDataAccessException ignored) {
+
+            return Objects.requireNonNull(this.jdbcTemplate.query("SELECT * FROM persons" +
+                            " WHERE is_deleted=false AND first_name = ? AND last_name = ?",
+                    new Object[]{author.substring(0, author.indexOf(" ")),
+                            author.substring(author.indexOf(" "))},
+                    new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null)).getId();
+        } catch (EmptyResultDataAccessException ignored) {
+
+    public Long findPersonsName(String nameFirst, String nameLast) {
+
+
+
+            return null;
+
+
     }
 
     public void updateOnlineStatus(Long personId, String status) {

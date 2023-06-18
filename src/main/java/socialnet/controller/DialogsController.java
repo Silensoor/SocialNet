@@ -40,12 +40,19 @@ public class DialogsController {
         return dialogs;
     }
 
+
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "get count of unread messages")
     public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
         return dialogsService.getUnreadedMessages(authorization);
     }
+
+//    @GetMapping(value = "/dialogs/unreaded", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public CommonRs<ComplexRs> getUnreadedMessages(@RequestHeader String authorization) {
+//        return dialogsService.getUnreadedMessages(authorization);
+//    }
+
 
     @OnlineStatusUpdatable
     @GetMapping(value = "/dialogs/{dialogId}/messages", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -7,6 +7,7 @@ import socialnet.model.Tag;
 import socialnet.repository.Post2TagRepository;
 import socialnet.repository.TagRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service

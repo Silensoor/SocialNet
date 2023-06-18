@@ -16,6 +16,19 @@ public class FriendsShipsRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+
+
+    public List<Friendships> findAllFriendships(Long id) {
+        try {
+            return this.jdbcTemplate.query("SELECT * FROM friendships" +
+                            " WHERE status_name = 'FRIEND' AND (dst_person_id = ? OR src_person_id = ?)",
+                    new Object[]{id, id}, friendshipsRowMapper);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
+    }
+
+
     private final RowMapper<Friendships> friendshipsRowMapper = (resultSet, rowNum) -> {
         Friendships friendships = new Friendships();
         friendships.setId(resultSet.getLong("id"));
