@@ -11,15 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommonRs<T> {
     private T data;
-
     private Integer itemPerPage;
-
     private Integer offset;
-
     private Integer perPage;
-
     private Long timestamp;
-
     private Long total;
 
     public CommonRs(T data, Long timestamp) {
@@ -28,10 +23,11 @@ public class CommonRs<T> {
     }
 
     public CommonRs(T data) {
+
         this.data = data;
-        this.itemPerPage = 20;
+        this.itemPerPage = 0;
         this.offset = 0;
-        this.perPage = 20;
+        this.perPage = 0;
         this.timestamp = System.currentTimeMillis();
         this.total = 0L;
     }

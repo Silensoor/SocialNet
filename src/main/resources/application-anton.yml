@@ -1,23 +1,8 @@
-server:
-  port: 8086
 spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  liquibase:
-    enabled: false
   datasource:
-    driver-class-name: org.postgresql.Driver
     username: postgres
     password: 85778577
     url: jdbc:postgresql://localhost:5432/test
-auth:
-  secret: socialNet
-  timeLive: 216000
-s3:
-  accessKey: YCAJE83YiyNT766OLADHNeObE
-  secretKey: YCMxows8B0JbmMtTWNcbdv3EtYq0TAO0i2minApz
-  bucket: socnet37
-weather:
-  apiKey: 3d29686077f7a60e5b5714b659a688dd
-schedules:
-  deleteOldCaptchasInterval: 0 0 0 * * *
+

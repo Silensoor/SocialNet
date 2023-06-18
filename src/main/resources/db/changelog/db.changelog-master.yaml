@@ -20,52 +20,33 @@ databaseChangeLog:
   - include:
       file: db/changelog/changelogset/create-dialogs-table.yaml
   - include:
-      file: db/changelog/changelogset/create-friendships-table.yaml
-  - include:
       file: db/changelog/changelogset/create-notifications-table.yaml
-  - include:
-      file: db/changelog/changelogset/create-cities-table.yaml
-  - include:
-      file: db/changelog/changelogset/create-countries-table.yaml
-  - include:
-      file: db/changelog/changelogset/create-personal_settings-table.yaml
-  - include:
-      file: db/changelog/changelogset/create-weather-table.yaml
   - include:
       file: db/changelog/changelogset/create-currencies-table.yaml
   - include:
       file: db/changelog/changelogset/create-captha-table.yaml
   - include:
-      file: db/changelog/changelogset/create-fk-constraints.yaml
+      file: db/changelog/changelogset/create-cities-table.yaml
   - include:
-      file: db/changelog/changelogset/add-constrains-persons-table.yaml
+      file: db/changelog/changelogset/create-storage-table.yaml
   - include:
-      file: db/changelog/changelogset/add-constraints.yaml
+      file: db/changelog/changelogset/create_countries_table.yaml
   - include:
-      file: db/changelog/changelogset/correct-fk_dialogs-message.yaml
+      file: db/changelog/changelogset/insert-into-countries-data.sql
   - include:
-      file: db/changelog/changelogset/delete-fk_dialogs-message.yaml
+      file: db/changelog/changelogset/insert-into-cities-data.sql
   - include:
-      file: db/changelog/changelogset/add_table_for_person_settings.yaml
+      file: db/changelog/changelogset/update-cities-russian_cities.sql
   - include:
-      file: db/changelog/changelogset/delete-FriendsCountryCity.yaml
+      file: db/changelog/changelogset/create-weather-table.yaml
   - include:
-      file: db/changelog/changelogset/create-FriendsCountryCity-table.yaml
+      file: db/changelog/changelogset/create-persons-settings-table.yaml
   - include:
-      file: db/changelog/changelogset/populate-database.yaml
+      file: db/changelog/changelogset/create-friendships-table.yaml
   - include:
-      file: db/changelog/changelogset/populate-databaseFriendsCountryCity.yaml
+      file: db/changelog/changelogset/add-fk-constraints.yaml
   - include:
-      file: db/changelog/changelogset/m-cities-table-modify.yaml
+      file: db/changelog/changelogset/add-notnull-constraints.yaml
   - include:
-      file: db/changelog/changelogset/m-cities-table-trigger.sql
-  - include:
-      file: db/changelog/changelogset/m-storage-table.sql
-  - include:
-      file: db/changelog/changelogset/m-storage-table-modify.sql
-  - include:
-      file: db/changelog/changelogset/m-countries-table-modify.sql
-  - include:
-      file: db/changelog/changelogset/m-ru-cities-adding.sql
-
+      file: db/changelog/changelogset/city-international-rus.sql
 

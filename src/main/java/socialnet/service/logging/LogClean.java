@@ -16,17 +16,15 @@ import java.util.HashMap;
 
 public class LogClean {
 
-    private final AuthCloud authCloud = new AuthCloud();
-
-    public void deleteOldLogs() throws IOException, ParseException {
+    public void deleteOldLogs(String yandexToken) throws IOException, ParseException {
 
         Integer afterDayDelete = 14;
-        HashMap<String, Date> logs = getListLogsFiles();
-        cleanLogs(logs, afterDayDelete);
+        HashMap<String, Date> logs = getListLogsFiles(yandexToken);
+        cleanLogs(logs, afterDayDelete, yandexToken);
 
     }
 
-    public HashMap<String, Date> getListLogsFiles() throws IOException, ParseException {
+    public HashMap<String, Date> getListLogsFiles(String yandexToken) throws IOException, ParseException {
 
         HashMap<String, Date> logsList = new HashMap<>();
 
@@ -34,7 +32,7 @@ public class LogClean {
                 "media_type=compressed&limit=1000");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        con.setRequestProperty("Authorization", authCloud.getYandexToken());
+        con.setRequestProperty("Authorization", yandexToken);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -70,7 +68,7 @@ public class LogClean {
         return date;
     }
 
-    public void cleanLogs(HashMap<String, Date> logs, Integer afterDayDelete) throws IOException {
+    public void cleanLogs(HashMap<String, Date> logs, Integer afterDayDelete,String yandexToken) throws IOException {
 
         Date today = new Date(System.currentTimeMillis());
         Calendar deleteData = Calendar.getInstance();
@@ -83,16 +81,16 @@ public class LogClean {
             logCal.setTime(date);
 
             if (logCal.getTime().before(deleteData.getTime())) {
-                delete(path);
+                delete(path,yandexToken);
             }
         }
     }
 
-    public void delete(String path) throws IOException {
+    public void delete(String path,String yandexToken) throws IOException {
         URL url = new URL("https://cloud-api.yandex.net/v1/disk/resources?path=" + path + "&permanently=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("DELETE");
-        con.setRequestProperty("Authorization", authCloud.getYandexToken());
+        con.setRequestProperty("Authorization", yandexToken);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
