@@ -1,15 +1,13 @@
 package socialnet.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import socialnet.api.request.LikeRq;
 import socialnet.api.response.CommonRs;
 import socialnet.api.response.LikeRs;
 import socialnet.service.LikesService;
-@Controller
+
+@RestController
 @RequiredArgsConstructor
 public class LikesController {
 
@@ -17,26 +15,28 @@ public class LikesController {
 
     @GetMapping("/api/v1/likes")
     public CommonRs<LikeRs> getLikes(
-            @RequestHeader(name = "authorization") String jwtToken,
-            @RequestParam(name = "item_id") Integer itemId,
-            @RequestParam String type){
-        return likesService.getLikes(jwtToken, itemId, type);
-    }
-    @PutMapping("/api/v1/likes")
-    public ResponseEntity<CommonRs<LikeRs>> putLike(
-            @RequestHeader(name = "authorization") String jwtToken,
-            @RequestBody LikeRq likeRq) {
-        return new ResponseEntity<>(likesService.putLike(jwtToken, likeRq), HttpStatus.OK);
-    }
-    @DeleteMapping("/api/v1/likes")
-    public ResponseEntity<CommonRs<LikeRs>> deleteLike(
-            @RequestHeader(name = "authorization") String jwtToken,
+            @RequestHeader String authorization,
             @RequestParam(name = "item_id") Integer itemId,
             @RequestParam String type) {
-        return new ResponseEntity<>(likesService.deleteLike(jwtToken, itemId, type), HttpStatus.OK);
 
+        return likesService.getLikes(authorization, itemId, type);
     }
 
+    @PutMapping("/api/v1/likes")
+    public CommonRs<LikeRs> putLike(
+            @RequestHeader String authorization,
+            @RequestBody LikeRq likeRq) {
 
+        return likesService.putLike(authorization, likeRq);
+    }
 
+    @DeleteMapping("/api/v1/likes")
+    public CommonRs<LikeRs> deleteLike(
+            @RequestHeader String authorization,
+            @RequestParam(name = "item_id") Integer itemId,
+            @RequestParam String type) {
+
+        return likesService.deleteLike(authorization, itemId, type);
+
+    }
 }

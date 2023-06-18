@@ -55,3 +55,17 @@ databaseChangeLog:
       file: db/changelog/changelogset/populate-database.yaml
   - include:
       file: db/changelog/changelogset/populate-databaseFriendsCountryCity.yaml
+  - include:
+      file: db/changelog/changelogset/m-cities-table-modify.yaml
+  - include:
+      file: db/changelog/changelogset/m-cities-table-trigger.sql
+  - include:
+      file: db/changelog/changelogset/m-storage-table.sql
+  - include:
+      file: db/changelog/changelogset/m-storage-table-modify.sql
+  - include:
+      file: db/changelog/changelogset/m-countries-table-modify.sql
+  - include:
+      file: db/changelog/changelogset/m-ru-cities-adding.sql
+
+

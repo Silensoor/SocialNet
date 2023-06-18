@@ -1,6 +1,7 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -25,10 +26,14 @@ public class MessageRepository {
             .build();
 
     public Message findLastMessageByDialogId(Long dialogId) {
-        return jdbcTemplate.queryForObject(
-                        "SELECT * FROM messages WHERE dialog_id = ? ORDER BY time DESC LIMIT 1;",
-                        messageRowMapper,
-                        dialogId);
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM messages WHERE dialog_id = ? ORDER BY time DESC LIMIT 1",
+                    messageRowMapper,
+                    dialogId);
+        } catch (EmptyResultDataAccessException ignored) {
+            return null;
+        }
     }
 
     public List<Message> findByDialogId(Long dialogId, Integer itemPerPage) {
@@ -62,13 +67,13 @@ public class MessageRepository {
 
     public int save(Message message) {
         return jdbcTemplate.update("INSERT INTO messages (is_deleted, " +
-                            "message_text, " +
-                            "read_status, " +
-                            "time, " +
-                            "dialog_id, " +
-                            "author_id, " +
-                            "recipient_id) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                   "message_text, " +
+                                   "read_status, " +
+                                   "time, " +
+                                   "dialog_id, " +
+                                   "author_id, " +
+                                   "recipient_id) " +
+                                   "VALUES (?, ?, ?, ?, ?, ?, ?)",
                 message.getIsDeleted(),
                 message.getMessageText(),
                 message.getReadStatus(),
@@ -80,5 +85,9 @@ public class MessageRepository {
 
     public void markDeleted(Long messageId, Boolean isDeletedState) {
         jdbcTemplate.update("UPDATE messages SET is_deleted = ? WHERE id = ?", isDeletedState, messageId);
+    }
+
+    public Integer updateTextById(String text, Long messageId) {
+        return jdbcTemplate.update("UPDATE messages SET message_text = ? WHERE id = ?", text, messageId);
     }
 }

@@ -10,6 +10,7 @@ import socialnet.mappers.PersonMapper;
 import socialnet.model.Dialog;
 import socialnet.model.Message;
 import socialnet.model.Person;
+import socialnet.model.enums.MessageReadStatus;
 import socialnet.repository.DialogsRepository;
 import socialnet.repository.MessageRepository;
 import socialnet.repository.PersonRepository;
@@ -31,21 +32,24 @@ public class DialogsService {
     public CommonRs<List<DialogRs>> getDialogs(String token) {
         String userEmail = jwtUtils.getUserEmail(token);
         Person person = personRepository.getPersonByEmail(userEmail);
-        List<Dialog> dialogsModelAuthor = dialogsRepository.findByAuthorId(person.getId());
-        List<Dialog> dialogsModelRecipient = dialogsRepository.findByRecipientId(person.getId());
+        List<Dialog> ownDialogs = dialogsRepository.findByAuthorId(person.getId());
+        List<Dialog> companionDialogs = dialogsRepository.findByRecipientId(person.getId());
         List<Dialog> dialogsModelAll = new ArrayList<>();
-        dialogsModelAll.addAll(dialogsModelAuthor);
-        dialogsModelAll.addAll(dialogsModelRecipient);
+        dialogsModelAll.addAll(ownDialogs);
+        dialogsModelAll.addAll(companionDialogs);
         List<DialogRs> dialogList = new ArrayList<>();
         for (Dialog dialog : dialogsModelAll) {
             DialogRs dialogRs = DialogMapper.INSTANCE.toDTO(dialog);
             Message lastMessage = messageRepository.findLastMessageByDialogId(dialog.getId());
+            if (lastMessage == null) {
+                continue;
+            }
             MessageRs messageRs = MessageMapper.INSTANCE.toDTO(lastMessage);
-            dialogRs.setLastMessage(messageRs);
-            dialogRs.setReadStatus(lastMessage.getReadStatus());
             PersonRs recipient = PersonMapper.INSTANCE.toDTO(personRepository.findById(lastMessage.getRecipientId()));
             messageRs.setRecipient(recipient);
-            dialogRs.setUnreadCount(messageRepository.findCountByDialogIdAndReadStatus(dialog.getId(), "UNREAD"));
+            dialogRs.setLastMessage(messageRs);
+            dialogRs.setReadStatus(lastMessage.getReadStatus());
+            dialogRs.setUnreadCount(messageRepository.findCountByDialogIdAndReadStatus(dialog.getId(), MessageReadStatus.UNREAD.name()));
             dialogList.add(dialogRs);
         }
 
@@ -60,15 +64,13 @@ public class DialogsService {
     public CommonRs<ComplexRs> getUnreadedMessages(String token) {
         String userEmail = jwtUtils.getUserEmail(token);
         Person person = personRepository.getPersonByEmail(userEmail);
-        Message message = messageRepository.findByAuthorId(person.getId());
-        CommonRs<ComplexRs> result = new CommonRs<>();
+        long count = messageRepository.findCountByAuthorIdAndReadStatus(person.getId(), MessageReadStatus.UNREAD.name());
+
         ComplexRs complexRs = new ComplexRs();
-        complexRs.setMessageId(message.getId());
-        complexRs.setMessage(message.getMessageText());
-        long count = messageRepository.findCountByAuthorIdAndReadStatus(person.getId(), "UNREAD");
         complexRs.setCount(count);
+
+        CommonRs<ComplexRs> result = new CommonRs<>();
         result.setData(complexRs);
-        result.setTotal(count);
         result.setTimestamp(System.currentTimeMillis());
 
         return result;

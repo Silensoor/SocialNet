@@ -31,10 +31,8 @@ public class PostService {
     private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
     private final JwtUtils jwtUtils;
-    private final PostCommentRepository postCommentRepository;
     private final PostsMapper postsMapper;
     private final PostCommentMapper postCommentMapper;
-    private final TagService tagService;
 
     public CommonRs<List<PostRs>> getAllPosts(Integer offset, Integer perPage) {
         List<Post> posts = postRepository.findAll();
@@ -237,7 +235,7 @@ public class PostService {
     }
 
     @Scheduled(cron = "0 0 1 * * *")
-    private void hardDeletingPosts() {
+    protected void hardDeletingPosts() {
         List<Post> deletingPosts = postRepository.findDeletedPosts();
         postRepository.deleteAll(deletingPosts);
         List<Tag> tags = new ArrayList<>();
@@ -248,6 +246,20 @@ public class PostService {
         }
         tagRepository.deleteAll(tags);
         likeRepository.deleteAll(likes);
+    }
+
+    public CommonRs<List<PostRs>> getFeedsByAuthorId(Long id, String jwtToken, Integer offset, Integer perPage) {
+        List<Post> postList = postRepository.findPostsByUserId(id);
+        postList.sort(Comparator.comparing(Post::getTime).reversed());
+        List<PostRs> postRsList = new ArrayList<>();
+        for (Post post : postList) {
+            int postId = post.getId().intValue();
+            Details details = getDetails(post.getAuthorId(), postId, jwtToken);
+            PostRs postRs = postsMapper.toRs(post, details);
+            postRsList.add(postRs);
+        }
+        int itemPerPage = offset / perPage;
+        return new CommonRs<>(postRsList, itemPerPage, offset, perPage, System.currentTimeMillis(), (long) postRsList.size());
     }
 
     @Data
