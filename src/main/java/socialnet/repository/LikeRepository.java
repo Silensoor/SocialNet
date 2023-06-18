@@ -1,8 +1,9 @@
 package socialnet.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import socialnet.model.Like;
@@ -22,8 +23,12 @@ public class LikeRepository {
     }
 
     public List<Like> getLikesByEntityId(long postId) {
-        String select = "SELECT * FROM likes WHERE entity_id = " + postId;
-        return jdbcTemplate.query(select, new BeanPropertyRowMapper<>(Like.class));
+        String select = "SELECT * FROM likes WHERE entity_id = ?";
+        try {
+            return jdbcTemplate.query(select, likeRowMapper, postId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 
     public Integer save(Like like) {
@@ -58,5 +63,23 @@ public class LikeRepository {
                         "  and ((entity_id = ?) and (person_id = ?)) \n",
                 new Object[]{type, entityId, personId},
                 Boolean.class);
+    }
+
+    private final RowMapper<Like> likeRowMapper = (rs, rowNum) -> {
+        Like like = new Like();
+        like.setId(rs.getLong("id"));
+        like.setType(rs.getString("type"));
+        like.setEntityId(rs.getLong("entity_id"));
+        like.setTime(rs.getTimestamp("time"));
+        like.setPersonId(rs.getLong("person_id"));
+        return like;
+    };
+
+    public Integer findAllLike(){
+        try {
+            return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM likes", Integer.class);
+        } catch (EmptyResultDataAccessException ignored){
+            return null;
+        }
     }
 }

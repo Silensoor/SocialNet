@@ -2,20 +2,24 @@ package socialnet.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.factory.Mappers;
 import socialnet.api.request.UserRq;
 import socialnet.api.request.UserUpdateDto;
-import socialnet.utils.Converter;
+
+import java.sql.Timestamp;
 
 @Mapper(componentModel = "spring")
-public abstract class UserDtoMapper {
-    @Autowired
-    protected Converter converter;
-    @Mappings({
-            @Mapping(target = "birthDate", expression = "java(converter.dateToTimeStamp(userRq.getBirthDate()))"),
-            @Mapping(target = "photo", source = "photoId")
-            //@Mapping(target = "photo", expression = "java(converter.checkPhotoId(userRq.getPhotoId()))")
-    })
-    public abstract UserUpdateDto toDto(UserRq userRq);
+public interface UserDtoMapper {
+
+    UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
+
+    @Mapping(expression = "java(dateToTimeStamp(userRq.getBirthDate()))", target = "birthDate")
+    @Mapping(source = "photoId", target = "photo")
+    UserUpdateDto toDto(UserRq userRq);
+
+    default Timestamp dateToTimeStamp(String dateStr) {
+        if (dateStr == null) return null;
+        dateStr = dateStr.substring(0,19).replace("T"," ");
+        return Timestamp.valueOf(dateStr);
+    }
 }

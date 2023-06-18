@@ -11,6 +11,7 @@ import socialnet.repository.DialogsRepository;
 import socialnet.repository.MessageRepository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
@@ -20,27 +21,30 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final DialogsRepository dialogsRepository;
 
-    public MessageWs processMessage(Long dialogId, MessageWs message) {
+    public MessageWs processMessage(Long dialogId, MessageWs messageWebSocket) {
         Dialog dialog = dialogsRepository.findByDialogId(dialogId);
+        dialog.setLastActiveTime(Timestamp.valueOf(LocalDateTime.now()));
         long recipientId;
-        if (Objects.equals(message.getAuthorId(), dialog.getFirstPersonId())) {
+        if (Objects.equals(messageWebSocket.getAuthorId(), dialog.getFirstPersonId())) {
             recipientId = dialog.getSecondPersonId();
         } else {
             recipientId = dialog.getFirstPersonId();
         }
-        message.setRecipientId(recipientId);
-        Message messageModel = Message.builder()
+        messageWebSocket.setRecipientId(recipientId);
+        Message message = Message.builder()
                 .isDeleted(false)
-                .messageText(message.getMessageText())
-                .readStatus(message.getReadStatus())
-                .time(new Timestamp(message.getTime()))
-                .dialogId(message.getDialogId())
-                .authorId(message.getAuthorId())
-                .recipientId(message.getRecipientId())
+                .messageText(messageWebSocket.getMessageText())
+                .readStatus(messageWebSocket.getReadStatus())
+                .time(new Timestamp(messageWebSocket.getTime()))
+                .dialogId(messageWebSocket.getDialogId())
+                .authorId(messageWebSocket.getAuthorId())
+                .recipientId(messageWebSocket.getRecipientId())
                 .build();
-        messageRepository.save(messageModel);
+        long savedMessageId = messageRepository.save(message);
+        dialog.setLastMessageId(savedMessageId);
+        dialogsRepository.update(dialog);
 
-        return message;
+        return messageWebSocket;
     }
 
     public void deleteMessages(MessageCommonWs messageCommonWs) {
