@@ -52,9 +52,8 @@ public class Post2TagRepository {
             } catch (EmptyResultDataAccessException ignored) {
                 return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     private final RowMapper<Post2Tag> post2TagRowMapper = (resultSet, rowNum) -> {

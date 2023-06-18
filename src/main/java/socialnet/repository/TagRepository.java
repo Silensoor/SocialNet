@@ -66,22 +66,25 @@ public class TagRepository {
 
     public List<Tag> getTagsByQuery(String[] tags) {
         StringBuilder sql = new StringBuilder("SELECT * FROM tags WHERE");
-        for(Object tag : tags){
-            if (tag != "" && tag != null) {
-                sql.append(" tag = '").append(tag).append("' AND ");
-            }
+        for (Object tag : tags) {
+            sql.append(" tag = '").append(tag).append("' AND ");
         }
-        if (sql.substring(sql.length() - 5).equals(" AND ")){
+        if (sql.substring(sql.length() - 5).equals(" AND ")) {
             sql = new StringBuilder(sql.substring(0, sql.length() - 5));
         }
         if (!sql.toString().equals("SELECT * FROM tags WHERE")) {
-            return this.jdbcTemplate.query(sql.toString(), tagRowMapper);
-        } else {
-            return null;
+            try {
+                return this.jdbcTemplate.query(sql.toString(), tagRowMapper);
+            } catch (EmptyResultDataAccessException ignored) {
+                return null;
+            }
         }
+        return null;
     }
+
 
     public Integer getAllTags() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tags", Integer.class);
     }
+
 }

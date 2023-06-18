@@ -6,17 +6,27 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+
 import socialnet.model.Post;
+import socialnet.exception.PostException;
+import socialnet.model.Post;
+import socialnet.model.Post2Tag;
+
 import socialnet.service.TagService;
 
 import java.sql.Timestamp;
 import java.util.*;
+
+
+
 
 @RequiredArgsConstructor
 @Repository
 public class PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final TagService tagService;
+
     private final TagService tagService;
 
     public List<Post> findAll() {
@@ -136,10 +146,18 @@ public class PostRepository {
         try {
             return jdbcTemplate.queryForObject(createSqlPost(authorId, dateFrom, dateTo, text, tags, flagQueryAll),
                     Integer.class);
+
+    public List<Post> findPostStringSql(String author, Long dateFrom, Long dateTo,
+                                        String text, Integer limit, Integer offset, String[] tags) {
+        try {
+            return jdbcTemplate.queryForList(createSqlPost(author, dateFrom, dateTo, text, limit, offset, tags),
+                    Post.class);
+
         } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
+
 
     private String createSqlPost(Integer authorId, Long dateFrom, Long dateTo,
                                  String text, String[] tags, Boolean flagQueryAll) {
@@ -166,6 +184,23 @@ public class PostRepository {
             text = "\"";
         }
         sql.append(!text.equals("") ? " lower (post_text) LIKE '%" + text.toLowerCase() + "%'" : "");
+
+    private String createSqlPost(String author, Long dateFrom, Long dateTo, String text,
+                                 Integer limit, Integer offset, String[] tags) {
+        String post2TagList = "";
+        if (tags != null) {
+            post2TagList = tagService.getPostByQueryTags(tags);
+        }
+        String sql = "SELECT * FROM posts JOIN post2tag ON posts.id=post2tag.post_id WHERE is_deleted = false ";
+        if (author.trim().indexOf(" ") > 0) {
+            final Long personId = personRepository.findPersonsName(author);
+            sql = sql + (personId != null ? " author_id = " + personId + " AND " : "");
+        }
+        sql = sql + (dateFrom > 0 ? " time > '" + parseDate(dateFrom) + "' AND " : "");
+        sql = sql + (dateTo > 0 ? " time < '" + parseDate(dateTo) + "' AND " : "");
+        sql = sql + (!text.equals("") ? " post_text LIKE '%" + text + "%' AND " : "");
+        sql = sql + (post2TagList != "" ? " post2tag.tag_id IN (" + post2TagList + ")" : "");
+
         String str = sql.substring(sql.length() - 5);
         String sql1;
         if (str.equals(" AND ")) {
@@ -178,12 +213,17 @@ public class PostRepository {
         } else {
             return sql1 + " ORDER BY posts.time DESC OFFSET ? LIMIT ?";
         }
+
+
+        return sql + " OFFSET " + offset + " LIMIT " + limit + " ORDER BY time DESC";
+
     }
 
     private Timestamp parseDate(Long str) {
         Date date = new Date(str);
         return new Timestamp(date.getTime());
     }
+
 
     private final RowMapper<Post> postRowMapper = (resultSet, rowNum) -> {
         Post post = new Post();
@@ -203,4 +243,38 @@ public class PostRepository {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM posts WHERE author_id = ?",
                 Integer.class, userId);
     }
+//    public List<Post> findPostStringSql2(List<Post2Tag> post2TagList) {
+//        String sql2 = createSqlPost2Tag(post2TagList);
+//        if (sql2 != null) {
+//            try {
+//                return jdbcTemplate.queryForList(sql2, Post.class);
+//            } catch (EmptyResultDataAccessException ignored) {
+//                return null;
+//            }
+//        } else {
+//            return null;
+//        }
+//    }
+//
+//
+//    private String createSqlPost2Tag(List<Post2Tag> post2TagList) {
+//        StringBuilder sql = new StringBuilder(" ");
+//        if (post2TagList != null && !post2TagList.isEmpty()) {
+//            for (Post2Tag post2Tag : post2TagList) {
+//                if (post2Tag.getPostId() != 0) {
+//                    sql.append(" Id = ").append(post2Tag.getId()).append(" OR ");
+//                }
+//            }
+//            if (sql.length() > 4) {
+//                if (sql.substring(sql.length() - 4).equals(" OR ")) {
+//                    sql.delete(sql.length() - 4, sql.length());
+//                }
+//            }
+//            return sql.toString();
+//        } else {
+//            return null;
+//        }
+//    }
+
+
 }
